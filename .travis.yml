@@ -1,0 +1,10 @@
+language: java
+jdk:
+  - oraclejdk7
+  - openjdk7
+notifications:
+  email:
+    recipients:
+      - betfair-cougar-dev@googlegroups.com
+    on_success: always
+    on_failure: always
