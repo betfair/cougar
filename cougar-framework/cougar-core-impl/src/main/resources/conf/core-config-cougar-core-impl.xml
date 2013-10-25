@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2013, The Sporting Exchange Limited
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+						http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+	
+	<bean class="com.betfair.cougar.util.configuration.PropertyConfigurer">
+        <constructor-arg index="0" ref="cougar.core.EncryptorRegistry"/>
+		<property name="defaultConfig" value="conf/cougar-core-defaults.properties"/>
+		<property name="configOverride" value="overrides.properties"/>
+		<property name="placeholderPrefix" value="$COUGAR{"/>
+	</bean>
+
+    <bean name="commandProcessorExecutor" class="com.betfair.cougar.util.JMXReportingThreadPoolExecutor">
+        <constructor-arg index="0" value="$COUGAR{cougar.commandProcessor.corePoolSize}"/>
+        <constructor-arg index="1" value="$COUGAR{cougar.commandProcessor.maximumPoolSize}"/>
+        <constructor-arg index="2" value="$COUGAR{cougar.commandProcessor.keepAliveTime}"/>
+        <constructor-arg index="3" value="$COUGAR{cougar.commandProcessor.timeUnit}"/>
+        <constructor-arg index="4">
+            <bean class="java.util.concurrent.LinkedBlockingQueue"/>
+        </constructor-arg>
+        <constructor-arg>
+            <bean class="org.springframework.scheduling.concurrent.CustomizableThreadFactory">
+                <property name="threadNamePrefix" value="ExecutionVenue-"/>
+            </bean>
+        </constructor-arg>
+    </bean>
+
+    <!-- make sure cougar.app.name is specified and valid -->
+    <bean class="com.betfair.cougar.core.impl.AppNameValidation" lazy-init="false">
+        <constructor-arg value="$COUGAR{cougar.app.name}"/>
+    </bean>
+
+
+    <bean id="identityResolverFactory" class="com.betfair.cougar.core.api.security.IdentityResolverFactory"/>
+
+    <bean id="abstractIdentityResolver" class="com.betfair.cougar.core.impl.security.IdentityResolverFactoryHelper"
+          abstract="true" init-method="init">
+        <property name="identityResolverFactory" ref="identityResolverFactory"/>
+    </bean>
+
+
+
+    <bean id="transportRegistry" class="com.betfair.cougar.core.impl.transports.TransportRegistryImpl"/>
+
+    <!--If you want to extend cougar by adding additional preproc interceptors, add 'em to this list -->
+    <util:list id="preProcessorInterceptors">
+        <bean class="com.betfair.cougar.core.impl.ev.MandatoryCheckInterceptor">
+            <constructor-arg ref="cougar.core.ExecutionVenue"/>
+        </bean>
+    </util:list>
+
+    <util:list id="postProcessorInterceptors"/>
+
+    <bean id="preProcessorInterceptorRegistrationHelper" abstract="true" init-method="register"
+            class="com.betfair.cougar.core.api.ev.ClientPreProcessorRegistrationHelper">
+        <property name="referenceInterceptorList" ref="preProcessorInterceptors"/>
+    </bean>
+
+    <bean id="postProcessorInterceptorRegistrationHelper" abstract="true" init-method="register"
+            class="com.betfair.cougar.core.api.ev.ClientPostProcessorRegistrationHelper">
+        <property name="referenceInterceptorList" ref="postProcessorInterceptors"/>
+    </bean>
+
+	<bean id="applicationProperties" class="com.betfair.cougar.core.impl.jmx.ApplicationProperties" />
+
+	<bean id="mbeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean">
+        	<property name="locateExistingServerIfPossible" value="true"/>
+    	</bean>
+
+	<bean class="org.springframework.jmx.export.MBeanExporter">
+		<property name="server" ref="mbeanServer" />
+
+		<property name="registrationBehavior">
+			<bean
+				id="org.springframework.jmx.export.MBeanExporter.REGISTRATION_REPLACE_EXISTING"
+				class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean" />
+		</property>
+
+        <property name="assembler">
+			<bean id="assembler" class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler">
+				<property name="attributeSource">
+					<bean id="jmxAttributeSource" class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource"/>
+				</property>
+			</bean>
+		</property>
+
+		<property name="beans">
+			<map>
+				<entry key="CoUGAR:name=ApplicationProperties" value-ref="applicationProperties" />
+				<entry key="CoUGAR:name=LibraryVersions" value-ref="libraryVersions" />
+				<entry key="CoUGAR:name=ApplicationChecksums" value-ref="applicationChecksums" />
+			</map>
+		</property>
+	</bean>
+
+    <bean name="libraryVersions" class="com.betfair.cougar.util.jmx.LibraryVersions"/>
+    <bean name="applicationChecksums" class="com.betfair.cougar.util.jmx.ApplicationChecksums">
+        <property name="algorithms" value="$COUGAR{cougar.applicationChecksums.algorithms}"/>
+    </bean>
+
+    <bean id="eventLogRecordSetup" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod"
+                  value="com.betfair.cougar.logging.records.EventLogRecord.setCollectionSeperator"/>
+
+        <property name="arguments">
+            <list>
+                <bean class="java.lang.String">
+                    <constructor-arg value="$COUGAR{cougar.eventLogRecord.collectionSeperator}"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean name="addressClassifier" class="com.betfair.cougar.core.impl.AddressClassifier">
+        <property name="privateAddressRanges" value="$COUGAR{cougar.network.ipv4.privateAddressRanges}"/>
+        <property name="localLoopbackRanges" value="$COUGAR{cougar.network.ipv4.localLoopbackRanges}"/>
+    </bean>
+
+    <!-- Now set up the core set of loggers, server, trace and console -->
+    <import resource="classpath:conf/remote/logging-handlers.xml"/>
+	<alias name="identityResolverRegistry"           alias="cougar.core.IdentityResolverRegistry"/>
+
+    <alias name="postProcessorInterceptorRegistrationHelper" alias="cougar.core.PostProcessorInterceptorRegistrationHelper"/>
+    <alias name="preProcessorInterceptorRegistrationHelper"  alias="cougar.core.PreProcessorInterceptorRegistrationHelper"/>
+    <alias name="transportRegistry" alias="cougar.core.TransportRegistry"/>
+
+    <alias name="abstractIdentityResolver" alias="cougar.core.AbstractIdentityResolver"/>
+    <alias name="identityResolverFactory" alias="cougar.core.IdentityResolverFactory"/>
+    <alias name="commandProcessorExecutor" alias="cougar.core.CommandProcessorExecutor"/>
+    <alias name="applicationChecksums" alias="cougar.core.ApplicationChecksums"/>
+    <alias name="addressClassifier" alias="cougar.core.AddressClassifier"/>
+</beans>

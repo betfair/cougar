@@ -1,0 +1,872 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+            ~ Copyright 2013, The Sporting Exchange Limited
+            ~
+            ~ Licensed under the Apache License, Version 2.0 (the "License");
+            ~ you may not use this file except in compliance with the License.
+            ~ You may obtain a copy of the License at
+            ~
+            ~     http://www.apache.org/licenses/LICENSE-2.0
+            ~
+            ~ Unless required by applicable law or agreed to in writing, software
+            ~ distributed under the License is distributed on an "AS IS" BASIS,
+            ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+            ~ See the License for the specific language governing permissions and
+            ~ limitations under the License.
+        -->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:security="http://www.betfair.com/security/" name="Baseline" targetNamespace="http://www.betfair.com/serviceapi/v1.0/Baseline/" xmlns:tns="http://www.betfair.com/servicetypes/v1/Baseline/" xmlns:wns="http://www.betfair.com/serviceapi/v1.0/Baseline/">
+<wsdl:documentation>Baseline.wsdl v1.0</wsdl:documentation>
+<wsdl:types>
+<xsd:schema targetNamespace="http://www.betfair.com/security/" elementFormDefault="qualified">
+<xsd:element name="Authentication" type="xsd:string"/>
+</xsd:schema>
+<xsd:schema targetNamespace="http://www.betfair.com/servicetypes/v1/Baseline/" elementFormDefault="qualified">
+<xsd:annotation>
+<xsd:documentation>Baseline.wsdl v1.0</xsd:documentation>
+</xsd:annotation>
+<xsd:element name="TestSimpleGetRequest" type="tns:TestSimpleGetRequestType"/>
+<xsd:complexType name="TestSimpleGetRequestType">
+<xsd:all>
+<xsd:element name="message" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestSimpleGetResponse" type="tns:TestSimpleGetResponseType"/>
+<xsd:complexType name="TestSimpleGetResponseType">
+<xsd:all>
+<xsd:element name="response" type="tns:SimpleResponseType" minOccurs="0" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestSimpleCacheGetRequest" type="tns:TestSimpleCacheGetRequestType"/>
+<xsd:complexType name="TestSimpleCacheGetRequestType">
+<xsd:all>
+<xsd:element name="id" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestSimpleCacheGetResponse" type="tns:TestSimpleCacheGetResponseType"/>
+<xsd:complexType name="TestSimpleCacheGetResponseType">
+<xsd:all>
+<xsd:element name="response" type="tns:SimpleResponseType" minOccurs="0" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestLargeGetRequest" type="tns:TestLargeGetRequestType"/>
+<xsd:complexType name="TestLargeGetRequestType">
+<xsd:all>
+<xsd:element name="size" type="xsd:int" minOccurs="1" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestLargeGetResponse" type="tns:TestLargeGetResponseType"/>
+<xsd:complexType name="TestLargeGetResponseType">
+<xsd:all>
+<xsd:element name="response" type="tns:LargeRequestType" minOccurs="0" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestLargeMapGetRequest" type="tns:TestLargeMapGetRequestType"/>
+<xsd:complexType name="TestLargeMapGetRequestType">
+<xsd:all>
+<xsd:element name="size" type="xsd:int" minOccurs="1" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestLargeMapGetResponse" type="tns:TestLargeMapGetResponseType"/>
+<xsd:complexType name="TestLargeMapGetResponseType">
+<xsd:all>
+<xsd:element name="response" type="tns:MapDataTypeType" minOccurs="0" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestMapsNameClashRequest" type="tns:TestMapsNameClashRequestType"/>
+<xsd:complexType name="TestMapsNameClashRequestType">
+<xsd:all>
+<xsd:element name="mapParam" type="tns:SimpleMapType" minOccurs="1" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestMapsNameClashResponse" type="tns:TestMapsNameClashResponseType"/>
+<xsd:complexType name="TestMapsNameClashResponseType">
+<xsd:all>
+<xsd:element name="response" type="tns:SimpleResponseMapType" minOccurs="0" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestSimpleAsyncGetRequest" type="tns:TestSimpleAsyncGetRequestType"/>
+<xsd:complexType name="TestSimpleAsyncGetRequestType">
+<xsd:all>
+<xsd:element name="message" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestSimpleAsyncGetResponse" type="tns:TestSimpleAsyncGetResponseType"/>
+<xsd:complexType name="TestSimpleAsyncGetResponseType">
+<xsd:all>
+<xsd:element name="response" type="tns:SimpleResponseType" minOccurs="0" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestAsyncGetTimeoutRequest" type="tns:TestAsyncGetTimeoutRequestType"/>
+<xsd:complexType name="TestAsyncGetTimeoutRequestType">
+<xsd:all>
+<xsd:element name="message" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestAsyncGetTimeoutResponse" type="tns:TestAsyncGetTimeoutResponseType"/>
+<xsd:complexType name="TestAsyncGetTimeoutResponseType">
+<xsd:all>
+<xsd:element name="response" type="tns:SimpleResponseType" minOccurs="0" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestParameterStylesRequest" type="tns:TestParameterStylesRequestType"/>
+<xsd:complexType name="TestParameterStylesRequestType">
+<xsd:all>
+<xsd:element name="pathParam" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+<xsd:element name="secondPathParam" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+<xsd:element name="HeaderParam" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+<xsd:element name="secondHeaderParam" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+<xsd:element name="queryParam" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+<xsd:element name="ok" type="xsd:float" minOccurs="0" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestParameterStylesResponse" type="tns:TestParameterStylesResponseType"/>
+<xsd:complexType name="TestParameterStylesResponseType">
+<xsd:all>
+<xsd:element name="response" type="tns:SimpleResponseType" minOccurs="0" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestDateRetrievalRequest" type="tns:TestDateRetrievalRequestType"/>
+<xsd:complexType name="TestDateRetrievalRequestType">
+<xsd:all>
+<xsd:element name="inputDates" type="tns:DateContainerType" minOccurs="1" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestDateRetrievalResponse" type="tns:TestDateRetrievalResponseType"/>
+<xsd:complexType name="TestDateRetrievalResponseType">
+<xsd:all>
+<xsd:element name="response" type="tns:DateContainerType" minOccurs="0" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestComplexMutatorRequest" type="tns:TestComplexMutatorRequestType"/>
+<xsd:complexType name="TestComplexMutatorRequestType">
+<xsd:all>
+<xsd:element name="message" type="tns:ComplexObjectType" minOccurs="1" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestComplexMutatorResponse" type="tns:TestComplexMutatorResponseType"/>
+<xsd:complexType name="TestComplexMutatorResponseType">
+<xsd:all>
+<xsd:element name="response" type="tns:SimpleResponseType" minOccurs="0" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestLargePostRequest" type="tns:TestLargePostRequestType"/>
+<xsd:complexType name="TestLargePostRequestType">
+<xsd:all>
+<xsd:element name="largeRequest" type="tns:LargeRequestType" minOccurs="1" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestLargePostResponse" type="tns:TestLargePostResponseType"/>
+<xsd:complexType name="TestLargePostResponseType">
+<xsd:all>
+<xsd:element name="response" type="tns:SimpleResponseType" minOccurs="0" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestExceptionRequest" type="tns:TestExceptionRequestType"/>
+<xsd:complexType name="TestExceptionRequestType">
+<xsd:all>
+<xsd:element name="responseCode" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+<xsd:element name="message" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestExceptionResponse" type="tns:TestExceptionResponseType"/>
+<xsd:complexType name="TestExceptionResponseType">
+<xsd:all>
+<xsd:element name="response" type="tns:SimpleResponseType" minOccurs="0" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestSecureServiceRequest" type="tns:TestSecureServiceRequestType"/>
+<xsd:complexType name="TestSecureServiceRequestType">
+<xsd:all>
+<xsd:element name="message" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestSecureServiceResponse" type="tns:TestSecureServiceResponseType"/>
+<xsd:complexType name="TestSecureServiceResponseType">
+<xsd:all>
+<xsd:element name="response" type="tns:SimpleResponseType" minOccurs="0" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestNoParamsRequest" type="tns:TestNoParamsRequestType"/>
+<xsd:complexType name="TestNoParamsRequestType">
+<xsd:all/>
+</xsd:complexType>
+<xsd:element name="TestNoParamsResponse" type="tns:TestNoParamsResponseType"/>
+<xsd:complexType name="TestNoParamsResponseType">
+<xsd:all>
+<xsd:element name="response" type="tns:NoParamsResponseType" minOccurs="0" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestNonExistentRequest" type="tns:TestNonExistentRequestType"/>
+<xsd:complexType name="TestNonExistentRequestType">
+<xsd:all/>
+</xsd:complexType>
+<xsd:element name="TestNonExistentResponse" type="tns:TestNonExistentResponseType"/>
+<xsd:complexType name="TestNonExistentResponseType">
+<xsd:all>
+<xsd:element name="response" type="tns:NoParamsResponseType" minOccurs="0" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestSimpleTypeReplacementRequest" type="tns:TestSimpleTypeReplacementRequestType"/>
+<xsd:complexType name="TestSimpleTypeReplacementRequestType">
+<xsd:all>
+<xsd:element name="simpleInt" type="xsd:int" minOccurs="1" maxOccurs="1"/>
+<xsd:element name="simpleDouble" type="xsd:double" minOccurs="1" maxOccurs="1"/>
+<xsd:element name="simpleString" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+<xsd:element name="simpleEnum" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestSimpleTypeReplacementResponse" type="tns:TestSimpleTypeReplacementResponseType"/>
+<xsd:complexType name="TestSimpleTypeReplacementResponseType">
+<xsd:all>
+<xsd:element name="response" type="tns:SimpleContainerType" minOccurs="0" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestStringableListsRequest" type="tns:TestStringableListsRequestType"/>
+<xsd:complexType name="TestStringableListsRequestType">
+<xsd:all>
+<xsd:element name="intList">
+<xsd:complexType>
+<xsd:sequence>
+<xsd:element name="Integer" type="xsd:int" minOccurs="1" maxOccurs="unbounded"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="stringList">
+<xsd:complexType>
+<xsd:sequence>
+<xsd:element name="String" type="xsd:string" minOccurs="1" maxOccurs="unbounded"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="enumList">
+<xsd:complexType>
+<xsd:sequence>
+<xsd:element name="SimpleValidValue" type="xsd:string" minOccurs="1" maxOccurs="unbounded"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="TestStringableListsResponse" type="tns:TestStringableListsResponseType"/>
+<xsd:complexType name="TestStringableListsResponseType">
+<xsd:all>
+<xsd:element name="response" type="tns:SimpleListContainerType" minOccurs="0" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:complexType name="NoParamsResponseType">
+<xsd:all>
+<xsd:element name="version" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+<xsd:element name="status" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:complexType name="SimpleResponseType">
+<xsd:all>
+<xsd:element name="message" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:complexType name="SimpleResponseMapType">
+<xsd:all>
+<!--map type-->
+<xsd:element name="cache" minOccurs="1" maxOccurs="1">
+<xsd:complexType>
+<xsd:sequence>
+<xsd:element name="entry" minOccurs="0" maxOccurs="unbounded">
+<xsd:complexType>
+<xsd:sequence>
+<xsd:element name="String" type="xsd:string" minOccurs="0"/>
+</xsd:sequence>
+<xsd:attribute name="key" type="xsd:string"/>
+</xsd:complexType>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+</xsd:all>
+</xsd:complexType>
+<xsd:complexType name="ComplexObjectType">
+<xsd:all>
+<xsd:element name="name" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+<xsd:element name="value1" type="xsd:int" minOccurs="1" maxOccurs="1"/>
+<xsd:element name="value2" type="xsd:int" minOccurs="0" maxOccurs="1"/>
+<xsd:element name="ok" type="xsd:boolean" minOccurs="0" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:complexType name="DateContainerType">
+<xsd:all>
+<xsd:element name="name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+<xsd:element name="first" type="xsd:dateTime" minOccurs="1" maxOccurs="1"/>
+<xsd:element name="last" type="xsd:dateTime" minOccurs="0" maxOccurs="1"/>
+<xsd:element name="difference" type="xsd:double" minOccurs="0" maxOccurs="1"/>
+<xsd:element name="allDates">
+<xsd:complexType>
+<xsd:sequence>
+<xsd:element name="String" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+</xsd:all>
+</xsd:complexType>
+<xsd:complexType name="LargeRequestType">
+<xsd:all>
+<xsd:element name="size" type="xsd:int" minOccurs="0" maxOccurs="1"/>
+<xsd:element name="objects">
+<xsd:complexType>
+<xsd:sequence>
+<xsd:element name="ComplexObject" type="tns:ComplexObjectType" minOccurs="1" maxOccurs="unbounded"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="oddOrEven" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:complexType name="MapDataTypeType">
+<xsd:all>
+<!--map type-->
+<xsd:element name="cache" minOccurs="1" maxOccurs="1">
+<xsd:complexType>
+<xsd:sequence>
+<xsd:element name="entry" minOccurs="0" maxOccurs="unbounded">
+<xsd:complexType>
+<xsd:sequence>
+<xsd:element name="ComplexObject" type="tns:ComplexObjectType" minOccurs="0"/>
+</xsd:sequence>
+<xsd:attribute name="key" type="xsd:int"/>
+</xsd:complexType>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+<!--map type-->
+<xsd:element name="someMap" minOccurs="1" maxOccurs="1">
+<xsd:complexType>
+<xsd:sequence>
+<xsd:element name="entry" minOccurs="0" maxOccurs="unbounded">
+<xsd:complexType>
+<xsd:sequence>
+<xsd:element name="ComplexObject" type="tns:ComplexObjectType" minOccurs="0"/>
+</xsd:sequence>
+<xsd:attribute name="key" type="xsd:string"/>
+</xsd:complexType>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+</xsd:all>
+</xsd:complexType>
+<xsd:complexType name="SimpleMapType">
+<xsd:all>
+<!--map type-->
+<xsd:element name="cache" minOccurs="1" maxOccurs="1">
+<xsd:complexType>
+<xsd:sequence>
+<xsd:element name="entry" minOccurs="0" maxOccurs="unbounded">
+<xsd:complexType>
+<xsd:sequence>
+<xsd:element name="String" type="xsd:string" minOccurs="0"/>
+</xsd:sequence>
+<xsd:attribute name="key" type="xsd:string"/>
+</xsd:complexType>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+</xsd:all>
+</xsd:complexType>
+<xsd:complexType name="SimpleContainerType">
+<xsd:all>
+<xsd:element name="simpleInt" type="xsd:int" minOccurs="0" maxOccurs="1"/>
+<xsd:element name="simpleDouble" type="xsd:double" minOccurs="0" maxOccurs="1"/>
+<xsd:element name="simpleString" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+<xsd:element name="simpleEnum" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:complexType name="SimpleListContainerType">
+<xsd:all>
+<xsd:element name="ints">
+<xsd:complexType>
+<xsd:sequence>
+<xsd:element name="Integer" type="xsd:int" minOccurs="0" maxOccurs="unbounded"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="strings">
+<xsd:complexType>
+<xsd:sequence>
+<xsd:element name="String" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="enums">
+<xsd:complexType>
+<xsd:sequence>
+<xsd:element name="SimpleValidValue" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="SimpleException" type="tns:SimpleExceptionType"/>
+<xsd:complexType name="SimpleExceptionType">
+<xsd:all>
+<xsd:element name="errorCode" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+<xsd:element name="reason" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+<xsd:element name="WotsitException" type="tns:WotsitExceptionType"/>
+<xsd:complexType name="WotsitExceptionType">
+<xsd:all>
+<xsd:element name="errorCode" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+<xsd:element name="type" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+</xsd:all>
+</xsd:complexType>
+</xsd:schema>
+</wsdl:types>
+<wsdl:message name="HeadersInOut">
+<wsdl:part name="header" element="Authentication"/>
+</wsdl:message>
+<wsdl:message name="TestSimpleGetIn">
+<wsdl:part name="parameters" element="tns:TestSimpleGetRequest"/>
+</wsdl:message>
+<wsdl:message name="TestSimpleGetOut">
+<wsdl:part name="parameters" element="tns:TestSimpleGetResponse"/>
+</wsdl:message>
+<wsdl:message name="TestSimpleCacheGetIn">
+<wsdl:part name="parameters" element="tns:TestSimpleCacheGetRequest"/>
+</wsdl:message>
+<wsdl:message name="TestSimpleCacheGetOut">
+<wsdl:part name="parameters" element="tns:TestSimpleCacheGetResponse"/>
+</wsdl:message>
+<wsdl:message name="TestLargeGetIn">
+<wsdl:part name="parameters" element="tns:TestLargeGetRequest"/>
+</wsdl:message>
+<wsdl:message name="TestLargeGetOut">
+<wsdl:part name="parameters" element="tns:TestLargeGetResponse"/>
+</wsdl:message>
+<wsdl:message name="TestLargeMapGetIn">
+<wsdl:part name="parameters" element="tns:TestLargeMapGetRequest"/>
+</wsdl:message>
+<wsdl:message name="TestLargeMapGetOut">
+<wsdl:part name="parameters" element="tns:TestLargeMapGetResponse"/>
+</wsdl:message>
+<wsdl:message name="TestMapsNameClashIn">
+<wsdl:part name="parameters" element="tns:TestMapsNameClashRequest"/>
+</wsdl:message>
+<wsdl:message name="TestMapsNameClashOut">
+<wsdl:part name="parameters" element="tns:TestMapsNameClashResponse"/>
+</wsdl:message>
+<wsdl:message name="TestSimpleAsyncGetIn">
+<wsdl:part name="parameters" element="tns:TestSimpleAsyncGetRequest"/>
+</wsdl:message>
+<wsdl:message name="TestSimpleAsyncGetOut">
+<wsdl:part name="parameters" element="tns:TestSimpleAsyncGetResponse"/>
+</wsdl:message>
+<wsdl:message name="TestAsyncGetTimeoutIn">
+<wsdl:part name="parameters" element="tns:TestAsyncGetTimeoutRequest"/>
+</wsdl:message>
+<wsdl:message name="TestAsyncGetTimeoutOut">
+<wsdl:part name="parameters" element="tns:TestAsyncGetTimeoutResponse"/>
+</wsdl:message>
+<wsdl:message name="TestParameterStylesIn">
+<wsdl:part name="parameters" element="tns:TestParameterStylesRequest"/>
+</wsdl:message>
+<wsdl:message name="TestParameterStylesOut">
+<wsdl:part name="parameters" element="tns:TestParameterStylesResponse"/>
+</wsdl:message>
+<wsdl:message name="TestDateRetrievalIn">
+<wsdl:part name="parameters" element="tns:TestDateRetrievalRequest"/>
+</wsdl:message>
+<wsdl:message name="TestDateRetrievalOut">
+<wsdl:part name="parameters" element="tns:TestDateRetrievalResponse"/>
+</wsdl:message>
+<wsdl:message name="TestComplexMutatorIn">
+<wsdl:part name="parameters" element="tns:TestComplexMutatorRequest"/>
+</wsdl:message>
+<wsdl:message name="TestComplexMutatorOut">
+<wsdl:part name="parameters" element="tns:TestComplexMutatorResponse"/>
+</wsdl:message>
+<wsdl:message name="TestLargePostIn">
+<wsdl:part name="parameters" element="tns:TestLargePostRequest"/>
+</wsdl:message>
+<wsdl:message name="TestLargePostOut">
+<wsdl:part name="parameters" element="tns:TestLargePostResponse"/>
+</wsdl:message>
+<wsdl:message name="TestExceptionIn">
+<wsdl:part name="parameters" element="tns:TestExceptionRequest"/>
+</wsdl:message>
+<wsdl:message name="TestExceptionOut">
+<wsdl:part name="parameters" element="tns:TestExceptionResponse"/>
+</wsdl:message>
+<wsdl:message name="TestSecureServiceIn">
+<wsdl:part name="parameters" element="tns:TestSecureServiceRequest"/>
+</wsdl:message>
+<wsdl:message name="TestSecureServiceOut">
+<wsdl:part name="parameters" element="tns:TestSecureServiceResponse"/>
+</wsdl:message>
+<wsdl:message name="TestNoParamsIn">
+<wsdl:part name="parameters" element="tns:TestNoParamsRequest"/>
+</wsdl:message>
+<wsdl:message name="TestNoParamsOut">
+<wsdl:part name="parameters" element="tns:TestNoParamsResponse"/>
+</wsdl:message>
+<wsdl:message name="TestNonExistentIn">
+<wsdl:part name="parameters" element="tns:TestNonExistentRequest"/>
+</wsdl:message>
+<wsdl:message name="TestNonExistentOut">
+<wsdl:part name="parameters" element="tns:TestNonExistentResponse"/>
+</wsdl:message>
+<wsdl:message name="TestSimpleTypeReplacementIn">
+<wsdl:part name="parameters" element="tns:TestSimpleTypeReplacementRequest"/>
+</wsdl:message>
+<wsdl:message name="TestSimpleTypeReplacementOut">
+<wsdl:part name="parameters" element="tns:TestSimpleTypeReplacementResponse"/>
+</wsdl:message>
+<wsdl:message name="TestStringableListsIn">
+<wsdl:part name="parameters" element="tns:TestStringableListsRequest"/>
+</wsdl:message>
+<wsdl:message name="TestStringableListsOut">
+<wsdl:part name="parameters" element="tns:TestStringableListsResponse"/>
+</wsdl:message>
+<wsdl:message name="SimpleExceptionFault">
+<wsdl:part name="fault" element="tns:SimpleException"/>
+</wsdl:message>
+<wsdl:message name="WotsitExceptionFault">
+<wsdl:part name="fault" element="tns:WotsitException"/>
+</wsdl:message>
+<wsdl:portType name="BaselineService">
+<wsdl:operation name="testSimpleGet">
+<wsdl:input message="wns:TestSimpleGetIn"/>
+<wsdl:output message="wns:TestSimpleGetOut"/>
+<wsdl:fault name="simpleException" message="wns:SimpleExceptionFault"/>
+</wsdl:operation>
+<wsdl:operation name="testSimpleCacheGet">
+<wsdl:input message="wns:TestSimpleCacheGetIn"/>
+<wsdl:output message="wns:TestSimpleCacheGetOut"/>
+<wsdl:fault name="simpleException" message="wns:SimpleExceptionFault"/>
+</wsdl:operation>
+<wsdl:operation name="testLargeGet">
+<wsdl:input message="wns:TestLargeGetIn"/>
+<wsdl:output message="wns:TestLargeGetOut"/>
+<wsdl:fault name="simpleException" message="wns:SimpleExceptionFault"/>
+</wsdl:operation>
+<wsdl:operation name="testLargeMapGet">
+<wsdl:input message="wns:TestLargeMapGetIn"/>
+<wsdl:output message="wns:TestLargeMapGetOut"/>
+<wsdl:fault name="simpleException" message="wns:SimpleExceptionFault"/>
+</wsdl:operation>
+<wsdl:operation name="testMapsNameClash">
+<wsdl:input message="wns:TestMapsNameClashIn"/>
+<wsdl:output message="wns:TestMapsNameClashOut"/>
+<wsdl:fault name="simpleException" message="wns:SimpleExceptionFault"/>
+</wsdl:operation>
+<wsdl:operation name="testSimpleAsyncGet">
+<wsdl:input message="wns:TestSimpleAsyncGetIn"/>
+<wsdl:output message="wns:TestSimpleAsyncGetOut"/>
+<wsdl:fault name="simpleException" message="wns:SimpleExceptionFault"/>
+</wsdl:operation>
+<wsdl:operation name="testAsyncGetTimeout">
+<wsdl:input message="wns:TestAsyncGetTimeoutIn"/>
+<wsdl:output message="wns:TestAsyncGetTimeoutOut"/>
+<wsdl:fault name="simpleException" message="wns:SimpleExceptionFault"/>
+</wsdl:operation>
+<wsdl:operation name="testParameterStyles">
+<wsdl:input message="wns:TestParameterStylesIn"/>
+<wsdl:output message="wns:TestParameterStylesOut"/>
+<wsdl:fault name="simpleException" message="wns:SimpleExceptionFault"/>
+</wsdl:operation>
+<wsdl:operation name="testDateRetrieval">
+<wsdl:input message="wns:TestDateRetrievalIn"/>
+<wsdl:output message="wns:TestDateRetrievalOut"/>
+<wsdl:fault name="simpleException" message="wns:SimpleExceptionFault"/>
+</wsdl:operation>
+<wsdl:operation name="testComplexMutator">
+<wsdl:input message="wns:TestComplexMutatorIn"/>
+<wsdl:output message="wns:TestComplexMutatorOut"/>
+<wsdl:fault name="simpleException" message="wns:SimpleExceptionFault"/>
+</wsdl:operation>
+<wsdl:operation name="testLargePost">
+<wsdl:input message="wns:TestLargePostIn"/>
+<wsdl:output message="wns:TestLargePostOut"/>
+<wsdl:fault name="simpleException" message="wns:SimpleExceptionFault"/>
+</wsdl:operation>
+<wsdl:operation name="testException">
+<wsdl:input message="wns:TestExceptionIn"/>
+<wsdl:output message="wns:TestExceptionOut"/>
+<wsdl:fault name="simpleException" message="wns:SimpleExceptionFault"/>
+<wsdl:fault name="wotsitException" message="wns:WotsitExceptionFault"/>
+</wsdl:operation>
+<wsdl:operation name="testSecureService">
+<wsdl:input message="wns:TestSecureServiceIn"/>
+<wsdl:output message="wns:TestSecureServiceOut"/>
+<wsdl:fault name="simpleException" message="wns:SimpleExceptionFault"/>
+</wsdl:operation>
+<wsdl:operation name="testNoParams">
+<wsdl:input message="wns:TestNoParamsIn"/>
+<wsdl:output message="wns:TestNoParamsOut"/>
+<wsdl:fault name="simpleException" message="wns:SimpleExceptionFault"/>
+</wsdl:operation>
+<wsdl:operation name="testNonExistent">
+<wsdl:input message="wns:TestNonExistentIn"/>
+<wsdl:output message="wns:TestNonExistentOut"/>
+<wsdl:fault name="simpleException" message="wns:SimpleExceptionFault"/>
+</wsdl:operation>
+<wsdl:operation name="testSimpleTypeReplacement">
+<wsdl:input message="wns:TestSimpleTypeReplacementIn"/>
+<wsdl:output message="wns:TestSimpleTypeReplacementOut"/>
+<wsdl:fault name="simpleException" message="wns:SimpleExceptionFault"/>
+</wsdl:operation>
+<wsdl:operation name="testStringableLists">
+<wsdl:input message="wns:TestStringableListsIn"/>
+<wsdl:output message="wns:TestStringableListsOut"/>
+<wsdl:fault name="simpleException" message="wns:SimpleExceptionFault"/>
+</wsdl:operation>
+</wsdl:portType>
+<wsdl:binding name="BaselineService" type="wns:BaselineService">
+<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+<wsdl:operation name="testSimpleGet">
+<soap:operation soapAction="testSimpleGet" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:output>
+<wsdl:fault name="simpleException">
+<soap:fault use="literal" name="simpleException"/>
+</wsdl:fault>
+</wsdl:operation>
+<wsdl:operation name="testSimpleCacheGet">
+<soap:operation soapAction="testSimpleCacheGet" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:output>
+<wsdl:fault name="simpleException">
+<soap:fault use="literal" name="simpleException"/>
+</wsdl:fault>
+</wsdl:operation>
+<wsdl:operation name="testLargeGet">
+<soap:operation soapAction="testLargeGet" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:output>
+<wsdl:fault name="simpleException">
+<soap:fault use="literal" name="simpleException"/>
+</wsdl:fault>
+</wsdl:operation>
+<wsdl:operation name="testLargeMapGet">
+<soap:operation soapAction="testLargeMapGet" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:output>
+<wsdl:fault name="simpleException">
+<soap:fault use="literal" name="simpleException"/>
+</wsdl:fault>
+</wsdl:operation>
+<wsdl:operation name="testMapsNameClash">
+<soap:operation soapAction="testMapsNameClash" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:output>
+<wsdl:fault name="simpleException">
+<soap:fault use="literal" name="simpleException"/>
+</wsdl:fault>
+</wsdl:operation>
+<wsdl:operation name="testSimpleAsyncGet">
+<soap:operation soapAction="testSimpleAsyncGet" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:output>
+<wsdl:fault name="simpleException">
+<soap:fault use="literal" name="simpleException"/>
+</wsdl:fault>
+</wsdl:operation>
+<wsdl:operation name="testAsyncGetTimeout">
+<soap:operation soapAction="testAsyncGetTimeout" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:output>
+<wsdl:fault name="simpleException">
+<soap:fault use="literal" name="simpleException"/>
+</wsdl:fault>
+</wsdl:operation>
+<wsdl:operation name="testParameterStyles">
+<soap:operation soapAction="testParameterStyles" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:output>
+<wsdl:fault name="simpleException">
+<soap:fault use="literal" name="simpleException"/>
+</wsdl:fault>
+</wsdl:operation>
+<wsdl:operation name="testDateRetrieval">
+<soap:operation soapAction="testDateRetrieval" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:output>
+<wsdl:fault name="simpleException">
+<soap:fault use="literal" name="simpleException"/>
+</wsdl:fault>
+</wsdl:operation>
+<wsdl:operation name="testComplexMutator">
+<soap:operation soapAction="testComplexMutator" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:output>
+<wsdl:fault name="simpleException">
+<soap:fault use="literal" name="simpleException"/>
+</wsdl:fault>
+</wsdl:operation>
+<wsdl:operation name="testLargePost">
+<soap:operation soapAction="testLargePost" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:output>
+<wsdl:fault name="simpleException">
+<soap:fault use="literal" name="simpleException"/>
+</wsdl:fault>
+</wsdl:operation>
+<wsdl:operation name="testException">
+<soap:operation soapAction="testException" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:output>
+<wsdl:fault name="simpleException">
+<soap:fault use="literal" name="simpleException"/>
+</wsdl:fault>
+<wsdl:fault name="wotsitException">
+<soap:fault use="literal" name="wotsitException"/>
+</wsdl:fault>
+</wsdl:operation>
+<wsdl:operation name="testSecureService">
+<soap:operation soapAction="testSecureService" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:output>
+<wsdl:fault name="simpleException">
+<soap:fault use="literal" name="simpleException"/>
+</wsdl:fault>
+</wsdl:operation>
+<wsdl:operation name="testNoParams">
+<soap:operation soapAction="testNoParams" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:output>
+<wsdl:fault name="simpleException">
+<soap:fault use="literal" name="simpleException"/>
+</wsdl:fault>
+</wsdl:operation>
+<wsdl:operation name="testNonExistent">
+<soap:operation soapAction="testNonExistent" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:output>
+<wsdl:fault name="simpleException">
+<soap:fault use="literal" name="simpleException"/>
+</wsdl:fault>
+</wsdl:operation>
+<wsdl:operation name="testSimpleTypeReplacement">
+<soap:operation soapAction="testSimpleTypeReplacement" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:output>
+<wsdl:fault name="simpleException">
+<soap:fault use="literal" name="simpleException"/>
+</wsdl:fault>
+</wsdl:operation>
+<wsdl:operation name="testStringableLists">
+<soap:operation soapAction="testStringableLists" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+<soap:header message="wns:HeadersInOut" part="header" use="literal"/>
+</wsdl:output>
+<wsdl:fault name="simpleException">
+<soap:fault use="literal" name="simpleException"/>
+</wsdl:fault>
+</wsdl:operation>
+</wsdl:binding>
+<wsdl:service name="BaselineService">
+<wsdl:port name="BaselineService" binding="wns:BaselineService">
+<soap:address location="http://localhost/this-should-be-set-programatically"/>
+</wsdl:port>
+</wsdl:service>
+</wsdl:definitions>

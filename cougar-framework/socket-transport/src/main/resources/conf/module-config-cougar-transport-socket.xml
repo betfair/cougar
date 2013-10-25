@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2013, The Sporting Exchange Limited
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+						http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+    <bean class="com.betfair.cougar.util.configuration.PropertyConfigurer">
+        <constructor-arg index="0" ref="cougar.core.EncryptorRegistry"/>
+        <property name="defaultConfig" value="conf/socket-transport-defaults.properties"/>
+        <property name="configOverride" value="overrides.properties"/>
+        <property name="placeholderPrefix" value="$COUGAR-SOCKET-TRANSPORT{"/>
+    </bean>
+
+    <!-- Socket transport command processing components -->
+
+    <bean id="serverSocketTransportInfo" class="com.betfair.cougar.transport.socket.jmx.ServerSocketTransportInfo">
+        <constructor-arg index="0" ref="cougar.core.JmxHtmlAdapter"/>
+        <constructor-arg index="1" ref="pooledConnectedObjectManager"/>
+    </bean>
+
+    <bean id="defaultSocketCertInfoExtractor" class="com.betfair.cougar.core.impl.security.CommonNameCertInfoExtractor"/>
+
+    <bean id="socketMarshaller" class="com.betfair.cougar.netutil.nio.marshalling.SocketRMIMarshaller">
+        <constructor-arg ref="cougar.core.GeoIPLocator"/>
+        <constructor-arg ref="$COUGAR-SOCKET-TRANSPORT{cougar.socket.tokenResolver.certInfoExtractor}"/>
+        <property name="hardFailEnumDeserialisation" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.enums.hardFailure}"/>
+    </bean>
+
+    <bean id="socketCommandProcessor" class="com.betfair.cougar.transport.socket.SocketTransportCommandProcessor" lazy-init="false" scope="singleton">
+        <property name="startingGate" ref="cougar.core.StartingGate"/>
+        <property name="marshaller" ref="socketMarshaller"/>
+        <property name="executionVenue" ref="cougar.core.ExecutionVenue"/>
+        <property name="executor" ref="cougar.core.CommandProcessorExecutor"/>
+        <property name="registry" ref="eventLoggingRegistry"/>
+        <property name="connectedObjectManager" ref="pooledConnectedObjectManager"/>
+        <property name="nioLogger" ref="nioLogger"/>
+        <property name="unknownCipherKeyLength" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.ssl.unknownCipherKeyLength}"/>
+    </bean>
+
+    <bean name="pooledConnectedObjectManager" class="com.betfair.cougar.transport.socket.PooledServerConnectedObjectManager" init-method="start" destroy-method="stop">
+        <property name="numProcessingThreads" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.push.processingThreads}"/>
+        <property name="maxUpdateActionsPerMessage" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.push.maxUpdateActionsPerMessage}"/>
+        <property name="objectIOFactory" ref="serverHessianObjectFactory"/>
+        <property name="nioLogger" ref="nioLogger"/>
+        <property name="eventLogger" ref="cougar.core.EventLogger"/>
+    </bean>
+
+    <bean name="serverSocketExecutor" class="com.betfair.cougar.util.JMXReportingThreadPoolExecutor">
+        <constructor-arg index="0" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.serverExecutor.corePoolSize}"/>
+        <constructor-arg index="1" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.serverExecutor.maximumPoolSize}"/>
+        <constructor-arg index="2" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.serverExecutor.keepAliveTime}"/>
+        <constructor-arg index="3" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.serverExecutor.timeUnit}"/>
+        <constructor-arg index="4">
+            <bean class="java.util.concurrent.SynchronousQueue"/>
+        </constructor-arg>
+        <constructor-arg>
+            <bean class="org.springframework.scheduling.concurrent.CustomizableThreadFactory">
+                <property name="threadNamePrefix" value="Server-SocketIo-"/>
+            </bean>
+        </constructor-arg>
+    </bean>
+
+    <bean name="serverHandler" class="com.betfair.cougar.transport.nio.ExecutionVenueServerHandler">
+        <constructor-arg ref="cougar.transport.SocketCommandProcessor"/>
+        <constructor-arg ref="nioLogger"/>
+        <constructor-arg ref="serverHessianObjectFactory"/>
+    </bean>
+
+    <bean name="serverHessianObjectFactory" class="com.betfair.cougar.netutil.nio.hessian.HessianObjectIOFactory"/>
+
+    <bean name="serverSessionManager" class="com.betfair.cougar.transport.nio.IoSessionManager">
+        <property name="maxTimeToWaitForRequestCompletion" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.maxTimeToWaitForRequestCompletion}"/>
+        <property name="nioLogger" ref="nioLogger"/>
+    </bean>
+
+    <bean id="socketServer" class="com.betfair.cougar.transport.nio.ExecutionVenueNioServer" init-method="start">
+        <property name="nioConfig" ref="socketConfig"/>
+        <property name="serverHandler" ref="serverHandler"/>
+        <property name="serverExecutor" ref="serverSocketExecutor"/>
+        <property name="transportRegistry" ref="cougar.core.TransportRegistry"/>
+        <property name="sessionManager" ref="serverSessionManager"/>
+        <property name="socketAcceptorProcessors" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.serverExecutor.processorThreads}"/>
+    </bean>
+
+    <!-- Register handler listeners with EVSH, to get notified of session close events -->
+    <bean id="serverHandlerRegisterer" class="com.betfair.cougar.transport.socket.HandlerListenerRegistrationHelper" init-method="start">
+        <property name="serverHandler" ref="serverHandler"/>
+        <property name="handlers">
+            <util:list>
+                <ref bean="serverSocketTransportInfo"/>
+                <ref bean="pooledConnectedObjectManager"/>
+            </util:list>
+        </property>
+    </bean>
+
+    <bean id="nioLogger" class="com.betfair.cougar.netutil.nio.NioLogger">
+        <constructor-arg value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.logLevel}"/>
+        <property name="jmxControl" ref="cougar.core.JmxControl"/>
+    </bean>
+
+    <bean id="socketConfig" class="com.betfair.cougar.netutil.nio.TlsNioConfig">
+        <property name="listenAddress" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.bindaddress}"/>
+        <property name="listenPort" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.serverport}"/>
+        <property name="reuseAddress" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.reuseAddress}"/>
+        <property name="maxWriteQueueSize" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.maxWriteQueueSize}"/>
+        <property name="recvBufferSize" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.receiveBufferSize}"/>
+        <property name="sendBufferSize" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.sendBufferSize}"/>
+        <property name="useDirectBuffersInMina" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.useDirectBuffers}"/>
+        <property name="nioLogger" ref="nioLogger"/>
+        <property name="supportsTls" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.ssl.supportsTls}"/>
+        <property name="requiresTls" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.ssl.requiresTls}"/>
+        <property name="needClientAuth" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.ssl.needClientAuth}"/>
+        <property name="wantClientAuth" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.ssl.wantClientAuth}"/>
+        <property name="keystore" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.ssl.keystore}"/>
+        <property name="keystoreType" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.ssl.keystoreType}"/>
+        <property name="keystorePassword" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.ssl.keystorePassword}"/>
+        <property name="truststore" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.ssl.truststore}"/>
+        <property name="truststoreType" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.ssl.truststoreType}"/>
+        <property name="truststorePassword" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.ssl.truststorePassword}"/>
+        <property name="mbeanServer" ref="mbeanServer"/>
+    </bean>
+
+    <!--
+    	suitable strategy if using active monitoring (cougar.socket.healthMonitorInterval > 0)
+     -->
+    <bean id="activeMonitoringStrategy" class="com.betfair.cougar.transport.nio.CountingHealthMonitorStrategy">
+    	<constructor-arg value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.healthStateRepeatsBeforeUpdate}"/>
+    </bean>
+
+    <!--
+    	suitable strategy if using passive monitoring (cougar.socket.healthMonitorInterval = 0)
+     -->
+    <bean id="passiveMonitoringStrategy" class="com.betfair.cougar.transport.nio.DebounceHealthMonitorStrategy">
+    	<constructor-arg value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.healthStateDebouncePeriod}"/>
+    </bean>
+
+    <bean id="applicationHealthMonitor" class="com.betfair.cougar.transport.nio.ApplicationHealthMonitor">
+        <constructor-arg ref="socketServer"/>
+        <constructor-arg ref="$COUGAR-SOCKET-TRANSPORT{cougar.socket.healthMonitorStrategy}MonitoringStrategy"/>
+        <constructor-arg value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.healthMonitorInterval}"/>
+        <constructor-arg ref="cougar.core.MonitorRegistry"/>
+    </bean>
+
+    <bean class="com.betfair.cougar.logging.LogDefinition" init-method="register">
+        <property name="logName" value="SOCKET_TRANSPORT-LOG" />
+        <property name="handler">
+            <bean factory-bean="cougar.core.logHandlerFactory" factory-method="createLogHandler">
+                <constructor-arg type="java.util.Map">
+                    <util:map map-class="java.util.HashMap">
+                       <entry key="logName" value="SOCKET_TRANSPORT-LOG"/>
+                       <entry key="fileName" value="$COUGAR{cougar.log.dir}/socket/$COUGAR{system.hostname}-$COUGAR{cougar.app.name}-socket-session.log"/>
+                       <entry key="flush" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.log.SESSION-LOG.flush}"/>
+                       <entry key="append" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.log.SESSION-LOG.append}"/>
+                       <entry key="rotation" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.log.SESSION-LOG.rotation}"/>
+                       <entry key="abstractLogger" value="false"/>
+                       <entry key="format" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.log.SESSION-LOG.format}"/>
+                    </util:map>
+                </constructor-arg>
+            </bean>
+        </property>
+    </bean>
+
+    <bean class="com.betfair.cougar.logging.EventLogDefinition" init-method="register">
+        <property name="logName" value="PUSH_SUBSCRIPTION-LOG" />
+        <property name="registry" ref="cougar.core.EventLoggingRegistry"/>
+        <property name="abstract" value="false"/>
+    </bean>
+
+    <bean class="com.betfair.cougar.logging.LogDefinition" init-method="register">
+        <property name="logName" value="PUSH_SUBSCRIPTION-LOG" />
+        <property name="handler">
+            <bean factory-bean="cougar.core.logHandlerFactory" factory-method="createLogHandler">
+                <constructor-arg type="java.util.Map">
+                    <util:map map-class="java.util.HashMap">
+                        <entry key="logName" value="PUSH_SUBSCRIPTION-LOG"/>
+                        <entry key="fileName" value="$COUGAR{cougar.log.dir}/dw/$COUGAR{system.hostname}-$COUGAR{cougar.app.name}-push-subscription.log"/>
+                        <entry key="flush" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.log.PUSH_SUBSCRIPTION-LOG.flush}"/>
+                        <entry key="append" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.log.PUSH_SUBSCRIPTION-LOG.append}"/>
+                        <entry key="rotation" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.log.PUSH_SUBSCRIPTION-LOG.rotation}"/>
+                        <entry key="abstractLogger" value="false"/>
+                        <entry key="format" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.log.PUSH_SUBSCRIPTION-LOG.format}"/>
+                        <entry key="immediateFlush" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.log.PUSH_SUBSCRIPTION-LOG.immediateFlush}"/>
+                    </util:map>
+                </constructor-arg>
+            </bean>
+        </property>
+    </bean>
+
+    <bean class="org.springframework.jmx.export.MBeanExporter">
+		<property name="server" ref="mbeanServer" />
+
+		<property name="registrationBehavior">
+			<bean
+				id="org.springframework.jmx.export.MBeanExporter.REGISTRATION_REPLACE_EXISTING"
+				class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean" />
+		</property>
+		<property name="assembler">
+			<bean id="assembler" class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler">
+				<property name="attributeSource">
+					<bean id="jmxAttributeSource" class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource"/>
+				</property>
+			</bean>
+		</property>
+		<property name="beans">
+			<map>
+				<entry key="CoUGAR.socket.transport:name=socketConfig" value-ref="socketConfig" />
+                <entry key="CoUGAR.socket.transport:name=server" value-ref="socketServer" />
+                <entry key="CoUGAR.socket.transport:name=serverExecutor" value-ref="serverSocketExecutor" />
+                <entry key="CoUGAR.socket.transport:name=nioLogger" value-ref="nioLogger" />
+                <entry key="CoUGAR.socket.transport:name=pooledConnectedObjectManager" value-ref="pooledConnectedObjectManager" />
+                <entry key="com.betfair.cougar.transport:type=socketCommandProcessor" value-ref="socketCommandProcessor"/>
+			</map>
+		</property>
+	</bean>
+
+
+    <alias name="socketCommandProcessor" alias="cougar.transport.SocketCommandProcessor"/>
+</beans>

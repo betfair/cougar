@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2013, The Sporting Exchange Limited
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean class="com.betfair.cougar.util.configuration.PropertyConfigurer">
+        <constructor-arg index="0" ref="cougar.core.EncryptorRegistry"/>
+        <property name="defaultConfig" value="conf/cougar-standalone-ev-defaults.properties"/>
+        <property name="configOverride" value="overrides.properties"/>
+        <property name="placeholderPrefix" value="$COUGAR_STANDALONE_EV{"/>
+    </bean>
+
+    <bean id="executionVenue" class="com.betfair.cougar.core.impl.ev.ServiceRegisterableExecutionVenue">
+        <property name="serviceLogManagerFactory" ref="serviceLogManagerFactory"/>
+        <property name="stats" ref="kpiMonitor"/>
+        <property name="preProcessors" ref="preProcessorInterceptors"/>
+        <property name="postProcessors" ref="postProcessorInterceptors"/>
+        <property name="identityResolverFactory" ref="cougar.core.IdentityResolverFactory"/>
+    </bean>
+
+    <bean id="cougarIntroductionService" class="com.betfair.cougar.core.impl.CougarIntroductionService" init-method="performIntroductions" lazy-init="false">
+        <property name="executionVenue" ref="cougar.core.ExecutionVenue"/>
+        <property name="serviceRegistrar" ref="cougar.core.ExecutionVenue"/>
+        <property name="executableResolver">
+            <bean class="com.betfair.cougar.core.impl.ev.CompoundExecutableResolverImpl"/>
+        </property>
+        <property name="transportRegistry" ref="cougar.core.TransportRegistry"/>
+    </bean>
+
+
+
+    <!-- Now set up the loggers -->
+    <import resource="classpath:conf/remote/logging-handlers.xml"/>
+
+    <bean id="eventLogger" class="com.betfair.cougar.core.impl.logging.EventLoggerImpl">
+        <property name="registry" ref="eventLoggingRegistry"/>
+        <property name="enabled" value="$COUGAR{cougar.log.request}"/>
+    </bean>
+
+    <bean id="eventLoggingRegistry" class="com.betfair.cougar.logging.EventLoggingRegistry"/>
+
+
+    <bean id="serviceLogManagerFactory" class="com.betfair.cougar.core.impl.ev.NamedLoggerServiceLogManagerFactory">
+        <constructor-arg index="0" value="$COUGAR{cougar.app.name}-"/>
+    </bean>
+
+    <alias name="executionVenue" alias="cougar.core.ExecutionVenue"/>
+
+</beans>

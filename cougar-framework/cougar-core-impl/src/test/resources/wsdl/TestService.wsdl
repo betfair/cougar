@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2013, The Sporting Exchange Limited
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                  xmlns:tns="http://www.betfair.com/servicetypes/v1/Test/"
+                  xmlns:wns="http://www.betfair.com/serviceapi/v1.0/Test/"
+                  name="Test"
+                  targetNamespace="http://www.betfair.com/serviceapi/v1.0/Test/">
+   <wsdl:documentation>Test.wsdl v1.0</wsdl:documentation>
+   <wsdl:types>
+      <xsd:schema targetNamespace="http://www.betfair.com/servicetypes/v1/Test/"
+                  elementFormDefault="qualified">
+         <xsd:annotation>
+            <xsd:documentation>Test.wsdl v1.0</xsd:documentation>
+         </xsd:annotation>
+         <xsd:element name="Header" type="tns:HeaderType"/>
+         <xsd:complexType name="HeaderType">
+            <xsd:sequence>
+               <xsd:element name="Authority" type="xsd:string"/>
+               <xsd:element name="Subject" type="xsd:string"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="TestSimpleGetRequest" type="tns:TestSimpleGetRequestType"/>
+         <xsd:complexType name="TestSimpleGetRequestType">
+            <xsd:sequence>
+               <xsd:element name="message" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="TestSimpleGetResponse" type="tns:TestSimpleGetResponseType"/>
+         <xsd:complexType name="TestSimpleGetResponseType">
+            <xsd:sequence>
+               <xsd:element name="response" type="tns:SimpleResponseType" minOccurs="0" maxOccurs="1"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:complexType name="SimpleResponseType">
+            <xsd:sequence>
+               <xsd:element name="message" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:element name="SimpleException" type="tns:SimpleExceptionType"/>
+         <xsd:complexType name="SimpleExceptionType">
+            <xsd:sequence>
+               <xsd:element name="errorCode" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+               <xsd:element name="message" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            </xsd:sequence>
+         </xsd:complexType>
+      </xsd:schema>
+   </wsdl:types>
+   <wsdl:message name="HeadersInOut">
+      <wsdl:part name="header" element="tns:Header"/>
+   </wsdl:message>
+   <wsdl:message name="TestSimpleGetIn">
+      <wsdl:part name="parameters" element="tns:TestSimpleGetRequest"/>
+   </wsdl:message>
+   <wsdl:message name="TestSimpleGetOut">
+      <wsdl:part name="parameters" element="tns:TestSimpleGetResponse"/>
+   </wsdl:message>
+   <wsdl:portType name="TestService">
+      <wsdl:operation name="testSimpleGet">
+         <wsdl:input message="wns:TestSimpleGetIn"/>
+         <wsdl:output message="wns:TestSimpleGetOut"/>
+         <wsdl:fault name="simpleException" message="wns:SimpleExceptionFault"/>
+      </wsdl:operation>
+   </wsdl:portType>
+   <wsdl:binding name="TestService" type="wns:TestService">
+      <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+      <wsdl:operation name="testSimpleGet">
+         <soap:operation soapAction="testSimpleGet" style="document"/>
+         <wsdl:input>
+            <soap:body use="literal"/>
+            <soap:header message="wns:HeadersInOut" part="header"/>
+         </wsdl:input>
+         <wsdl:output>
+            <soap:body use="literal"/>
+            <soap:header message="wns:HeadersInOut" part="header"/>
+         </wsdl:output>
+         <wsdl:fault name="simpleException">
+            <soap:fault use="literal" name="simpleException"/>
+         </wsdl:fault>
+      </wsdl:operation>
+   </wsdl:binding>
+   <wsdl:service name="TestService">
+      <wsdl:port name="TestService" binding="wns:TestService">
+         <soap:address location="http://localhost/this-should-be-set-programatically"/>
+      </wsdl:port>
+   </wsdl:service>
+</wsdl:definitions>

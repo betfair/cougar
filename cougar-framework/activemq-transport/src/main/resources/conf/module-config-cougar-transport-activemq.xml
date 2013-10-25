@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2013, The Sporting Exchange Limited
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+						http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean class="com.betfair.cougar.util.configuration.PropertyConfigurer">
+        <constructor-arg index="0" ref="cougar.core.EncryptorRegistry"/>
+        <property name="defaultConfig" value="conf/cougar-transport-activemq-defaults.properties"/>
+        <property name="configOverride" value="overrides.properties"/>
+        <property name="placeholderPrefix" value="$COUGAR_TRANSPORT_ACTIVEMQ{"/>
+    </bean>
+
+    <bean id="activeMQSubscriptionEventListener" class="com.betfair.cougar.transport.activemq.ActiveMQSubscriptionEventListener">
+    </bean>
+
+    <bean id="defaultActiveMQConnectionFactory" class="org.apache.activemq.ActiveMQSslConnectionFactory"/>
+
+    <!-- Abstract bean definition to help reduce the amount of Cougar innards that need to be exposed to the client -->
+
+    <bean id="abstractActiveMQTransport" class="com.betfair.cougar.transport.activemq.ActiveMQEventTransportImpl" parent="cougar.jms.AbstractJmsTransport"
+        abstract="true" init-method="init" destroy-method="destroy">
+        <constructor-arg index="0" ref="$COUGAR_TRANSPORT_ACTIVEMQ{activemqTransport.connectionFactory.beanName}"/>
+        <property name="activeMQSubscriptionEventListener" ref="activeMQSubscriptionEventListener"/>
+        <property name="connectionMonitor">
+            <bean factory-bean="$COUGAR_TRANSPORT_ACTIVEMQ{activemqTransport.connectionMonitorFactory.beanName}" factory-method="getConnectionMonitor"/>
+        </property>
+    </bean>
+
+    <alias name="abstractActiveMQTransport" alias="com.betfair.cougar.transport.activemq.AbstractActiveMQTransport"/>
+
+</beans>

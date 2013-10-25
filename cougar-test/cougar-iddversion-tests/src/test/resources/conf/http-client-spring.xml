@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2013, The Sporting Exchange Limited
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+	
+	<bean class="com.betfair.cougar.util.configuration.PropertyConfigurer">
+        <constructor-arg index="0" ref="cougar.core.EncryptorRegistry"/>
+	   <property name="defaultConfig" value="conf/http-client.properties"/>
+	   <property name="configOverride" value="override.properties"/>
+	   <property name="placeholderPrefix" value="$HTTP_CLIENT{"/>
+	</bean>
+
+
+    <bean id="baselineClient" class="com.betfair.baseline.v2.BaselineSyncClientImpl" parent="cougar.client.AbstractSyncClient">
+        <constructor-arg value="pants"/>
+    </bean>
+
+    <bean class="com.betfair.cougar.core.impl.ev.ClientServiceRegistration">
+        <property name="resolver">
+            <bean class="com.betfair.baseline.v2.BaselineClientExecutableResolver" init-method="init">
+                <property name="defaultOperationTransport" ref="rescriptTransport"/>
+            </bean>
+        </property>
+        <property name="serviceDefinition">
+            <bean class="com.betfair.baseline.v2.BaselineServiceDefinition"/>
+        </property>
+        <property name="namespace" value="pants"/>
+    </bean>
+    
+    <bean id="clientIdentityResolver" class="com.betfair.cougar.baseline.security.GeneralIdentityResolver"/>
+    
+    
+    <bean id="rescriptTransport" parent="cougar.client.AbstractRescriptTransport">
+        <constructor-arg>
+            <bean class="com.betfair.baseline.v2.rescript.BaselineRescriptServiceBindingDescriptor"/>
+        </constructor-arg>
+        <property name="remoteAddress" value="$HTTP_CLIENT{cougar.client.rescript.remoteaddress}"/>
+        <property name="exceptionFactory">
+            <bean class="com.betfair.baseline.v2.exception.BaselineExceptionFactory"/>
+        </property>
+        <property name="identityTokenResolver">
+            <bean class="com.betfair.cougar.baseline.security.BaselineClientIdentityTokenResolver"/>
+        </property>
+        <property name="identityResolver" ref="clientIdentityResolver"/>
+        <!-- SSL ARGS -->
+        <property name="transportSSLEnabled" value="$HTTP_CLIENT{cougar.client.rescript.useSSL}"/>
+        <property name="httpsKeystore" value="$HTTP_CLIENT{cougar.client.rescript.httpsKeystore}"/>
+        <property name="httpsKeyPassword" value="$HTTP_CLIENT{cougar.client.rescript.httpsKeyPassword}"/>
+        <property name="httpsTruststore" value="$HTTP_CLIENT{cougar.client.rescript.httpsTruststore}"/>
+        <property name="httpsTrustPassword" value="$HTTP_CLIENT{cougar.client.rescript.httpsTrustPassword}"/>
+    </bean> 
+
+
+</beans>

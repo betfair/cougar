@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2013, The Sporting Exchange Limited
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+						http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+
+	<!-- Generate the service beans -->
+	
+	<bean class="com.betfair.cougar.util.configuration.PropertyConfigurer">
+        <constructor-arg index="0" ref="cougar.core.EncryptorRegistry"/>
+        <property name="defaultConfig" value="etc/cougar-testing-service-defaults.properties" />
+        <property name="configOverride" value="overrides.properties" />
+        <property name="placeholderPrefix" value="$TESTINGSERVICE{" />
+    </bean>
+	
+    <bean id="com.betfair.cougar.testing.testingService" class="com.betfair.cougar.testing.TestingServiceImpl">
+            <property name="cacheFrameworkRegistry" ref="cougar.caching.CacheFrameworkRegistry"/>
+			<property name="baseLogDirectory" value="$COUGAR{cougar.log.dir}"/>
+			<property name="doSkipLogLines" value="$TESTINGSERVICE{cougar.testingservice.skiploglines}"/>
+			<property name="maxMessageSize" value="$TESTINGSERVICE{cougar.testingservice.maxlogmessagesize}"/>
+			<property name="defaultMaxNumberOfResults" value="$TESTINGSERVICE{cougar.testingservice.defaultmaxlogmessages}"/>
+			<property name="logDateTimeFormat" value="$TESTINGSERVICE{cougar.testingservice.logdatetimeformat}"/>
+	</bean>
+
+    <bean class="com.betfair.cougar.core.impl.ev.ServiceRegistration">
+        <property name="resolver">
+            <bean class="com.betfair.testingservice.v1.TestingSyncServiceExecutableResolver">
+                <property name="service" ref="com.betfair.cougar.testing.testingService"/>
+            </bean>
+        </property>
+        <property name="serviceDefinition">
+            <bean class="com.betfair.testingservice.v1.TestingServiceDefinition"/>
+        </property>
+        <property name="service" ref="com.betfair.cougar.testing.testingService"/>
+        <property name="bindingDescriptors">
+            <util:set>
+                <bean class="com.betfair.testingservice.v1.rescript.TestingRescriptServiceBindingDescriptor"/>
+                <bean class="com.betfair.testingservice.v1.soap.TestingSoapServiceBindingDescriptor"/>
+                <bean class="com.betfair.testingservice.v1.jsonrpc.TestingJsonRpcServiceBindingDescriptor"/>
+            </util:set>
+        </property>
+    </bean>
+
+
+</beans>

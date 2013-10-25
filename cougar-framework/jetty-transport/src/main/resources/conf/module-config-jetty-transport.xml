@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2013, The Sporting Exchange Limited
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+						http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+	 
+	<bean class="com.betfair.cougar.util.configuration.PropertyConfigurer">
+        <constructor-arg index="0" ref="cougar.core.EncryptorRegistry"/>
+		<property name="defaultConfig" value="conf/jetty-transport-defaults.properties"/>
+		<property name="configOverride" value="overrides.properties"/>
+		<property name="placeholderPrefix" value="$COUGAR-JETTY{"/>
+	</bean>
+
+    <bean id="defaultGeoLocationDeserializer" class="com.betfair.cougar.transport.impl.protocol.http.DefaultGeoLocationDeserializer"/>
+	
+    <bean id="jettyInstance" class="com.betfair.cougar.transport.jetty.JettyHttpTransport" init-method="start" destroy-method="stop" lazy-init="false" scope="singleton">
+        <property name="jmxControl" ref="cougar.core.JmxControl"/>
+        <property name="startingGate" ref="cougar.core.StartingGate"/>
+        <property name="transportRegistry" ref="cougar.core.TransportRegistry"/>
+		<property name="geoIPLocator" ref="cougar.core.GeoIPLocator"/>
+		<property name="commandProcessorFactory" ref="cougar.transport.CommandProcessorFactory"/>
+		<property name="defaultCommandProcessor" ref="cougar.transport.ServiceNotFoundCommandProcessor"/>
+        <property name="protocolBindingRegistry" ref="cougar.transport.ProtocolBindingRegistry"/>
+		
+        <property name="htmlContextPath" value="$COUGAR-JETTY{cougar.htmlHandler.contextPath}"/>
+        <property name="htmlRegex" value="$COUGAR-JETTY{cougar.htmlHandler.regex}"/>
+        <property name="htmlMediaType" value="$COUGAR-JETTY{cougar.htmlHandler.mediaType}"/>
+        <property name="suppressCommasInAccessLogForStaticHtml" value="$COUGAR-JETTY{cougar.htmlHandler.suppressCommaLogging}"/>
+
+        <property name="suppressCommasInAccessLogForCalls" value="$COUGAR-JETTY{cougar.callHandler.suppressCommaLogging}"/>
+
+        <property name="wsdlContextPath" value="$COUGAR-JETTY{cougar.wsdlHandler.contextPath}"/>
+        <property name="wsdlRegex" value="$COUGAR-JETTY{cougar.wsdlHandler.regex}"/>
+        <property name="wsdlMediaType" value="$COUGAR-JETTY{cougar.wsdlHandler.mediaType}"/>
+
+        <property name="geoLocationDeserializer" ref="$COUGAR-JETTY{cougar.http.geoLocationDeserializerBean}"/>
+        <property name="uuidHeader" value="$COUGAR-JETTY{cougar.http.uuidheader}"/>
+
+        <property name="requestLogger" ref="httpRequestLogger"/>
+
+        <property name="serverWrapper.mbeanServer" ref="mbeanServer"/>
+        <property name="serverWrapper.minThreads" value="$COUGAR-JETTY{jetty.threadpool.min}"/>
+        <property name="serverWrapper.maxThreads" value="$COUGAR-JETTY{jetty.threadpool.max}"/>
+        <property name="serverWrapper.requestHeaderSize" value="$COUGAR-JETTY{jetty.request.headerSize}"/>
+        <property name="serverWrapper.responseHeaderSize" value="$COUGAR-JETTY{jetty.response.headerSize}"/>
+        <property name="serverWrapper.responseBufferSize" value="$COUGAR-JETTY{jetty.response.bufferSize}"/>
+
+        <property name="serverWrapper.lowResourcesMaxConnections" value="$COUGAR-JETTY{jetty.lowresources.maxconnections}"/>
+        <property name="serverWrapper.lowResourcesIdleTime" value="$COUGAR-JETTY{jetty.lowresources.idletime}"/>
+        <property name="serverWrapper.lowResourcesMaxMemory" value="$COUGAR-JETTY{jetty.lowresources.maxmemory}"/>
+        <property name="serverWrapper.lowResourcesMaxTime" value="$COUGAR-JETTY{jetty.lowresources.maxtime}"/>
+        <property name="serverWrapper.lowResourcesMonitorThreads" value="$COUGAR-JETTY{jetty.lowresources.monitorthreads}"/>
+        <property name="serverWrapper.lowResourcesPeriod" value="$COUGAR-JETTY{jetty.lowresources.period}"/>
+
+        <property name="serverWrapper.httpPort" value="$COUGAR-JETTY{jetty.http.port}"/>
+        <property name="serverWrapper.httpReuseAddress" value="$COUGAR-JETTY{jetty.http.reuseAddress}"/>
+        <property name="serverWrapper.httpMaxIdle" value="$COUGAR-JETTY{jetty.http.maxidle}"/>
+        <property name="serverWrapper.httpAcceptors" value="$COUGAR-JETTY{jetty.http.acceptors}"/>
+        <property name="serverWrapper.httpAcceptQueueSize" value="$COUGAR-JETTY{jetty.http.acceptQueueSize}"/>
+        <property name="serverWrapper.httpSelectors" value="$COUGAR-JETTY{jetty.http.selectors}"/>
+
+        <property name="serverWrapper.httpForwarded" value="$COUGAR-JETTY{jetty.http.forwarded}"/>
+        <property name="serverWrapper.httpsForwarded" value="$COUGAR-JETTY{jetty.https.forwarded}"/>
+
+        <property name="serverWrapper.httpsPort" value="$COUGAR-JETTY{jetty.https.port}" />
+        <property name="serverWrapper.httpsReuseAddress" value="$COUGAR-JETTY{jetty.https.reuseAddress}" />
+        <property name="serverWrapper.httpsMaxIdle" value="$COUGAR-JETTY{jetty.https.maxidle}" />
+        <property name="serverWrapper.httpsAcceptors" value="$COUGAR-JETTY{jetty.https.acceptors}"/>
+        <property name="serverWrapper.httpsAcceptQueueSize" value="$COUGAR-JETTY{jetty.https.acceptQueueSize}"/>
+        <property name="serverWrapper.httpsSelectors" value="$COUGAR-JETTY{jetty.https.selectors}"/>
+        <property name="serverWrapper.httpsAllowRenegotiate" value="$COUGAR-JETTY{jetty.https.allowRenegotiation}"/>
+
+        <property name="serverWrapper.httpsWantClientAuth" value="$COUGAR-JETTY{jetty.https.wantClientAuth}"/>
+        <property name="serverWrapper.httpsNeedClientAuth" value="$COUGAR-JETTY{jetty.https.needClientAuth}"/>
+        <property name="serverWrapper.httpsKeystore" value="$COUGAR-JETTY{jetty.https.keystore}"/>
+        <property name="serverWrapper.httpsKeystoreType" value="$COUGAR-JETTY{jetty.https.keystoreType}"/>
+        <property name="serverWrapper.httpsKeyPassword" value="$COUGAR-JETTY{jetty.https.keyPassword}"/>
+        <property name="serverWrapper.httpsCertAlias" value="$COUGAR-JETTY{jetty.https.certAlias}"/>
+        <property name="serverWrapper.httpsTruststore" value="$COUGAR-JETTY{jetty.https.truststore}"/>
+        <property name="serverWrapper.httpsTruststoreType" value="$COUGAR-JETTY{jetty.https.truststoreType}"/>
+        <property name="serverWrapper.httpsTrustPassword" value="$COUGAR-JETTY{jetty.https.trustPassword}"/>
+
+        <property name="timeoutInSeconds" value="$COUGAR-JETTY{jetty.request.timeoutInSeconds}"/>
+
+        <property name="jettyEndPoints" ref="jettyEndPoints"/>
+        
+        <property name="gzipEnabled" value="$COUGAR-JETTY{cougar.gzipHandler.enabled}"/>
+        <property name="gzipBufferSize" value="$COUGAR-JETTY{cougar.gzipHandler.bufferSize}"/>
+        <property name="gzipMinSize" value="$COUGAR-JETTY{cougar.gzipHandler.minSize}"/>
+        <property name="gzipExcludedAgents" value="$COUGAR-JETTY{cougar.gzipHandler.excludedAgents}"/>
+
+        <property name="serverWrapper.maxFormContentSize" value="$COUGAR-JETTY{cougar.maxFormContentSize}"/>
+
+        <property name="unknownCipherKeyLength" value="$COUGAR-JETTY{jetty.https.unknownCipherKeyLength}"/>
+    </bean>
+
+	<bean id="jettyEndPoints" class="com.betfair.cougar.transport.jetty.jmx.JettyEndpoints"/>
+	
+    <bean id="jetty.mbean.server" class="org.eclipse.jetty.server.jmx.ServerMBean">
+       <constructor-arg>
+           <bean factory-bean="jettyInstance" factory-method="getJettyServer"/>
+       </constructor-arg>
+    </bean>
+
+    <!-- http transport command processing -->
+
+    <bean id="httpRequestLogger" class="com.betfair.cougar.transport.impl.protocol.http.HttpRequestLogger">
+        <constructor-arg ref="eventLoggingRegistry"/>
+        <constructor-arg value="$COUGAR-JETTY{cougar.http.log.access}"/>
+        <property name="headersToLog" value="$COUGAR-JETTY{cougar.http.log.extraFields}"/>
+    </bean>
+
+    <bean id="httpCommandValidatorRegistry" class="com.betfair.cougar.transport.impl.CommandValidatorRegistry"/>
+
+    <bean id="httpCommandProcessor" abstract="true" scope="prototype">
+        <constructor-arg ref="cougar.core.GeoIPLocator" index="0"/>
+        <constructor-arg ref="$COUGAR-JETTY{cougar.http.geoLocationDeserializerBean}" index="1"/>
+        <constructor-arg value="$COUGAR-JETTY{cougar.http.uuidheader}" index="2"/>
+        <property name="executionVenue" ref="cougar.core.ExecutionVenue"/>
+        <property name="startingGate" ref="cougar.core.StartingGate"/>
+        <property name="executor" ref="cougar.core.CommandProcessorExecutor"/>
+        <property name="requestLogger" ref="httpRequestLogger"/>
+        <property name="validatorRegistry" ref="httpCommandValidatorRegistry"/>
+    </bean>
+
+    <bean id="rescriptCommandProcessor" class="com.betfair.cougar.transport.impl.protocol.http.rescript.RescriptTransportCommandProcessor" parent="httpCommandProcessor" scope="singleton">
+        <property name="contentTypeNormaliser" ref="contentTypeNormaliser"/>
+        <property name="hardFailEnumDeserialisation" value="$COUGAR-JETTY{cougar.http.enums.hardFailure}"/>
+        <property name="maxPostBodyLength" value="$COUGAR-JETTY{cougar.http.rescript.maxPostBodyLength}"/>
+    </bean>
+
+    <bean id="soapCommandProcessor" class="com.betfair.cougar.transport.impl.protocol.http.soap.SoapTransportCommandProcessor" parent="httpCommandProcessor" scope="singleton">
+        <constructor-arg index="3" ref="$COUGAR-JETTY{cougar.http.soap.schemaValidationFailureParserBean}"/>
+        <property name="contentTypeNormaliser" ref="contentTypeNormaliser"/>
+        <property name="hardFailEnumDeserialisation" value="$COUGAR-JETTY{cougar.http.enums.hardFailure}"/>
+        <property name="schemaValidationEnabled" value="$COUGAR-JETTY{cougar.http.soap.schemaValidationEnabled}"/>
+        <property name="maxPostBodyLength" value="$COUGAR-JETTY{cougar.http.soap.maxPostBodyLength}"/>
+    </bean>
+
+    <bean id="jsonRpcCommandProcessor" class="com.betfair.cougar.transport.impl.protocol.http.jsonrpc.JsonRpcTransportCommandProcessor" parent="httpCommandProcessor" scope="singleton">
+        <property name="contentTypeNormaliser" ref="contentTypeNormaliser"/>
+        <property name="hardFailEnumDeserialisation" value="$COUGAR-JETTY{cougar.http.enums.hardFailure}"/>
+        <property name="maxPostBodyLength" value="$COUGAR-JETTY{cougar.http.jsonrpc.maxPostBodyLength}"/>
+    </bean>
+
+    <bean id="notFoundCommandProcessor" class="com.betfair.cougar.transport.impl.protocol.http.ServiceNotFoundHttpCommandProcessor" parent="httpCommandProcessor" scope="singleton"/>
+
+    <bean id="commandProcessorFactory" class="com.betfair.cougar.transport.impl.protocol.http.HttpCommandProcessorFactory">
+        <property name="commandProcessorNames">
+            <map>
+                <entry key="SOAP" value="soapCommandProcessor"/>
+                <entry key="RESCRIPT" value="rescriptCommandProcessor"/>
+                <entry key="JSON_RPC" value="jsonRpcCommandProcessor"/>
+            </map>
+        </property>
+    </bean>
+
+
+    <bean class="com.betfair.cougar.logging.EventLogDefinition" init-method="register">
+        <property name="logName" value="ACCESS-LOG" />
+        <property name="registry" ref="cougar.core.EventLoggingRegistry"/>
+        <property name="handler">
+            <bean factory-bean="cougar.core.logHandlerFactory" factory-method="createLogHandler">
+                <constructor-arg type="java.util.Map">
+                    <util:map map-class="java.util.HashMap">
+                        <entry key="logName" value="ACCESS-LOG"/>
+                        <entry key="fileName" value="$COUGAR{cougar.log.dir}/dw/$COUGAR{system.hostname}-$COUGAR{cougar.app.name}-access.log"/>
+                        <entry key="flush" value="$COUGAR-JETTY{cougar.http.log.ACCESS-LOG.flush}"/>
+                        <entry key="append" value="$COUGAR-JETTY{cougar.http.log.ACCESS-LOG.append}"/>
+                        <entry key="rotation" value="$COUGAR-JETTY{cougar.http.log.ACCESS-LOG.rotation}"/>
+                        <entry key="abstractLogger" value="false"/>
+                        <entry key="immediateFlush" value="$COUGAR-JETTY{cougar.http.log.ACCESS-LOG.immediateFlush}"/>
+                    </util:map>
+                </constructor-arg>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="contentTypeNormaliser" class="com.betfair.cougar.transport.impl.protocol.http.ContentTypeNormaliserImpl">
+        <property name="defaultResponseFormat" value="$COUGAR-JETTY{cougar.http.defaultResponseFormat}"/>
+    </bean>
+
+    <bean class="com.betfair.cougar.transport.impl.protocol.http.ContentTypeNormaliserHelper">
+        <property name="contentTypeNormaliser" ref="contentTypeNormaliser"/>
+        <property name="dataBindingMaps" >
+            <list>
+                <ref bean="jsonBindingMap"/>
+                <ref bean="xmlBindingMap"/>
+            </list>
+        </property>
+        <property name="validEncodings" ref="validEncodings"/>
+    </bean>
+
+    <bean class="com.betfair.cougar.transport.impl.protocol.http.InferredCountryResolverHelper"/>
+
+
+    <alias name="rescriptCommandProcessor" alias="cougar.transport.RescriptCommandProcessor"/>
+    <alias name="soapCommandProcessor" alias="cougar.transport.SoapCommandProcessor"/>
+    <alias name="notFoundCommandProcessor" alias="cougar.transport.ServiceNotFoundCommandProcessor"/>
+    <alias name="commandProcessorFactory" alias="cougar.transport.CommandProcessorFactory"/>
+    <alias name="httpCommandValidatorRegistry" alias="cougar.transport.HttpCommandValidatorRegistry"/>
+
+	<bean class="org.springframework.jmx.export.MBeanExporter" >
+		<property name="server" ref="mbeanServer"/>
+		<property name="registrationBehavior">
+		  <bean id="org.springframework.jmx.export.MBeanExporter.REGISTRATION_REPLACE_EXISTING"
+		        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean" />
+		</property>
+		<property name="beans">
+			<map>
+                <entry key="CoUGAR:name=wsdlStaticHandler">
+                    <bean factory-bean="jettyInstance" factory-method="getWsdlStaticHandler"/>
+                </entry>
+				<entry key="CoUGAR:name=htmlStaticHandler">
+                    <bean factory-bean="jettyInstance" factory-method="getHtmlStaticHandler"/>
+                </entry>
+                <entry key="CoUGAR:name=jettyInstance" value-ref="jettyInstance"/>
+                <entry key="CoUGAR:name=EndPoints" value-ref="jettyEndPoints"/>
+                <entry key="com.betfair.cougar.transport.http:type=accessLogger" value-ref="httpRequestLogger"/>
+                <entry key="com.betfair.cougar.transport:type=rescriptCommandProcessor" value-ref="rescriptCommandProcessor"/>
+                <entry key="com.betfair.cougar.transport:type=soapCommandProcessor" value-ref="soapCommandProcessor"/>
+                <entry key="com.betfair.cougar.transport:type=jsonRpcCommandProcessor" value-ref="jsonRpcCommandProcessor"/>
+                <entry key="com.betfair.cougar.transport:type=notFoundCommandProcessor" value-ref="notFoundCommandProcessor"/>
+                <entry key="CoUGAR:type=commandProcessorExecutor" value-ref="commandProcessorExecutor"/>
+			</map>
+		</property>
+		
+		<property name="assembler">
+			<bean id="assembler" class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler">
+				<property name="attributeSource">
+					<bean id="jmxAttributeSource" class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource"/>
+				</property>
+			</bean>
+		</property>
+	</bean>
+	
+</beans>

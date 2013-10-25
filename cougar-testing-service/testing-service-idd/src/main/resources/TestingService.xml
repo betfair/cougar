@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~ Copyright 2013, The Sporting Exchange Limited
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<interface name="Testing" version="1.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		    xsi:noNamespaceSchemaLocation="http://www.betfair.com/BSIDL/4.0.xsd">
+	<description>The Cougar Testing Service</description>
+	<operation name="refreshAllCaches" since="1.0.0">
+		<description>returns a list of caches</description>
+		<parameters>
+			<request>
+			</request>
+			<response type="CallResponse">
+				<description>The result of the refresh</description>
+			</response>
+			<exceptions>
+				<exception type="TestingException">
+    				<description>If the service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+	        <path>/refreshAllCaches</path>
+            <method>GET</method>
+		</extensions>
+	</operation>
+	<operation name="refreshCache" since="1.0.0">
+		<description>returns a list of caches</description>
+		<parameters>
+			<request>
+				<parameter name="name" type="string" mandatory="true">
+					<description>the name of the cache to refresh</description>
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+			</request>
+			
+			<response type="CallResponse">
+				<description>The result of the refresh</description>
+			</response>
+			<exceptions>
+				<exception type="TestingException">
+    				<description>If the service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+	        <path>/refresh</path>
+            <method>GET</method>
+		</extensions>
+	</operation>
+	<operation name="getIDD" since="1.0.0">
+		<description>returns an IDD</description>
+		<parameters>
+			<request>
+				<parameter name="name" type="string" mandatory="true">
+					<description>the name IDD to return</description>
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+			</request>
+			
+			<response type="IDD">
+				<description>The result IDD</description>
+			</response>
+			<exceptions>
+				<exception type="TestingException">
+    				<description>If the service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+	        <path>/idd</path>
+            <method>GET</method>
+		</extensions>
+	</operation>
+	
+	<operation name="getLogEntries" since="1.0.0">
+		<description>Return log file entries</description>
+		<parameters>
+			<request>
+				<parameter name="logFileName" type="string" mandatory="true">
+					<description>the log file to return entries from</description>
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+				<parameter name="numberOfLines" type="i32" mandatory="true">
+					<description>Number of lines from end of log file to return.</description>
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+			</request>
+			<response type="LogFileResponse">
+				<description>The log file entries</description>
+			</response>
+			<exceptions>
+				<exception type="TestingException">
+    				<description>If the service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+	        <path>/logEntries</path>
+            <method>GET</method>
+		</extensions>
+	</operation>
+	
+		<operation name="getLogEntriesByDateRange" since="1.0.0">
+		<description>Return log file entries</description>
+		<parameters>
+			<request>
+				<parameter name="logFileName" type="string" mandatory="true">
+					<description>the log file to return entries from</description>
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+				<parameter name="startDateTime" type="string" mandatory="false">
+					<description>start date time</description>
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+				<parameter name="endDateTime" type="string" mandatory="false">
+					<description>end date time</description>
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+			</request>
+			<response type="LogFileResponse">
+				<description>The log file entries</description>
+			</response>
+			<exceptions>
+				<exception type="TestingException">
+    				<description>If the service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+	        <path>/logEntriesDateTime</path>
+            <method>GET</method>
+		</extensions>
+	</operation>
+	
+	<dataType name="Cache">
+		<description>The description of a cache</description>
+		<parameter name="name" type="string" >
+            <description>the name of the cache</description>
+		</parameter>
+	</dataType>
+
+	<dataType name="IDD">
+		<description>The description of an IDD</description>
+		<parameter name="name" type="string" >
+            <description>the name of the idd</description>
+		</parameter>
+		<parameter name="content" type="string" >
+            <description>the data in the IDD</description>
+		</parameter>
+	</dataType>
+	
+	<dataType name="CallResponse">
+		<description>The response to a call</description>
+		<parameter name="result" type="string" >
+            <description>the result of the call</description>
+		</parameter>
+	</dataType>
+	
+	<dataType name="LogFileResponse">
+		<description>The response to a call</description>
+		<parameter name="result" type="list(string)" >
+            <description>the result of the call</description>
+		</parameter>
+	</dataType>
+	
+	<exceptionType name="TestingException" prefix="TEX">
+		<description>This exception is thrown when an operation fails</description>
+		<parameter name="errorCode" type="string">
+			<description>the unique code for this error</description>
+			<validValues>
+				<value id="1" name="GENERIC">
+					<description>Generic Error</description>
+				</value>
+				<value id="2" name="NOT_FOUND">
+					<description>The resource was not found</description>
+				</value>
+			</validValues>		
+        </parameter>
+	</exceptionType>
+    
+	<extensions>
+		<path>/testing-services</path>
+	</extensions>
+
+</interface>

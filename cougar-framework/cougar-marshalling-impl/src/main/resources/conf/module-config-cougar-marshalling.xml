@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2013, The Sporting Exchange Limited
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+						http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+    <bean class="com.betfair.cougar.util.configuration.PropertyConfigurer">
+        <constructor-arg index="0" ref="cougar.core.EncryptorRegistry"/>
+        <property name="defaultConfig" value="conf/cougar-marshalling-defaults.properties"/>
+        <property name="configOverride" value="overrides.properties"/>
+        <property name="placeholderPrefix" value="$COUGAR_MARSHALLING{"/>
+    </bean>
+
+    <!-- JSON configuration -->
+    <util:set id="json-validContentTypes">
+        <value>application/json</value>
+        <value>text/json</value>
+    </util:set>
+
+    <bean id="jsonBindingMap" class="com.betfair.cougar.marshalling.impl.databinding.DataBindingMap">
+        <property name="factory" ref="jsonBindingFactory"/>
+        <property name="contentTypes" ref="json-validContentTypes"/>
+        <property name="preferredContentType" value="application/json"/>
+    </bean>
+
+    <bean id="jsonBindingFactory" class="com.betfair.cougar.marshalling.impl.databinding.kpi.KPITimingDataBindingFactory">
+        <constructor-arg ref="kpiMonitor"/>
+        <constructor-arg value="json"/>
+        <constructor-arg>
+            <bean class="com.betfair.cougar.marshalling.impl.databinding.json.JSONBindingFactory"/>
+        </constructor-arg>
+    </bean>
+
+    <!-- XML Configuration -->
+
+    <util:set id="xml-validContentTypes">
+        <value>application/xml</value>
+        <value>application/soap+xml</value>
+        <value>text/xml</value>
+    </util:set>
+
+    <bean id="xmlBindingMap" class="com.betfair.cougar.marshalling.impl.databinding.DataBindingMap">
+        <property name="factory" ref="xmlBindingFactory"/>
+        <property name="contentTypes" ref="xml-validContentTypes"/>
+        <property name="preferredContentType" value="application/xml"/>
+    </bean>
+
+    <bean id="jdkEmbeddedXercesSchemaValidationFailureParser" class="com.betfair.cougar.marshalling.impl.databinding.xml.JdkEmbeddedXercesSchemaValidationFailureParser"/>
+
+    <bean id="xmlBindingFactory" class="com.betfair.cougar.marshalling.impl.databinding.kpi.KPITimingDataBindingFactory">
+        <constructor-arg ref="kpiMonitor"/>
+        <constructor-arg value="xml"/>
+        <constructor-arg>
+            <bean class="com.betfair.cougar.marshalling.impl.databinding.xml.XMLDataBindingFactory">
+                <constructor-arg index="0" ref="$COUGAR_MARSHALLING{cougar.marshalling.xml.schemaValidationFailureParserBean}"/>
+            </bean>
+        </constructor-arg>
+    </bean>
+
+    <!-- Data Binding configuration -->
+
+    <util:set id="validEncodings">
+         <value>utf-8</value>
+    </util:set>
+
+	<bean id="dataBindingManager" class="com.betfair.cougar.marshalling.impl.databinding.DataBindingManager" factory-method="getInstance"/>
+
+
+	<bean class="com.betfair.cougar.marshalling.impl.databinding.DataBindingManagerHelper">
+		<property name="dataBindingManager" ref="dataBindingManager"/>
+		<property name="dataBindingMaps" >
+			<list>
+				<ref bean="jsonBindingMap"/>
+				<ref bean="xmlBindingMap"/>
+			</list>
+		</property>
+	</bean>
+
+    <alias name="jsonBindingFactory" alias="cougar.marshalling.JSONBindingFactory"/>
+
+
+</beans>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~ Copyright 2013, The Sporting Exchange Limited
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<interface name="Baseline"
+            version="1.0"
+            namespace="com.betfair.baseline"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		    xsi:noNamespaceSchemaLocation="http://www.betfair.com/BSIDL/4.0.xsd">
+	<description>The Baseline Service</description>
+
+    <operation name="testSimpleGet" since="1.0.0">
+		<description>test of an idempotent service.  takes a single arg and echos it back</description>
+		<parameters>
+			<request>
+				<parameter name="message" type="string" mandatory="true">
+					<description>the message to echo</description>
+				</parameter>
+			</request>
+			<response type="SimpleResponse">
+				<description>The response</description>
+			</response>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+	</operation>
+
+    <dataType name="SimpleResponse">
+		<description>The simplest response type possible</description>
+		<parameter name="message" type="string" mandatory="true">
+			<description>message</description>
+		</parameter>
+	</dataType>
+
+    <exceptionType name="SimpleException" prefix="SEX">
+        <!--
+            Cougar currently requires that all Exceptions have a first parameter
+            that is defined by its valid values, all defined by an incrementing id
+        -->
+        <description>This exception is thrown when an operation fails</description>
+        <parameter name="errorCode" type="string">
+            <description>the unique code for this error</description>
+            <validValues>
+                <value id="1" name="GENERIC">
+                    <description>Generic Error</description>
+                </value>
+                <value id="2" name="NULL">
+                    <description>Null Input</description>
+                </value>
+                <value id="3" name="TIMEOUT">
+                    <description>Timeout</description>
+                </value>
+                <value id="4" name="FORBIDDEN">
+                    <description>Forbidden to call this operation</description>
+                </value>
+            </validValues>
+        </parameter>
+        <parameter name="reason" type="string">
+            <description>A human readable description of this error</description>
+        </parameter>
+    </exceptionType>
+
+
+</interface>

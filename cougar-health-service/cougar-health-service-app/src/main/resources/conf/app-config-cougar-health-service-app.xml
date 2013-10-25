@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2013, The Sporting Exchange Limited
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+						http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+
+    <bean class="org.springframework.jmx.export.MBeanExporter">
+        <property name="server" ref="mbeanServer"/>
+        <property name="registrationBehavior">
+            <bean id="org.springframework.jmx.export.MBeanExporter.REGISTRATION_REPLACE_EXISTING"
+                  class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean"/>
+        </property>
+        <property name="beans">
+            <map>
+                <entry key="CoUGAR:name=healthChecker,version=3.0" value-ref="healthService"/>
+            </map>
+        </property>
+        <property name="assembler">
+            <bean id="assembler" class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler">
+                <property name="attributeSource">
+                    <bean id="jmxAttributeSource"
+                          class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource"/>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <!-- Generate the service beans -->
+    <bean id="healthService" class="com.betfair.cougar.health.HealthServiceImpl">
+    </bean>
+
+    <bean id="healthServiceResolver" class="com.betfair.cougar.health.service.v3.HealthSyncServiceExecutableResolver">
+        <property name="service" ref="healthService"/>
+    </bean>
+
+
+    <bean class="com.betfair.cougar.core.impl.ev.ServiceRegistration">
+        <property name="resolver" ref="healthServiceResolver"/>
+        <property name="serviceDefinition">
+            <bean class="com.betfair.cougar.health.service.v3.HealthServiceDefinition"/>
+        </property>
+        <property name="service" ref="healthService"/>
+        <property name="bindingDescriptors">
+            <util:set>
+                <!-- Declare the binding descriptors for the SOAP and RESCRIPT transports -->
+                <bean class="com.betfair.cougar.health.service.v3.rescript.HealthRescriptServiceBindingDescriptor"/>
+                <bean class="com.betfair.cougar.health.service.v3.soap.HealthSoapServiceBindingDescriptor"/>
+                <bean class="com.betfair.cougar.health.service.v3.jsonrpc.HealthJsonRpcServiceBindingDescriptor"/>
+            </util:set>
+        </property>
+    </bean>
+    <bean parent="cougar.core.PreProcessorInterceptorRegistrationHelper">
+        <property name="interceptorList">
+            <util:list>
+                <bean class="com.betfair.cougar.core.api.ev.processors.PreMatchingInterceptor">
+                    <constructor-arg>
+                        <bean class="com.betfair.cougar.core.impl.interceptors.PrivateOnlyInterceptor">
+                            <constructor-arg ref="cougar.core.AddressClassifier"/>
+                        </bean>
+                    </constructor-arg>
+                    <property name="matcher">
+                        <bean class="com.betfair.cougar.core.api.ev.processors.OperationKeyMatcher">
+                            <property name="serviceName" value="Health"/>
+                            <property name="operationName" value="getDetailedHealthStatus"/>
+                        </bean>
+                    </property>
+                </bean>
+            </util:list>
+        </property>
+    </bean>
+
+
+
+</beans>

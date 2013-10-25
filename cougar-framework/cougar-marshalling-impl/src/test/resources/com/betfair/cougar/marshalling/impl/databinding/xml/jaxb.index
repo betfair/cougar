@@ -1,0 +1,7 @@
+XMLMarshallerTest$TestClass
+XMLMarshallerTest$TestDateClass
+XMLMarshallerTest$TestDateList
+XMLMarshallerTest$TestDateSet
+XMLUnMarshallerTest$TestClassUnmarshall
+XMLUnMarshallerTest$TestClassUnmarshallEnum
+XMLUnMarshallerTest$TestUnmarshallEnum

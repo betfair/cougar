@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2013, The Sporting Exchange Limited
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.springframework.org/schema/util
+	http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+    <!-- This bean is used to facilitate a binding between logging and the
+         logging framework that publishes them -->
+    <bean id="log4jLogHandlerFactory" class="com.betfair.cougar.logging.handlers.Log4JLogHandlerFactory"/>
+
+	<bean id="traceLogger" class="com.betfair.cougar.logging.LogDefinition" init-method="register">
+		<property name="logName" value="TRACE-LOG" />
+		<property name="traceLog" value="true" />
+		<property name="handler">	
+            <bean factory-bean="cougar.core.logHandlerFactory" factory-method="createLogHandler">
+                <constructor-arg type="java.util.Map">
+                    <util:map map-class="java.util.HashMap">
+                        <entry key="logName" value="TRACE-LOG"/>
+                        <entry key="fileName" value="$COUGAR{cougar.log.dir}/$COUGAR{system.hostname}-$COUGAR{cougar.app.name}-trace.log"/>
+                        <entry key="flush" value="true"/>
+                        <entry key="append" value="$COUGAR{cougar.log.TRACE.append}"/>
+                        <entry key="rotation" value="$COUGAR{cougar.log.TRACE.rotation}"/>
+                        <entry key="abstractLogger" value="false"/>
+                        <entry key="format" value="$COUGAR{cougar.log.traceFormatter.pattern}"/>
+                        <entry key="isTraceLogger" value="true"/>
+                    </util:map>
+                </constructor-arg>
+            </bean>
+		</property>
+	</bean>
+
+    <alias name="$COUGAR{cougar.events.logHandlerFactory}" alias="cougar.core.logHandlerFactory"/>
+
+</beans>

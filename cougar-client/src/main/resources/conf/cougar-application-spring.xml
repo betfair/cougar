@@ -1,0 +1,326 @@
+<!--
+  ~ Copyright 2013, The Sporting Exchange Limited
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean class="com.betfair.cougar.util.configuration.PropertyConfigurer">
+        <constructor-arg index="0" ref="cougar.core.EncryptorRegistry"/>
+        <property name="defaultConfig" value="conf/cougar-client-defaults.properties"/>
+        <property name="configOverride" value="overrides.properties"/>
+        <property name="placeholderPrefix" value="$COUGAR_CLIENT{"/>
+    </bean>
+
+    <bean id="defaultGeoLocationSerializer" class="com.betfair.cougar.client.DefaultGeoLocationSerializer"/>
+
+    <!-- Initialise the RequestUUID Generator -->
+    <bean id="requestUuidInitialisation" class="com.betfair.cougar.util.RequestUUIDImpl">
+        <constructor-arg index="0" ref="$COUGAR_CLIENT{cougar.client.uuidgenerator}"/>
+    </bean>
+
+    <bean id="defaultClientRequestUuidGenerator" class="com.betfair.cougar.util.UUIDGeneratorImpl"/>
+
+    <bean id="qsGeneratorFactory" class="com.betfair.cougar.client.query.QueryStringGeneratorFactory"
+          init-method="init">
+        <property name="dataBindingFactory" ref="cougar.marshalling.JSONBindingFactory"/>
+    </bean>
+
+    <bean id="exceptionTransformer" class="com.betfair.cougar.client.exception.ExceptionTransformerDelegate"
+          init-method="init">
+        <property name="dataBindingFactory" ref="cougar.marshalling.JSONBindingFactory"/>
+    </bean>
+
+    <bean id="defaultRetryHandler" class="org.apache.http.impl.client.DefaultHttpRequestRetryHandler">
+        <constructor-arg value="3"/>
+        <constructor-arg value="false"/>
+    </bean>
+
+
+    <!-- synchronous http transport -->
+    <bean id="abstractRescriptTransport" class="com.betfair.cougar.client.HttpClientExecutable" abstract="true"
+          init-method="init">
+        <constructor-arg index="1" ref="$COUGAR_CLIENT{cougar.client.geoLocationSerializerBean}"/>
+        <constructor-arg index="2" value="$COUGAR_CLIENT{cougar.client.http.uuidheader}"/>
+
+        <property name="retryHandler" ref="defaultRetryHandler"/>
+        <property name="dataBindingFactory" ref="cougar.marshalling.JSONBindingFactory"/>
+        <property name="queryStringGeneratorFactory" ref="$COUGAR_CLIENT{cougar.client.querystring.factoryBean}"/>
+        <property name="exceptionTransformer" ref="exceptionTransformer"/>
+        <property name="connectTimeout" value="$COUGAR_CLIENT{cougar.client.http.clientTimeout}"/>
+        <property name="maxTotalConnections" value="$COUGAR_CLIENT{cougar.client.http.maxConnectionsTotal}"/>
+        <property name="maxPerRouteConnections" value="$COUGAR_CLIENT{cougar.client.http.maxConnectionsPerRoute}"/>
+        <property name="hostnameVerificationDisabled" value="$COUGAR_CLIENT{cougar.client.http.hostnameVerificationDisabled}" />
+        <property name="jmxControl" ref="clientJMXControl"/>
+        <property name="hardFailEnumDeserialisation" value="$COUGAR_CLIENT{cougar.client.http.enums.hardFailure}"/>
+        <property name="userTokenHandler">
+            <bean class="$COUGAR_CLIENT{cougar.client.https.userTokenHandlerClass}" />
+        </property>
+    </bean>
+
+    <!-- asynchronous http transport -->
+    <bean id="asyncHttpWorkerThreadPool" class="com.betfair.cougar.util.JMXReportingThreadPoolExecutor">
+        <constructor-arg value="$COUGAR_CLIENT{cougar.client.http.async.worker.corePoolSize}"/>
+        <constructor-arg value="$COUGAR_CLIENT{cougar.client.http.async.worker.maxPoolSize}"/>
+        <constructor-arg value="$COUGAR_CLIENT{cougar.client.http.async.worker.timeout}"/>
+        <constructor-arg value="SECONDS"/>
+        <constructor-arg>
+            <bean class="java.util.concurrent.SynchronousQueue"/>
+        </constructor-arg>
+        <constructor-arg>
+            <bean class="org.springframework.scheduling.concurrent.CustomizableThreadFactory">
+                <property name="threadNamePrefix" value="Client-AsyncHttpWorker-"/>
+            </bean>
+        </constructor-arg>
+    </bean>
+
+    <!-- asynchronous http transport -->
+    <bean id="asyncHttpReponseProcessorThreadPool" class="com.betfair.cougar.util.JMXReportingThreadPoolExecutor">
+        <constructor-arg value="$COUGAR_CLIENT{cougar.client.http.async.response.corePoolSize}"/>
+        <constructor-arg value="$COUGAR_CLIENT{cougar.client.http.async.response.maxPoolSize}"/>
+        <constructor-arg value="$COUGAR_CLIENT{cougar.client.http.async.response.timeout}"/>
+        <constructor-arg value="SECONDS"/>
+        <constructor-arg>
+            <bean class="java.util.concurrent.SynchronousQueue"/>
+        </constructor-arg>
+        <constructor-arg>
+            <bean class="org.springframework.scheduling.concurrent.CustomizableThreadFactory">
+                <property name="threadNamePrefix" value="Client-AsyncHttpResponseProcessor-"/>
+            </bean>
+        </constructor-arg>
+    </bean>
+
+    <bean id="abstractAsyncRescriptTransport" class="com.betfair.cougar.client.AsyncHttpExecutable" abstract="true"
+          init-method="init">
+        <constructor-arg index="1" ref="$COUGAR_CLIENT{cougar.client.geoLocationSerializerBean}"/>
+        <constructor-arg index="2" value="$COUGAR_CLIENT{cougar.client.http.uuidheader}"/>
+        <constructor-arg index="3" ref="asyncHttpWorkerThreadPool"/>
+        <constructor-arg index="4" ref="asyncHttpReponseProcessorThreadPool"/>
+
+        <property name="dataBindingFactory" ref="cougar.marshalling.JSONBindingFactory"/>
+        <property name="queryStringGeneratorFactory" ref="qsGeneratorFactory"/>
+        <property name="exceptionTransformer" ref="exceptionTransformer"/>
+        <property name="connectTimeout" value="$COUGAR_CLIENT{cougar.client.http.async.connectTimeout}"/>
+        <property name="idleTimeout" value="$COUGAR_CLIENT{cougar.client.http.async.idleTimeout}"/>
+
+        <property name="maxRequestsQueuedPerDestination" value="$COUGAR_CLIENT{cougar.client.http.async.maxRequestsQueuedPerRoute}"/>
+        <property name="maxConnectionsPerDestination" value="$COUGAR_CLIENT{cougar.client.http.async.maxConnectionsPerRoute}"/>
+        <property name="hostnameVerificationDisabled" value="$COUGAR_CLIENT{cougar.client.http.async.hostnameVerificationDisabled}" />
+        <property name="jmxControl" ref="clientJMXControl"/>
+        <property name="hardFailEnumDeserialisation" value="$COUGAR_CLIENT{cougar.client.http.async.enums.hardFailure}"/>
+    </bean>
+
+    <!-- synchronous http transport factory -->
+    <bean id="syncHttpTransportFactory" class="com.betfair.cougar.client.SyncHttpTransportFactory">
+        <property name="geoLocationSerializer" ref="$COUGAR_CLIENT{cougar.client.geoLocationSerializerBean}"/>
+        <property name="uuidHeader" value="$COUGAR_CLIENT{cougar.client.http.uuidheader}"/>
+        <property name="retryHandler" ref="defaultRetryHandler"/>
+        <property name="dataBindingFactory" ref="cougar.marshalling.JSONBindingFactory"/>
+        <property name="queryStringGeneratorFactory" ref="qsGeneratorFactory"/>
+        <property name="exceptionTransformer" ref="exceptionTransformer"/>
+        <property name="httpTimeout" value="$COUGAR_CLIENT{cougar.client.http.clientTimeout}"/>
+        <property name="maxTotalConnections" value="$COUGAR_CLIENT{cougar.client.http.maxConnectionsTotal}"/>
+        <property name="maxPerRouteConnections" value="$COUGAR_CLIENT{cougar.client.http.maxConnectionsPerRoute}"/>
+        <property name="hardFailEnumDeserialisation" value="$COUGAR_CLIENT{cougar.client.http.enums.hardFailure}"/>
+    </bean>
+
+    <!-- binary transport -->
+    <bean id="clientSocketMarshaller" class="com.betfair.cougar.netutil.nio.marshalling.SocketRMIMarshaller">
+        <property name="hardFailEnumDeserialisation" value="$COUGAR_CLIENT{cougar.client.socket.enums.hardFailure}"/>
+    </bean>
+
+    <bean id="workerThreadPool" class="com.betfair.cougar.util.JMXReportingThreadPoolExecutor">
+        <constructor-arg value="$COUGAR_CLIENT{cougar.client.socket.worker.corePoolSize}"/>
+        <constructor-arg value="$COUGAR_CLIENT{cougar.client.socket.worker.maxPoolSize}"/>
+        <constructor-arg value="$COUGAR_CLIENT{cougar.client.socket.worker.timeout}"/>
+        <constructor-arg value="SECONDS"/>
+        <constructor-arg>
+            <bean class="java.util.concurrent.LinkedBlockingQueue"/>
+        </constructor-arg>
+        <constructor-arg>
+            <bean class="org.springframework.scheduling.concurrent.CustomizableThreadFactory">
+                <property name="threadNamePrefix" value="Client-SocketWorker-"/>
+            </bean>
+        </constructor-arg>
+    </bean>
+
+    <bean id="reconnectThreadPool" class="com.betfair.cougar.util.JMXReportingThreadPoolExecutor">
+        <constructor-arg value="$COUGAR_CLIENT{cougar.client.socket.connector.corePoolSize}"/>
+        <constructor-arg value="$COUGAR_CLIENT{cougar.client.socket.connector.maxPoolSize}"/>
+        <constructor-arg value="$COUGAR_CLIENT{cougar.client.socket.connector.timeout}"/>
+        <constructor-arg value="SECONDS"/>
+        <constructor-arg>
+            <bean class="java.util.concurrent.LinkedBlockingQueue"/>
+        </constructor-arg>
+        <constructor-arg>
+            <bean class="org.springframework.scheduling.concurrent.CustomizableThreadFactory">
+                <property name="threadNamePrefix" value="Client-SocketReconnector-"/>
+            </bean>
+        </constructor-arg>
+    </bean>
+
+    <bean name="clientConnectedObjectManager" class="com.betfair.cougar.client.socket.ClientConnectedObjectManager"
+          init-method="start" destroy-method="stop">
+        <property name="nioLogger" ref="clientNioLogger"/>
+        <property name="objectIOFactory" ref="objectIOFactory"/>
+        <property name="numProcessingThreads"
+                  value="$COUGAR_CLIENT{cougar.client.socket.connectedObjectManager.processorThreads}"/>
+        <property name="maxInitialPopulationWait"
+                  value="$COUGAR_CLIENT{cougar.client.socket.connectedObjectManager.maxInitialPopulationWait}"/>
+        <property name="maxDeltaQueue"
+                  value="$COUGAR_CLIENT{cougar.client.socket.connectedObjectManager.maxDeltaQueue}"/>
+        <property name="missingDeltaTimeout"
+                  value="$COUGAR_CLIENT{cougar.client.socket.connectedObjectManager.missingDeltaTimeout}"/>
+        <property name="pullerAwaitTimeout"
+                  value="$COUGAR_CLIENT{cougar.client.socket.connectedObjectManager.pullerAwaitTimeout}"/>
+        <property name="newListenerConflater">
+            <bean factory-bean="newListenerConflaterFactory" factory-method="getConflater"/>
+        </property>
+    </bean>
+
+    <bean name="newListenerConflaterFactory" class="com.betfair.cougar.client.socket.ConflaterFactory">
+        <constructor-arg index="0"
+                         value="$COUGAR_CLIENT{cougar.client.socket.connectedObjectManager.newListenerConflater}"/>
+    </bean>
+
+    <bean id="DNSBasedNetworkAddressResolver"
+          class="com.betfair.cougar.client.socket.resolver.DNSBasedAddressResolver"/>
+
+    <bean id="FILEBasedNetworkAddressResolver"
+          class="com.betfair.cougar.client.socket.resolver.FileBasedAddressResolver">
+        <constructor-arg index="0" value="$COUGAR_CLIENT{cougar.client.socket.address.resolver.file.enabled}"/>
+        <constructor-arg index="1" value="$COUGAR_CLIENT{cougar.client.socket.address.resolver.config.file}"/>
+    </bean>
+
+    <bean id="networkAddressResolver" class="com.betfair.cougar.client.socket.resolver.HotSwitchableAddressResolver">
+        <constructor-arg index="0" value="$COUGAR_CLIENT{cougar.client.socket.address.resolver}"/>
+    </bean>
+
+    <bean id="abstractSocketTransport" class="com.betfair.cougar.client.socket.ExecutionVenueNioClient" abstract="true"
+          init-method="start" destroy-method="stop">
+        <constructor-arg index="0" ref="clientNioLogger"/>
+        <constructor-arg index="1" ref="clientNioConfig"/>
+        <constructor-arg index="2" ref="objectIOFactory"/>
+        <constructor-arg index="3" ref="clientConnectedObjectManager"/>
+        <constructor-arg index="4" ref="clientSocketTransportInfo"/>
+        <constructor-arg index="6" ref="workerThreadPool"/>
+        <constructor-arg index="7" ref="reconnectThreadPool"/>
+        <constructor-arg index="8" value="$COUGAR_CLIENT{cougar.client.socket.reconnectInterval}"/>
+        <constructor-arg index="9" value="$COUGAR_CLIENT{cougar.client.socket.handshakeResponseTimeout}"/>
+        <constructor-arg index="10" value="$COUGAR_CLIENT{cougar.client.socket.session.recycle.interval}"/>
+        <constructor-arg index="11" ref="networkAddressResolver"/>
+        <property name="marshaller" ref="clientSocketMarshaller"/>
+    </bean>
+
+    <bean id="objectIOFactory" class="com.betfair.cougar.netutil.nio.hessian.HessianObjectIOFactory"/>
+
+    <bean id="clientNioConfig" class="com.betfair.cougar.netutil.nio.TlsNioConfig">
+        <property name="workerTimeout" value="$COUGAR_CLIENT{cougar.client.socket.worker.timeout}"/>
+        <property name="maxWriteQueueSize" value="$COUGAR_CLIENT{cougar.client.socket.maxWriteQueueSize}"/>
+        <property name="recvBufferSize" value="$COUGAR_CLIENT{cougar.client.socket.receiveBufferSize}"/>
+        <property name="sendBufferSize" value="$COUGAR_CLIENT{cougar.client.socket.sendBufferSize}"/>
+        <property name="useDirectBuffersInMina" value="$COUGAR_CLIENT{cougar.client.socket.useDirectBuffers}"/>
+        <property name="nioLogger" ref="clientNioLogger"/>
+        <property name="supportsTls" value="$COUGAR_CLIENT{cougar.client.socket.ssl.supportsTls}"/>
+        <property name="requiresTls" value="$COUGAR_CLIENT{cougar.client.socket.ssl.requiresTls}"/>
+        <property name="wantClientAuth" value="$COUGAR_CLIENT{cougar.client.socket.ssl.wantClientAuth}"/>
+        <property name="keystore" value="$COUGAR_CLIENT{cougar.client.socket.ssl.keystore}"/>
+        <property name="keystoreType" value="$COUGAR_CLIENT{cougar.client.socket.ssl.keystoreType}"/>
+        <property name="keystorePassword" value="$COUGAR_CLIENT{cougar.client.socket.ssl.keystorePassword}"/>
+        <property name="truststore" value="$COUGAR_CLIENT{cougar.client.socket.ssl.truststore}"/>
+        <property name="truststoreType" value="$COUGAR_CLIENT{cougar.client.socket.ssl.truststoreType}"/>
+        <property name="truststorePassword" value="$COUGAR_CLIENT{cougar.client.socket.ssl.truststorePassword}"/>
+        <property name="rpcTimeoutMillis" value="$COUGAR_CLIENT{cougar.client.socket.rpc.timeout}"/>
+        <property name="rpcTimeoutGranularityMillis" value="$COUGAR_CLIENT{cougar.client.socket.rpc.timeout.granularity}"/>
+        <property name="mbeanServer">
+            <bean class="org.springframework.jmx.support.MBeanServerFactoryBean">
+                <property name="locateExistingServerIfPossible" value="true"/>
+            </bean>
+        </property>
+    </bean>
+
+
+    <bean id="clientNioLogger" class="com.betfair.cougar.netutil.nio.NioLogger">
+        <constructor-arg value="$COUGAR_CLIENT{cougar.client.socket.logLevel}"/>
+    </bean>
+
+    <bean id="clientSocketTransportInfo" class="com.betfair.cougar.client.socket.jmx.ClientSocketTransportInfo">
+        <constructor-arg index="0" value="cougar.core.JmxHtmlAdapter"/>
+        <constructor-arg index="1" ref="clientConnectedObjectManager"/>
+    </bean>
+
+    <bean id="abstractClient" abstract="true">
+        <constructor-arg index="0" ref="cougar.core.ExecutionVenue"/>
+        <constructor-arg index="1" ref="cougar.core.CommandProcessorExecutor"/>
+    </bean>
+
+    <bean id="abstractSyncClient" abstract="true">
+        <constructor-arg index="0" ref="cougar.core.ExecutionVenue"/>
+    </bean>
+
+    <alias name="abstractSocketTransport" alias="cougar.client.AbstractSocketTransport"/>
+    <alias name="abstractRescriptTransport" alias="cougar.client.AbstractRescriptTransport"/>
+    <alias name="abstractAsyncRescriptTransport" alias="cougar.client.AbstractAsyncRescriptTransport"/>
+    <alias name="abstractClient" alias="cougar.client.AbstractClient"/>
+    <alias name="abstractSyncClient" alias="cougar.client.AbstractSyncClient"/>
+
+    <bean name="clientMbeanExporter" class="org.springframework.jmx.export.MBeanExporter">
+        <property name="beans">
+            <map>
+                <entry key="CoUGAR.socket.transport.client:name=asyncHttpWorkerExecutor"
+                       value-ref="asyncHttpWorkerThreadPool"/>
+
+                <entry key="CoUGAR.socket.transport.client:name=socketWorkerExecutor" value-ref="workerThreadPool"/>
+                <entry key="CoUGAR.socket.transport.client:name=socketConnectorExecutor"
+                       value-ref="reconnectThreadPool"/>
+                <entry key="CoUGAR.socket.transport.client:name=socketConfig" value-ref="clientNioConfig"/>
+                <entry key="CoUGAR.socket.transport.client:name=nioLogger" value-ref="clientNioLogger"/>
+                <entry key="CoUGAR.socket.transport.client:type=addressResolver,name=hybrid"
+                       value-ref="networkAddressResolver"/>
+                <entry key="CoUGAR.socket.transport.client:type=addressResolver,name=file"
+                       value-ref="FILEBasedNetworkAddressResolver"/>
+                <entry key="CoUGAR.socket.transport.client:type=addressResolver,name=dns"
+                       value-ref="DNSBasedNetworkAddressResolver"/>
+            </map>
+        </property>
+        <property name="registrationBehaviorName" value="REGISTRATION_REPLACE_EXISTING"/>
+        <property name="server">
+            <bean class="org.springframework.jmx.support.MBeanServerFactoryBean">
+                <property name="locateExistingServerIfPossible" value="true"/>
+            </bean>
+        </property>
+        <property name="assembler">
+            <bean id="assembler"
+                  class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler">
+                <property name="attributeSource">
+                    <bean id="jmxAttributeSource"
+                          class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource"/>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="clientJMXControl" class="com.betfair.cougar.util.jmx.JMXControl">
+        <constructor-arg ref="clientMbeanExporter"/>
+    </bean>
+
+    <bean id="cougarClientFactory" class="com.betfair.cougar.client.factory.AbstractCougarClientFactory" abstract="true">
+        <property name="syncHttpTransportFactory" ref="syncHttpTransportFactory"/>
+        <property name="cougarIntroductionService" ref="cougarIntroductionService"/>
+        <property name="executionVenue" ref="cougar.core.ExecutionVenue"/>
+        <property name="executor" ref="cougar.core.CommandProcessorExecutor"/>
+    </bean>
+</beans>

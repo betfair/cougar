@@ -1,0 +1,624 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~ Copyright 2013, The Sporting Exchange Limited
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<interface name="Baseline" owner="Fred Flinstone" version="1.0" date="now()"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:noNamespaceSchemaLocation="http://www.betfair.com/BSIDL/4.0.xsd"
+            xmlns:xi="http://www.w3.org/2001/XInclude">
+    <authors><author name="Fred Flinstone" email="fred@flinstone.com"/></authors>
+    <description>The Baseline Service</description>
+    <operation name="testSimpleGet" since="1.0.0">
+        <description>test of an idempotent service.  takes a single arg and echos it back</description>
+        <parameters>
+            <request>
+                <parameter name="message" type="string" mandatory="true">
+                    <description>the message to echo</description>
+                </parameter>
+            </request>
+            <simpleResponse type="SimpleResponse">
+                <description>The response</description>
+            </simpleResponse>
+            <exceptions>
+                <exception type="SimpleException">
+                    <description>If the echo service fails for any reason</description>
+                </exception>
+            </exceptions>
+        </parameters>
+    </operation>
+    <operation name="testSimpleCacheGet" since="1.0.0">
+        <description>Tests if the cache is integrated correctly</description>
+        <parameters>
+            <request>
+                <parameter name="id" type="string" mandatory="true">
+                    <description>the id of the item to retrieve</description>
+                </parameter>
+            </request>
+            <simpleResponse type="SimpleResponse">
+                <description>The response</description>
+            </simpleResponse>
+            <exceptions>
+                <exception type="SimpleException">
+                    <description>If the echo service fails for any reason</description>
+                </exception>
+            </exceptions>
+        </parameters>
+    </operation>
+    <operation name="testLargeGet" since="1.0.0">
+        <description>
+            Test of an idempotent service.  Takes a number and returns a list of
+            complex objects of the size specified. Used to test output parsing speed
+        </description>
+        <parameters>
+            <request>
+                <parameter name="size" type="i32" mandatory="true">
+                    <description>the list of complex objects</description>
+                </parameter>
+            </request>
+            <simpleResponse type="LargeRequest">
+                <description>The response containing the number of elements specified</description>
+            </simpleResponse>
+            <exceptions>
+                <exception type="SimpleException">
+                    <description>If the echo service fails for any reason</description>
+                </exception>
+            </exceptions>
+        </parameters>
+    </operation>
+    <operation name="testLargeMapGet" since="1.0.0">
+        <description>
+            Test of an idempotent service.  Takes a number and returns a list of
+            complex objects of the size specified. Used to test output parsing speed
+        </description>
+        <parameters>
+            <request>
+                <parameter name="size" type="i32" mandatory="true">
+                    <description>the list of complex objects</description>
+                </parameter>
+            </request>
+            <simpleResponse type="MapDataType">
+                <description>The response containing the number of elements specified</description>
+            </simpleResponse>
+            <exceptions>
+                <exception type="SimpleException">
+                    <description>If the echo service fails for any reason</description>
+                </exception>
+            </exceptions>
+        </parameters>
+    </operation>
+    
+    <operation name="testMapsNameClash" since="1.0.0">
+        <description>
+        </description>
+        <parameters>
+            <request>
+                <parameter name="mapParam" type="SimpleMap" mandatory="true">
+                    <description>the list of complex objects</description>
+                </parameter>
+            </request>
+            <simpleResponse type="SimpleResponseMap">
+                <description>The response containing the number of elements specified</description>
+            </simpleResponse>
+            <exceptions>
+                <exception type="SimpleException">
+                    <description>If the echo service fails for any reason</description>
+                </exception>
+            </exceptions>
+        </parameters>
+    </operation>
+    
+    
+    <operation name="testSimpleAsyncGet" since="1.0.0">
+        <description>test of an idempotent service. Takes a single arg and echos it back</description>
+        <parameters>
+            <request>
+                <parameter name="message" type="string" mandatory="true">
+                    <description>the message to echo</description>
+                </parameter>
+            </request>
+            <simpleResponse type="SimpleResponse">
+                <description>The response</description>
+            </simpleResponse>
+            <exceptions>
+                <exception type="SimpleException">
+                    <description>If the echo service fails for any reason</description>
+                </exception>
+            </exceptions>
+        </parameters>
+    </operation>
+
+    <operation name="testAsyncGetTimeout" since="1.0.0">
+        <description>test of a async service that does not generate a response within the timeout period</description>
+        <parameters>
+            <request>
+                <parameter name="message" type="string" mandatory="true">
+                    <description>the message to echo</description>
+                </parameter>
+            </request>
+            <simpleResponse type="SimpleResponse">
+                <description>The response</description>
+            </simpleResponse>
+            <exceptions>
+                <exception type="SimpleException">
+                    <description>If the echo service fails for any reason</description>
+                </exception>
+            </exceptions>
+        </parameters>
+    </operation>
+
+    <operation name="testParameterStyles" since="1.0.0">
+        <description>Ensure that REST parameters can be taken from different sources</description>
+        <parameters>
+            <request>
+                <parameter name="pathParam" type="string" mandatory="true">
+                    <description>the path parameter</description>
+                </parameter>
+                <parameter name="secondPathParam" type="string" mandatory="true">
+                    <description>the second path parameter</description>
+                </parameter>
+                <parameter name="HeaderParam" type="string">
+                    <description>the header parameter</description>
+                    <validValues>
+                        <value name="Foo">
+                            <description>Foo parameter</description>
+                        </value>
+                        <value name="Bar">
+                            <description>Bar parameter</description>
+                        </value>
+                        <value name="FooBar">
+                            <description>FooBar parameter</description>
+                        </value>
+                    </validValues>
+                </parameter>
+                <parameter name="secondHeaderParam" type="string">
+                    <description>the second (unbounded) header parameter</description>
+                </parameter>
+                <parameter name="queryParam" type="string" mandatory="true">
+                    <description>the query parameter</description>
+                </parameter>
+                <parameter name="ok" type="float">
+                    <description>some old stuff</description>
+                </parameter>
+            </request>
+            <simpleResponse type="SimpleResponse">
+                <description>The response, containing all the paramters</description>
+            </simpleResponse>
+            <exceptions>
+                <exception type="SimpleException">
+                    <description>If the echo service fails for any reason</description>
+                </exception>
+            </exceptions>
+        </parameters>
+    </operation>
+    
+    <operation name="testDateRetrieval" since="1.0.0">
+        <description>Return some date information</description>
+        <parameters>
+            <request>
+                <parameter name="inputDates" type="DateContainer" mandatory="true">
+                    <description>the path parameter</description>
+                </parameter>
+            </request>
+            <simpleResponse type="DateContainer">
+                <description>The response, containing the Dates</description>
+            </simpleResponse>
+            <exceptions>
+                <exception type="SimpleException">
+                    <description>If the service fails for any reason</description>
+                </exception>
+            </exceptions>
+        </parameters>
+    </operation>
+    
+    
+    <operation name="testComplexMutator" since="1.0.0">
+        <description>test of a service that takes a complex object and returns a complex object</description>
+        <parameters>
+            <request>
+                <parameter name="message" type="ComplexObject" mandatory="true">
+                    <description>the complex object</description>
+                </parameter>
+            </request>
+            <simpleResponse type="SimpleResponse">
+                <description>The response</description>
+            </simpleResponse>
+            <exceptions>
+                <exception type="SimpleException">
+                    <description>If the echo service fails for any reason</description>
+                </exception>
+            </exceptions>
+        </parameters>
+    </operation>
+ 
+    <operation name="testLargePost" since="1.0.0">
+        <description>
+            Takes a list of complex objects and returns the number of values in the list. 
+            Used to test input parsing speed.
+        </description>
+        <parameters>
+            <request>
+                <parameter name="largeRequest" type="LargeRequest" mandatory="true">
+                    <description>the list of complex objects</description>
+                </parameter>
+            </request>
+            <simpleResponse type="SimpleResponse">
+                <description>The response containing the number of elements in the list</description>
+            </simpleResponse>
+            <exceptions>
+                <exception type="SimpleException">
+                    <description>If the echo service fails for any reason</description>
+                </exception>
+            </exceptions>
+        </parameters>
+    </operation>
+
+    <operation name="testException" since="1.0.0">
+        <description>a service that always throws an exception</description>
+        <parameters>
+            <request>
+                <parameter name="responseCode" type="string" mandatory="true">
+                    <description>The service response code</description>
+                </parameter>
+                <parameter name="message" type="string" mandatory="true">
+                    <description>The service Parameter</description>
+                </parameter>
+            </request>
+            <simpleResponse type="SimpleResponse">
+                <description>The response</description>
+            </simpleResponse>
+            <exceptions>
+                <exception type="SimpleException">
+                    <description>If the echo service fails for any reason</description>
+                </exception>
+                <exception type="WotsitException">
+                    <description>If the wotsit was not available</description>
+                </exception>
+            </exceptions>
+        </parameters>
+    </operation>
+    
+    <operation name="testSecureService" since="1.0.0">
+        <description>
+            a service with a security attribute - cannot be called without an Authorisation token.
+            Models placing a bet on an Australian exchange
+            use CoUGARAUS as the token you should have permission to call the service
+            use CoUGARUK as the token and the call will be rejected
+            no token and the call will be rejected 
+        </description>
+        <parameters>
+            <request>
+                <parameter name="message" type="string" mandatory="true">
+                    <description>The service Parameter</description>
+                </parameter>
+            </request>
+            <simpleResponse type="SimpleResponse">
+                <description>The response</description>
+            </simpleResponse>
+            <exceptions>
+                <exception type="SimpleException">
+                    <description>If the echo service fails for any reason</description>
+                </exception>
+            </exceptions>
+        </parameters>
+    </operation>
+    <operation name="testNoParams" since="1.0.0">
+            <description>No Params test</description>
+            <parameters>
+                  <request></request>
+                  <simpleResponse type="NoParamsResponse">
+                        <description>The response</description>
+                  </simpleResponse>
+                  <exceptions>
+                        <exception type="SimpleException">
+                              <description>If the echo service fails for any reason</description>
+                        </exception>
+                  </exceptions>
+            </parameters>
+    </operation>
+    <operation name="testNonExistent" since="1.0.0">
+            <description>Non existent operation (not defined in extensions doc)</description>
+            <parameters>
+                  <request></request>
+                  <simpleResponse type="NoParamsResponse">
+                        <description>The response</description>
+                  </simpleResponse>
+                  <exceptions>
+                        <exception type="SimpleException">
+                              <description>If the echo service fails for any reason</description>
+                        </exception>
+                  </exceptions>
+            </parameters>
+      </operation>
+
+    <operation name="testSimpleTypeReplacement" since="1.0.0">
+            <description>Test that simple types are handled by Cougar</description>
+            <parameters>
+                <request>
+                    <parameter name="simpleInt" type="SimpleInt" mandatory="true">
+                        <description>A simple value</description>
+                    </parameter>
+                    <parameter name="simpleDouble" type="SimpleDouble" mandatory="true">
+                        <description>A simple value</description>
+                    </parameter>
+                    <parameter name="simpleString" type="SimpleString" mandatory="true">
+                        <description>A simple value</description>
+                    </parameter>
+                    <parameter name="simpleEnum" type="SimpleValidValue" mandatory="true">
+                        <description>A simple value</description>
+                    </parameter>
+                </request>
+                <simpleResponse type="SimpleContainer">
+                      <description>The response</description>
+                </simpleResponse>
+                  <exceptions>
+                        <exception type="SimpleException">
+                              <description>If the service fails for any reason</description>
+                        </exception>
+                  </exceptions>
+            </parameters>
+      </operation>
+
+    <operation name="testStringableLists" since="1.0.0">
+            <description>Test that lists are stringable if they are enums or integers</description>
+            <parameters>
+                <request>
+                    <parameter name="intList" type="set(SimpleInt)" mandatory="true">
+                        <description>A simple value</description>
+                    </parameter>
+                    <parameter name="stringList" type="list(string)" mandatory="true">
+                        <description>A simple value</description>
+                    </parameter>
+                    <parameter name="enumList" type="list(SimpleValidValue)" mandatory="true">
+                        <description>A simple value</description>
+                    </parameter>
+                </request>
+                <simpleResponse type="SimpleListContainer">
+                      <description>The response</description>
+                </simpleResponse>
+                  <exceptions>
+                        <exception type="SimpleException">
+                              <description>If the service fails for any reason</description>
+                        </exception>
+                  </exceptions>
+            </parameters>
+      </operation>
+    
+
+<!--
+          
+    *** START INCLUDE
+-->
+<!--
+    <dataType name="ComplexObject">
+        <description>A (slightly) complex object</description>
+        <parameter name="name" type="string" mandatory="false">
+            <description>name</description>
+        </parameter>
+        <parameter name="value1" type="i32" mandatory="true">
+            <description>value1</description>
+        </parameter>
+        <parameter name="value2" type="i32">
+            <description>value2</description>
+        </parameter>
+        <parameter name="ok" type="bool">
+            <description>some old stuff</description>
+        </parameter>
+    </dataType>
+
+    <dataType name="DateContainer">
+        <description>An object returning some dates</description>
+        <parameter name="name" type="string" mandatory="true">
+            <description>name</description>
+        </parameter>
+        <parameter name="first" type="dateTime" mandatory="true">
+            <description>firstDate</description>
+        </parameter>
+        <parameter name="last" type="dateTime">
+            <description>last</description>
+        </parameter>
+        <parameter name="difference" type="double">
+            <description>difference in ms</description>
+        </parameter>
+        <parameter name="allDates" type="list(string)">
+            <description>The dates passed as strings</description>
+        </parameter>
+    </dataType>
+    
+    <dataType name="LargeRequest">
+        <description>A list of complex objects from a request</description>
+        <parameter name="size" type="i32" mandatory="false">
+            <description>The size of the object list</description>
+        </parameter>
+        <parameter name="objects" type="list(ComplexObject)" mandatory="true">
+            <description>the complex object list</description>
+        </parameter>
+        <parameter name="oddOrEven" type="string" mandatory="true">
+            <description>the size parameter is...</description>
+            <validValues>
+                <value name="ODD">
+                    <description>Odd</description>
+                </value>
+                <value name="EVEN">
+                    <description>Even</description>
+                </value>
+            </validValues>
+        </parameter>
+    </dataType>
+
+    
+    <dataType name="MapDataType">
+        <description>A map of simple types to complex objects from a request</description>
+        <parameter name="cache" type="map(i32,ComplexObject)" mandatory="true">
+            <description>the complex object list</description>
+        </parameter>
+        <parameter name="someMap" type="map(string,ComplexObject)" mandatory="true">
+            <description>the complex object list</description>
+        </parameter>
+    </dataType>
+
+    <dataType name="SimpleMap">
+        <description>A map of simple types to complex objects from a request</description>
+        <parameter name="cache" type="map(string,string)" mandatory="true">
+            <description>the complex object list</description>
+        </parameter>
+    </dataType>
+
+    <dataType name="SimpleContainer">
+        <description>Some simple types in an object</description>
+        <parameter name="simpleInt" type="SimpleInt">
+            <description>A simple value</description>
+        </parameter>
+        <parameter name="simpleDouble" type="SimpleDouble">
+            <description>A simple value</description>
+        </parameter>
+        <parameter name="simpleString" type="SimpleString">
+            <description>A simple value</description>
+        </parameter>
+        <parameter name="simpleEnum" type="SimpleValidValue">
+            <description>A simple value</description>
+        </parameter>
+    </dataType>
+
+    <dataType name="SimpleListContainer">
+        <description>Some simple types in an object</description>
+        <parameter name="ints" type="list(i32)">
+            <description>A simple value</description>
+        </parameter>
+        <parameter name="strings" type="list(string)">
+            <description>A simple value</description>
+        </parameter>
+        <parameter name="enums" type="set(SimpleValidValue)">
+            <description>A simple value</description>
+        </parameter>
+    </dataType> 
+   
+
+    *** END INCLUDE
+-->
+     
+      <dataType name="NoParamsResponse">
+            <description>Status info</description>
+            <parameter name="version" type="string">
+                  <description>the application version</description>
+            </parameter>
+            <parameter name="status" type="string">
+                  <description>the application status</description>
+            </parameter>
+      </dataType>
+    
+
+    <dataType name="SimpleResponse">
+        <description>The simplest response type possible</description>
+        <parameter name="message" type="string" mandatory="true">
+            <description>message</description>
+        </parameter>
+    </dataType>
+        
+    <dataType name="SimpleResponseMap">
+        <description>A map of simple types to complex objects from a request</description>
+        <parameter name="cache" type="map(string,string)" mandatory="true">
+            <description>the complex object list</description>
+        </parameter>
+    </dataType>
+
+    <exceptionType name="SimpleException" prefix="SEX">
+        <!-- 
+            Cougar currently requires that all Exceptions have a first parameter
+            that is defined by its valid values, all defined by an incrementing id 
+        -->
+        <description>This exception is thrown when an operation fails</description>
+        <parameter name="errorCode" type="string">
+            <description>the unique code for this error</description>
+            <validValues>
+                <value id="1" name="GENERIC">
+                    <description>Generic Error</description>
+                </value>
+                <value id="2" name="NULL">
+                    <description>Null Input</description>
+                </value>
+                <value id="3" name="TIMEOUT">
+                    <description>Timeout</description>
+                </value>
+                <value id="4" name="FORBIDDEN">
+                    <description>Forbidden to call this operation</description>
+                </value>
+            </validValues>
+        </parameter>
+        <parameter name="reason" type="string">
+            <description>A human readable description of this error</description>
+        </parameter>        
+    </exceptionType>
+    <exceptionType name="WotsitException" prefix="WEX">
+        <!-- 
+            Cougar currently requires that all Exceptions have a first parameter
+            that is defined by its valid values, all defined by an incrementing id 
+        -->
+        <description>This exception might be thrown when an operation fails</description>
+        <parameter name="errorCode" type="string">
+            <description>the unique code for this error</description>
+            <validValues>
+                <value id="1" name="CLOSED">
+                    <description>The wotsit is closed</description>
+                </value>
+                <value id="2" name="SUSPENDED">
+                    <description>The wotsit is suspended</description>
+                </value>
+                <value id="3" name="NOT_FOUND">
+                    <description>The wotsit is not found</description>
+                </value>
+            </validValues>
+        </parameter>
+        <parameter name="type" type="string">
+            <description>A The type of wotsit</description>
+            <validValues>
+                <value name="CHEESY">
+                    <description>The wotsit is cheesy</description>
+                </value>
+                <value name="SPICY">
+                    <description>The wotsit is spicy</description>
+                </value>
+            </validValues>
+        </parameter>
+    </exceptionType>
+    
+<!--
+        <xi:include href="baseline-simpletypes.inc" />
+    *** START INCLUDE
+
+     
+
+    <simpleType name="SimpleDouble" type="double"/>
+    <simpleType name="SimpleString" type="string"/>
+    -->
+<!--
+    *** END INCLUDE
+-->
+    <simpleType name="SimpleInt" type="i32"/>
+    <simpleType name="SimpleValidValue" type="string">
+        <validValues>
+            <value name="WEASEL">
+                <description>Weasely recognised</description>
+            </value>
+            <value name="STOAT">
+                <description>Stoatally different</description>
+            </value>
+        </validValues>
+    </simpleType>   
+
+    <xi:include href="SimpleTypes.inc" />    
+    <xi:include href="DataTypes.inc" />
+        
+</interface>

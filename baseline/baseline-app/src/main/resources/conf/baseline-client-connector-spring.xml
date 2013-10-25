@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2013, The Sporting Exchange Limited
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+    <bean class="com.betfair.cougar.core.impl.ev.ClientServiceRegistration">
+        <property name="resolver">
+            <bean class="com.betfair.baseline.v2.BaselineClientExecutableResolver" init-method="init">
+                <property name="defaultOperationTransport">
+                    <bean parent="cougar.client.AbstractRescriptTransport">
+                        <constructor-arg>
+                            <bean class="com.betfair.baseline.v2.rescript.BaselineRescriptServiceBindingDescriptor"/>
+                        </constructor-arg>
+                        <property name="remoteAddress" value="$BASELINE{cougar.client.rescript.remoteaddress}"/>
+                        <property name="exceptionFactory">
+                            <bean class="com.betfair.baseline.v2.exception.BaselineExceptionFactory"/>
+                        </property>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+        <property name="serviceDefinition">
+            <bean class="com.betfair.baseline.v2.BaselineServiceDefinition"/>
+        </property>
+        <property name="namespace" value="RESCRIPT-CLI"/>
+    </bean>
+    <bean name="rescriptSyncClient"
+          class="com.betfair.baseline.v2.BaselineSyncClientImpl" parent="cougar.client.AbstractSyncClient">
+        <constructor-arg value="RESCRIPT-CLI"/>
+    </bean>
+
+    <bean name="rescriptAsyncClient"
+          class="com.betfair.baseline.v2.BaselineClientImpl" parent="cougar.client.AbstractClient">
+        <constructor-arg value="RESCRIPT-CLI"/>
+    </bean>
+
+
+
+    <bean name="directAsyncClient" class="com.betfair.baseline.v2.BaselineClientImpl" parent="cougar.client.AbstractClient"/>
+    <bean name="directSyncClient" class="com.betfair.baseline.v2.BaselineSyncClientImpl" parent="cougar.client.AbstractSyncClient"/>
+
+
+
+    <bean class="com.betfair.cougar.core.impl.ev.ClientServiceRegistration">
+        <property name="resolver">
+            <bean class="com.betfair.baseline.v2.BaselineClientExecutableResolver" init-method="init">
+                <property name="defaultOperationTransport">
+                    <bean parent="cougar.client.AbstractSocketTransport">
+                        <constructor-arg index="5" value="localhost:9003"/>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+        <property name="serviceDefinition">
+            <bean class="com.betfair.baseline.v2.BaselineServiceDefinition"/>
+        </property>
+        <property name="namespace" value="SOCKET-CLI"/>
+    </bean>
+    <bean name="socketSyncClient" class="com.betfair.baseline.v2.BaselineSyncClientImpl" parent="cougar.client.AbstractSyncClient">
+            <constructor-arg value="SOCKET-CLI"/>
+        </bean>
+    <bean name="socketAsyncClient" class="com.betfair.baseline.v2.BaselineClientImpl" parent="cougar.client.AbstractClient">
+        <constructor-arg value="SOCKET-CLI"/>
+    </bean>
+</beans>

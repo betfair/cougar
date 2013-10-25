@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2013, The Sporting Exchange Limited
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <bean id="insecureClientNioConfig" class="com.betfair.cougar.netutil.nio.TlsNioConfig">
+        <property name="workerTimeout" value="$COUGAR_CLIENT{cougar.client.socket.worker.timeout}"/>
+        <property name="maxWriteQueueSize" value="$COUGAR_CLIENT{cougar.client.socket.maxWriteQueueSize}"/>
+        <property name="recvBufferSize" value="$COUGAR_CLIENT{cougar.client.socket.receiveBufferSize}"/>
+        <property name="sendBufferSize" value="$COUGAR_CLIENT{cougar.client.socket.sendBufferSize}"/>
+        <property name="useDirectBuffersInMina" value="$COUGAR_CLIENT{cougar.client.socket.useDirectBuffers}"/>
+        <property name="nioLogger" ref="clientNioLogger"/>
+        <property name="supportsTls" value="false"/>
+        <property name="requiresTls" value="false"/>
+        <property name="rpcTimeoutMillis" value="$COUGAR_CLIENT{cougar.client.socket.rpc.timeout}"/>
+        <property name="mbeanServer">
+            <bean class="org.springframework.jmx.support.MBeanServerFactoryBean">
+                <property name="locateExistingServerIfPossible" value="true"/>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="secureNioConfig" class="com.betfair.cougar.netutil.nio.TlsNioConfig">
+        <property name="workerTimeout" value="$COUGAR_CLIENT{cougar.client.socket.worker.timeout}"/>
+        <property name="maxWriteQueueSize" value="$COUGAR_CLIENT{cougar.client.socket.maxWriteQueueSize}"/>
+        <property name="recvBufferSize" value="$COUGAR_CLIENT{cougar.client.socket.receiveBufferSize}"/>
+        <property name="sendBufferSize" value="$COUGAR_CLIENT{cougar.client.socket.sendBufferSize}"/>
+        <property name="useDirectBuffersInMina" value="$COUGAR_CLIENT{cougar.client.socket.useDirectBuffers}"/>
+        <property name="nioLogger" ref="clientNioLogger"/>
+        <property name="supportsTls" value="true"/>
+        <property name="requiresTls" value="true"/>
+        <property name="truststore" value="classpath:cougar_server_ca.jks"/>
+        <property name="truststoreType" value="JKS"/>
+        <property name="truststorePassword" value="password"/>
+        <property name="rpcTimeoutMillis" value="$COUGAR_CLIENT{cougar.client.socket.rpc.timeout}"/>
+        <property name="mbeanServer">
+            <bean class="org.springframework.jmx.support.MBeanServerFactoryBean">
+                <property name="locateExistingServerIfPossible" value="true"/>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="secureNioConfigWithClientAuth" class="com.betfair.cougar.netutil.nio.TlsNioConfig">
+        <property name="workerTimeout" value="$COUGAR_CLIENT{cougar.client.socket.worker.timeout}"/>
+        <property name="maxWriteQueueSize" value="$COUGAR_CLIENT{cougar.client.socket.maxWriteQueueSize}"/>
+        <property name="recvBufferSize" value="$COUGAR_CLIENT{cougar.client.socket.receiveBufferSize}"/>
+        <property name="sendBufferSize" value="$COUGAR_CLIENT{cougar.client.socket.sendBufferSize}"/>
+        <property name="useDirectBuffersInMina" value="$COUGAR_CLIENT{cougar.client.socket.useDirectBuffers}"/>
+        <property name="nioLogger" ref="clientNioLogger"/>
+        <property name="supportsTls" value="true"/>
+        <property name="requiresTls" value="true"/>
+        <property name="keystore" value="classpath:cougar_client_cert.jks"/>
+        <property name="keystoreType" value="JKS"/>
+        <property name="keystorePassword" value="password"/>
+        <property name="truststore" value="classpath:cougar_server_ca.jks"/>
+        <property name="truststoreType" value="JKS"/>
+        <property name="truststorePassword" value="password"/>
+        <property name="wantClientAuth" value="true"/>
+        <property name="needClientAuth" value="true"/>
+        <property name="rpcTimeoutMillis" value="$COUGAR_CLIENT{cougar.client.socket.rpc.timeout}"/>
+        <property name="mbeanServer">
+            <bean class="org.springframework.jmx.support.MBeanServerFactoryBean">
+                <property name="locateExistingServerIfPossible" value="true"/>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="socketTransport" parent="cougar.client.AbstractSocketTransport">
+        <constructor-arg index="1" ref="insecureClientNioConfig"/>
+        <constructor-arg index="5" value="127.0.0.1:9003"/>
+        <property name="identityResolver" ref="clientIdentityResolver"/>
+    </bean>
+
+    <bean id="secureSocketTransport" parent="cougar.client.AbstractSocketTransport">
+        <constructor-arg index="1" ref="secureNioConfig"/>
+        <constructor-arg index="5" value="127.0.0.1:9003"/>
+        <property name="identityResolver" ref="clientIdentityResolver"/>
+    </bean>
+
+    <bean id="secureSocketTransportWithClientAuth" parent="cougar.client.AbstractSocketTransport">
+        <constructor-arg index="1" ref="secureNioConfigWithClientAuth"/>
+        <constructor-arg index="5" value="127.0.0.1:9003"/>
+        <property name="identityResolver" ref="clientIdentityResolver"/>
+    </bean>
+
+</beans>

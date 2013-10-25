@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2013, The Sporting Exchange Limited
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.betfair.cougar</groupId>
+        <artifactId>socket-perf-testing</artifactId>
+        <version>3.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>socket-perf-testing-launcher</artifactId>
+    <name>${project.artifactId}</name>
+
+    <properties>
+        <perftest.concurrency>10</perftest.concurrency>
+        <perftest.numHeapsForTest>1000</perftest.numHeapsForTest>
+        <perftest.numUpdates>10</perftest.numUpdates>
+        <perftest.pushThreads>10</perftest.pushThreads>
+    </properties>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>2.2-beta-3</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.1.1</version>
+                <configuration>
+                    <mainClass>com.betfair.cougar.core.impl.Main</mainClass>
+                    <classpathScope>runtime</classpathScope>
+                    <commandlineArgs>-verbose:gc -Xmn256m -Xmx1g -Xms1g -XX:PermSize=128m -XX:MaxPermSize=128m -XX:SurvivorRatio=16 -XX:MaxTenuringThreshold=4 -XX:+CMSScavengeBeforeRemark -XX:CMSWaitDuration=15000 -XX:CMSInitiatingOccupancyFraction=70 -XX:+HeapDumpOnOutOfMemoryError -verbose:gc -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps -XX:+PrintGCDetails -XX:+PrintGCApplicationConcurrentTime -XX:+PrintGCApplicationStoppedTime -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -Xloggc:logs/gc.log</commandlineArgs>
+                    <systemProperties>
+                        <systemProperty>
+                            <key>cougar.log.CONSOLE.level</key>
+                            <value>INFO</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <key>cougar.log.echoToStdout</key>
+                            <value>true</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <key>cougar.geoip.useDefault</key>
+                            <value>true</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <key>cougar.security.AuthenticationProvider</key>
+                            <value>cougar.security.NullAuthenticationProvider</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <key>cougar.fault.detailed</key>
+                            <value>true</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <key>jmx.html.tls.enabled</key>
+                            <value>false</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <key>cougar.socket.healthStateRepeatsBeforeUpdate</key>
+                            <value>1</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <key>cougar.socket.healthMonitorStrategy</key>
+                            <value>active</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <key>cougar.socket.healthMonitorInterval</key>
+                            <value>2</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <key>cougar.socket.logLevel</key>
+                            <value>ALL</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <key>cougar.socket.log.SESSION-LOG.format</key>
+                            <value>%d{HH:mm:ss.SSS}: %t %m%n</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <key>perftest.concurrency</key>
+                            <value>${perftest.concurrency}</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <key>perftest.numHeapsForTest</key>
+                            <value>${perftest.numHeapsForTest}</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <key>perftest.numUpdates</key>
+                            <value>${perftest.numUpdates}</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <key>cougar.socket.push.processingThreads</key>
+                            <value>${perftest.pushThreads}</value>
+                        </systemProperty>
+                    </systemProperties>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>appassembler-maven-plugin</artifactId>
+                <version>1.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>assemble</goal>
+                        </goals>
+                        <configuration>
+                            <programs>
+                                <program>
+                                    <mainClass>com.betfair.cougar.core.impl.Main</mainClass>
+                                    <name>socketTestServer.sh</name>
+                                </program>
+                            </programs>
+                            <platforms>
+                                <platform>unix</platform>
+                            </platforms>
+                            <extraJvmArguments>-verbose:gc -Xmn256m -Xmx1g -Xms1g -XX:PermSize=128m -XX:MaxPermSize=128m -XX:SurvivorRatio=16 -XX:MaxTenuringThreshold=4 -XX:+CMSScavengeBeforeRemark -XX:CMSWaitDuration=15000 -XX:CMSInitiatingOccupancyFraction=70 -XX:+HeapDumpOnOutOfMemoryError -verbose:gc -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps -XX:+PrintGCDetails -XX:+PrintGCApplicationConcurrentTime -XX:+PrintGCApplicationStoppedTime -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -Xloggc:logs/gc.log -Dperftest.concurrency=$1 -Dperftest.numHeapsForTest=$2 -Dperftest.numUpdates=$3 -Dcougar.socket.push.processingThreads=$4 -Dcougar.socket.serverExecutor.maximumPoolSize=$5 -Dcougar.commandProcessor.maximumPoolSize=$5</extraJvmArguments>
+                            <assembleDirectory>${project.build.directory}/sockettest-server-${project.version}</assembleDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.2-beta-3</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attached</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/assembly/bin.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.betfair.cougar</groupId>
+            <artifactId>cougar-util</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.betfair.cougar</groupId>
+            <artifactId>net-util</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.betfair.cougar</groupId>
+            <artifactId>cougar-api</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.betfair.cougar</groupId>
+            <artifactId>cougar-core-api</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.betfair.cougar</groupId>
+            <artifactId>cougar-core-impl</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.betfair.cougar</groupId>
+            <artifactId>cougar-ev</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.betfair.cougar</groupId>
+            <artifactId>cougar-marshalling-api</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.betfair.cougar</groupId>
+            <artifactId>cougar-marshalling-impl</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.betfair.cougar</groupId>
+            <artifactId>cougar-transport-impl</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.betfair.cougar</groupId>
+            <artifactId>jetty-transport</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.betfair.cougar</groupId>
+            <artifactId>socket-transport</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.betfair.cougar</groupId>
+            <artifactId>socket-perf-testing-app</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.betfair.cougar</groupId>
+            <artifactId>cougar-health-service-app</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.betfair.cougar</groupId>
+            <artifactId>cougar-environment-service-app</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.caucho</groupId>
+            <artifactId>hessian</artifactId>
+        </dependency>
+    </dependencies>
+
+    
+</project>

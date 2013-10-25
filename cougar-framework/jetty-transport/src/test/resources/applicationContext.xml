@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2013, The Sporting Exchange Limited
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+"http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<!-- DAO Objects, and their proxies -->
+	<bean id="simpleCacheDAO" class="com.betfair.caching.domain.dao.GenericCacheDAO">
+		<constructor-arg type="java.lang.Class" value="com.betfair.caching.test.objects.TestSimpleDO"></constructor-arg>
+	</bean>
+
+	<bean id="simpleDAO" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="proxyInterfaces">
+			<value>com.betfair.caching.domain.dao.IGenericCacheDAO</value>
+		</property>
+		<property name="target">
+			<ref local="simpleCacheDAO" />
+		</property>
+		<property name="interceptorNames">
+			<list>
+				<value>cacheDAOBeforeAdvisor</value>
+				<value>cacheDAOAfterAdvisor</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="compositeCacheDAO" class="com.betfair.caching.test.dao.impl.TestCompositeCacheDAOImpl">
+		<property name="simpleDAO">
+			<ref local="simpleDAO" />
+		</property>
+	</bean>
+	
+	<bean id="compositeDAO" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="proxyInterfaces">
+			<value>com.betfair.caching.domain.dao.IGenericCacheDAO</value>
+		</property>
+		<property name="target">
+			<ref local="compositeCacheDAO" />
+		</property>
+		<property name="interceptorNames">
+			<list>
+				<value>cacheDAOBeforeAdvisor</value>
+				<value>cacheDAOAfterAdvisor</value>
+			</list>
+		</property>
+	</bean>
+
+	
+	<!-- ASPECTS -->
+	
+	<bean id="cacheDAOBeforeAdvisor"
+		class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+		<property name="advice">
+			<ref local="cacheDAOBeforeAdvice" />
+		</property>
+		<property name="pattern">
+			<value>.*Get.*</value>
+		</property>
+	</bean>
+
+	<!-- Advisor pointcut definition for after advice -->
+	<bean id="cacheDAOAfterAdvisor"
+		class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+		<property name="advice">
+			<ref local="cacheDAOAfterAdvice" />
+		</property>
+		<property name="pattern">
+			<value>.*Get.*</value>
+		</property>
+	</bean>
+
+	<bean id="cacheDAOBeforeAdvice" class="com.betfair.caching.core.aspects.DebugDAOBeforeAdvice" />
+	<bean id="cacheDAOAfterAdvice" class="com.betfair.caching.core.aspects.DAOVersionManagementAfterAdvice" />
+
+
+	<!--  Versioner configs -->
+	<bean id="SimpleDOVersioner" class="com.betfair.caching.core.version.impl.ReferenceVersioner" />
+	<bean id="CompositeDOVersioner" class="com.betfair.caching.core.version.impl.ReferenceVersioner" />
+
+
+	
+	
+
+	<!-- Service Definitions -->
+	
+	
+	<!--  ************************************************************** -->
+	<!--  ** REMEMBER :-  Wire in the PROXY DAO's, not the actual DAO's! -->
+	<!--  ************************************************************** -->
+	
+	<bean id="SimpleService" class="com.betfair.caching.test.service.impl.SimpleServiceImpl">
+		<property name="simpleDAO" ref="simpleDAO"/>
+	</bean>
+	
+	<bean id="CompositeService" class="com.betfair.caching.test.service.impl.CompositeServiceImpl">
+		<property name="simpleDAO" ref="simpleDAO"/>
+		<property name="compositeDAO" ref="compositeDAO"/>
+	</bean>
+	
+	
+ 	<!--  DAO Properties Configurer -->
+	<bean id="DAOPropertyConfigurer" class="com.betfair.caching.core.config.DAOPropertyConfigurer">
+		<property name="propertiesList">
+			<list>
+				<bean class="com.betfair.caching.core.config.DomainObjectProperties">
+					<property name="dao" ref="simpleCacheDAO" />
+					<property name="versioner" ref="SimpleDOVersioner" />
+					<property name="cacheable" value="true" />
+					<property name="domainObjectClass" value="com.betfair.caching.test.objects.TestSimpleDO" />
+				</bean>
+
+				<bean class="com.betfair.caching.core.config.DomainObjectProperties">
+					<property name="dao" ref="compositeCacheDAO" />
+					<property name="versioner" ref="CompositeDOVersioner" />
+					<property name="cacheable" value="true" />
+					<property name="domainObjectClass" value="com.betfair.caching.test.objects.TestCompositeDO" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+</beans>

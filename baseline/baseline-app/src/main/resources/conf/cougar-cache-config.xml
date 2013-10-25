@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2013, The Sporting Exchange Limited
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE cache-config SYSTEM "cache-config.dtd">
+
+<cache-config>
+
+  <caching-scheme-mapping>
+
+    <cache-mapping>
+        <cache-name>SimpleDOCache</cache-name>
+        <scheme-name>Baseline</scheme-name>
+    </cache-mapping>
+    
+    <cache-mapping>
+        <cache-name>SimpleTestCache</cache-name>
+        <scheme-name>SimpleTestCacheScheme</scheme-name>
+    </cache-mapping>
+    
+    <cache-mapping>
+        <cache-name>SimpleTestCache1</cache-name>
+        <scheme-name>SimpleTestCache1Scheme</scheme-name>
+    </cache-mapping>
+
+    <cache-mapping>
+        <cache-name>SimpleTestCache2</cache-name>
+        <scheme-name>SimpleTestCache2Scheme</scheme-name>
+    </cache-mapping>
+
+
+  </caching-scheme-mapping>
+
+  <caching-schemes>
+    <local-scheme>
+    	<scheme-name>Baseline</scheme-name>
+        <high-units>60</high-units>
+        <expiry-delay>60</expiry-delay>
+        <eviction-policy>HYBRID</eviction-policy>
+		<cachestore-scheme>
+			<class-scheme>
+			  <class-name>spring-bean:simpleCacheLoader</class-name>
+			</class-scheme>
+		</cachestore-scheme>
+    </local-scheme>
+    
+    <local-scheme>
+    	<scheme-name>SimpleTestCacheScheme</scheme-name>
+        <high-units>60</high-units>
+        <expiry-delay>6</expiry-delay>
+        <eviction-policy>HYBRID</eviction-policy>
+		<cachestore-scheme>
+			<class-scheme>
+			  <class-name>spring-bean:simpleTestCacheLoader</class-name>
+			</class-scheme>
+		</cachestore-scheme>
+    </local-scheme> 
+    
+    <local-scheme>
+    	<scheme-name>SimpleTestCache1Scheme</scheme-name>
+        <high-units>60</high-units>
+        <expiry-delay>60</expiry-delay>
+        <eviction-policy>HYBRID</eviction-policy>
+		<cachestore-scheme>
+			<class-scheme>
+			  <class-name>spring-bean:simpleTestCache1Loader</class-name>
+			</class-scheme>
+		</cachestore-scheme>
+    </local-scheme>    
+
+	<local-scheme>
+    	<scheme-name>SimpleTestCache2Scheme</scheme-name>
+        <high-units>60</high-units>
+        <expiry-delay>6</expiry-delay>
+        <eviction-policy>HYBRID</eviction-policy>
+		<cachestore-scheme>
+			<class-scheme>
+			  <class-name>spring-bean:simpleTestCache2Loader</class-name>
+			</class-scheme>
+		</cachestore-scheme>
+    </local-scheme>
+    
+  </caching-schemes>
+</cache-config>

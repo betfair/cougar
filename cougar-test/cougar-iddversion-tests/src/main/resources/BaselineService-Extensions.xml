@@ -1,0 +1,2081 @@
+
+<!--
+  ~ Copyright 2013, The Sporting Exchange Limited
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<interface name="Baseline">
+
+    <operation name="mandatoryCollectionElementTest" since="2.0.0">
+        <parameters>
+            <request>
+                <parameter name="inputList">
+                    <extensions>
+                        <style>body</style>
+                    </extensions>
+                </parameter>
+                <parameter name="inputMap">
+                    <extensions>
+                        <style>body</style>
+                    </extensions>
+                </parameter>
+            </request>
+        </parameters>
+        <extensions>
+            <path>/mandatoryCollectionElementTest</path>
+            <method>POST</method>
+        </extensions>
+    </operation>
+
+    <operation name="interceptorCheckedExceptionOperation" since="2.0.0">
+        <description>Will make a call that causes a SimpleException to be thrown from an interceptor</description>
+        <parameters>
+            <request>
+                <parameter name="preOrPostException">
+                    <extensions>
+                        <style>query</style>
+                    </extensions>
+                </parameter>
+            </request>
+        </parameters>
+        <extensions>
+            <path>/interceptorCheckedExceptionOperation</path>
+            <method>GET</method>
+        </extensions>
+    </operation>
+
+    <operation name="listOfComplexOperation" since="2.0.0">
+        <parameters>
+            <request>
+                <parameter name="inputList">
+                    <extensions>
+                        <style>body</style>
+                    </extensions>
+                </parameter>
+            </request>
+        </parameters>
+        <extensions>
+            <path>/listOfComplexOperation</path>
+            <method>POST</method>
+        </extensions>
+    </operation>
+
+    <operation name="mapOfComplexOperation" since="2.0.0">
+        <parameters>
+            <request>
+                <parameter name="inputMap">
+                    <extensions>
+                        <style>body</style>
+                    </extensions>
+                </parameter>
+            </request>
+        </parameters>
+        <extensions>
+            <path>/mapOfComplexOperation</path>
+            <method>POST</method>
+        </extensions>
+    </operation>
+    
+    <operation name="setOfComplexOperation" since="2.0.0">
+        <parameters>
+            <request>
+                <parameter name="inputSet">
+                    <extensions>
+                        <style>body</style>
+                    </extensions>
+                </parameter>
+            </request>
+        </parameters>
+        <extensions>
+            <path>/setOfComplexOperation</path>
+            <method>POST</method>
+        </extensions>
+    </operation>
+
+	 <operation name="testSimpleDateListGet" since="1.0.0">
+        <parameters>
+            <request>
+                <parameter name="inputList" type="list(dateTime)" mandatory="true">
+                    <extensions>
+                        <style>body</style>
+                    </extensions>
+                </parameter>
+            </request>
+        </parameters>
+        <extensions>
+            <path>/testSimpleDateListGet</path>
+            <method>POST</method>
+        </extensions>
+    </operation>
+    
+    <operation name="testSimpleMapGet" since="1.0.0">
+        <parameters>
+            <request>
+                <parameter name="inputMap">
+                    <extensions>
+                        <style>body</style>
+                    </extensions>
+                </parameter>
+            </request>
+        </parameters>
+        <extensions>
+            <path>/simpleMapGet</path>
+            <method>POST</method>
+        </extensions>
+    </operation>
+
+    <operation name="testSimpleListGet" since="1.0.0">
+        <parameters>
+            <request>
+                <parameter name="inputList" type="list(string)" mandatory="true">
+                    <extensions>
+                        <style>body</style>
+                    </extensions>
+                </parameter>
+            </request>
+        </parameters>
+        <extensions>
+            <path>/simpleListGet</path>
+            <method>POST</method>
+        </extensions>
+    </operation>
+
+    <operation name="testSimpleSetGet" since="1.0.0">
+        <parameters>
+            <request>
+                <parameter name="inputSet">
+                    <extensions>
+                        <style>body</style>
+                    </extensions>
+                </parameter>
+            </request>
+        </parameters>
+        <extensions>
+            <path>/simpleSetGet</path>
+            <method>POST</method>
+        </extensions>
+    </operation>
+
+	<operation name="testSimpleGet">
+		<extensions>
+		        <path>/simple</path>
+                <method>GET</method>
+		</extensions>
+	</operation>
+
+	<operation name="testSimpleGetQA" since="1.0.0">
+		<description>test of an idempotent service.  takes a single arg and echos it back</description>
+		<parameters>
+			<request>
+				<parameter name="message" type="string" mandatory="true" >
+					<description>the message to echo</description>
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="SimpleResponse">
+				<description>The response</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+		        <path>/testSimpleGetQA</path>
+                <method>GET</method>
+		</extensions>
+	</operation>
+	<operation name="testLargeGet">
+		<parameters>
+			<request>
+				<parameter name="size">
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+			</request>
+		</parameters>
+		<extensions>
+			<path>/largeGet</path>
+			<method>GET</method>
+		</extensions>
+	</operation>
+    <operation name="testLargeMapGet">
+        <parameters>
+            <request>
+                <parameter name="size">
+                    <extensions>
+                        <style>query</style>
+                    </extensions>
+                </parameter>
+            </request>
+        </parameters>
+        <extensions>
+            <path>/map</path>
+            <method>GET</method>
+        </extensions>
+    </operation>
+
+    <operation name="testMapsNameClash">
+        <parameters>
+            <request>
+                <parameter name="mapParam">
+                    <extensions>
+                        <style>body</style>
+                    </extensions>
+                </parameter>
+            </request>
+        </parameters>
+        <extensions>
+            <path>/map1</path>
+            <method>POST</method>
+        </extensions>
+    </operation>
+
+
+	<operation name="testSleep">
+		<parameters>
+			<request>
+                <parameter name="sleep">
+                    <extensions>
+                        <style>query</style>
+                    </extensions>
+                </parameter>
+			</request>
+		</parameters>
+		<extensions>
+			<path>/simple/sleep</path>
+			<method>GET</method>
+		</extensions>
+	</operation>
+
+	<operation name="testParameterStyles">
+		<parameters>
+			<request>
+				<parameter name="HeaderParam">
+					<extensions>
+						<style>header</style>
+					</extensions>
+				</parameter>
+				<parameter name="secondHeaderParam">
+					<extensions>
+						<style>header</style>
+					</extensions>
+				</parameter>
+				<parameter name="queryParam">
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+                <parameter name="dateQueryParam">
+                    <extensions>
+                        <style>query</style>
+                    </extensions>
+                </parameter>
+				<parameter name="ok">
+					<extensions>
+						<style>header</style>
+					</extensions>
+				</parameter>
+			</request>
+		</parameters>
+		<extensions>
+			<path>/styles</path>
+			<method>GET</method>
+		</extensions>
+	</operation>
+
+	<operation name="testParameterStylesQA" since="1.0.0">
+		<description>Ensure that REST parameters can be taken from different sources</description>
+		<parameters>
+			<request>
+				<parameter name="HeaderParam">
+					<description>the header parameter</description>
+					<extensions>
+						<style>header</style>
+					</extensions>
+				</parameter>
+				<parameter name="queryParam">
+					<description>the query parameter</description>
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+				<parameter name="dateQueryParam">
+                    <extensions>
+                        <style>query</style>
+                    </extensions>
+                </parameter>
+			</request>
+			<simpleResponse type="SimpleResponse">
+				<description>The response, containing all the paramters</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+			<path>/testParameterStylesQA</path>
+			<method>GET</method>
+		</extensions>
+	</operation>
+
+	<operation name="testDateRetrieval" since="1.0.0">
+		<description>Return some date information</description>
+		<parameters>
+			<request>
+				<parameter name="inputDates">
+					<extensions>
+						<style>body</style>
+					</extensions>
+				</parameter>
+			</request>
+		</parameters>
+		<extensions>
+			<path>/dates</path>
+			<method>POST</method>
+		</extensions>
+	</operation>
+
+    <operation name="testDoubleHandling">
+        <parameters>
+            <request>
+                <parameter name="doubleContainer">
+                    <extensions>
+                        <style>body</style>
+                    </extensions>
+                </parameter>
+                <parameter name="doubleVal">
+                    <extensions>
+                        <style>body</style>
+                    </extensions>
+                </parameter>
+            </request>
+        </parameters>
+        <extensions>
+            <path>/doubles</path>
+            <method>POST</method>
+        </extensions>
+    </operation>
+
+    <operation name="testListRetrieval" since="1.0.0">
+		<parameters>
+			<request>
+				<parameter name="seed">
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+			</request>
+		</parameters>
+		<extensions>
+			<path>/primitiveLists</path>
+			<method>GET</method>
+		</extensions>
+	</operation>
+
+	<operation name="testComplexMutator">
+		<parameters>
+			<request>
+				<parameter name="message">
+					<extensions>
+						<style>body</style>
+					</extensions>
+				</parameter>
+			</request>
+		</parameters>
+		<extensions>
+			<path>/complex</path>
+			<method>POST</method>
+		</extensions>
+	</operation>
+
+	<operation name="testLargePost">
+		<parameters>
+			<request>
+				<parameter name="largeRequest">
+					<extensions>
+						<style>body</style>
+					</extensions>
+				</parameter>
+			</request>
+		</parameters>
+		<extensions>
+			<path>/largePost</path>
+			<method>POST</method>
+		</extensions>
+	</operation>
+
+		<operation name="testLargePostQA">
+		<parameters>
+			<request>
+				<parameter name="largeRequest">
+					<extensions>
+						<style>body</style>
+					</extensions>
+				</parameter>
+			</request>
+		</parameters>
+		<extensions>
+			<path>/testLargePostQA</path>
+			<method>POST</method>
+		</extensions>
+	</operation>
+
+	<operation name="testException">
+		<parameters>
+			<request>
+				<parameter name="responseCode">
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+				<parameter name="message">
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+			</request>
+		</parameters>
+		<extensions>
+			<path>/exception</path>
+			<method>GET</method>
+        </extensions>
+	</operation>
+
+	<operation name="testExceptionQA" since="1.0.0">
+		<description>a service that always throws an exception</description>
+		<parameters>
+			<request>
+				<parameter mandatory="true" name="message" type="string">
+					<description>The service Parameter</description>
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="SimpleResponse">
+				<description>The response</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+				<exception type="WotsitException">
+    				<description>If the wotsit was not available</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+			<path>/testExceptionQA</path>
+			<method>GET</method>
+        </extensions>
+	</operation>
+
+	<operation name="testSecureService">
+		<parameters>
+			<request>
+				<parameter name="message">
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+			</request>
+		</parameters>
+		<extensions>
+			<path>/secure</path>
+			<method>GET</method>
+		</extensions>
+	</operation>
+    <operation name="testSimpleTypeReplacement">
+            <parameters>
+	            <request>
+					<parameter name="simpleInt">
+					<extensions>
+						<style>query</style>
+					</extensions>
+					</parameter>
+					<parameter name="simpleDouble">
+					<extensions>
+						<style>query</style>
+					</extensions>
+					</parameter>
+					<parameter name="simpleString">
+					<extensions>
+						<style>query</style>
+					</extensions>
+					</parameter>
+					<parameter name="simpleEnum">
+					<extensions>
+						<style>query</style>
+					</extensions>
+					</parameter>
+				</request>
+            </parameters>
+		<extensions>
+			<path>/simpletypes</path>
+			<method>GET</method>
+		</extensions>
+      </operation>
+    <operation name="testStringableLists">
+            <parameters>
+	            <request>
+					<parameter name="intList">
+						<extensions>
+							<style>query</style>
+						</extensions>
+					</parameter>
+					<parameter name="stringList">
+						<extensions>
+							<style>query</style>
+						</extensions>
+					</parameter>
+					<parameter name="enumList">
+						<extensions>
+							<style>query</style>
+						</extensions>
+					</parameter>
+				</request>
+            </parameters>
+		<extensions>
+			<path>/simpleLists</path>
+			<method>GET</method>
+		</extensions>
+      </operation>
+
+	<operation name="testBodyParams" since="1.0.0">
+		<parameters>
+			<request>
+				<parameter name="message">
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+				<parameter name="value">
+					<extensions>
+						<style>body</style>
+					</extensions>
+				</parameter>
+				<parameter name="complex">
+					<extensions>
+						<style>body</style>
+					</extensions>
+				</parameter>
+				<parameter name="myEnum">
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+				<parameter name="anotherComplex">
+					<extensions>
+						<style>body</style>
+					</extensions>
+				</parameter>
+			</request>
+		</parameters>
+		<extensions>
+			  <path>/multibody</path>
+			  <method>POST</method>
+		</extensions>
+	</operation>
+	  <operation name="testNoParams">
+		<extensions>
+			  <path>/noparams</path>
+			  <method>GET</method>
+		</extensions>
+    </operation>
+    <operation name="testIdentityChain">
+        <extensions>
+              <path>/identityChain</path>
+              <method>GET</method>
+        </extensions>
+    </operation>
+
+    <operation name="testDirectMapReturn" since="1.0.0">
+		<parameters>
+			<request>
+				<parameter name="seed">
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+				<parameter name="async">
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+			</request>
+		</parameters>
+		<extensions>
+			  <path>/direct/map</path>
+			  <method>GET</method>
+		</extensions>
+	</operation>
+
+	<operation name="testDirectListReturn" since="1.0.0">
+		<parameters>
+			<request>
+				<parameter name="seed">
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+				<parameter name="async">
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+			</request>
+		</parameters>
+		<extensions>
+			  <path>/direct/list</path>
+			  <method>GET</method>
+		</extensions>
+	</operation>
+
+	<operation name="kpiTesting" since="1.0.0">
+		<description>logs a message</description>
+		<parameters>
+			<request>
+				<parameter mandatory="true" name="message" type="string">
+					<description>the message to log</description>
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="SimpleResponse">
+				<description>The response</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+		        <path>/kpiTesting</path>
+                <method>GET</method>
+		</extensions>
+	</operation>
+
+	<operation name="waitSeconds" since="1.0.0">
+		<description>logs a message</description>
+		<parameters>
+			<request>
+				<parameter mandatory="true" name="seconds" type="string">
+					<description>the message to log</description>
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="SimpleResponse">
+				<description>The response</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+		        <path>/waitSeconds</path>
+                <method>GET</method>
+		</extensions>
+	</operation>
+
+	<operation name="logMessage" since="1.0.0">
+		<description>logs a message</description>
+		<parameters>
+			<request>
+				<parameter mandatory="true" name="logString" type="string">
+					<description>the message to log</description>
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+				<parameter mandatory="true" name="logLevel" type="string">
+					<description>log level</description>
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="SimpleResponse">
+				<description>The response</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+		        <path>/logMessage</path>
+                <method>GET</method>
+		</extensions>
+	</operation>
+
+    <operation name="bulkCaller" since="2.0.0">
+        <parameters>
+            <request>
+                <parameter name="cycles">
+                    <extensions>
+                        <style>query</style>
+                    </extensions>
+                </parameter>
+                <parameter name="logLevel">
+                    <extensions>
+                        <style>query</style>
+                    </extensions>
+                </parameter>
+            </request>
+        </parameters>
+		<extensions>
+		        <path>/bulkCaller</path>
+                 <method>GET</method>
+		</extensions>
+    </operation>
+
+    <operation name="changeLogLevel" since="1.0.0">
+		<description>logs a message</description>
+		<parameters>
+			<request>
+				<parameter mandatory="true" name="logName" type="string">
+					<description>the name of the log to change logging level on</description>
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+				<parameter mandatory="true" name="level" type="string">
+					<description>the logging level to set the log to</description>
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="SimpleResponse">
+				<description>The response</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+		        <path>/changeLogLevel</path>
+                 <method>GET</method>
+		</extensions>
+	</operation>
+
+	<operation name="enumOperation" since="1.0.0">
+		<description>Takes one of each rest parameter type, that is an enum</description>
+		<parameters>
+			<request>
+				<parameter mandatory="true" name="headerParam" type="string">
+					<description>the header parameter</description>
+					<extensions>
+						<style>header</style>
+					</extensions>
+					<validValues>
+						<value name="FooHeader">
+							<description>Foo parameter</description>
+						</value>
+						<value name="BarHeader">
+							<description>Bar parameter</description>
+						</value>
+						<value name="FooBarHeader">
+							<description>FooBar parameter</description>
+						</value>
+					</validValues>
+				</parameter>
+				<parameter mandatory="true" name="queryParam" type="string">
+					<description>the message to echo</description>
+					<extensions>
+						<style>query</style>
+					</extensions>
+					<validValues>
+						<value name="FooQuery">
+							<description>Foo parameter</description>
+						</value>
+						<value name="BarQuery">
+							<description>Bar parameter</description>
+						</value>
+						<value name="FooBarQuery">
+							<description>FooBar parameter</description>
+						</value>
+					</validValues>
+				</parameter>
+				<parameter mandatory="true" name="message" type="BodyParamEnumObject">
+					<description>the message to echo</description>
+					<extensions>
+						<style>body</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="EnumOperationResponseObject">
+				<description>The response</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+		        <path>/enumOperation</path>
+                <method>POST</method>
+		</extensions>
+	</operation>
+
+	<operation name="i32Operation" since="1.0.0">
+		<description>Takes one of each rest parameter type, that is an Integer</description>
+		<parameters>
+			<request>
+				<parameter mandatory="true" name="headerParam" type="i32">
+					<description>the header parameter</description>
+					<extensions>
+						<style>header</style>
+					</extensions>
+				</parameter>
+				<parameter mandatory="true" name="queryParam" type="i32">
+					<description>the message to echo</description>
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+				<parameter mandatory="true" name="message" type="BodyParamI32Object">
+					<description>the message to echo</description>
+					<extensions>
+						<style>body</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="I32OperationResponseObject">
+				<description>The response</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+		        <path>/i32Operation</path>
+                <method>POST</method>
+		</extensions>
+	</operation>
+	<operation name="i64Operation" since="1.0.0">
+		<description>Takes one of each rest parameter type, that is an Integer</description>
+		<parameters>
+			<request>
+				<parameter mandatory="true" name="headerParam" type="i64">
+					<description>the header parameter</description>
+					<extensions>
+						<style>header</style>
+					</extensions>
+				</parameter>
+				<parameter mandatory="true" name="queryParam" type="i64">
+					<description>the message to echo</description>
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+				<parameter mandatory="true" name="message" type="BodyParamI64Object">
+					<description>the message to echo</description>
+					<extensions>
+						<style>body</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="I64OperationResponseObject">
+				<description>The response</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+		        <path>/i64Operation</path>
+                <method>POST</method>
+		</extensions>
+	</operation>
+
+	<operation name="byteOperation" since="1.0.0">
+		<description>Takes one of each rest parameter type, that is a byte</description>
+		<parameters>
+			<request>
+				<parameter mandatory="true" name="headerParam" type="byte">
+					<description>the header parameter</description>
+					<extensions>
+						<style>header</style>
+					</extensions>
+				</parameter>
+				<parameter mandatory="true" name="queryParam" type="byte">
+					<description>the message to echo</description>
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+				<parameter mandatory="true" name="message" type="BodyParamByteObject">
+					<description>the message to echo</description>
+					<extensions>
+						<style>body</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="ByteOperationResponseObject">
+				<description>The response</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+		        <path>/byteOperation</path>
+                 <method>POST</method>
+		</extensions>
+	</operation>
+
+	<operation name="floatOperation" since="1.0.0">
+		<description>Takes one of each rest parameter type, that is a Float</description>
+		<parameters>
+			<request>
+				<parameter mandatory="true" name="headerParam" type="float">
+					<description>the header parameter</description>
+					<extensions>
+						<style>header</style>
+					</extensions>
+				</parameter>
+				<parameter mandatory="true" name="queryParam" type="float">
+					<description>the message to echo</description>
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+				<parameter mandatory="true" name="message" type="BodyParamFloatObject">
+					<description>the message to echo</description>
+					<extensions>
+						<style>body</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="FloatOperationResponseObject">
+				<description>The response</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+		        <path>/floatOperation</path>
+                <method>POST</method>
+		</extensions>
+	</operation>
+
+	<operation name="doubleOperation" since="1.0.0">
+		<description>Takes one of each rest parameter type, that is a Double</description>
+		<parameters>
+			<request>
+				<parameter mandatory="true" name="headerParam" type="double">
+					<description>the header parameter</description>
+					<extensions>
+						<style>header</style>
+					</extensions>
+				</parameter>
+				<parameter mandatory="true" name="queryParam" type="double">
+					<description>the message to echo</description>
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+				<parameter mandatory="true" name="message" type="BodyParamDoubleObject">
+					<description>the message to echo</description>
+					<extensions>
+						<style>body</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="DoubleOperationResponseObject">
+				<description>The response</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+		        <path>/doubleOperation</path>
+               <method>POST</method>
+		</extensions>
+	</operation>
+
+	<operation name="boolOperation" since="1.0.0">
+		<description>Takes one of each rest parameter type, that is a Boolean</description>
+		<parameters>
+			<request>
+				<parameter mandatory="true" name="headerParam" type="bool">
+					<description>the header parameter</description>
+					<extensions>
+						<style>header</style>
+					</extensions>
+				</parameter>
+				<parameter mandatory="true" name="queryParam" type="bool">
+					<description>the message to echo</description>
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+				<parameter mandatory="true" name="message" type="BodyParamBoolObject">
+					<description>the message to echo</description>
+					<extensions>
+						<style>body</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="BoolOperationResponseObject">
+				<description>The response</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+		        <path>/boolOperation</path>
+                <method>POST</method>
+		</extensions>
+	</operation>
+
+
+	<operation name="nonMandatoryParamsOperation" since="1.0.0">
+		<description>Takes one of each rest parameter type, but they are not mandatory (barring path which is always mandatory)</description>
+		<parameters>
+			<request>
+                <parameter mandatory="false" name="queryParam" type="string">
+                    <description>the message to echo</description>
+                    <extensions>
+                        <style>query</style>
+                    </extensions>
+                </parameter>
+				<parameter mandatory="true" name="message" type="NonMandatoryParamsRequest">
+					<description>the message to echo</description>
+					<extensions>
+						<style>body</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="NonMandatoryParamsOperationResponseObject">
+				<description>The response</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+		        <path>/nonMandatoryParamsOperation</path>
+                        <method>POST</method>
+		</extensions>
+	</operation>
+
+		<operation name="mandatoryParamsOperation" since="1.0.0">
+		<description>Takes one of each rest parameter type, but they are not mandatory (barring path which is always mandatory)</description>
+		<parameters>
+			<request>
+				<parameter mandatory="true" name="headerParam" type="string">
+					<description>the header parameter</description>
+					<extensions>
+						<style>header</style>
+					</extensions>
+				</parameter>
+				<parameter mandatory="true" name="queryParam" type="string">
+					<description>the message to echo</description>
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+				<parameter mandatory="true" name="message" type="MandatoryParamsRequest">
+					<description>the message to echo</description>
+					<extensions>
+						<style>body</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="MandatoryParamsOperationResponseObject">
+				<description>The response</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+		        <path>/mandatoryParamsOperation</path>
+                        <method>POST</method>
+		</extensions>
+	</operation>
+
+	<operation name="setHealthStatusInfo" since="1.0.0">
+		<description>Sets the Baseline2 service's healthy status</description>
+		<parameters>
+			<request>
+				<parameter mandatory="true" name="message" type="HealthStatusInfoRequest">
+					<description>the message to echo</description>
+					<extensions>
+						<style>body</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="SimpleResponse">
+				<description>The response</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+		        <path>/setHealthStatusInfo</path>
+                        <method>POST</method>
+		</extensions>
+	</operation>
+
+	<operation name="dateTimeOperation" since="1.0.0">
+		<description>Takes one of each rest parameter type, that is a dateTime</description>
+		<parameters>
+			<request>
+				<parameter mandatory="true" name="bodyParamDateTimeObject" type="BodyParamDateTimeObject">
+					<description>the message to echo</description>
+					<extensions>
+						<style>body</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="DateTimeOperationResponseObject">
+				<description>The response</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+		        <path>/dateTimeOperation</path>
+                <method>POST</method>
+		</extensions>
+	</operation>
+
+
+		<operation name="simpleMapOperation" since="1.0.0">
+		<description>Takes a post body that contains a simple (string, string) map</description>
+		<parameters>
+			<request>
+				<parameter mandatory="true" name="message" type="BodyParamSimpleMapObject">
+					<description>the message to echo</description>
+					<extensions>
+						<style>body</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="SimpleMapOperationResponseObject">
+				<description>The response</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+		        <path>/simpleMapOperation</path>
+                        <method>POST</method>
+		</extensions>
+	</operation>
+
+	<operation name="complexMapOperation" since="1.0.0">
+		<description>Takes a post body that contains a more complex (string, some complex object) map</description>
+		<parameters>
+			<request>
+				<parameter mandatory="true" name="message" type="BodyParamComplexMapObject">
+					<description>the message to echo</description>
+					<extensions>
+						<style>body</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="ComplexMapOperationResponseObject">
+				<description>The response</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+		        <path>/complexMapOperation</path>
+                        <method>POST</method>
+		</extensions>
+	</operation>
+
+	<operation name="simpleSetOperation" since="1.0.0">
+		<description>Takes a post body that contains a simple (string) set</description>
+		<parameters>
+			<request>
+				<parameter mandatory="true" name="message" type="BodyParamSimpleSetObject">
+					<description>the message to echo</description>
+					<extensions>
+						<style>body</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="SimpleSetOperationResponseObject">
+				<description>The response</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+		        <path>/simpleSetOperation</path>
+                        <method>POST</method>
+		</extensions>
+	</operation>
+
+	<operation name="complexSetOperation" since="1.0.0">
+		<description>Takes a post body that contains a more complex (some complex object) set</description>
+		<parameters>
+			<request>
+				<parameter mandatory="true" name="message" type="BodyParamComplexSetObject">
+					<description>the message to echo</description>
+					<extensions>
+						<style>body</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="ComplexSetOperationResponseObject">
+				<description>The response</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+		        <path>/complexSetOperation</path>
+                <method>POST</method>
+		</extensions>
+	</operation>
+
+	<operation name="dateTimeSetOperation" since="1.0.0">
+		<description>Takes a post body that contains a more complex (dateTime object) set</description>
+		<parameters>
+			<request>
+				<parameter mandatory="true" name="message" type="BodyParamDateTimeSetObject">
+					<description>the message to echo</description>
+					<extensions>
+						<style>body</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="DateTimeSetOperationResponseObject">
+				<description>The response</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+		        <path>/dateTimeSetOperation</path>
+                <method>POST</method>
+		</extensions>
+	</operation>
+	<operation name="dateTimeListOperation" since="1.0.0">
+		<description>Takes a post body that contains a date time list</description>
+		<parameters>
+			<request>
+				<parameter mandatory="true" name="message" type="BodyParamDateTimeListObject">
+					<description>the message to echo</description>
+					<extensions>
+						<style>body</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="DateTimeListOperationResponseObject">
+				<description>The response</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+		        <path>/dateTimeListOperation</path>
+                <method>POST</method>
+		</extensions>
+	</operation>
+
+	<operation name="dateTimeMapOperation" since="2.0.0">
+		<description>Takes a post body that contains a date time map</description>
+		<parameters>
+			<request>
+				<parameter mandatory="true" name="message" type="BodyParamDateTimeMapObject">
+					<description>the message to echo</description>
+					<extensions>
+						<style>body</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="DateTimeMapOperationResponseObject">
+				<description>The response</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+		        <path>/dateTimeMapOperation</path>
+                <method>POST</method>
+		</extensions>
+	</operation>
+	
+		<operation name="mapDateTimeKeyOperation" since="2.0.0">
+		<description>Takes a post body that contains a map with a date time key</description>
+		<parameters>
+			<request>
+				<parameter mandatory="true" name="message" type="BodyParamMapDateTimeKeyObject">
+					<description>the message to echo</description>
+					<extensions>
+						<style>body</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="MapDateTimeKeyOperationResponseObject">
+				<description>The response</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+		        <path>/mapDateTimeKeyOperation</path>
+                <method>POST</method>
+		</extensions>
+	</operation>
+
+	<operation name="i32SimpleTypeOperation" since="1.0.0">
+		<description>Takes one of each rest parameter type, that is an Integer</description>
+		<parameters>
+			<request>
+				<parameter mandatory="true" name="headerParam" type="i32">
+					<description>the header parameter</description>
+					<extensions>
+						<style>header</style>
+					</extensions>
+				</parameter>
+				<parameter mandatory="true" name="queryParam" type="i32">
+					<description>the message to echo</description>
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+				<parameter mandatory="true" name="message" type="I32SimpleTypeRequestObject">
+					<description>the message to echo</description>
+					<extensions>
+						<style>body</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="I32SimpleOperationResponseObject">
+				<description>The response</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+		        <path>/i32SimpleTypeOperation</path>
+                <method>POST</method>
+		</extensions>
+	</operation>
+
+	<operation name="enumSimpleOperation" since="1.0.0">
+		<description>Takes one of each rest parameter type, that is an enum</description>
+		<parameters>
+			<request>
+				<parameter mandatory="true" name="headerParam" type="SimpleEnum">
+					<description>the header parameter</description>
+					<extensions>
+						<style>header</style>
+					</extensions>
+				</parameter>
+				<parameter mandatory="true" name="queryParam" type="SimpleEnum">
+					<description>the message to echo</description>
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+				<parameter mandatory="true" name="message" type="EnumSimpleRequestObject">
+					<description>the message to echo</description>
+					<extensions>
+						<style>body</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="EnumSimpleResponseObject">
+				<description>The response</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+		        <path>/enumSimpleOperation</path>
+                <method>POST</method>
+		</extensions>
+	</operation>
+
+	<operation name="stringListOperation" since="1.0.0">
+		<description>Takes one of each rest parameter type, that is an list of strings</description>
+		<parameters>
+			<request>
+
+				<parameter mandatory="true" name="headerParam" type="list(string)">
+					<description>list of strings</description>
+					<extensions>
+						<style>header</style>
+					</extensions>
+				</parameter>
+				<parameter mandatory="true" name="queryParam" type="list(string)">
+					<description>list of strings</description>
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="NonMandatoryParamsOperationResponseObject">
+				<description>The response object</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+		        <path>/stringListOperation</path>
+                <method>GET</method>
+		</extensions>
+	</operation>
+
+	<operation name="stringSetOperation" since="1.0.0">
+		<description>Takes one of each rest parameter type, that is an set of strings</description>
+		<parameters>
+			<request>
+				<parameter mandatory="true" name="headerParam" type="set(string)">
+					<description>set of strings</description>
+					<extensions>
+						<style>header</style>
+					</extensions>
+				</parameter>
+				<parameter mandatory="true" name="queryParam" type="set(string)">
+					<description>set of strings</description>
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="NonMandatoryParamsOperationResponseObject">
+				<description>The response object</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+		        <path>/stringSetOperation</path>
+                <method>GET</method>
+		</extensions>
+	</operation>
+
+	<operation name="simpleEnumListOperation" since="1.0.0">
+		<description>Takes one of each rest parameter type, that is an list of SimpleEnums</description>
+		<parameters>
+			<request>
+				<parameter mandatory="true" name="headerParam" type="list(SimpleEnum)">
+					<description>list of SimpleEnum</description>
+					<extensions>
+						<style>header</style>
+					</extensions>
+				</parameter>
+				<parameter mandatory="true" name="queryParam" type="list(SimpleEnum)">
+					<description>list of SimpleEnum</description>
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="NonMandatoryParamsOperationResponseObject">
+				<description>The response object</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+		        <path>/simpleEnumListOperation</path>
+                <method>GET</method>
+		</extensions>
+	</operation>
+
+    <operation name="callWithEnumResponse" since="1.0.0">
+        <extensions>
+            <path>/callWithEnumResponse</path>
+            <method>GET</method>
+        </extensions>
+    </operation>
+
+	<operation name="simpleEnumSetOperation" since="1.0.0">
+		<description>Takes one of each rest parameter type, that is an set of SimpleEnums</description>
+		<parameters>
+			<request>
+				<parameter mandatory="true" name="headerParam" type="set(SimpleEnum)">
+					<description>set of SimpleEnum</description>
+					<extensions>
+						<style>header</style>
+					</extensions>
+				</parameter>
+				<parameter mandatory="true" name="queryParam" type="set(SimpleEnum)">
+					<description>set of SimpleEnum</description>
+					<extensions>
+						<style>query</style>
+					</extensions>
+				</parameter>
+			</request>
+			<simpleResponse type="NonMandatoryParamsOperationResponseObject">
+				<description>The response object</description>
+			</simpleResponse>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+		<extensions>
+		        <path>/simpleEnumSetOperation</path>
+                <method>GET</method>
+		</extensions>
+	</operation>
+	
+	<operation name="voidResponseOperation" since="1.0.0">
+		<description>Operation with a void response type</description>
+		<parameters>
+			<request>
+				<parameter mandatory="true" name="message" type="string">
+					<description>message</description>					
+					<extensions>
+	                     <style>query</style>
+	                </extensions>	
+                </parameter>			
+			</request>
+			<simpleResponse type="void">
+				<description>ignored</description>
+			</simpleResponse>
+            <exceptions>
+                <exception type="SimpleException">
+                    <description>If the operation fails for any reason</description>
+                </exception>
+            </exceptions>
+		</parameters>
+		<extensions>
+                <path>/voidResponseOperation</path>
+                <method>POST</method>
+        </extensions>
+	</operation>
+
+    <operation name="simpleEventPublication" since="1.0.0">
+        <description>Bridging call between a request based transport and an event based transport.  This parameter will be published to an event destination</description>
+        <parameters>
+            <request>
+                <parameter mandatory="true" name="time" type="TimeContainer">
+                    <description>The time tick information to be forwarded</description>
+                    <extensions>
+                        <style>body</style>
+                    </extensions>
+                </parameter>
+            </request>
+            <simpleResponse type="bool">
+                <description>true if the object was succesfully bridged</description>
+            </simpleResponse>
+            <exceptions>
+                <exception type="SimpleException">
+                    <description>If the bridging service fails for any reason</description>
+                </exception>
+            </exceptions>
+        </parameters>
+        <extensions>
+                <path>/simpleEventPublication</path>
+                <method>POST</method>
+        </extensions>
+    </operation>
+
+    <operation name="emitMatchedBet" since="1.0.0">
+        <description>Publish the input bet to the message transport</description>
+        <parameters>
+            <request>
+                <parameter mandatory="true" name="bet" type="MatchedBetStruct">
+                    <description>Details of the matched bet</description>
+                    <extensions>
+                        <style>body</style>
+                    </extensions>
+                </parameter>
+                <parameter type="MarketStruct" name="market" mandatory="true">
+                    <description>details of the market</description>
+                    <extensions>
+                        <style>body</style>
+                    </extensions>
+                </parameter>
+            </request>
+            <simpleResponse type="void"/>
+            <exceptions>
+                <exception type="SimpleException">
+                    <description>If the service fails to emit the matched bet for any reason</description>
+                </exception>
+            </exceptions>
+        </parameters>
+        <extensions>
+            <path>/emitMatchedBet</path>
+            <method>POST</method>
+        </extensions>
+    </operation>
+
+	<operation name="emitLogMessage" since="1.0.0">
+	     <description>Publish the log message to the message transport</description>
+	     <parameters>
+	          <request>
+	              <parameter type= "string" name="logString" mandatory="true">    
+		          <description>the message to log</description>
+		          <extensions>
+			 			<style>body</style>
+			   		</extensions>      
+			      </parameter>
+			      <parameter type= "string" name="logLevel" mandatory="true">    
+			           <description>log level</description> 
+			           <extensions>
+			 			<style>body</style>
+			   		</extensions>     
+			      </parameter>
+			      <parameter type= "i64" name="timeStamp" mandatory="true">    
+			           <description>timestamp to identify the event</description> 
+			           <extensions>
+			 			<style>body</style>
+			   		</extensions>     
+			      </parameter>
+	          </request>
+	          <simpleResponse type="void">
+	               <description>ignored</description>
+	          </simpleResponse>
+	          <exceptions>
+	               <exception type="SimpleException">
+	                   <description>If the service fails to emit the message for any reason</description>
+	               </exception>
+	          </exceptions>
+	       </parameters>
+	        <extensions>
+           <path>/emitLogMessage</path>
+           <method>POST</method>
+      </extensions>
+	       
+	</operation>
+
+    <!-- begin simpleType responses -->
+
+    <operation name="boolSimpleTypeEcho" since="1.0.0">
+        <description>An operation which echoes a bool</description>
+        <parameters>
+            <request>
+                <parameter type= "bool" name="msg" mandatory="true">
+                    <description>The value to echo</description>
+                    <extensions>
+                        <style>query</style>
+                    </extensions>
+                </parameter>
+            </request>
+            <simpleResponse type="bool">
+                <description>An echo of the value</description>
+            </simpleResponse>
+            <exceptions>
+                <exception type="SimpleException">
+                    <description>Something went wrong</description>
+                </exception>
+            </exceptions>
+        </parameters>
+        <extensions>
+                <path>/boolEcho</path>
+                <method>GET</method>
+        </extensions>
+    </operation>
+
+    <operation name="byteSimpleTypeEcho" since="1.0.0">
+        <description>An operation which echoes a byte</description>
+        <parameters>
+            <request>
+                <parameter type= "byte" name="msg" mandatory="true">
+                    <description>The value to echo</description>
+                    <extensions>
+                        <style>query</style>
+                    </extensions>
+                </parameter>
+            </request>
+            <simpleResponse type="byte">
+                <description>An echo of the value</description>
+            </simpleResponse>
+            <exceptions>
+                <exception type="SimpleException">
+                    <description>Something went wrong</description>
+                </exception>
+            </exceptions>
+        </parameters>
+        <extensions>
+                <path>/byteEcho</path>
+                <method>GET</method>
+        </extensions>
+    </operation>
+
+    <operation name="i32SimpleTypeEcho" since="1.0.0">
+        <description>An operation which echoes an i32</description>
+        <parameters>
+            <request>
+                <parameter type= "i32" name="msg" mandatory="true">
+                    <description>The value to echo</description>
+                    <extensions>
+                        <style>query</style>
+                    </extensions>
+                </parameter>
+            </request>
+            <simpleResponse type="i32">
+                <description>An echo of the value</description>
+            </simpleResponse>
+            <exceptions>
+                <exception type="SimpleException">
+                    <description>Something went wrong</description>
+                </exception>
+            </exceptions>
+        </parameters>
+        <extensions>
+                <path>/i32Echo</path>
+                <method>GET</method>
+        </extensions>
+    </operation>
+
+    <operation name="i64SimpleTypeEcho" since="1.0.0">
+        <description>An operation which echoes an i64</description>
+        <parameters>
+            <request>
+                <parameter type= "i64" name="msg" mandatory="true">
+                    <description>The value to echo</description>
+                    <extensions>
+                        <style>query</style>
+                    </extensions>
+                </parameter>
+            </request>
+            <simpleResponse type="i64">
+                <description>An echo of the value</description>
+            </simpleResponse>
+            <exceptions>
+                <exception type="SimpleException">
+                    <description>Something went wrong</description>
+                </exception>
+            </exceptions>
+        </parameters>
+        <extensions>
+                <path>/i64Echo</path>
+                <method>GET</method>
+        </extensions>
+    </operation>
+
+    <operation name="floatSimpleTypeEcho" since="1.0.0">
+        <description>An operation which echoes a float</description>
+        <parameters>
+            <request>
+                <parameter type= "float" name="msg" mandatory="true">
+                    <description>The value to echo</description>
+                    <extensions>
+                        <style>query</style>
+                    </extensions>
+                </parameter>
+            </request>
+            <simpleResponse type="float">
+                <description>An echo of the value</description>
+            </simpleResponse>
+            <exceptions>
+                <exception type="SimpleException">
+                    <description>Something went wrong</description>
+                </exception>
+            </exceptions>
+        </parameters>
+        <extensions>
+                <path>/floatEcho</path>
+                <method>GET</method>
+        </extensions>
+    </operation>
+
+    <operation name="doubleSimpleTypeEcho" since="1.0.0">
+        <description>An operation which echoes a double</description>
+        <parameters>
+            <request>
+                <parameter type= "double" name="msg" mandatory="true">
+                    <description>The value to echo</description>
+                    <extensions>
+                        <style>query</style>
+                    </extensions>
+                </parameter>
+            </request>
+            <simpleResponse type="double">
+                <description>An echo of the value</description>
+            </simpleResponse>
+            <exceptions>
+                <exception type="SimpleException">
+                    <description>Something went wrong</description>
+                </exception>
+            </exceptions>
+        </parameters>
+        <extensions>
+                <path>/doubleEcho</path>
+                <method>GET</method>
+        </extensions>
+    </operation>
+
+    <operation name="stringSimpleTypeEcho" since="1.0.0">
+        <description>An operation which echoes a string</description>
+        <parameters>
+            <request>
+                <parameter type= "string" name="msg" mandatory="true">
+                    <description>The value to echo</description>
+                    <extensions>
+                        <style>query</style>
+                    </extensions>
+                </parameter>
+            </request>
+            <simpleResponse type="string">
+                <description>An echo of the value</description>
+            </simpleResponse>
+            <exceptions>
+                <exception type="SimpleException">
+                    <description>Something went wrong</description>
+                </exception>
+            </exceptions>
+        </parameters>
+        <extensions>
+                <path>/stringEcho</path>
+                <method>GET</method>
+        </extensions>
+    </operation>
+
+    <operation name="dateTimeSimpleTypeEcho" since="1.0.0">
+        <description>An operation which echoes a dateTime</description>
+        <parameters>
+            <request>
+                <parameter type= "dateTime" name="msg" mandatory="true">
+                    <description>The value to echo</description>
+                    <extensions>
+                        <style>query</style>
+                    </extensions>
+                </parameter>
+            </request>
+            <simpleResponse type="dateTime">
+                <description>An echo of the value</description>
+            </simpleResponse>
+            <exceptions>
+                <exception type="SimpleException">
+                    <description>Something went wrong</description>
+                </exception>
+            </exceptions>
+        </parameters>
+        <extensions>
+                <path>/dateTimeEcho</path>
+                <method>POST</method>
+        </extensions>
+    </operation>
+
+    <operation name="i32ListSimpleTypeEcho" since="1.0.0">
+        <description>An operation which echoes a list(i32)</description>
+        <parameters>
+            <request>
+                <parameter type= "list(i32)" name="msg" mandatory="true">
+                    <description>The value to echo</description>
+                    <extensions>
+                        <style>body</style>
+                    </extensions>
+                </parameter>
+            </request>
+            <simpleResponse type="list(i32)">
+                <description>An echo of the value</description>
+            </simpleResponse>
+            <exceptions>
+                <exception type="SimpleException">
+                    <description>Something went wrong</description>
+                </exception>
+            </exceptions>
+        </parameters>
+        <extensions>
+                <path>/i32ListEcho</path>
+                <method>POST</method>
+        </extensions>
+    </operation>
+
+    <operation name="i32SetSimpleTypeEcho" since="1.0.0">
+        <description>An operation which echoes a set(i32)</description>
+        <parameters>
+            <request>
+                <parameter type= "set(i32)" name="msg" mandatory="true">
+                    <description>The value to echo</description>
+                    <extensions>
+                        <style>body</style>
+                    </extensions>
+                </parameter>
+            </request>
+            <simpleResponse type="set(i32)">
+                <description>An echo of the value</description>
+            </simpleResponse>
+            <exceptions>
+                <exception type="SimpleException">
+                    <description>Something went wrong</description>
+                </exception>
+            </exceptions>
+        </parameters>
+        <extensions>
+                <path>/i32SetEcho</path>
+                <method>POST</method>
+        </extensions>
+    </operation>
+
+    <operation name="i32MapSimpleTypeEcho" since="1.0.0">
+        <description>An operation which echoes a map(i32,i32)</description>
+        <parameters>
+            <request>
+                <parameter type= "map(i32,i32)" name="msg" mandatory="true">
+                    <description>The value to echo</description>
+                    <extensions>
+                        <style>body</style>
+                    </extensions>
+                </parameter>
+            </request>
+            <simpleResponse type="map(i32,i32)">
+                <description>An echo of the value</description>
+            </simpleResponse>
+            <exceptions>
+                <exception type="SimpleException">
+                    <description>Something went wrong</description>
+                </exception>
+            </exceptions>
+        </parameters>
+        <extensions>
+                <path>/i32MapEcho</path>
+                <method>POST</method>
+        </extensions>
+    </operation>
+
+    <!-- end simpleType responses -->
+
+    <event name="TimeTick" since="1.0">
+        <description>An event for a time service</description>
+        <parameter type="TimeContainer" name="time" mandatory="true">
+            <description>The time</description>
+	    <extensions>
+	 	<style>body</style>
+	    </extensions>
+        </parameter>
+    </event>
+
+    <event name="MatchedBet" since="1.0">
+        <description>An event to store matched bet events</description>
+        <parameter type="MatchedBetStruct" name="matchedBet" mandatory="true">
+            <description>details of the bet</description>
+            <extensions>
+                <style>body</style>
+            </extensions>
+        </parameter>
+        <parameter type="MarketStruct" name="market" mandatory="true">
+            <description>details of the market</description>
+            <extensions>
+                <style>body</style>
+            </extensions>
+        </parameter>
+    </event>
+    
+    <event name= "LogMessage" since="1.0">
+	     <description>An event for logging a message</description> 
+	     <parameter type= "string" name="logString" mandatory="true">    
+	          <description>the message to log</description> 
+	          <extensions>
+ 			<style>body</style>
+   		</extensions>     
+	     </parameter>
+	     <parameter type= "string" name="logLevel" mandatory="true">    
+	          <description>log level</description>  
+	          <extensions>
+ 			<style>body</style>
+   		</extensions>    
+	     </parameter>
+	     <parameter type= "i64" name="timeStamp" mandatory="true">    
+	          <description>timestamp to identify the event</description>  
+	          <extensions>
+ 			<style>body</style>
+   		</extensions>    
+	     </parameter>
+	</event>
+	
+	<extensions>
+		<path>/cougarBaseline</path>
+	</extensions>
+</interface>

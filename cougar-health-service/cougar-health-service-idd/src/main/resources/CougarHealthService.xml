@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~ Copyright 2013, The Sporting Exchange Limited
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<interface name="Health"
+		   version="3.0"
+		   namespace="com.betfair.cougar.health.service" 
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:noNamespaceSchemaLocation="http://www.betfair.com/BSIDL/4.0.xsd">
+    <authors>
+        <author name="Simon Matic Langford"/>
+    </authors>
+    <description>The Cougar Health Service</description>
+    <operation name="isHealthy" since="1.0.0">
+        <description>returns a String to indicate whether system is "OK" or "FAIL"</description>
+        <parameters>
+            <request>
+                <!-- No Parameters required -->
+            </request>
+
+            <response type="HealthSummaryResponse">
+                <description>"OK" or "FAIL"</description>
+            </response>
+            <exceptions>
+                <exception type="HealthException">
+                    <description>If the service fails for any reason</description>
+                </exception>
+            </exceptions>
+        </parameters>
+        <extensions>
+            <path>/summary</path>
+            <method>GET</method>
+        </extensions>
+    </operation>
+
+    <operation name="getDetailedHealthStatus" since="1.0.0">
+        <description>returns a HealthDetail object containing the health status of all registered services</description>
+        <parameters>
+            <request>
+                <!-- no parameters required -->
+            </request>
+            <response type="HealthDetailResponse">
+                <description>The response obejct</description>
+            </response>
+            <exceptions>
+                <exception type="HealthException">
+                    <description>If the service fails for any reason</description>
+                </exception>
+            </exceptions>
+        </parameters>
+        <extensions>
+            <path>/detailed</path>
+            <method>GET</method>
+        </extensions>
+
+    </operation>
+
+    <dataType name="HealthSummaryResponse">
+        <description>The simplest health check possible, intended for use by Hardware load balancers</description>
+        <parameter name="healthy" type="RestrictedHealthStatus">
+            <description>Status of this Cougar instance</description>
+        </parameter>
+    </dataType>
+
+    <dataType name="HealthDetailResponse">
+        <description>A more in-depth health check</description>
+        <parameter name="subComponentList" type="list(SubComponentStatus)">
+            <description>a list of sub-component status elements - eg cache, database, external service</description>
+        </parameter>
+        <parameter name="health" type="HealthStatus">
+            <description>message</description>
+        </parameter>
+    </dataType>
+
+    <dataType name="SubComponentStatus">
+        <description>Information on a sub-component</description>
+        <parameter name="name" type="string">
+            <description>Name of the sub-component</description>
+        </parameter>
+        <parameter name="status" type="HealthStatus">
+            <description>Current status of the sub-component</description>
+        </parameter>
+    </dataType>
+
+    <exceptionType name="HealthException" prefix="HEX">
+        <description>This exception is thrown when an operation fails</description>
+        <parameter name="errorCode" type="string">
+            <description>the unique code for this error</description>
+            <validValues>
+                <value id="1" name="GENERIC">
+                    <description>Generic Error</description>
+                </value>
+                <value id="2" name="NULL">
+                    <description>Null Input</description>
+                </value>
+                <value id="3" name="TIMEOUT">
+                    <description>Timeout</description>
+                </value>
+                <value id="4" name="FORBIDDEN">
+                    <description>Forbidden to call this operation</description>
+                </value>
+            </validValues>
+        </parameter>
+    </exceptionType>
+
+    <extensions>
+        <path>/healthcheck</path>
+    </extensions>
+
+    <simpleType name="RestrictedHealthStatus" type="string">
+        <validValues>
+            <value name="OK">
+                <description>This Cougar instance is UP</description>
+            </value>
+            <value name="FAIL">
+                <description>This Cougar instance DOWN</description>
+            </value>
+        </validValues>
+    </simpleType>
+
+    <simpleType name="HealthStatus" type="string">
+        <validValues>
+            <value name="OK">
+                <description>This Cougar instance is UP</description>
+            </value>
+            <value name="WARN">
+                <description>This Cougar instance is UP but has had some minor issues recently</description>
+            </value>
+            <value name="FAIL">
+                <description>This Cougar instance is DOWN (due to failure)</description>
+            </value>
+            <value name="OUT_OF_SERVICE">
+                <description>This Cougar instance is DOWN (due to being manually flagged as out of service)</description>
+            </value>
+        </validValues>
+    </simpleType>
+
+</interface>

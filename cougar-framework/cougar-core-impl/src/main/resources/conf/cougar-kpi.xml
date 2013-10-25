@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2013, The Sporting Exchange Limited
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+
+    <!-- =======================================================================================
+            KPI configuration for Cougar.
+
+            (This files mirrors the standard kpi-all, except for the jmx tweaks below.)
+         ======================================================================================= -->
+
+    <!-- previously loaded via kpi-beans.xml -->
+    <bean id="kpiMonitor" class="com.betfair.cougar.core.impl.kpi.ConfigurableKPIRepeater">
+        <property name="kpiMonitors">
+            <map key-type="java.lang.String" value-type="java.lang.Boolean">
+                <entry key="simpleKPIMonitor" value="$COUGAR{cougar.kpis.simple.enabled}"/>
+                <entry key="statsEMonitor" value="$COUGAR{cougar.kpis.statse.enabled}"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="simpleKPIMonitor" class="com.betfair.tornjak.kpi.simple.SimpleKPIMonitor">
+        <property name="mbeanServer" ref="mbeanServer"/>
+    </bean>
+    <bean id="statsEMonitor" class="com.betfair.tornjak.kpi.statse.StatsEMonitor">
+        <property name="sender" ref="statsESender"/>
+    </bean>
+
+    <bean id="statsESender" class="com.betfair.sre.statse.client.StatsESender" init-method="start" destroy-method="stop">
+        <property name="enabled" value="$COUGAR{cougar.kpis.statse.enabled}"/>
+        <property name="queueSize" value="$COUGAR{cougar.kpi.eventQueueSize}"/>
+        <property name="agentAddress" value="$COUGAR{cougar.kpi.statsEAgent}"/>
+        <property name="cleaner" ref="$COUGAR{cougar.kpi.tsdbCleanerBean}"/>
+    </bean>
+
+    <bean id="defaultTsdbCleaner" class="com.betfair.sre.statse.client.NoOpTsdbCleaner"/>
+
+    <import resource="classpath:kpi-annotations.xml"/>      <!-- annotation-based KPIs -->
+    <bean id="aspect" class="com.betfair.cougar.core.impl.kpi.KPIAsyncTimer">
+        <property name="monitor" ref="kpiMonitor"/>
+    </bean>
+
+    <!-- JMX -->
+    <!--    replaces kpi-jmx.xml, mainly because injecting an MBean name is redundant -->
+
+    <!-- JMX hookup for StatsE-->
+    <bean class="com.betfair.cougar.core.impl.jmx.ToggledAnnotationMBeanExporter" lazy-init="false">
+        <property name="enabled" value="$COUGAR{cougar.kpis.statse.enabled}"/>
+        <property name="autodetectModeName" value="AUTODETECT_NONE"/>
+		<property name="registrationBehavior">
+		  <bean class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+              <property name="staticField" value="org.springframework.jmx.support.MBeanRegistrationSupport.REGISTRATION_REPLACE_EXISTING"/>
+          </bean>
+		</property>
+        <property name="beans">
+            <map>
+                <entry key="KPI.StatsE.MessageStats:name=messageStats" value-ref="statsESender"/>
+            </map>
+        </property>
+    </bean>
+
+
+</beans>
+
