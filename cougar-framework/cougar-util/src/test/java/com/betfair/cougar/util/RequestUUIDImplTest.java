@@ -18,6 +18,8 @@ package com.betfair.cougar.util;
 
 import com.betfair.cougar.api.RequestUUID;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.*;
@@ -31,6 +33,11 @@ import java.util.regex.Pattern;
 import static org.junit.Assert.*;
 
 public class RequestUUIDImplTest {
+
+    @BeforeClass
+    public static void installGenerator() {
+        RequestUUIDImpl.setGenerator(new UUIDGeneratorImpl());
+    }
 
 	@Test
 	public void testStringValue() throws Exception {
