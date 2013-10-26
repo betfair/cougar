@@ -16,7 +16,7 @@ before_script:
 #after_script:
 #  - "travis-artifacts upload --target-path $TRAVIS_BUILD_ID/$TRAVIS_JOB_ID --path cougar-framework/cougar-util/target/surefire-reports:cougar-util-surefire-reports"
 after_failure: # this will of course run only on failure
-  - "sh uploadSurefireReports.sh"
+  - "bash uploadSurefireReports.sh"
 #after_success: # and this only on success
 #  - "travis-artifacts upload --target-path $TRAVIS_BUILD_ID/$TRAVIS_JOB_ID --path build/build.tar.gz"
 env:
