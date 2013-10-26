@@ -9,6 +9,8 @@ notifications:
     on_success: always
     on_failure: always
 before_script:
+   - "echo ARTIFACTS_AWS_ACCESS_KEY_ID=$ARTIFACTS_AWS_ACCESS_KEY_ID"
+   - "echo ARTIFACTS_AWS_SECRET_ACCESS_KEY=$ARTIFACTS_AWS_SECRET_ACCESS_KEY"
    - "gem install travis-artifacts"
 #after_script:
 #  - "travis-artifacts upload --target-path $TRAVIS_BUILD_ID/$TRAVIS_JOB_ID --path cougar-framework/cougar-util/target/surefire-reports:cougar-util-surefire-reports"
@@ -20,5 +22,10 @@ env:
  global:
    - "ARTIFACTS_AWS_REGION=eu-west-1"
    - "ARTIFACTS_S3_BUCKET=betfair.travis-ci"
-   - secure: "EYtFWbIMgrz4zN2w3kYFuLhU+XmBtLb+kxqdYiqaivyibkXm94WGk7ZgmpjsY1evp1enVzZRriaG7lpuNd9ItSSxaVTHrx/StKWBCyGpg2/QsrEoC+w2wY7ylhGy0jYsPfG55R48z4ZPfv2sJgJr1+eE8u06w+k7BBRuv3/0Whk="
-   - secure: "kcWNRtMYCBIwkI3/LVnBzATFDBdU4u9H8ZfAV06l8GbhBBFJrQW5L5f0UZtR28gIAOzcKC6a/TbRFnfHsTRc7Ppfr+LMaDdTROy2M9Fjd6xAyTkuq/oGiU5G6av55TDpfBznukJsZw0QoHi3yqaTgNM8XvAQDJ8GUF0O72M8g7o="
+#   - secure: "EYtFWbIMgrz4zN2w3kYFuLhU+XmBtLb+kxqdYiqaivyibkXm94WGk7ZgmpjsY1evp1enVzZRriaG7lpuNd9ItSSxaVTHrx/StKWBCyGpg2/QsrEoC+w2wY7ylhGy0jYsPfG55R48z4ZPfv2sJgJr1+eE8u06w+k7BBRuv3/0Whk="
+#   - secure: "kcWNRtMYCBIwkI3/LVnBzATFDBdU4u9H8ZfAV06l8GbhBBFJrQW5L5f0UZtR28gIAOzcKC6a/TbRFnfHsTRc7Ppfr+LMaDdTROy2M9Fjd6xAyTkuq/oGiU5G6av55TDpfBznukJsZw0QoHi3yqaTgNM8XvAQDJ8GUF0O72M8g7o="
+   - "ARTIFACTS_AWS_ACCESS_KEY_ID=abc"
+#   - secure: "ebZIMNM2Hga+z014bga4IuWu+mQ2WbPwbREHRE9Qx3HetrlBcJJr8W3SBZ9rlKJGHjz/9FioZEnAzsBOhgvGRJFsM/zd84X74bNSkvHot6OQ8VYOa+/aRz7kLDINxX70LoILazucn/2/TyWkoEnKdtj1Uku7Le6/uTUI578iLk8="
+   - "ARTIFACTS_AWS_SECRET_ACCESS_KEY=def"
+#   - secure: "OhUluDweaGjvCuBSsSShyvYjbIqk+9G6Llf1BM4jYHSyH2xX2hnMhz4Qz9WLJG174yiwq5NM34zuxDc8GnwJGfTEaABIwlLn2b+4BCPRfJqlxHJfgpjIdqPSPuwCm9c6ZNo5qFafKlZadM4HpT1jFytkl+rRoj4ynaqK7zUkkVg="
+    
