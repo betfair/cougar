@@ -8,3 +8,17 @@ notifications:
       - betfair-cougar-dev@googlegroups.com
     on_success: always
     on_failure: always
+before_script:
+   - "gem install travis-artifacts"
+#after_script:
+#  - "travis-artifacts upload --target-path $TRAVIS_BUILD_ID/$TRAVIS_JOB_ID --path cougar-framework/cougar-util/target/surefire-reports:cougar-util-surefire-reports"
+after_failure: # this will of course run only on failure
+  - "travis-artifacts upload --target-path $TRAVIS_BUILD_ID/$TRAVIS_JOB_ID --path cougar-framework/cougar-util/target/surefire-reports:cougar-util-surefire-reports"
+#after_success: # and this only on success
+#  - "travis-artifacts upload --target-path $TRAVIS_BUILD_ID/$TRAVIS_JOB_ID --path build/build.tar.gz"
+env:
+ global:
+   - "ARTIFACTS_AWS_REGION=eu-west-1"
+   - "ARTIFACTS_S3_BUCKET=betfair.travis-ci"
+   - secure: "EYtFWbIMgrz4zN2w3kYFuLhU+XmBtLb+kxqdYiqaivyibkXm94WGk7ZgmpjsY1evp1enVzZRriaG7lpuNd9ItSSxaVTHrx/StKWBCyGpg2/QsrEoC+w2wY7ylhGy0jYsPfG55R48z4ZPfv2sJgJr1+eE8u06w+k7BBRuv3/0Whk="
+   - secure: "kcWNRtMYCBIwkI3/LVnBzATFDBdU4u9H8ZfAV06l8GbhBBFJrQW5L5f0UZtR28gIAOzcKC6a/TbRFnfHsTRc7Ppfr+LMaDdTROy2M9Fjd6xAyTkuq/oGiU5G6av55TDpfBznukJsZw0QoHi3yqaTgNM8XvAQDJ8GUF0O72M8g7o="
