@@ -1,4 +1,4 @@
-Many people have contributed to Cougar over the years at Betfair, we want to call out those who have made the greatest contributions.
+Many people have contributed to Cougar over the years at Betfair, we want to call out those who have made the greatest contributions internally before it was released since those contributions aren't visible on Github.
 
 Authors
 =======
