@@ -45,14 +45,8 @@
 			<artifactId>tools</artifactId>
 			<scope>system</scope>
 			<systemPath>${env.JAVA_HOME}/lib/tools.jar</systemPath>
-            <version>1.6.0</version>
+            <version>${java.version}</version>
 		</dependency>
-
-		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-            <version>${json.version}</version>
-		</dependency> 
 		
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
