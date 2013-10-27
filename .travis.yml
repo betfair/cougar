@@ -13,6 +13,7 @@ notifications:
 #   - "echo ARTIFACTS_AWS_SECRET_ACCESS_KEY=$ARTIFACTS_AWS_SECRET_ACCESS_KEY"
 before_install:
    - "gem install travis-artifacts"
+script: "mvn test -Pintegration-test -B"
 #after_script:
 #  - "travis-artifacts upload --target-path $TRAVIS_BUILD_ID/$TRAVIS_JOB_ID --path cougar-framework/cougar-util/target/surefire-reports:cougar-util-surefire-reports"
 after_failure: # this will of course run only on failure
