@@ -49,8 +49,8 @@ public class XmlGeneratorTest {
         generator.transform(iddDoc, xslFile, outFile);
 
         //this test is flakey with respect to new line characters
-        String expectedContent = Files.readFile(Files.fromResource("SomeService.wsdl"));
-        String actualContent = Files.readFile(outFile);
-        assertEquals(expectedContent.replace("\n", ""), actualContent.replace("\n", ""));
+        String expectedContent = Files.readFile(Files.fromResource("SomeService.wsdl")).replace("\r","").replace("\n","");
+        String actualContent = Files.readFile(outFile).replace("\r","").replace("\n","");
+        assertEquals(expectedContent, actualContent);
     }
 }

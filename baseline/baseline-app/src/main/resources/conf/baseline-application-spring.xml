@@ -141,11 +141,6 @@
         </property>
     </bean>
 
-	<bean id="simpleCacheLoader" class="com.betfair.cougar.baseline.domain.SimpleDOLoader"/>
-	<bean id="simpleTestCache1Loader" class="com.betfair.cougar.baseline.domain.SimpleCache1DOLoader"/>
-	<bean id="simpleTestCache2Loader" class="com.betfair.cougar.baseline.domain.SimpleCache2DOLoader"/>
-	<bean id="simpleTestCacheLoader" class="com.betfair.cougar.baseline.domain.SimpleCacheDOLoader"/>
-
     <bean id="simpleInferredCountryResolver" class="com.betfair.cougar.baseline.location.SimpleInferredCountryResolver"/>
 
     <bean name="baselineMonitorRegistry" class="com.betfair.tornjak.monitor.DefaultMonitorRegistry">
