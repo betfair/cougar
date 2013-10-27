@@ -14,13 +14,14 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<parent>
-		<groupId>com.betfair.cougar</groupId>
-  		<artifactId>cougar-test</artifactId>
-		<version>3.0-SNAPSHOT</version>
-	</parent>
+    <parent>
+        <groupId>com.betfair.cougar</groupId>
+        <artifactId>cougar-test</artifactId>
+        <version>3.0-SNAPSHOT</version>
+    </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>cougar-ci-process-launcher</artifactId>
@@ -32,7 +33,9 @@
             <id>windows-command</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
-                <os><family>windows</family></os>
+                <os>
+                    <family>windows</family>
+                </os>
             </activation>
             <properties>
                 <mavenCommand>${env.M2_HOME}\bin\mvn.bat -o</mavenCommand>
@@ -42,72 +45,80 @@
             <id>linux-command</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
-                <os><family>unix</family></os>
+                <os>
+                    <family>unix</family>
+                </os>
             </activation>
             <properties>
                 <mavenCommand>${env.M2_HOME}/bin/mvn</mavenCommand>
             </properties>
         </profile>
-		   	  <profile>
-				     <id>integration-test</id>
-                     <build>
-                           <plugins>
-                                  <plugin>
-                                         <groupId>com.betfair.plugins</groupId>
-                                         <artifactId>maven-process-launcher-plugin</artifactId>
-                                         <version>1.2-SNAPSHOT</version>
-                                         <executions>
-                                                <execution>
-                                                       <id>tests</id>
-                                                       <phase>integration-test</phase>
-                                                       <goals>
-                                                              <goal>test</goal>
-                                                       </goals>
-														<configuration>
-                                                              <containerProcess>${mavenCommand} -Dcougar.log.echoToStdout=true -Dspring.dependency.version=${spring.dependency.version} exec:java</containerProcess>
-                                                              <containerProcessWorkingDir>baseline/baseline-launch</containerProcessWorkingDir>
-                                                              <containerProcessUpString>COUGAR HAS STARTED</containerProcessUpString>
-                                                              <containerProcessFailureWatchString>PanicInTheCougar</containerProcessFailureWatchString>
-                                                              <containerProcessStartupTimeout>120000</containerProcessStartupTimeout>
-                                                              <testProcesses>
-                                                                  <testProcess>
-                                                                      <id>binaryprotocol</id>
-                                                                      <process>${mavenCommand} test -Prun-integration-tests</process>
-                                                                      <workingDir>cougar-test/cougar-binaryprotocol-tests</workingDir>
-                                                                      <failureWatchString>Failures: [1-9]|BUILD FAILURE</failureWatchString>
-                                                                      <watchString>Failures: 0</watchString>
-                                                                  </testProcess>
-                                                                  <testProcess>
-                                                                      <id>iddversions</id>
-                                                                      <process>${mavenCommand} test -Prun-integration-tests</process>
-                                                                      <workingDir>cougar-test/cougar-iddversion-tests</workingDir>
-                                                                      <failureWatchString>Failures: [1-9]|BUILD FAILURE</failureWatchString>
-                                                                      <watchString>Failures: 0</watchString>
-                                                                  </testProcess>
-                                                                  <testProcess>
-                                                                      <id>clientNG</id>
-                                                                      <process>${mavenCommand} test -Prun-integration-tests</process>
-                                                                      <workingDir>cougar-test/cougar-client-code-tests</workingDir>
-                                                                      <failureWatchString>Failures: [1-9]|BUILD FAILURE</failureWatchString>
-                                                                      <watchString>Failures: 0</watchString>
-                                                                  </testProcess>
-                                                                  <testProcess>
-                                                                      <id>normalNG</id>
-                                                                      <process>${mavenCommand} test -Prun-integration-tests</process>
-                                                                      <workingDir>cougar-test/cougar-normal-code-tests</workingDir>
-                                                                      <failureWatchString>Failures: [1-9]|BUILD FAILURE</failureWatchString>
-                                                                      <watchString>Failures: 0</watchString>
-                                                                  </testProcess>
-															   </testProcesses>
-                                                              <testProcessCompletionTimeout>7200000</testProcessCompletionTimeout>
-                                                              <failFast>false</failFast>
-                                                        </configuration>
-                                                </execution>
-                                         </executions>
-                                  </plugin>
-                           </plugins>
-                     </build>
-              </profile>
-       </profiles>
+        <profile>
+            <id>integration-test</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.betfair.plugins</groupId>
+                        <artifactId>maven-test-process-plugin</artifactId>
+                        <version>1.2-SNAPSHOT</version>
+                        <executions>
+                            <execution>
+                                <id>tests</id>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <configuration>
+                                    <containerProcesses>
+                                        <containerProcess>
+                                            <id>baseline</id>
+                                            <process>${mavenCommand} -Dcougar.log.echoToStdout=true exec:java
+                                            </process>
+                                            <workingDir>baseline/baseline-launch</workingDir>
+                                            <startWatchString>COUGAR HAS STARTED</startWatchString>
+                                            <failureWatchString>PanicInTheCougar</failureWatchString>
+                                        </containerProcess>
+                                    </containerProcesses>
+                                    <testProcesses>
+                                        <testProcess>
+                                            <id>binaryprotocol</id>
+                                            <process>${mavenCommand} test -Prun-integration-tests</process>
+                                            <workingDir>cougar-test/cougar-binaryprotocol-tests</workingDir>
+                                            <failureWatchString>Failures: [1-9]|BUILD FAILURE</failureWatchString>
+                                            <watchString>Failures: 0</watchString>
+                                        </testProcess>
+                                        <testProcess>
+                                            <id>iddversions</id>
+                                            <process>${mavenCommand} test -Prun-integration-tests</process>
+                                            <workingDir>cougar-test/cougar-iddversion-tests</workingDir>
+                                            <failureWatchString>Failures: [1-9]|BUILD FAILURE</failureWatchString>
+                                            <watchString>Failures: 0</watchString>
+                                        </testProcess>
+                                        <testProcess>
+                                            <id>clientNG</id>
+                                            <process>${mavenCommand} test -Prun-integration-tests</process>
+                                            <workingDir>cougar-test/cougar-client-code-tests</workingDir>
+                                            <failureWatchString>Failures: [1-9]|BUILD FAILURE</failureWatchString>
+                                            <watchString>Failures: 0</watchString>
+                                        </testProcess>
+                                        <testProcess>
+                                            <id>normalNG</id>
+                                            <process>${mavenCommand} test -Prun-integration-tests</process>
+                                            <workingDir>cougar-test/cougar-normal-code-tests</workingDir>
+                                            <failureWatchString>Failures: [1-9]|BUILD FAILURE</failureWatchString>
+                                            <watchString>Failures: 0</watchString>
+                                        </testProcess>
+                                    </testProcesses>
+                                    <containersStartupTimeout>120000</containersStartupTimeout>
+                                    <testsCompletionTimeout>7200000</testsCompletionTimeout>
+                                    <failFast>false</failFast>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

@@ -93,11 +93,6 @@
 		</dependency>
 		<dependency>
 			<groupId>com.betfair.cougar</groupId>
-			<artifactId>cougar-api</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.betfair.cougar</groupId>
 			<artifactId>cougar-transport-impl</artifactId>
 			<version>${project.version}</version>
 		</dependency>
