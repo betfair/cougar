@@ -1,0 +1,13 @@
+# Intellij project files
+.idea
+*.iml
+
+# Log files
+*.log
+
+# Compiled files
+target
+
+# Folder view configuration files
+.DS_Store
+Desktop.ini
