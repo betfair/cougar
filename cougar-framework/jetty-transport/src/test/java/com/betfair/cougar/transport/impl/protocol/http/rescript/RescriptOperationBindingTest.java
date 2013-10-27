@@ -201,10 +201,20 @@ public class RescriptOperationBindingTest extends TestCase {
 
     @Test(expected = EnumDerialisationException.class)
     public void testResolveUnrecognizedOptionalBodyEnumWithHardFailure() {
-        enumBodyParamValue = "GARBAGE";
-        InputStream is = new ByteArrayInputStream(("{\"message\":\"" + "dummy" + "\"}").getBytes());
-        when(mockedRequest.getMethod()).thenReturn("POST");
-        operationOptionalBodyEnumParamBinding.resolveArgs(mockedRequest, is, MediaType.APPLICATION_JSON_TYPE, "utf-8");
+        Boolean originalHardFailureValue = EnumUtils.getHardFailureForThisThread();
+        EnumUtils.setHardFailureForThisThread(true);
+        try {
+            enumBodyParamValue = "GARBAGE";
+            InputStream is = new ByteArrayInputStream(("{\"message\":\"" + "dummy" + "\"}").getBytes());
+            when(mockedRequest.getMethod()).thenReturn("POST");
+            operationOptionalBodyEnumParamBinding.resolveArgs(mockedRequest, is, MediaType.APPLICATION_JSON_TYPE, "utf-8");
+        }
+        finally {
+            if (originalHardFailureValue == null) {
+                originalHardFailureValue = true;
+            }
+            EnumUtils.setHardFailureForThisThread(originalHardFailureValue);
+        }
     }
 
     @Test
