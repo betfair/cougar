@@ -8,30 +8,15 @@ notifications:
       - betfair-cougar-dev@googlegroups.com
     on_success: always
     on_failure: always
-#before_install:
-#   - "echo ARTIFACTS_AWS_ACCESS_KEY_ID=$ARTIFACTS_AWS_ACCESS_KEY_ID"
-#   - "echo ARTIFACTS_AWS_SECRET_ACCESS_KEY=$ARTIFACTS_AWS_SECRET_ACCESS_KEY"
 before_install:
    - "gem install travis-artifacts"
-script: "mvn integration-test -Pintegration-test -B"
-#after_script:
-#  - "travis-artifacts upload --target-path $TRAVIS_BUILD_ID/$TRAVIS_JOB_ID --path cougar-framework/cougar-util/target/surefire-reports:cougar-util-surefire-reports"
+script: "mvn integration-test -Pintegration-test -B -X"
 after_failure: # this will of course run only on failure
   - "bash uploadSurefireReports.sh"
-#after_success: # and this only on success
-#  - "travis-artifacts upload --target-path $TRAVIS_BUILD_ID/$TRAVIS_JOB_ID --path build/build.tar.gz"
 env:
  global:
    - "ARTIFACTS_AWS_REGION=eu-west-1"
    - "ARTIFACTS_S3_BUCKET=betfair.travis-ci"
-#   - secure: "EYtFWbIMgrz4zN2w3kYFuLhU+XmBtLb+kxqdYiqaivyibkXm94WGk7ZgmpjsY1evp1enVzZRriaG7lpuNd9ItSSxaVTHrx/StKWBCyGpg2/QsrEoC+w2wY7ylhGy0jYsPfG55R48z4ZPfv2sJgJr1+eE8u06w+k7BBRuv3/0Whk="
-#   - secure: "kcWNRtMYCBIwkI3/LVnBzATFDBdU4u9H8ZfAV06l8GbhBBFJrQW5L5f0UZtR28gIAOzcKC6a/TbRFnfHsTRc7Ppfr+LMaDdTROy2M9Fjd6xAyTkuq/oGiU5G6av55TDpfBznukJsZw0QoHi3yqaTgNM8XvAQDJ8GUF0O72M8g7o="
-#   - "ARTIFACTS_AWS_ACCESS_KEY_ID=abc"
-#   - secure: "ebZIMNM2Hga+z014bga4IuWu+mQ2WbPwbREHRE9Qx3HetrlBcJJr8W3SBZ9rlKJGHjz/9FioZEnAzsBOhgvGRJFsM/zd84X74bNSkvHot6OQ8VYOa+/aRz7kLDINxX70LoILazucn/2/TyWkoEnKdtj1Uku7Le6/uTUI578iLk8="
-#   - "ARTIFACTS_AWS_SECRET_ACCESS_KEY=def"
-#   - secure: "OhUluDweaGjvCuBSsSShyvYjbIqk+9G6Llf1BM4jYHSyH2xX2hnMhz4Qz9WLJG174yiwq5NM34zuxDc8GnwJGfTEaABIwlLn2b+4BCPRfJqlxHJfgpjIdqPSPuwCm9c6ZNo5qFafKlZadM4HpT1jFytkl+rRoj4ynaqK7zUkkVg="
-#   - secure: "OyaiC54/Um/wUlmSCz0yEWIU3y71JMmapc2Fvigr8AYYteququxLmurkn20qCBaslxQqV703o25LiEe3zRcmcB0xDwyw+zvIO27uldWUDSooPb6fMjX243sCHmISvnnoIKBuKc/5b1m8Uar0IkbeDmJaZNT0lvfBjJs2lJOHOAY="
-#   - secure: "ibjRfsP3+YNqbqGAUYMj49zLivmvcApB9CW5P7xE3LgZfvptRXGpfHAfNfxo5cBDU9odtSCI3aGRCkiOL2PynUM//7Q4B8W2yNciYXB8FSII9vrsw5H1InUskflFWOcxZOUA3NUNLYXImDMBt224zAINRi8ndNvOzivuV/0ZrjM="
    - secure: "PMdX+2QqkQPpGbKiMRQDPRQeYNMLAqnXvnGb/EhEWdRF9o7pxten5AllxUAVXkx5b88X5x1wPhd4UZj43/lDoRLIwsnHe7Nstc3kWX4g0xXsKty2s2he40bu4Q7aZvsEfpTjm/KNe5cLVOcBKWP3ovgY4JFUP7qWz9R0Z+ttU5Y="
    - secure: "UIM47HAplfuaXAQLe3R10KpK1wCDtzVTLb2Vu6gp92JTlAxnMDJj7AYt0aN7ETaVF+6ZPac7kELQdufctcSKSD6N93tpOusw5yKmk2yk10t8uhzbXsHkN3scUi/0VSZ7gdHOWaNFVejtKSFOHqHOgN6ll93T0iviMhvl6xj7Y/c="
     
