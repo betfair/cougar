@@ -17,7 +17,6 @@ after_failure: # this will of course run only on failure
   - "bash uploadSurefireReports.sh"
 env:
  global:
-   - "M2_HOME=`which mvn | sed -e 's/\/bin\/mvn//'`"
    - "WHICH_MVN=`which mvn`"
    - "ARTIFACTS_AWS_REGION=eu-west-1"
    - "ARTIFACTS_S3_BUCKET=betfair.travis-ci"
