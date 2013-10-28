@@ -1,0 +1,17 @@
+body {
+	margin-left:1em;
+	margin-right:1em;
+	font-size:24pt;
+}
+
+.site {
+	width: 100%;
+}
+
+ul.posts span.seperator {
+	display:none;
+}
+
+ul.posts a {
+	display:block;
+}
