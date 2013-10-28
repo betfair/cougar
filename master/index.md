@@ -1,4 +1,5 @@
 ---
+layout: default
 ---
 
 Welcome to Cougar!
