@@ -17,7 +17,7 @@ after_failure: # this will of course run only on failure
   - "bash uploadSurefireReports.sh"
 env:
  global:
-   - "WHICH_MVN=`which mvn`"
+   - "M2_HOME=/usr/share/maven"
    - "ARTIFACTS_AWS_REGION=eu-west-1"
    - "ARTIFACTS_S3_BUCKET=betfair.travis-ci"
    - secure: "PMdX+2QqkQPpGbKiMRQDPRQeYNMLAqnXvnGb/EhEWdRF9o7pxten5AllxUAVXkx5b88X5x1wPhd4UZj43/lDoRLIwsnHe7Nstc3kWX4g0xXsKty2s2he40bu4Q7aZvsEfpTjm/KNe5cLVOcBKWP3ovgY4JFUP7qWz9R0Z+ttU5Y="
