@@ -10,9 +10,9 @@ notifications:
     on_failure: always
 before_install:
    - "gem install travis-artifacts"
-script: "mvn integration-test -Pintegration-test -B -Denv.M2_HOME=/usr/share/maven -X > mvn.log"
-after_script:
-  - "travis-artifacts upload --target-path $TRAVIS_REPO_SLUG --path mvn.log"
+script: "mvn integration-test -Pintegration-test -B -Denv.M2_HOME=/usr/share/maven"
+#after_script:
+#  - "travis-artifacts upload --target-path $TRAVIS_REPO_SLUG --path mvn.log"
 after_failure: # this will of course run only on failure
   - "bash uploadSurefireReports.sh"
 env:
