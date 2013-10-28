@@ -490,6 +490,7 @@
                     Similarly set testFailureIgnore with a property or at the command line (-DtestFailureIgnore=false) to override. -->
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.14.1</version>
                 <configuration>
                     <skipTests>true</skipTests>
                 </configuration>

@@ -12,12 +12,12 @@ for i in `find . -name surefire-reports`; do
       OUTPUT=index.html
     fi
     echo "<a href='$dir/index.html'>$dir</a><br/>" >> $OUTPUT
-    travis-artifacts upload --target-path cougar --path $OUTPUT
+    travis-artifacts upload --target-path $TRAVIS_REPO_SLUG --path $OUTPUT
     if [ $dir == "surefire-reports" ]; then
       for file in `ls $NEW_PATH_SO_FAR`; do
         echo "<a href='$file'>$file</a><br/>" >> $NEW_PATH_SO_FAR/index.html
       done
-      travis-artifacts upload --target-path cougar --path $NEW_PATH_SO_FAR
+      travis-artifacts upload --target-path $TRAVIS_REPO_SLUG --path $NEW_PATH_SO_FAR
     fi
     PATH_SO_FAR=$NEW_PATH_SO_FAR
   done

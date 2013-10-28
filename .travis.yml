@@ -12,7 +12,7 @@ before_install:
    - "gem install travis-artifacts"
 script: "mvn integration-test -Pintegration-test -B -X > mvn.log"
 after_script:
-  - "travis-artifacts upload --target-path cougar --path mvn.log"
+  - "travis-artifacts upload --target-path $TRAVIS_REPO_SLUG --path mvn.log"
 after_failure: # this will of course run only on failure
   - "bash uploadSurefireReports.sh"
 env:
