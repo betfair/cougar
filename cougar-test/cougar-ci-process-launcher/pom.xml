@@ -27,6 +27,9 @@
     <artifactId>cougar-ci-process-launcher</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
+    <properties>
+        <travis>false</travis>
+    </properties>
 
     <profiles>
         <profile>
@@ -48,9 +51,26 @@
                 <os>
                     <family>unix</family>
                 </os>
+                <property>
+                    <name>travis</name>
+                    <value>false</value>
+                </property>
             </activation>
             <properties>
                 <mavenCommand>${env.M2_HOME}/bin/mvn</mavenCommand>
+            </properties>
+        </profile>
+        <profile>
+            <id>travis-ci-command</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>travis</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <properties>
+                <mavenCommand>mvn</mavenCommand>
             </properties>
         </profile>
         <profile>
