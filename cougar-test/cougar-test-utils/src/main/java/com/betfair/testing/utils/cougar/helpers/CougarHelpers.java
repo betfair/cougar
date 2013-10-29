@@ -97,6 +97,7 @@ import java.util.regex.Pattern;
 
 public class CougarHelpers {
 
+    private static final Logger logger = LoggerFactory.getLogger(CougarHelpers.class);
 	private ICougarDAO cougarDAO = new CougarDefaultDAO();
 
 	private IReflect reflect = new Reflect();
@@ -330,13 +331,11 @@ public class CougarHelpers {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 
 		transformer.transform(new DOMSource(newDocument), new StreamResult(out));
-	//	String s = new String(out.toByteArray());
 
-	//	logger.LogBetfairDebugEntry("SOAP Response Body: " + s);
-		
-		//Uncomment for debug
-//		System.out.println("\n Return Doc \n");
-//		System.out.println(s);
+        if (logger.isDebugEnabled()) {
+            logger.debug("\n Return Doc \n");
+            logger.debug(new String(out.toByteArray()));
+        }
 
 		return newDocument;
 	}
@@ -497,14 +496,16 @@ public class CougarHelpers {
 		try {
 			completeRestMethodBuild(method, responseContentTypeEnum, requestContentTypeEnum, postQuery, headerParams, authority, authCredentials,altUrl, acceptProtocols, ipAddress);
 
-            System.out.println("Request");
-            System.out.println("=======");
-            System.out.println("URI: '" + method.getURI() + "'");
-            Header[] headers = method.getAllHeaders();
-            for (Header h : headers) {
-                System.out.println("Header: '"+h.getName()+" = "+h.getValue()+"'");
+            if (logger.isDebugEnabled()) {
+                logger.debug("Request");
+                logger.debug("=======");
+                logger.debug("URI: '" + method.getURI() + "'");
+                Header[] headers = method.getAllHeaders();
+                for (Header h : headers) {
+                    logger.debug("Header: '"+h.getName()+" = "+h.getValue()+"'");
+                }
+                logger.debug("Body:    '" + postQuery + "'");
             }
-            System.out.println("Body:    '" + postQuery + "'");
 
 			Date requestTime = new Date();
             final HttpResponse httpResponse = cougarDAO.executeHttpMethodBaseCall(method);       
@@ -512,14 +513,16 @@ public class CougarHelpers {
            
             String response = buildResponseString(inputStream);
 
-            System.out.println("Response");
-            System.out.println("========");
-            System.out.println(httpResponse.getStatusLine());
-            headers = httpResponse.getAllHeaders();
-            for (Header h : headers) {
-                System.out.println("Header: '"+h.getName()+" = "+h.getValue()+"'");
+            if (logger.isDebugEnabled()) {
+                logger.debug("Response");
+                logger.debug("========");
+                logger.debug(String.valueOf(httpResponse.getStatusLine()));
+                Header[] headers = httpResponse.getAllHeaders();
+                for (Header h : headers) {
+                    logger.debug("Header: '"+h.getName()+" = "+h.getValue()+"'");
+                }
+                logger.debug("Body:    '" + response + "'");
             }
-            System.out.println("Body:    '" + response + "'");
 
 			Date responseTime = new Date();
 
@@ -985,7 +988,7 @@ public class CougarHelpers {
             results = (JSONArray) json.get("response");
         }
         catch (JSONException je) {
-            System.out.println(json);
+            logger.debug(String.valueOf(json),je);
             throw je;
         }
 		
@@ -1017,32 +1020,32 @@ public class CougarHelpers {
 		 String s = datetoconvert;
 		String[] tmp = s.split(".0Z");
 		String s1= tmp[0];
-         System.out.println("given string is" +s1);
+         logger.debug("given string is" +s1);
 		 date = dateFormat.parse(s1);
-		System.out.println("OffsetValue is " +tz.getRawOffset());
+		logger.debug("OffsetValue is " +tz.getRawOffset());
           if(tz.getRawOffset()!= 0)
 
           date = new Date(date.getTime() + tz.getRawOffset());
-          System.out.println("After adding offset" +date);
+          logger.debug("After adding offset" +date);
 		if ( tz.inDaylightTime( date ))
 	   {
 	      Date dstDate = new Date( date.getTime() + tz.getDSTSavings() );
-	     System.out.println("Day Light Saving is  "+ tz.getDSTSavings());
-	       System.out.println("Dst is   "+ dstDate);
+	     logger.debug("Day Light Saving is  "+ tz.getDSTSavings());
+	       logger.debug("Dst is   "+ dstDate);
 
 	      if ( tz.inDaylightTime( dstDate ))
 	      {
 	         date = dstDate;
-//	         System.out.println("dst date  "+ dstDate);
+//	         logger.debug("dst date  "+ dstDate);
 	      }
        }
-          System.out.println("After the day light saving" +date);
+          logger.debug("After the day light saving" +date);
 
 
 	  	}
 		catch(Exception e)
 		{
-			System.out.println("System exception caught" +e);
+			logger.debug("System exception caught" +e);
 		}
 return date;
 	}
