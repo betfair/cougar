@@ -3,7 +3,7 @@ Project Tasks
 
 Documentation Publishing
 ------------------------
-* Ensure you have configured a [GitHub SSH Key]()
+* Ensure you have configured a [GitHub SSH Key](https://help.github.com/articles/generating-ssh-keys)
 * Pull the latest [betfair/gh-pages-publishing](https://github.com/betfair/gh-pages-publishing)
 * Run ```./publish betfair/cougar <github-user> <branch-name>```
 
