@@ -20,6 +20,9 @@ import java.net.Socket;
 
 import javax.management.MBeanServer;
 
+/**
+ * HtmlRequestHandler is package private, so we just extend to make it public..
+ */
 public class JdmkHtmlRequestHandler extends HtmlRequestHandler {
 
 	public JdmkHtmlRequestHandler(Socket socket, HtmlAdaptorServer htmlAdaptorServer, MBeanServer mBeanServer, int activeClientCount) {
