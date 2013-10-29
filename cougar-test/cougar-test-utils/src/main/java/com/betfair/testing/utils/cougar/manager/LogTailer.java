@@ -18,6 +18,8 @@ package com.betfair.testing.utils.cougar.manager;
 
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +38,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class LogTailer<T extends LogTailer.LogRequirement> implements TailerListener {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     public static final String DATE_FIELD = "_DATE_FIELD";
 
     private final AtomicLong idSource = new AtomicLong();
@@ -58,7 +61,7 @@ public abstract class LogTailer<T extends LogTailer.LogRequirement> implements T
         if (!toRead.exists() || !toRead.canRead()) {
             throw new IllegalStateException("Couldn't read "+toRead.getCanonicalPath()+" in the configured timeout");
         }
-        System.out.println("Initialising Tailer for "+toRead.getCanonicalPath());
+        logger.debug("Initialising Tailer for "+toRead.getCanonicalPath());
 
         tailer = new Tailer(toRead, this, DELAY, false);
     }
@@ -73,7 +76,7 @@ public abstract class LogTailer<T extends LogTailer.LogRequirement> implements T
     @Override
     public void init(Tailer tailer) {
         startupLatch.countDown();
-//        System.out.println(System.currentTimeMillis()+": Started!");
+//        logger.debug(System.currentTimeMillis()+": Started!");
     }
 
     @Override
@@ -83,16 +86,16 @@ public abstract class LogTailer<T extends LogTailer.LogRequirement> implements T
 
     @Override
     public void fileRotated() {
-//        System.out.println(getClass().getSimpleName()+": Following file rotation");
+//        logger.debug(getClass().getSimpleName()+": Following file rotation");
     }
 
     @Override
     public void handle(String s) {
-        System.out.println(System.currentTimeMillis()+": Line received: "+s);
+        logger.debug(System.currentTimeMillis()+": Line received: "+s);
         try {
             Map<String, String> fields = getFieldsForLine(s);
             if (fields == null) {
-                System.err.println(System.currentTimeMillis()+": Parsing error on line: "+s);
+                logger.error(System.currentTimeMillis()+": Parsing error on line: "+s);
             }
             else {
                 Timestamp datetime = toDate(fields.get(DATE_FIELD));
@@ -100,9 +103,9 @@ public abstract class LogTailer<T extends LogTailer.LogRequirement> implements T
                 inputQueue.add(line);
             }
         } catch (ParseException e) {
-            e.printStackTrace();
+            logger.error("",e);
         }
-        System.out.println(System.currentTimeMillis()+": End of handle");
+        logger.debug(System.currentTimeMillis()+": End of handle");
     }
 
     @Override
@@ -134,7 +137,7 @@ public abstract class LogTailer<T extends LogTailer.LogRequirement> implements T
             }
             // once we run out of requirements we exit cleanly
             if (remainingRequirements.isEmpty() && !expectingNoLines) {
-//                System.out.println(System.currentTimeMillis()+": Found all lines we were looking for!");
+//                logger.debug(System.currentTimeMillis()+": Found all lines we were looking for!");
                 return;
             }
         }
@@ -169,7 +172,7 @@ public abstract class LogTailer<T extends LogTailer.LogRequirement> implements T
                 }
                 // once we run out of requirements we exit cleanly
                 if (remainingRequirements.isEmpty()) {
-//                        System.out.println(System.currentTimeMillis()+": Found all lines we were looking for!");
+//                        logger.debug(System.currentTimeMillis()+": Found all lines we were looking for!");
                     return;
                 }
             }
