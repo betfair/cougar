@@ -35,6 +35,7 @@
 
   <modules>
     <module>cougar-test-utils</module>
+    <module>cougar-ci-test-listener</module>
     <module>cougar-component-code-tests</module>
     <module>cougar-client-code-tests</module>
     <module>cougar-normal-code-tests</module>
