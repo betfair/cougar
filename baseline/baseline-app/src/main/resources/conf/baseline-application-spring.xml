@@ -143,13 +143,5 @@
 
     <bean id="simpleInferredCountryResolver" class="com.betfair.cougar.baseline.location.SimpleInferredCountryResolver"/>
 
-    <bean name="baselineMonitorRegistry" class="com.betfair.tornjak.monitor.DefaultMonitorRegistry">
-        <property name="statusAggregator" ref="baselineStatusAggregator" />
-    </bean>
-
-    <bean name="baselineStatusAggregator" class="com.betfair.tornjak.monitor.OverallStatus">
-        <property name="monitorRegistry" ref="baselineMonitorRegistry" />
-    </bean>
-
 
 </beans>

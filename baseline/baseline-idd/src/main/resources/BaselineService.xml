@@ -23,7 +23,7 @@
 			xmlns:xi="http://www.w3.org/2001/XInclude">
 	<description>The Baseline Service</description>
 
-    <operation name="echoCougarPropertyValue" since="2.0.0">
+    <operation name="echoCougarPropertyValue" since="2.0">
         <description>Echo the value of the passed cougar property</description>
         <parameters>
             <request>
@@ -42,7 +42,7 @@
         </parameters>
     </operation>
 
-    <operation name="mandatoryCollectionElementTest" since="2.0.0">
+    <operation name="mandatoryCollectionElementTest" since="2.0">
         <description>Echos list where the element itself is a complex type with mandatory items</description>
         <parameters>
             <request>
@@ -64,7 +64,7 @@
         </parameters>
     </operation>
 
-    <operation name="interceptorCheckedExceptionOperation" since="2.0.0">
+    <operation name="interceptorCheckedExceptionOperation" since="2.0">
         <description>Will make a call that causes a SimpleException to be thrown from an interceptor</description>
         <parameters>
             <request>
@@ -83,7 +83,7 @@
         </parameters>
     </operation>
 
-    <operation name="listOfComplexOperation" since="2.0.0">
+    <operation name="listOfComplexOperation" since="2.0">
         <description>Operation to pass a list of complex objects to check missing fields of entries are detected</description>
         <parameters>
             <request>
@@ -102,7 +102,7 @@
         </parameters>
     </operation>
 
-    <operation name="setOfComplexOperation" since="2.0.0">
+    <operation name="setOfComplexOperation" since="2.0">
         <description>Operation to pass a set of complex objects to check missing fields of entries are detected</description>
         <parameters>
             <request>
@@ -121,7 +121,7 @@
         </parameters>
     </operation>
     
-    <operation name="mapOfComplexOperation" since="2.0.0">
+    <operation name="mapOfComplexOperation" since="2.0">
         <description>Operation to pass a map of string:complex objects to check missing fields of entries are detected</description>
         <parameters>
             <request>
@@ -140,7 +140,7 @@
         </parameters>
     </operation>
 
-    <operation name="testSimpleDateListGet" since="2.0.0">
+    <operation name="testSimpleDateListGet" since="2.0">
         <description>Takes a list arg and echos it back in a list</description>
         <parameters>
             <request>
@@ -159,7 +159,7 @@
         </parameters>
     </operation>
     
-    <operation name="testSimpleMapGet" since="2.0.0">
+    <operation name="testSimpleMapGet" since="2.0">
         <description>Takes a single arg and echos it back in a map</description>
         <parameters>
             <request>
@@ -178,7 +178,7 @@
         </parameters>
     </operation>
 
-    <operation name="testSimpleListGet" since="2.0.0">
+    <operation name="testSimpleListGet" since="2.0">
         <description>Takes a list arg and echos it back in a list</description>
         <parameters>
             <request>
@@ -197,7 +197,7 @@
         </parameters>
     </operation>
 
-    <operation name="testSimpleSetGet" since="2.0.0">
+    <operation name="testSimpleSetGet" since="2.0">
         <description>Takes a set arg and echos it back in a set</description>
         <parameters>
             <request>
@@ -234,7 +234,7 @@
 			</exceptions>
 		</parameters>
 	</operation>
-	<operation name="testSimpleGetQA" since="2.0.0">
+	<operation name="testSimpleGetQA" since="2.0">
 		<description>test of an idempotent service.  takes a single arg and echos it back</description>
 		<parameters>
 			<request>
@@ -393,7 +393,7 @@
 		</parameters>
 	</operation>
 	
-	<operation name="testParameterStylesQA" since="2.0.0">
+	<operation name="testParameterStylesQA" since="2.0">
 		<description>Ensure that REST parameters can be taken from different sources</description>
 		<parameters>
 			<request>
@@ -530,7 +530,7 @@
 		</parameters>
 	</operation>
 	
-	<operation name="testLargePostQA" since="2.0.0">
+	<operation name="testLargePostQA" since="2.0">
 		<description>
 			Takes a list of complex objects and returns the number of values in the list. 
 			Used to test input parsing speed.
@@ -577,7 +577,7 @@
 		</parameters>
 	</operation>
 	
-	<operation name="testExceptionQA" since="2.0.0">
+	<operation name="testExceptionQA" since="2.0">
 		<description>a service that always throws an exception</description>
 		<parameters>
 			<request>
@@ -685,7 +685,7 @@
             </parameters>
       </operation>
 
-    <operation name="testSimpleTypeReplacement" since="2.0.0">
+    <operation name="testSimpleTypeReplacement" since="2.0">
             <description>Test that simple types are handled by Cougar</description>
             <parameters>
 	            <request>
@@ -713,7 +713,7 @@
             </parameters>
       </operation>
 
-    <operation name="testStringableLists" since="2.0.0">
+    <operation name="testStringableLists" since="2.0">
             <description>Test that lists are stringable if they are enums or integers</description>
             <parameters>
 	            <request>
@@ -738,7 +738,7 @@
             </parameters>
       </operation>
 
-	<operation name="testBodyParams" since="2.0.0">
+	<operation name="testBodyParams" since="2.0">
 		<description>test of a multi-bodied service</description>
 		<parameters>
 			<request>
@@ -769,7 +769,7 @@
 		</parameters>
 	</operation>
 
-	<operation name="testDirectMapReturn" since="2.0.0">
+	<operation name="testDirectMapReturn" since="2.0">
 		<description>Return a map</description>
 		<parameters>
 			<request>
@@ -791,7 +791,7 @@
 		</parameters>
 	</operation>
 
-	<operation name="testDirectListReturn" since="2.0.0">
+	<operation name="testDirectListReturn" since="2.0">
 		<description>Return a list</description>
 		<parameters>
 			<request>
@@ -813,7 +813,7 @@
 		</parameters>
 	</operation>
 	
-	<operation name="kpiTesting" since="2.0.0">
+	<operation name="kpiTesting" since="2.0">
 		<description>logs a message</description>
 		<parameters>
 			<request>
@@ -832,7 +832,7 @@
 		</parameters>
 	</operation>	
 	
-	<operation name="waitSeconds" since="2.0.0">
+	<operation name="waitSeconds" since="2.0">
 		<description>logs a message</description>
 		<parameters>
 			<request>
@@ -851,7 +851,7 @@
 		</parameters>
 	</operation>
 	
-	<operation name="logMessage" since="2.0.0">
+	<operation name="logMessage" since="2.0">
 		<description>logs a message</description>
 		<parameters>
 			<request>
@@ -873,7 +873,7 @@
 		</parameters>
 	</operation>
 
-    <operation name="bulkCaller" since="2.0.0">
+    <operation name="bulkCaller" since="2.0">
         <description>logs a message</description>
         <parameters>
             <request>
@@ -895,7 +895,7 @@
         </parameters>
     </operation>
 
-	<operation name="changeLogLevel" since="2.0.0">
+	<operation name="changeLogLevel" since="2.0">
 		<description>logs a message</description>
 		<parameters>
 			<request>
@@ -917,7 +917,7 @@
 		</parameters>
 	</operation>	
 	
-	<operation name="enumOperation" since="2.0.0">
+	<operation name="enumOperation" since="2.0">
 		<description>Takes one of each rest parameter type, that is an enum</description>
 		<parameters>
 			<request>
@@ -1046,7 +1046,7 @@
 		</parameters>
 	</operation>
 	
-	<operation name="i32Operation" since="2.0.0">
+	<operation name="i32Operation" since="2.0">
 		<description>Takes one of each rest parameter type, that is an Integer</description>
 		<parameters>
 			<request>
@@ -1070,7 +1070,7 @@
 			</exceptions>
 		</parameters>
 	</operation>
-	<operation name="i64Operation" since="2.0.0">
+	<operation name="i64Operation" since="2.0">
 		<description>Takes one of each rest parameter type, that is an Integer</description>
 		<parameters>
 			<request>
@@ -1095,7 +1095,7 @@
 		</parameters>
 	</operation>
 	
-	<operation name="byteOperation" since="2.0.0">
+	<operation name="byteOperation" since="2.0">
 		<description>Takes one of each rest parameter type, that is a byte</description>
 		<parameters>
 			<request>
@@ -1120,7 +1120,7 @@
 		</parameters>
 	</operation>
 	
-	<operation name="floatOperation" since="2.0.0">
+	<operation name="floatOperation" since="2.0">
 		<description>Takes one of each rest parameter type, that is a Float</description>
 		<parameters>
 			<request>
@@ -1145,7 +1145,7 @@
 		</parameters>
 	</operation>
 
-	<operation name="doubleOperation" since="2.0.0">
+	<operation name="doubleOperation" since="2.0">
 		<description>Takes one of each rest parameter type, that is a Double</description>
 		<parameters>
 			<request>
@@ -1170,7 +1170,7 @@
 		</parameters>
 	</operation>
 
-	<operation name="boolOperation" since="2.0.0">
+	<operation name="boolOperation" since="2.0">
 		<description>Takes one of each rest parameter type, that is a Boolean</description>
 		<parameters>
 			<request>
@@ -1195,7 +1195,7 @@
 		</parameters>
 	</operation>
 
-	<operation name="nonMandatoryParamsOperation" since="2.0.0">
+	<operation name="nonMandatoryParamsOperation" since="2.0">
 		<description>Takes one of each rest parameter type, but they are not mandatory (barring path which is always mandatory)</description>
 		<parameters>
 			<request>
@@ -1220,7 +1220,7 @@
 		</parameters>
 	</operation>
 	
-	<operation name="mandatoryParamsOperation" since="2.0.0">
+	<operation name="mandatoryParamsOperation" since="2.0">
 		<description>Takes one of each rest parameter type, but they are not mandatory (barring path which is always mandatory)</description>
 		<parameters>
 			<request>
@@ -1264,7 +1264,7 @@
 		</parameters>
 	</operation>
 	
-	<operation name="dateTimeOperation" since="2.0.0">
+	<operation name="dateTimeOperation" since="2.0">
 		<description>Takes one of each rest parameter type, that is a dateTime</description>
 		<parameters>
 			<request>
@@ -1283,7 +1283,7 @@
 		</parameters>
 	</operation>
 	
-		<operation name="simpleMapOperation" since="2.0.0">
+		<operation name="simpleMapOperation" since="2.0">
 		<description>Takes a post body that contains a simple (string, string) map</description>
 		<parameters>
 			<request>
@@ -1302,7 +1302,7 @@
 		</parameters>
 	</operation>
 
-	<operation name="complexMapOperation" since="2.0.0">
+	<operation name="complexMapOperation" since="2.0">
 		<description>Takes a post body that contains a more complex (string, some complex object) map</description>
 		<parameters>
 			<request>
@@ -1321,7 +1321,7 @@
 		</parameters>
 	</operation>
 
-	<operation name="simpleSetOperation" since="2.0.0">
+	<operation name="simpleSetOperation" since="2.0">
 		<description>Takes a post body that contains a simple (string) set</description>
 		<parameters>
 			<request>
@@ -1340,7 +1340,7 @@
 		</parameters>
 	</operation>
 	
-	<operation name="complexSetOperation" since="2.0.0">
+	<operation name="complexSetOperation" since="2.0">
 		<description>Takes a post body that contains a more complex (some complex object) set</description>
 		<parameters>
 			<request>
@@ -1359,7 +1359,7 @@
 		</parameters>
 	</operation>
 	
-	<operation name="dateTimeSetOperation" since="2.0.0">
+	<operation name="dateTimeSetOperation" since="2.0">
 		<description>Takes a post body that contains a more complex (dateTime object) set</description>
 		<parameters>
 			<request>
@@ -1378,7 +1378,7 @@
 		</parameters>
 	</operation>
 	
-	<operation name="dateTimeListOperation" since="2.0.0">
+	<operation name="dateTimeListOperation" since="2.0">
 		<description>Takes a post body that contains a date time list</description>
 		<parameters>
 			<request>
@@ -1397,7 +1397,7 @@
 		</parameters>
 	</operation>
 
-	<operation name="dateTimeMapOperation" since="2.0.0">
+	<operation name="dateTimeMapOperation" since="2.0">
 		<description>Takes a post body that contains a date time map</description>
 		<parameters>
 			<request>
@@ -1416,7 +1416,7 @@
 		</parameters>
 	</operation>
 	
-	<operation name="mapDateTimeKeyOperation" since="2.0.0">
+	<operation name="mapDateTimeKeyOperation" since="2.0">
 		<description>Takes a post body that contains a map with a date time key</description>
 		<parameters>
 			<request>
@@ -1435,7 +1435,7 @@
 		</parameters>
 	</operation>
 	
-	<operation name="i32SimpleTypeOperation" since="2.0.0">
+	<operation name="i32SimpleTypeOperation" since="2.0">
 		<description>Takes one of each rest parameter type, that is an Integer</description>
 		<parameters>
 			<request>
@@ -1460,7 +1460,7 @@
 		</parameters>
 	</operation>
 	
-	<operation name="enumSimpleOperation" since="2.0.0">
+	<operation name="enumSimpleOperation" since="2.0">
 		<description>Takes one of each rest parameter type, that is an enum</description>
 		<parameters>
 			<request>
@@ -1485,7 +1485,7 @@
 		</parameters>
 	</operation>
 
-	<operation name="stringListOperation" since="2.0.0">
+	<operation name="stringListOperation" since="2.0">
 		<description>Takes one of each rest parameter type, that is an list of strings</description>
 		<parameters>
 			<request>
@@ -1507,7 +1507,7 @@
 		</parameters>
 	</operation>
 	
-	<operation name="stringSetOperation" since="2.0.0">
+	<operation name="stringSetOperation" since="2.0">
 		<description>Takes one of each rest parameter type, that is an set of strings</description>
 		<parameters>
 			<request>
@@ -1529,7 +1529,7 @@
 		</parameters>
 	</operation>
 	
-	<operation name="simpleEnumListOperation" since="2.0.0">
+	<operation name="simpleEnumListOperation" since="2.0">
 		<description>Takes one of each rest parameter type, that is an list of SimpleEnums</description>
 		<parameters>
 			<request>
@@ -1551,7 +1551,7 @@
 		</parameters>
 	</operation>
 
-    <operation name="callWithEnumResponse" since="2.0.0">
+    <operation name="callWithEnumResponse" since="2.0">
         <description>returns a valid from the valid set</description>
         <parameters>
             <request>
@@ -1567,7 +1567,7 @@
         </parameters>
     </operation>
 	
-	<operation name="simpleEnumSetOperation" since="2.0.0">
+	<operation name="simpleEnumSetOperation" since="2.0">
 		<description>Takes one of each rest parameter type, that is an set of SimpleEnums</description>
 		<parameters>
 			<request>
@@ -1589,7 +1589,7 @@
 		</parameters>
 	</operation>
 	
-	<operation name="voidResponseOperation" since="2.0.0">
+	<operation name="voidResponseOperation" since="2.0">
 		<description>Operation with a void response type</description>
 		<parameters>
 			<request>
@@ -1608,7 +1608,7 @@
 		</parameters>
 	</operation>
 	
-    <operation name="simpleEventPublication" since="2.0.0">
+    <operation name="simpleEventPublication" since="2.0">
         <description>Bridging call between a request based transport and an event based transport.  This parameter will be published to an event destination</description>
         <parameters>
             <request>
@@ -1627,7 +1627,7 @@
         </parameters>
     </operation>
 
-    <operation name="emitMatchedBet" since="2.0.0">
+    <operation name="emitMatchedBet" since="2.0">
         <description>Publish the input bet to the message transport</description>
         <parameters>
             <request>
@@ -1649,7 +1649,7 @@
         </parameters>
     </operation>
     
-    <operation name="emitLogMessage" since="2.0.0">
+    <operation name="emitLogMessage" since="2.0">
      <description>Publish the log message to the message transport</description>
      <parameters>
           <request>
@@ -1733,7 +1733,7 @@
 
     <!-- begin simpleType responses -->
 
-    <operation name="boolSimpleTypeEcho" since="2.0.0">
+    <operation name="boolSimpleTypeEcho" since="2.0">
         <description>An operation which echoes a bool</description>
         <parameters>
             <request>
@@ -1752,7 +1752,7 @@
         </parameters>
     </operation>
 
-    <operation name="byteSimpleTypeEcho" since="2.0.0">
+    <operation name="byteSimpleTypeEcho" since="2.0">
         <description>An operation which echoes a byte</description>
         <parameters>
             <request>
@@ -1771,7 +1771,7 @@
         </parameters>
     </operation>
 
-    <operation name="i32SimpleTypeEcho" since="2.0.0">
+    <operation name="i32SimpleTypeEcho" since="2.0">
         <description>An operation which echoes an i32</description>
         <parameters>
             <request>
@@ -1790,7 +1790,7 @@
         </parameters>
     </operation>
 
-    <operation name="i64SimpleTypeEcho" since="2.0.0">
+    <operation name="i64SimpleTypeEcho" since="2.0">
         <description>An operation which echoes an i64</description>
         <parameters>
             <request>
@@ -1809,7 +1809,7 @@
         </parameters>
     </operation>
 
-    <operation name="floatSimpleTypeEcho" since="2.0.0">
+    <operation name="floatSimpleTypeEcho" since="2.0">
         <description>An operation which echoes a float</description>
         <parameters>
             <request>
@@ -1828,7 +1828,7 @@
         </parameters>
     </operation>
 
-    <operation name="doubleSimpleTypeEcho" since="2.0.0">
+    <operation name="doubleSimpleTypeEcho" since="2.0">
         <description>An operation which echoes a double</description>
         <parameters>
             <request>
@@ -1847,7 +1847,7 @@
         </parameters>
     </operation>
 
-    <operation name="stringSimpleTypeEcho" since="2.0.0">
+    <operation name="stringSimpleTypeEcho" since="2.0">
         <description>An operation which echoes a string</description>
         <parameters>
             <request>
@@ -1866,7 +1866,7 @@
         </parameters>
     </operation>
 
-    <operation name="dateTimeSimpleTypeEcho" since="2.0.0">
+    <operation name="dateTimeSimpleTypeEcho" since="2.0">
         <description>An operation which echoes a dateTime</description>
         <parameters>
             <request>
@@ -1885,7 +1885,7 @@
         </parameters>
     </operation>
 
-    <operation name="i32ListSimpleTypeEcho" since="2.0.0">
+    <operation name="i32ListSimpleTypeEcho" since="2.0">
         <description>An operation which echoes a list(i32)</description>
         <parameters>
             <request>
@@ -1904,7 +1904,7 @@
         </parameters>
     </operation>
 
-    <operation name="i32SetSimpleTypeEcho" since="2.0.0">
+    <operation name="i32SetSimpleTypeEcho" since="2.0">
         <description>An operation which echoes a set(i32)</description>
         <parameters>
             <request>
@@ -1923,7 +1923,7 @@
         </parameters>
     </operation>
 
-    <operation name="i32MapSimpleTypeEcho" since="2.0.0">
+    <operation name="i32MapSimpleTypeEcho" since="2.0">
         <description>An operation which echoes a map(i32,i32)</description>
         <parameters>
             <request>
@@ -1942,7 +1942,7 @@
         </parameters>
     </operation>
 
-    <operation name="getInferredCountryCode" since="2.0.0">
+    <operation name="getInferredCountryCode" since="2.0">
         <description>Infers the country name based on host header</description>
         <parameters>
             <request/>
@@ -1957,7 +1957,7 @@
         </parameters>
     </operation>
 
-    <operation name="emitLongEvent" since="2.0.0">
+    <operation name="emitLongEvent" since="2.0">
         <description>causes a long event to emitted onto the appropriate event transport</description>
         <parameters>
              <request>

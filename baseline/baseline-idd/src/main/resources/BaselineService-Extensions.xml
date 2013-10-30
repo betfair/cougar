@@ -17,7 +17,7 @@
 
 <interface name="Baseline">
 
-    <operation name="echoCougarPropertyValue" since="2.0.0">
+    <operation name="echoCougarPropertyValue">
         <parameters>
             <request>
                 <parameter name="propertyName">
@@ -34,7 +34,7 @@
         </extensions>
     </operation>
 
-    <operation name="mandatoryCollectionElementTest" since="2.0.0">
+    <operation name="mandatoryCollectionElementTest">
         <parameters>
             <request>
                 <parameter name="inputList">
@@ -55,7 +55,7 @@
         </extensions>
     </operation>
 
-    <operation name="interceptorCheckedExceptionOperation" since="2.0.0">
+    <operation name="interceptorCheckedExceptionOperation">
         <description>Will make a call that causes a SimpleException to be thrown from an interceptor</description>
         <parameters>
             <request>
@@ -72,7 +72,7 @@
         </extensions>
     </operation>
 
-    <operation name="listOfComplexOperation" since="2.0.0">
+    <operation name="listOfComplexOperation">
         <parameters>
             <request>
                 <parameter name="inputList">
@@ -88,7 +88,7 @@
         </extensions>
     </operation>
 
-    <operation name="mapOfComplexOperation" since="2.0.0">
+    <operation name="mapOfComplexOperation">
         <parameters>
             <request>
                 <parameter name="inputMap">
@@ -104,7 +104,7 @@
         </extensions>
     </operation>
     
-    <operation name="setOfComplexOperation" since="2.0.0">
+    <operation name="setOfComplexOperation">
         <parameters>
             <request>
                 <parameter name="inputSet">
@@ -787,7 +787,7 @@
 		</extensions>
 	</operation>
 
-    <operation name="bulkCaller" since="2.0.0">
+    <operation name="bulkCaller">
         <parameters>
             <request>
                 <parameter name="cycles">
@@ -1441,7 +1441,7 @@
 		</extensions>
 	</operation>
 
-	<operation name="dateTimeMapOperation" since="2.0.0">
+	<operation name="dateTimeMapOperation">
 		<description>Takes a post body that contains a date time map</description>
 		<parameters>
 			<request>
@@ -1467,7 +1467,7 @@
 		</extensions>
 	</operation>
 	
-		<operation name="mapDateTimeKeyOperation" since="2.0.0">
+		<operation name="mapDateTimeKeyOperation">
 		<description>Takes a post body that contains a map with a date time key</description>
 		<parameters>
 			<request>
