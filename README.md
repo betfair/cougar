@@ -7,6 +7,11 @@ Cougar is a framework for making building network exposed service interfaces eas
 
 Read more on [Cougar's site](http://betfair.github.io/cougar).
 
+Project admin
+-------------
+
+[Project tasks](ProjectTasks.md)
+
 [![Build Status](https://travis-ci.org/betfair/cougar.png?branch=master)](https://travis-ci.org/betfair/cougar)
 
 Licensing
