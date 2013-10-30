@@ -392,10 +392,11 @@ public class JmsEventTransportImpl extends AbstractRegisterableTransport impleme
         @Override
         // Get the jms session belonging to the thread publishing this event
         public void run() {
+            MessageProducer messageProducer = null;
             try {
                 Session session = sessionManager.get();
                 Destination destination = createDestination(session, destinationName);
-                MessageProducer messageProducer = session.createProducer(destination);
+                messageProducer = session.createProducer(destination);
                 TextMessage textMessage = getEventMarshaller().marshallEvent(descriptor, event, session);
                 messageProducer.send(textMessage, textMessage.getJMSDeliveryMode(), textMessage.getJMSPriority(), textMessage.getJMSExpiration());
                 success = true;
@@ -406,6 +407,13 @@ public class JmsEventTransportImpl extends AbstractRegisterableTransport impleme
                 success = false;
                 error = ex;
             } finally {
+                if (messageProducer != null) {
+                    try {
+                        messageProducer.close();
+                    } catch (JMSException e) {
+                        logger.log(Level.WARNING, "Failed to close message producer", e);
+                    }
+                }
                 unlock();
             }
         }
