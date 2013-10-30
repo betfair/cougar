@@ -13,8 +13,8 @@ fi
 ARTIFACTS_S3_BUCKET_URL=http://$ARTIFACTS_S3_BUCKET.s3-website-$ARTIFACTS_AWS_REGION.amazonaws.com
 
 # Create our tarballs for upload
-find . -name "*.log" -exec tar rvf logs.tar {} \;
-find . -name "TEST-*.xml" -exec tar rvf TEST-xml.tar {} \;
+find . -name "*.log" -exec tar rvf logs.tar {} \; >/dev/null
+find . -name "TEST-*.xml" -exec tar rvf TEST-xml.tar {} \; >/dev/null
 
 # Make sure the branch exists in the s3 bucket
 wget -O index.html $UPLOAD_S3_BUCKET_URL/$TRAVIS_REPO_SLUG/index.html
@@ -30,7 +30,7 @@ else
 fi
 
 # Add this build to the branch index
-echo "<a href=\"$$TRAVIS_BUILD_ID/index.html\">$TRAVIS_BUILD_ID</a><br/>" >> index.html
+echo "<a href=\"$TRAVIS_BUILD_ID/index.html\">$TRAVIS_BUILD_ID</a><br/>" >> index.html
 travis-artifacts upload --target-path $TRAVIS_REPO_SLUG/$TRAVIS_BRANCH --path index.html
 
 # Create and upload the build index and tarballs
@@ -62,3 +62,5 @@ travis-artifacts upload --target-path $TRAVIS_REPO_SLUG/$TRAVIS_BRANCH/$TRAVIS_B
 #    PATH_SO_FAR=$NEW_PATH_SO_FAR
 #  done
 #done
+
+echo "Artifacts uploaded to $ARTIFACTS_S3_BUCKET_URL/$TRAVIS_REPO_SLUG/$TRAVIS_BRANCH/$TRAVIS_BUILD_ID"
