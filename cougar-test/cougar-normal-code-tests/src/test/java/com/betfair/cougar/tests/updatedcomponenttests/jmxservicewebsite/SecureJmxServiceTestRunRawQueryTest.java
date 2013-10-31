@@ -30,7 +30,7 @@ public class SecureJmxServiceTestRunRawQueryTest {
     public void doTest() throws Exception {
         // Set the parts of the URL to load (setting the link to be the query to run)
         HttpPageBean httpPageBean1 = new HttpPageBean();
-        httpPageBean1.setURLParts("https", "localhost", (int) 9999, "/administration/batchquery.jsp?on=SYSTEM&an=java.runtime.name");
+        httpPageBean1.setURLParts("https", "localhost", (int) 9999, "/administration/batchquery.jsp?on=SYSTEM&an=java.specification.name");
         HttpPageBean BeanyBaby = httpPageBean1;
         // Set the auth details needed to load it
         BeanyBaby.setAuthusername("jmxadmin");
@@ -43,7 +43,7 @@ public class SecureJmxServiceTestRunRawQueryTest {
         // Check the page was loaded and that the query result is displayed correctly
         HttpPageBean response3 = BeanyBaby.getMe();
         AssertionUtils.multiAssertEquals(true, response3.getPageLoaded());
-        AssertionUtils.multiAssertEquals("System Properties~java.runtime.name~Java(TM) SE Runtime Environment", response3.getPageText());
+        AssertionUtils.multiAssertEquals("System Properties~java.specification.name~Java Platform API Specification", response3.getPageText());
     }
 
 }
