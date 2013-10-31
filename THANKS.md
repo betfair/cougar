@@ -4,7 +4,7 @@ Where just initials are presented it's because we haven't been able to obtain pe
 
 Authors
 =======
-* Simon Matic Langford
+* [Simon Matic Langford](http://eswdd.github.io)
 * Michael Funnell
 * Peter Lewin-Harris
 * Richard Mason	 
