@@ -33,8 +33,12 @@ public class ProtocolBindingHelper {
 
     private IdentityTokenResolver<?, ?, ?> identityTokenResolver;
 
+    private boolean enabled = true;
+
     public void init() {
-        registry.addProtocolBinding(new ProtocolBinding(contextRoot, identityTokenResolver, protocol));
+        if (enabled) {
+            registry.addProtocolBinding(new ProtocolBinding(contextRoot, identityTokenResolver, protocol));
+        }
     }
 
     public void setRegistry(ProtocolBindingRegistry registry) {
@@ -51,5 +55,9 @@ public class ProtocolBindingHelper {
 
     public void setProtocol(Protocol protocol) {
         this.protocol = protocol;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }
