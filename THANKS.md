@@ -8,7 +8,7 @@ Authors
 * Michael Funnell
 * Peter Lewin-Harris
 * Richard Mason	 
-* SF
+* S.F.
 * Alexsei Makarenko 
 * Teresa Christianson
 * James Dodd 
@@ -19,11 +19,11 @@ Authors
 
 Contributors
 ============
-* RS
-* GE
+* R.S.
+* G.E.
 * Hannah Kroukamp	
 * Harsha Aswath
-* ED
+* E.D.
 * Mike Guyver 
 * Denys Zakhozhyy
 * Tristan Lanfrey
@@ -33,5 +33,5 @@ Contributors
 * Maris Orbidans
 * Caner Akpinar	
 * David Prime 
-* JS
+* J.S.
 * Simon Tackley
