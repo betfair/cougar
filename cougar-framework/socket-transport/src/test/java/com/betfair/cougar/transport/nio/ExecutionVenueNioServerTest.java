@@ -224,7 +224,7 @@ public class ExecutionVenueNioServerTest {
 
         ev = new ExecutionVenue() {
             @Override
-            public void registerOperation(String ns, OperationDefinition def, Executable executable, ExecutionTimingRecorder recorder) {
+            public void registerOperation(String ns, OperationDefinition def, Executable executable, ExecutionTimingRecorder recorder, long maxExecutionTime) {
             }
 
             @Override

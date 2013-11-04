@@ -32,11 +32,13 @@ public interface ExecutionVenue {
 
 	/**
 	 * Registers an OperationDefinition against an actual Executable implementation
-	 * @param def defines the Operation and its parameters
-	 * @param executable the executable implementation of the operation
-	 * @param recorder Provides methods for recording execution statistics
-	 */
-	public void registerOperation(String namespace, OperationDefinition def, Executable executable, ExecutionTimingRecorder recorder);
+     * @param def defines the Operation and its parameters
+     * @param executable the executable implementation of the operation
+     * @param recorder Provides methods for recording execution statistics
+     * @param maxExecutionTime The max amount of time (in ms) that this operation should be allowed to execute before
+     *                         returning a timeout. A value of zero means there will be no timeout.
+     */
+	public void registerOperation(String namespace, OperationDefinition def, Executable executable, ExecutionTimingRecorder recorder, long maxExecutionTime);
 
 	/**
 	 * Gets the OperationDefinition that has been registered with the EV for the provided key

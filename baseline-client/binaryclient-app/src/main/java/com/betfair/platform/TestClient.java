@@ -41,7 +41,6 @@ import com.betfair.cougar.api.security.IdentityChain;
 import com.betfair.cougar.core.api.ServiceVersion;
 import com.betfair.cougar.core.api.ev.Executable;
 import com.betfair.cougar.core.api.ev.ExecutionTimingRecorder;
-import com.betfair.cougar.core.api.ev.ServiceLogManager;
 import com.betfair.cougar.core.api.ev.ExecutionObserver;
 import com.betfair.cougar.core.api.ev.ExecutionPostProcessor;
 import com.betfair.cougar.core.api.ev.ExecutionPreProcessor;
@@ -547,7 +546,7 @@ public class TestClient {
 				return operationDef;
 			}
 			public Set<OperationKey> getOperationKeys() {return null;}
-            public void registerOperation(String namespace, OperationDefinition def, Executable executable, ExecutionTimingRecorder recorder) {}
+            public void registerOperation(String namespace, OperationDefinition def, Executable executable, ExecutionTimingRecorder recorder, long maxExecutionTime) {}
 			public void setPostProcessors(List<ExecutionPostProcessor> preProcessorList) {}
 			public void setPreProcessors(List<ExecutionPreProcessor> preProcessorList) {}
 			

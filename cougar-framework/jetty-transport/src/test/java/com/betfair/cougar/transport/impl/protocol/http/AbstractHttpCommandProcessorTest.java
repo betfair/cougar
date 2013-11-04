@@ -144,11 +144,11 @@ public class AbstractHttpCommandProcessorTest {
 		testOut = new TestServletOutputStream();
 		when(response.getOutputStream()).thenReturn(testOut);
 		ev = new TestEV();
-		ev.registerOperation(null, new SimpleOperationDefinition(firstOpKey, firstOpParams,firstOpReturn), null, null);
-		ev.registerOperation(null, new SimpleOperationDefinition(mapOpKey, mapOpParams, mapOpReturn), null, null);
-		ev.registerOperation(null, new SimpleOperationDefinition(listOpKey, listOpParams, listOpReturn), null, null);
-		ev.registerOperation(null, new SimpleOperationDefinition(invalidOpKey, invalidOpParams, invalidOpReturn), null, null);
-        ev.registerOperation(null, new SimpleOperationDefinition(voidReturnOpKey, voidReturnOpParams, null), null, null);
+		ev.registerOperation(null, new SimpleOperationDefinition(firstOpKey, firstOpParams,firstOpReturn), null, null, 0);
+		ev.registerOperation(null, new SimpleOperationDefinition(mapOpKey, mapOpParams, mapOpReturn), null, null, 0);
+		ev.registerOperation(null, new SimpleOperationDefinition(listOpKey, listOpParams, listOpReturn), null, null, 0);
+		ev.registerOperation(null, new SimpleOperationDefinition(invalidOpKey, invalidOpParams, invalidOpReturn), null, null, 0);
+        ev.registerOperation(null, new SimpleOperationDefinition(voidReturnOpKey, voidReturnOpParams, null), null, null, 0);
         commandProcessor = new LocalCommandProcessor();
 		init(commandProcessor);
 	}
@@ -505,7 +505,7 @@ public class AbstractHttpCommandProcessorTest {
         }
 
         @Override
-        public void registerOperation(String namespace, OperationDefinition def, Executable executable, ExecutionTimingRecorder recorder) {
+        public void registerOperation(String namespace, OperationDefinition def, Executable executable, ExecutionTimingRecorder recorder, long max) {
             map.put(def.getOperationKey(), def);
         }
 

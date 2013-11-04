@@ -18,7 +18,6 @@ package com.betfair.cougar.transport.impl.protocol.http.jsonrpc;
 
 import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.ExecutionContextWithTokens;
-import com.betfair.cougar.api.LogExtension;
 import com.betfair.cougar.api.ResponseCode;
 import com.betfair.cougar.api.export.Protocol;
 import com.betfair.cougar.api.geolocation.GeoLocationDetails;
@@ -30,7 +29,6 @@ import com.betfair.cougar.core.api.ServiceVersion;
 import com.betfair.cougar.core.api.ev.Executable;
 import com.betfair.cougar.core.api.ev.ExecutionTimingRecorder;
 import com.betfair.cougar.core.api.ev.NullExecutionTimingRecorder;
-import com.betfair.cougar.core.api.ev.ServiceLogManager;
 import com.betfair.cougar.core.api.ev.ExecutionObserver;
 import com.betfair.cougar.core.api.ev.ExecutionPostProcessor;
 import com.betfair.cougar.core.api.ev.ExecutionPreProcessor;
@@ -212,8 +210,8 @@ public class JsonRpcTransportCommandProcessorTest  {
                 }
             };
             ExecutionTimingRecorder nullMgr = new NullExecutionTimingRecorder();
-            ev.registerOperation(null, def1, noop, nullMgr);
-            ev.registerOperation(null, def2, noop, nullMgr);
+            ev.registerOperation(null, def1, noop, nullMgr, 0);
+            ev.registerOperation(null, def2, noop, nullMgr, 0);
         }
 
         commandProcessor.bind(new ServiceBindingDescriptor() {
@@ -250,7 +248,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         verify(ev, times(1)).registerOperation(JsonRpcTransportCommandProcessor.IDENTITY_RESOLUTION_NAMESPACE,
                                                JsonRpcTransportCommandProcessor.IDENTITY_RESOLUTION_OPDEF,
                                                JsonRpcTransportCommandProcessor.IDENTITY_RESOLUTION_EXEC,
-                                               JsonRpcTransportCommandProcessor.IDENTITY_RESOLUTION_TIMING_RECORDER);
+                                               JsonRpcTransportCommandProcessor.IDENTITY_RESOLUTION_TIMING_RECORDER, 0);
 //        verify(ev, times(1)).execute(any(ExecutionContextWithTokens.class), eq(JsonRpcTransportCommandProcessor.IDENTITY_RESOLUTION_OPDEF.getOperationKey()), eq(new Object[0]), any(ExecutionObserver.class));
     }
 
@@ -261,7 +259,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         verify(ev, times(0)).registerOperation(JsonRpcTransportCommandProcessor.IDENTITY_RESOLUTION_NAMESPACE,
                 JsonRpcTransportCommandProcessor.IDENTITY_RESOLUTION_OPDEF,
                 JsonRpcTransportCommandProcessor.IDENTITY_RESOLUTION_EXEC,
-                JsonRpcTransportCommandProcessor.IDENTITY_RESOLUTION_TIMING_RECORDER);
+                JsonRpcTransportCommandProcessor.IDENTITY_RESOLUTION_TIMING_RECORDER, 0);
 //        verify(ev, times(0)).execute(any(ExecutionContextWithTokens.class), eq(JsonRpcTransportCommandProcessor.IDENTITY_RESOLUTION_OPDEF.getOperationKey()), eq(new Object[0]), any(ExecutionObserver.class));
     }
 
@@ -1035,7 +1033,7 @@ public class JsonRpcTransportCommandProcessorTest  {
     private static class RandomFailureEV implements ExecutionVenue {
 
         @Override
-        public void registerOperation(String namespace, OperationDefinition def, Executable executable, ExecutionTimingRecorder recorder) {
+        public void registerOperation(String namespace, OperationDefinition def, Executable executable, ExecutionTimingRecorder recorder, long maxExecutionTime) {
         }
 
         @Override
