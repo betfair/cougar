@@ -1,32 +1,25 @@
 ---
 layout: default
-title: cougar
 ---
 
-Welcome to Cougar.
+Welcome to Cougar!
+==================
 
-Cougar is a framework for making building network exposed service interfaces easy. It supports multiple paradigms of interface interaction over multiple network transports and protocols. It has an asynchronous core, supporting high throughput, highly concurrent implementations, and yet offers simpler synchronous interfaces when you want to trade speed for simpler code. It also comprises an interface definition language, client and server stub generator, plus a whole bunch of other goodies to make your life as simple as possible and to free you up to implement your business logic.
+Cougar is an open source framework for implementing well defined service interfaces with true transport independence, freeing you up to write your core logic. Originally written by [Betfair](http://www.betfair.com), and powering their core services, it is a high performance framework, easily supporting high concurrency requirements.
+
+It is released under the [Apache Software Licence v2](http://www.apache.org/licenses).
+
+Using Cougar
+------------
+
+If you're new to Cougar we suggest checking out the following 2 guides:
+
+* [What is Cougar?](cougar-guide.html)
+* [Cougar in under 5 minutes](getting-started.html)
+
+Alternatively, checkout our [documentation hub](documentation.html) for other guides and references.
 
 Releases
 --------
 
-* [Latest](master)
-
-Licensing
----------
-
-The maven-test-process-plugin is covered by "[The Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html)":
-
-    Copyright 2013, The Sporting Exchange Limited
-    
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-    
-        http://www.apache.org/licenses/LICENSE-2.0
-    
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+Cougar is currently in the process of being open-sourced, and so the code is currently unavailable. Once it is, it will be published in the Sonatype OSS Snapshot repo until the first release is pushed to Maven Central.
