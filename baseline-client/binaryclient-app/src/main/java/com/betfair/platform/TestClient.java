@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 import com.betfair.baseline.v2.enumerations.EnumOperationResponseObjectBodyParameterEnum;
@@ -541,6 +542,7 @@ public class TestClient {
 		
 		return new ExecutionVenue() {
 			public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer) {}
+			public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, Executor executor) {}
 			public OperationDefinition getOperationDefinition(OperationKey key) {
 				return operationDef;
 			}

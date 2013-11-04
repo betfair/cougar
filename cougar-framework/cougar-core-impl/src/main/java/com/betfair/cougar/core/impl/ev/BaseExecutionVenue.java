@@ -32,6 +32,7 @@ import com.betfair.cougar.logging.CougarLoggingUtils;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 
 import java.util.*;
+import java.util.concurrent.Executor;
 import java.util.logging.Level;
 
 
@@ -154,6 +155,16 @@ public class BaseExecutionVenue implements ExecutionVenue {
                                 e)));
             }
         }
+    }
+
+    @Override
+    public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, final ExecutionObserver observer, final Executor executor) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                execute(ctx, key, args, observer);
+            }
+        });
     }
 
 

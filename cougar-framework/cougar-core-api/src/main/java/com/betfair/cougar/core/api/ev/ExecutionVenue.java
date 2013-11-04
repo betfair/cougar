@@ -18,6 +18,7 @@ package com.betfair.cougar.core.api.ev;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Executor;
 
 import com.betfair.cougar.api.ExecutionContext;
 
@@ -51,13 +52,22 @@ public interface ExecutionVenue {
 	public Set<OperationKey> getOperationKeys();
 
 	/**
-	 * Execute the Executable registered for the provided OperationKey.
+	 * Execute the Executable registered for the provided OperationKey on the current thread.
 	 * @param ctx Provides contextual information for execution, such as channel id, user identity, geographical location etc.
 	 * @param key Defines the operation to be executed
 	 * @param args The arguments to be provided to the operation
 	 * @param observer The ExecutionObserver is notified of either the result of the execution, or of an exception thrown during execution.
 	 */
 	public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer);
+
+	/**
+	 * Execute the Executable registered for the provided OperationKey in the provided executor
+	 * @param ctx Provides contextual information for execution, such as channel id, user identity, geographical location etc.
+	 * @param key Defines the operation to be executed
+	 * @param args The arguments to be provided to the operation
+	 * @param observer The ExecutionObserver is notified of either the result of the execution, or of an exception thrown during execution.
+	 */
+	public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, Executor executor);
 
 	public void setPreProcessors(List<ExecutionPreProcessor> preProcessorList);
 	

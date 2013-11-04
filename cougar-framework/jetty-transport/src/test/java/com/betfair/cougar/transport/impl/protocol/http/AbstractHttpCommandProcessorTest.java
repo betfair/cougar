@@ -495,6 +495,16 @@ public class AbstractHttpCommandProcessorTest {
 		}
 
         @Override
+        public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, final ExecutionObserver observer, final Executor executor) {
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    execute(ctx, key, args, observer);
+                }
+            });
+        }
+
+        @Override
         public void registerOperation(String namespace, OperationDefinition def, Executable executable, ExecutionTimingRecorder recorder) {
             map.put(def.getOperationKey(), def);
         }

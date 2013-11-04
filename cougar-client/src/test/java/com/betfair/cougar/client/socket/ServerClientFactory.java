@@ -135,6 +135,15 @@ public class ServerClientFactory {
             	
             }
 
+            public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, final ExecutionObserver observer, Executor executor) {
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        execute(ctx, key, args, observer);
+                    }
+                });
+            }
+
             @Override
             public void setPreProcessors(List<ExecutionPreProcessor> preProcessorList) {
             }

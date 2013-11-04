@@ -1054,6 +1054,11 @@ public class JsonRpcTransportCommandProcessorTest  {
         }
 
         @Override
+        public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, Executor executor) {
+            throw new NullPointerException("BANG");
+        }
+
+        @Override
         public void setPreProcessors(List<ExecutionPreProcessor> preProcessorList) {
         }
 
