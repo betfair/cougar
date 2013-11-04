@@ -37,6 +37,7 @@
             <bean class="com.betfair.cougar.baseline.security.AlternativeRescriptIdentityTokenResolver"/>
         </property>
         <property name="protocol" value="RESCRIPT"/>
+        <property name="enabled" value="true"/>
     </bean>
 
     <bean parent="cougar.transport.AbstractProtocolBinding" scope="singleton">
