@@ -8,28 +8,28 @@ Guides
 ------
 
 * [What is Cougar?](cougar-guide.html)
-* [Cougar in under 5 minutes](getting-started.html)
-* [Securing Cougar](securing.html)
-* [Tips 'N' Tricks](tips-tricks.html)
+* [Cougar in under 5 minutes](getting-started.html) - TODO
+* [Securing Cougar](securing.html) - TODO
+* [Tips 'N' Tricks](tips-tricks.html) - TODO
 
 References
 ----------
 
-* [Jetty transport](jetty-transport.html)
-* [Binary transport](binary-transport.html)
-* [JMS transports](jms-transports.html)
-* [Cougar client](client.html)
-* [Identities](identities.html)
-* [Geo-location](geolocation.html)
-* [Connected objects](connected-objects.html)
-* [Maven code generation plugin](codegen.html)
-* [Monitoring (health & performance)](monitoring.html)
-* [Configuration](configuration.html)
-* [Async/sync](async-vs-sync.html)
-* [Modules](modules.html)
-* [Utilities](utilities.html)
-* [Archetypes](archetypes.html)
-* [Tuning](tuning.html)
+* [Jetty transport](jetty-transport.html) - TODO
+* [Binary transport](binary-transport.html) - TODO
+* [JMS transports](jms-transports.html) - TODO
+* [Cougar client](client.html) - TODO
+* [Identities](identities.html) - TODO
+* [Geo-location](geolocation.html) - TODO
+* [Connected objects](connected-objects.html) - TODO
+* [Maven code generation plugin](codegen.html) - TODO
+* [Monitoring (health & performance)](monitoring.html) - TODO
+* [Configuration](configuration.html) - TODO
+* [Async/sync](async-vs-sync.html) - TODO
+* [Modules](modules.html) - TODO
+* [Utilities](utilities.html) - TODO
+* [Archetypes](archetypes.html) - TODO
+* [Tuning](tuning.html) - TODO
 
 Older
 -----
