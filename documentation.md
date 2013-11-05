@@ -4,6 +4,11 @@ layout: default
 Cougar documentation hub
 ========================
 
+Project Info
+------------
+* [Project Info](project-info.html) (maven repos, mailing lists, etc)
+* [Building Cougar](building.html) - TODO
+
 Guides
 ------
 
@@ -15,7 +20,6 @@ Guides
 References
 ----------
 
-* [Maven info](maven.html)
 * [Jetty transport](jetty-transport.html) - TODO
 * [Binary transport](binary-transport.html) - TODO
 * [JMS transports](jms-transports.html) - TODO
