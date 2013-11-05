@@ -75,7 +75,7 @@
                                     <containerProcesses>
                                         <containerProcess>
                                             <id>baseline</id>
-                                            <command>${mavenCommand} -Dcougar.log.echoToStdout=true exec:java -X >baseline-mvn.log</command>
+                                            <command>${mavenCommand} -Dcougar.log.echoToStdout=true exec:java -X -l baseline-mvn.log</command>
                                             <workingDir>baseline/baseline-launch</workingDir>
                                             <startWatchString>COUGAR HAS STARTED</startWatchString>
                                             <failureWatchString>PanicInTheCougar</failureWatchString>
