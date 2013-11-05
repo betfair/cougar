@@ -16,7 +16,6 @@ References
 ----------
 
 * [Maven info](maven.html)
-
 * [Jetty transport](jetty-transport.html) - TODO
 * [Binary transport](binary-transport.html) - TODO
 * [JMS transports](jms-transports.html) - TODO
