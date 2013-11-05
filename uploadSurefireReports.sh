@@ -5,10 +5,10 @@ if [ "$ARTIFACTS_S3_BUCKET" == "" ]; then
   exit 1
 fi
 
-#if [ "$TRAVIS_PULL_REQUEST" == "true"]; then
-#  echo "WARNING: Not uploading results as this is a pull request" >&2
-#  exit 2
-#fi
+if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
+  echo "WARNING: Not uploading results as this is a pull request" >&2
+  exit 2
+fi
 
 ARTIFACTS_S3_BUCKET_URL=http://$ARTIFACTS_S3_BUCKET.s3-website-$ARTIFACTS_AWS_REGION.amazonaws.com
 
