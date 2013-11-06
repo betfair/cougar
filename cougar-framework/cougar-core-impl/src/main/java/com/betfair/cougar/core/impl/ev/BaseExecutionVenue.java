@@ -32,6 +32,13 @@ import com.betfair.cougar.logging.CougarLoggingUtils;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.DelayQueue;
+import java.util.concurrent.Delayed;
+import java.util.concurrent.Executor;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 
 
@@ -44,20 +51,14 @@ public class BaseExecutionVenue implements ExecutionVenue {
 
     private List<ExecutionPostProcessor> postProcessorList = new ArrayList<ExecutionPostProcessor>();
     private List<ExecutionPreProcessor> preProcessorList = new ArrayList<ExecutionPreProcessor>();
-    private EventLogger eventLogger;
-    private IdentityResolverFactory identityResolverFactory;
     private IdentityResolver identityResolver;
 
+    private DelayQueue<ExpiringObserver> expiringObservers = new DelayQueue<>();
 
-    protected Map<OperationKey, DefinedExecutable> registry = new HashMap<OperationKey, DefinedExecutable>();
-
-    public void setEventLogger(EventLogger eventLogger) {
-        this.eventLogger = eventLogger;
-    }
-
+    protected Map<OperationKey, DefinedExecutable> registry = new HashMap<>();
 
     @Override
-    public void registerOperation(String namespace, OperationDefinition def, Executable executable, ExecutionTimingRecorder recorder) {
+    public void registerOperation(String namespace, OperationDefinition def, Executable executable, ExecutionTimingRecorder recorder, long maxExecutionTime) {
 
         if (isInterceptingSupported()) {
             executable = new InterceptingExecutableWrapper(executable, preProcessorList, postProcessorList);
@@ -74,7 +75,8 @@ public class BaseExecutionVenue implements ExecutionVenue {
                 new DefinedExecutable(
                         def,
                         executable,
-                        recorder));
+                        recorder,
+                        maxExecutionTime));
         logger.log(Level.INFO, "Registered operation: %s", key);
     }
 
@@ -140,6 +142,14 @@ public class BaseExecutionVenue implements ExecutionVenue {
             logger.log(Level.FINE, "Not request logging request to URI: %s as no operation was found", key.toString());
             observer.onResult(new ExecutionResult(new CougarServiceException(ServerFaultCode.NoSuchOperation, "Operation not found: "+key.toString())));
         } else {
+            if (!(observer instanceof ExpiringObserver)) {
+                final long expiryTime = de.maxExecutionTime;
+                final ExpiringObserver expiringObserver = new ExpiringObserver(observer, expiryTime);
+                if (expiringObserver.expires()) {
+                    registerExpiringObserver(expiringObserver);
+                }
+                observer = expiringObserver;
+            }
             observer = new ExecutionObserverWrapper(observer, de.recorder, key);
 
             try {
@@ -154,15 +164,113 @@ public class BaseExecutionVenue implements ExecutionVenue {
                                 e)));
             }
         }
+        if (observer instanceof ExpiringObserver) {
+            deregisterExpiringObserver((ExpiringObserver) observer);
+        }
     }
 
+    @Override
+    public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, ExecutionObserver observer, final Executor executor) {
+        final DefinedExecutable de = registry.get(key);
+        final long expiryTime = de != null ? de.maxExecutionTime : 0;
+        final ExpiringObserver expiringObserver = new ExpiringObserver(observer, expiryTime);
+        if (expiringObserver.expires()) {
+            registerExpiringObserver(expiringObserver);
+        }
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                execute(ctx, key, args, expiringObserver);
+            }
+        });
+    }
 
-    private class DefinedExecutable {
+    protected void start() {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                processExpiredObservers();
+            }
+        }, "EV-ExecutableExpiryDetection");
+        t.setDaemon(true);
+        t.start();
+    }
+
+    private void processExpiredObservers() {
+        // this executes on a daemon thread so we can happily loop forever
+        while (true) {
+            try {
+                ExpiringObserver expired = expiringObservers.take();
+                expired.expire();
+            } catch (InterruptedException e) {
+                // ignore, just carry on round
+            }
+        }
+    }
+
+    private void registerExpiringObserver(ExpiringObserver expiringObserver) {
+        expiringObservers.add(expiringObserver);
+    }
+
+    private void deregisterExpiringObserver(ExpiringObserver expiringObserver) {
+        expiringObservers.remove(expiringObserver);
+    }
+
+    private class ExpiringObserver implements ExecutionObserver, Delayed {
+
+        private AtomicBoolean onResultCalled = new AtomicBoolean(false);
+        private final ExecutionObserver observer;
+        private final long expiryTime;
+
+        private ExpiringObserver(final ExecutionObserver observer, final long expiryTime) {
+            this.observer = observer;
+            this.expiryTime = expiryTime;
+        }
+
+        public boolean expires() {
+            return expiryTime != 0;
+        }
+
+        @Override
+        public void onResult(ExecutionResult executionResult) {
+            if (onResultCalled.compareAndSet(false, true)) {
+                observer.onResult(executionResult);
+            }
+        }
+
+        public int compareTo(ExpiringObserver o) {
+            long diff = expiryTime - o.expiryTime;
+            if (diff == 0) {
+                return 0;
+            }
+            return diff < 0 ? -1 : 1;
+        }
+
+        @Override
+        public long getDelay(TimeUnit unit) {
+            return unit.convert(expiryTime-System.currentTimeMillis(),TimeUnit.MILLISECONDS);
+        }
+
+        @Override
+        public int compareTo(Delayed o) {
+            return compareTo((ExpiringObserver)o);
+        }
+
+        public void expire() {
+            if (onResultCalled.compareAndSet(false, true)) {
+                observer.onResult(new ExecutionResult(new CougarServiceException(ServerFaultCode.Timeout, "Executable did not complete in time")));
+            }
+        }
+    }
+
+    // package private for testing
+    static class DefinedExecutable {
         private final OperationDefinition def;
         private final Executable exec;
         private final ExecutionTimingRecorder recorder;
+        private final long maxExecutionTime;
 
-        public DefinedExecutable(final OperationDefinition def, final Executable exec, final ExecutionTimingRecorder recorder) {
+        public DefinedExecutable(final OperationDefinition def, final Executable exec, final ExecutionTimingRecorder recorder, final long maxExecutionTime) {
             this.def = def;
             this.exec = exec;
             if (recorder != null) {
@@ -170,6 +278,11 @@ public class BaseExecutionVenue implements ExecutionVenue {
             } else {
                 throw new IllegalArgumentException("recorder must be defined");
             }
+            this.maxExecutionTime = maxExecutionTime;
+        }
+
+        long getMaxExecutionTime() {
+            return maxExecutionTime;
         }
     }
 
@@ -234,5 +347,10 @@ public class BaseExecutionVenue implements ExecutionVenue {
             return de.exec;
         }
         return null;
+    }
+
+    // for testing
+    DefinedExecutable getDefinedExecutable(final OperationKey key) {
+        return registry.get(key);
     }
 }

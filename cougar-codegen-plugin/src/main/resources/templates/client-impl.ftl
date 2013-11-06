@@ -84,16 +84,11 @@ public class ${service}ClientImpl implements ${service}Client {<#t>
             }
         };
 
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                ev.execute(
-                        ctx,
-                        operationKey,
-                        args,
-                        wrappedObserver);
-            }
-        });
+        ev.execute( ctx,
+                    operationKey,
+                    args,
+                    wrappedObserver,
+                    executor);
     }
 
 <#list operations as operation>

@@ -42,7 +42,6 @@
     <bean id="executionVenue" class="com.betfair.cougar.core.impl.ev.ContainerAwareExecutionVenue">
         <property name="serviceLogManagerFactory" ref="serviceLogManagerFactory"/>
         <property name="stats" ref="kpiMonitor"/>
-        <property name="eventLogger" ref="cougar.core.EventLogger"/>
         <property name="preProcessors" ref="preProcessorInterceptors"/>
         <property name="postProcessors" ref="postProcessorInterceptors"/>
         <property name="identityResolverFactory" ref="cougar.core.IdentityResolverFactory"/>

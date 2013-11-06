@@ -120,16 +120,11 @@ public abstract class AbstractCommandProcessor<T extends TransportCommand> imple
      */
     protected void executeCommand(final ExecutionCommand finalExec, final ExecutionContext finalCtx) {
         executionsProcessed.incrementAndGet();
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                ev.execute(
-                        finalCtx,
-                        finalExec.getOperationKey(),
-                        finalExec.getArgs(),
-                        finalExec);
-            }
-        });
+        ev.execute(finalCtx,
+                   finalExec.getOperationKey(),
+                   finalExec.getArgs(),
+                   finalExec,
+                   executor);
     }
 
     protected void executeError(final T finalExec, final ExecutionContextWithTokens finalCtx, final CougarException finalError) {
