@@ -10,7 +10,8 @@ notifications:
     on_failure: always
 before_install:
    - "gem install travis-artifacts"
-script: "mvn integration-test -Pintegration-test -B -Denv.M2_HOME=/usr/share/maven"
+install: "echo 'No install command here!'"
+script: "mvn install -Pintegration-test -B -Denv.M2_HOME=/usr/share/maven"
 after_failure:
   - "bash uploadSurefireReports.sh"
 env:
