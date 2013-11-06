@@ -14,10 +14,17 @@ install: "echo 'No install command here!'"
 script: "mvn install -Pintegration-test -B -Denv.M2_HOME=/usr/share/maven"
 after_failure:
   - "bash uploadSurefireReports.sh"
+after_success:
+  - "mvn deploy -DskipTests=true -s upload_settings.xml"
 env:
  global:
    - "ARTIFACTS_AWS_REGION=eu-west-1"
    - "ARTIFACTS_S3_BUCKET=eswdd.travis-ci"
    - secure: "BpUh4fDvDlHolTGftatmhQdfl61Yyjb6AiDxreiWiIKyG1cuE4EhrvqFIikaWqesQ5uQkWWa6zHnA4r4FDDgFt11Qlq7Pp9oV7wqru0hZIVgFhOi1Uxdn/b0DTcDIEbrghyKkwHDM4F5q58dTggr8hXXXL5fsRx+m23tHum8x18="
    - secure: "LNBKYWq+b82QA9DVDfwb3XEXFkm/pWEPogn9D+AmimUUZ4rAsFb4OtwZ3vvfoIRujSLdbzr3g4ZCwoWmhEe8WLMIkbQ8CQLYrFvQk8/+f48OAb90n/3M6Ow0lHBz+h5D6/N2rs2QegRdf/kgrBL2M0CygRduW1VT7ESLx+t846w="
-    
+   # travis encrypt of "SONATYPE_NEXUS_SNAPSHOT_USER=xxx" - will be removed from eswdd/cougar after initial test
+   - secure: "H5IdRcXYp2AwHiXHN+tgfXhbaIdxXEmZsP+iX3Snp/sq6vz08TT6+nIlimUHDn5svcMG/Gjr1OjJf8pivnDh5s8+pS+B9a1KoxdhmkhvtMYQe2BjFYHP1G1nwBZcFu+sxwbkzTZSkivxLZ0K4VwDsoz1+7VF0lpXPZffVlgjMFc="
+   # value for betfair/cougar: "dN4cQEqoxAs4jMWLJqOfuJobSh7lqj5Ugo64sQcKLzJqpwBXaMyQvFsQxarWqbFWRjzSu8lw1+vQmz6R+dW6ysPDkQ/MqD1ETieBJjuQ46ynYMOVdR5hh4ovMnfCsCzpoaCdsuNFv+PwU6BN5LzQA7iKHSYDINzQKy1gobzzYtA="
+   # travis encrypt of "SONATYPE_NEXUS_SNAPSHOT_PASSWORD=xxx" - will be removed from eswdd/cougar after initial test
+   - secure: "LaaLZBIibOiMoO1Lzcsj5SEC6eAGtcg1J+GFJZc2PGch+C2ZWHF646rN5/WaToGGnS6Zo8ZDYc9dW+Z8iXFtPWgePNlo5+giXlDDcKrUnzBbdkxCUvANbC5/0Ei7hUVh8yXtuHup1gNUj3YpoFBZ84Bi7J1V/bZPGokSFFz/ktY="
+   # value for betfair/cougar: "bFEuZ3TbP/saFjqPF2naGi2QVRCfghMx/ztYR2GUuBy1NI70NSXkUhkob8Lyef2+zI9dDz4rF3+DocIb4Yx7BGoV16qxdOhGUPAKRyFKzgN9xH/8gSNJmtZvuHfrTA4lfluiu8NTbqBq7I2T4L4LQCldpmSvWgHr+Ag4hJ2kotk="
