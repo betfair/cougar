@@ -5,7 +5,7 @@ jdk:
 notifications:
   email:
     recipients:
-      - betfair-cougar-dev@googlegroups.com
+      - simon@exemel.co.uk
     on_success: always
     on_failure: always
 before_install:
@@ -16,7 +16,7 @@ after_failure:
 env:
  global:
    - "ARTIFACTS_AWS_REGION=eu-west-1"
-   - "ARTIFACTS_S3_BUCKET=betfair.travis-ci"
-   - secure: "PMdX+2QqkQPpGbKiMRQDPRQeYNMLAqnXvnGb/EhEWdRF9o7pxten5AllxUAVXkx5b88X5x1wPhd4UZj43/lDoRLIwsnHe7Nstc3kWX4g0xXsKty2s2he40bu4Q7aZvsEfpTjm/KNe5cLVOcBKWP3ovgY4JFUP7qWz9R0Z+ttU5Y="
-   - secure: "UIM47HAplfuaXAQLe3R10KpK1wCDtzVTLb2Vu6gp92JTlAxnMDJj7AYt0aN7ETaVF+6ZPac7kELQdufctcSKSD6N93tpOusw5yKmk2yk10t8uhzbXsHkN3scUi/0VSZ7gdHOWaNFVejtKSFOHqHOgN6ll93T0iviMhvl6xj7Y/c="
+   - "ARTIFACTS_S3_BUCKET=eswdd.travis-ci"
+   - secure: "BpUh4fDvDlHolTGftatmhQdfl61Yyjb6AiDxreiWiIKyG1cuE4EhrvqFIikaWqesQ5uQkWWa6zHnA4r4FDDgFt11Qlq7Pp9oV7wqru0hZIVgFhOi1Uxdn/b0DTcDIEbrghyKkwHDM4F5q58dTggr8hXXXL5fsRx+m23tHum8x18="
+   - secure: "LNBKYWq+b82QA9DVDfwb3XEXFkm/pWEPogn9D+AmimUUZ4rAsFb4OtwZ3vvfoIRujSLdbzr3g4ZCwoWmhEe8WLMIkbQ8CQLYrFvQk8/+f48OAb90n/3M6Ow0lHBz+h5D6/N2rs2QegRdf/kgrBL2M0CygRduW1VT7ESLx+t846w="
     

@@ -47,7 +47,6 @@ import org.mockito.Mockito;
 import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.security.IdentityResolver;
 import com.betfair.cougar.core.api.ev.Executable;
-import com.betfair.cougar.core.api.ev.ServiceLogManager;
 import com.betfair.cougar.core.api.ev.ExecutionObserver;
 import com.betfair.cougar.core.api.ev.ExecutionPostProcessor;
 import com.betfair.cougar.core.api.ev.ExecutionPreProcessor;
@@ -102,7 +101,7 @@ public class ServerClientFactory {
 
         ExecutionVenue ev = new ExecutionVenue() {
             @Override
-            public void registerOperation(String namespace, OperationDefinition def, Executable executable, ExecutionTimingRecorder recorder) {
+            public void registerOperation(String namespace, OperationDefinition def, Executable executable, ExecutionTimingRecorder recorder, long maxExecutionTime) {
             }
 
             @Override
@@ -133,6 +132,15 @@ public class ServerClientFactory {
                     break;
             }
             	
+            }
+
+            public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, final ExecutionObserver observer, Executor executor) {
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        execute(ctx, key, args, observer);
+                    }
+                });
             }
 
             @Override

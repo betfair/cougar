@@ -22,6 +22,7 @@ import com.betfair.cougar.core.api.ServiceDefinition;
 import com.betfair.cougar.core.api.ServiceVersion;
 import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.security.IdentityResolverFactory;
+import com.betfair.cougar.util.configuration.PropertyConfigurer;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -29,6 +30,7 @@ import org.mockito.stubbing.Answer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 
+import static com.betfair.cougar.core.impl.ev.BaseExecutionVenue.DefinedExecutable;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
@@ -167,5 +169,17 @@ public class ServiceRegisterableExecutionVenueTest {
         ev.onApplicationEvent(new ContextRefreshedEvent(appContext));
 
         verify(service).init(any(ContainerContext.class));
+    }
+
+    @Test
+    public void timeoutSet() {
+        PropertyConfigurer.getAllLoadedProperties().put("timeout.foo:Service1/v1.0/Operation1","1000");
+        PropertyConfigurer.getAllLoadedProperties().put("timeout.Service1/v1.0/Operation2","100");
+        ev.registerService("foo", serviceDef, service, resolver);
+        ev.registerService(serviceDef, service, resolver);
+        DefinedExecutable fooOp1De = ev.getDefinedExecutable(fooOp1Key);
+        assertEquals(1000, fooOp1De.getMaxExecutionTime());
+        DefinedExecutable op2De = ev.getDefinedExecutable(op2Key);
+        assertEquals(100, op2De.getMaxExecutionTime());
     }
 }
