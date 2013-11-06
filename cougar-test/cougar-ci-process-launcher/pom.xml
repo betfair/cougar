@@ -75,7 +75,7 @@
                                     <containerProcesses>
                                         <containerProcess>
                                             <id>baseline</id>
-                                            <command>${mavenCommand} -Dcougar.log.echoToStdout=true exec:java -X -l baseline-mvn.log</command>
+                                            <command>${mavenCommand} -Dcougar.log.echoToStdout=true exec:java -B</command>
                                             <workingDir>baseline/baseline-launch</workingDir>
                                             <startWatchString>COUGAR HAS STARTED</startWatchString>
                                             <failureWatchString>PanicInTheCougar</failureWatchString>
@@ -84,28 +84,28 @@
                                     <testProcesses>
                                         <testProcess>
                                             <id>binaryprotocol</id>
-                                            <command>${mavenCommand} test -Prun-integration-tests</command>
+                                            <command>${mavenCommand} test -Prun-integration-tests -B</command>
                                             <workingDir>cougar-test/cougar-binaryprotocol-tests</workingDir>
                                             <failureWatchString>Failures: [1-9]|BUILD FAILURE</failureWatchString>
                                             <watchString>Failures: 0</watchString>
                                         </testProcess>
                                         <testProcess>
                                             <id>iddversions</id>
-                                            <command>${mavenCommand} test -Prun-integration-tests</command>
+                                            <command>${mavenCommand} test -Prun-integration-tests -B</command>
                                             <workingDir>cougar-test/cougar-iddversion-tests</workingDir>
                                             <failureWatchString>Failures: [1-9]|BUILD FAILURE</failureWatchString>
                                             <watchString>Failures: 0</watchString>
                                         </testProcess>
                                         <testProcess>
                                             <id>clientNG</id>
-                                            <command>${mavenCommand} test -Prun-integration-tests</command>
+                                            <command>${mavenCommand} test -Prun-integration-tests -B</command>
                                             <workingDir>cougar-test/cougar-client-code-tests</workingDir>
                                             <failureWatchString>Failures: [1-9]|BUILD FAILURE</failureWatchString>
                                             <watchString>Failures: 0</watchString>
                                         </testProcess>
                                         <testProcess>
                                             <id>normalNG</id>
-                                            <command>${mavenCommand} test -Prun-integration-tests</command>
+                                            <command>${mavenCommand} test -Prun-integration-tests -B</command>
                                             <workingDir>cougar-test/cougar-normal-code-tests</workingDir>
                                             <failureWatchString>Failures: [1-9]|BUILD FAILURE</failureWatchString>
                                             <watchString>Failures: 0</watchString>
