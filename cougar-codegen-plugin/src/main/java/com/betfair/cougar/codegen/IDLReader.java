@@ -270,7 +270,7 @@ public class IDLReader {
         FileWriter fw = new FileWriter(outputFile);
         root.put("className", className);
 
-        log.info("Writing " + name + " using template " + trans.getTemplate() + " to file " + outputFile);
+        log.debug("Writing " + name + " using template " + trans.getTemplate() + " to file " + outputFile);
         try {
             // First thing is to deal with the service
             final Template template = config.getTemplate(trans.getTemplate());
