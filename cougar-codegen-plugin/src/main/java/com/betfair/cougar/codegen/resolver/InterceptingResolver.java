@@ -80,7 +80,7 @@ public class InterceptingResolver extends XMLCatalogResolver {
 	
 		try {
 			if (shouldLoadAsResource(systemId)) {
-				log.info("Loading entity '" + systemId + "' as resource");
+				log.debug("Loading entity '" + systemId + "' as resource");
 				return resourceToInputSource(publicId, systemId);
 			}
 			else {
@@ -103,7 +103,7 @@ public class InterceptingResolver extends XMLCatalogResolver {
 
 		try {
 			if (shouldLoadAsResource(systemId)) {
-				log.info("Loading resource '" + systemId + "' as resource");				
+				log.debug("Loading resource '" + systemId + "' as resource");
 				return resourceToLSInput(publicId, systemId);				
 			}
 			else {

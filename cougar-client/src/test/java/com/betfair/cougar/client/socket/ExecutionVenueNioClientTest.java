@@ -21,6 +21,7 @@ import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.impl.transports.TransportRegistryImpl;
 import com.betfair.cougar.netutil.nio.CougarProtocol;
+import com.betfair.cougar.netutil.nio.NioLogger;
 import com.betfair.cougar.netutil.nio.TlsNioConfig;
 import com.betfair.cougar.netutil.nio.message.ProtocolMessage;
 import com.betfair.cougar.netutil.nio.hessian.HessianObjectIOFactory;
@@ -52,6 +53,7 @@ public class ExecutionVenueNioClientTest extends AbstractClientTest {
     private HessianObjectIOFactory objectIOFactory;
 
     private byte serverVersion;
+    private NioLogger nioLogger;
 
     public ExecutionVenueNioClientTest(byte serverVersion) {
         this.serverVersion = serverVersion;
@@ -70,6 +72,7 @@ public class ExecutionVenueNioClientTest extends AbstractClientTest {
     @Before
     public void before() throws Exception {
         this.objectIOFactory = new HessianObjectIOFactory();
+        this.nioLogger = new NioLogger("ALL");
         super.before(serverVersion);
     }
 
@@ -81,6 +84,7 @@ public class ExecutionVenueNioClientTest extends AbstractClientTest {
 
     @Test
     public void testClient() throws Exception {
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Starting testClient()");
     	ClientTestExecutionObserver noFaultObserver = new ClientTestExecutionObserver();
     	ClientTestExecutionObserver invocationObserver = new ClientTestExecutionObserver(ECHO_STRING);
 
@@ -97,10 +101,12 @@ public class ExecutionVenueNioClientTest extends AbstractClientTest {
         invocationObserver.assertResult();
         noFaultObserver.assertResult();
 
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Stopping testClient()");
     }
 
     @Test
     public void testRPCTimeout() throws InterruptedException, ExecutionException, TimeoutException, IOException {
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Starting testRPCTimeout()");
         TlsNioConfig config = ServerClientFactory.getDefaultConfig();
         config.setRpcTimeoutMillis(1000);
         ExecutionVenueNioClient timeoutClient = ServerClientFactory.createClient(connectionString, config);
@@ -113,10 +119,12 @@ public class ExecutionVenueNioClientTest extends AbstractClientTest {
         performRequestAsync(timeoutClient, timeoutObserver, new Object[]{true, ServerClientFactory.COMMAND_SLEEP_60S, "60s sleep"});
         assertNotNull(timeoutObserver.getExecutionResultFuture().get(2000, TimeUnit.MILLISECONDS));
         timeoutObserver.assertResult();
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Stopping testRPCTimeout()");
     }
 
     @Test
     public void testMultipleServerConnections() throws Exception {
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Starting testMultipleServerConnections()");
 
         final ExecutionVenueNioServer nioServer2 = ServerClientFactory.createServer("127.0.0.1", 0, serverVersion);
         final ExecutionVenueNioServer nioServer3 = ServerClientFactory.createServer("127.0.0.1", 0, serverVersion);
@@ -191,11 +199,13 @@ public class ExecutionVenueNioClientTest extends AbstractClientTest {
         client2.stop().get(30, TimeUnit.SECONDS);
         nioServer2.stop();
         nioServer3.stop();
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Stopping testMultipleServerConnections()");
     }
 
 
     @Test
     public void testKeepAlive() throws Exception {
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Starting testKeepAlive()");
 
         ExecutionVenueNioServer s = null;
         ExecutionVenueNioClient c = null;
@@ -238,6 +248,7 @@ public class ExecutionVenueNioClientTest extends AbstractClientTest {
             if (s != null) s.stop();
             if (c != null) c.stop();
         }
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Stopping testKeepAlive()");
     }
 
     private static interface Outcome<T> {
@@ -257,31 +268,38 @@ public class ExecutionVenueNioClientTest extends AbstractClientTest {
 
     @Test
     public void testClientWithException() throws IOException, InterruptedException {
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Starting testClientWithException()");
         //Tests an exceptional call, the observer asserts we received the anticipated exception
         Object[] args = new Object[]{false, 999, ECHO_STRING};
         ClientTestExecutionObserver exceptionThrowingObserver =
                 new ClientTestExecutionObserver(
                         new CougarFrameworkException(BANG));
         performRequest(exceptionThrowingObserver, args);
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Stopping testClientWithException()");
     }
 
     @Test
     public void testStopUnconnected() throws IOException, InterruptedException, ExecutionException, TimeoutException {
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Starting testStopUnconnected()");
         ExecutionVenueNioClient client = ServerClientFactory.createClient("this.is.a.bad.url:999", getConfig());
         client.stop().get(30, TimeUnit.SECONDS);
         final boolean connected = client.getSessionFactory().isConnected();
         assertFalse(connected);
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Stopping testStopUnconnected()");
     }
 
     @Test
     public void testUnconnected() throws IOException, InterruptedException {
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Starting testUnconnected()");
         ExecutionVenueNioClient client = ServerClientFactory.createClient("this.is.a.bad.url:999", getConfig());
         client.start();
         assertFalse(client.getSessionFactory().isConnected());
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Stopping testUnconnected()");
     }
 
     @Test
     public void testUnconnected2() throws Exception {
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Starting testUnconnected2()");
         ExecutionVenueNioClient client = ServerClientFactory.createClient("this.is.a.bad.url:999", getConfig());
         try {
             client.start().get(2, TimeUnit.SECONDS);
@@ -289,10 +307,12 @@ public class ExecutionVenueNioClientTest extends AbstractClientTest {
         } catch (TimeoutException e) {
         }
         assertFalse(client.getSessionFactory().isConnected());
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Stopping testUnconnected2()");
     }
 
     @Test
     public void testStopConnected() throws Exception {
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Starting testStopConnected()");
         ExecutionVenueNioClient anotherClient = ServerClientFactory.createClient(connectionString, getConfig());
 
         anotherClient.start().get(30, TimeUnit.SECONDS);
@@ -300,10 +320,12 @@ public class ExecutionVenueNioClientTest extends AbstractClientTest {
 
         anotherClient.stop().get(30, TimeUnit.SECONDS);
         assertFalse("Client should now be disconnected", anotherClient.getSessionFactory().isConnected());
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Stopping testStopConnected()");
     }
 
     @Test
     public void testAddressFailover() throws Exception {
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Starting testAddressFailover()");
 
         String addressList = "rubbish.betfair.com:999,yetmorerubbish.betfair.com:999," + connectionString + ",one.more:123";
         ExecutionVenueNioClient anotherClient = ServerClientFactory.createClient(addressList, getConfig());
@@ -315,11 +337,13 @@ public class ExecutionVenueNioClientTest extends AbstractClientTest {
 
         anotherClient.stop().get(30, TimeUnit.SECONDS); //.get(10, TimeUnit.SECONDS);
 
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Stopping testAddressFailover()");
     }
 
 
     @Test
     public void testExecutionBeforeConnection() throws Exception {
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Starting testExecutionBeforeConnection()");
         ExecutionVenueNioClient anotherClient = ServerClientFactory.createClient("rubbish.betfair.com:0", getConfig());
 
         assertFalse("Client should not be connected", anotherClient.getSessionFactory().isConnected());
@@ -330,10 +354,12 @@ public class ExecutionVenueNioClientTest extends AbstractClientTest {
 
 
         anotherClient.stop().get(30, TimeUnit.SECONDS);
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Stopping testExecutionBeforeConnection()");
     }
 
     @Test
     public void testNoConnectionToUnhealthyServer() throws Exception {
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Starting testNoConnectionToUnhealthyServer()");
 
         ExecutionVenueNioServer nioServer2 = ServerClientFactory.createServer("127.0.0.1", 0, serverVersion);
         nioServer2.setServerExecutor(Executors.newCachedThreadPool());
@@ -359,11 +385,13 @@ public class ExecutionVenueNioClientTest extends AbstractClientTest {
 
         assertTrue(client2.getSessionFactory().isConnected());
 
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Stopping testNoConnectionToUnhealthyServer()");
 
     }
 
     @Test
     public void testServerDisconnects() throws Exception {
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Starting testServerDisconnects()");
 
         ExecutionVenueNioServer nioServer2 = ServerClientFactory.createServer("127.0.0.1", 0, serverVersion);
         nioServer2.setServerExecutor(Executors.newCachedThreadPool());
@@ -389,10 +417,12 @@ public class ExecutionVenueNioClientTest extends AbstractClientTest {
 
         assertFalse(client2.getSessionFactory().isConnected());
 
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Stopping testServerDisconnects()");
     }
 
     @Test
     public void testClientReconnection() throws Exception {
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Starting testClientReconnection()");
 
         ExecutionVenueNioServer server = null;
         ExecutionVenueNioClient client = null;
@@ -433,10 +463,12 @@ public class ExecutionVenueNioClientTest extends AbstractClientTest {
             if (server != null) server.stop();
             if (client != null) client.stop().get(30, TimeUnit.SECONDS);
         }
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Stopping testClientReconnection()");
     }
 
     @Test
     public void testClientObserverReceivesNotificationsAfterReconnection() throws Exception {
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Starting testClientObserverReceivesNotificationsAfterReconnection()");
 
         ExecutionVenueNioServer server = null;
         ExecutionVenueNioClient client = null;
@@ -489,10 +521,12 @@ public class ExecutionVenueNioClientTest extends AbstractClientTest {
             if (server != null) server.stop();
             if (client != null) client.stop().get(30, TimeUnit.SECONDS);
         }
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Stopping testClientObserverReceivesNotificationsAfterReconnection()");
     }
 
     @Test
     public void testObserversCanNotBeAdded() throws Exception {
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Starting testObserversCanNotBeAdded()");
 
         ClientTestExecutionObserver observer1 = new ClientTestExecutionObserver("1");
         ClientTestExecutionObserver observer2 = new ClientTestExecutionObserver("2");
@@ -506,10 +540,12 @@ public class ExecutionVenueNioClientTest extends AbstractClientTest {
 
         assertEquals("DSC-0026", observer1.getExecutionResult().getFault().getFault().getErrorCode());
         assertEquals("DSC-0002", observer2.getExecutionResult().getFault().getFault().getErrorCode());
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Stopping testObserversCanNotBeAdded()");
     }
 
     @Test
     public void testGracefulDisconnectionEnabled() throws Exception {
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Starting testGracefulDisconnectionEnabled()");
         ExecutionVenueNioServer testServer = null;
         ExecutionVenueNioClient testClient = null;
         try {
@@ -548,10 +584,12 @@ public class ExecutionVenueNioClientTest extends AbstractClientTest {
                 testClient.stop().get(30, TimeUnit.SECONDS);
             }
         }
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Stopping testGracefulDisconnectionEnabled()");
     }
 
     @Test
     public void testGracefulDisconnectionDisabled() throws Exception {
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Starting testGracefulDisconnectionDisabled()");
 
         ExecutionVenueNioServer testServer = null;
         ExecutionVenueNioClient testClient = null;
@@ -597,6 +635,7 @@ public class ExecutionVenueNioClientTest extends AbstractClientTest {
                 testClient.stop().get(30, TimeUnit.SECONDS);
             }
         }
+        nioLogger.log(NioLogger.LoggingLevel.SESSION, (String)null, "Stopping testGracefulDisconnectionDisabled()");
     }
 
     private int getNumOfConnectedSessions(Map<String, String> connectedStatus) {
