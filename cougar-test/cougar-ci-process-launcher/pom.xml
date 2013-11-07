@@ -63,7 +63,7 @@
                     <plugin>
                         <groupId>com.betfair.plugins</groupId>
                         <artifactId>maven-test-process-plugin</artifactId>
-                        <version>1.2</version>
+                        <version>1.3-SNAPSHOT</version>
                         <executions>
                             <execution>
                                 <id>tests</id>
@@ -72,6 +72,7 @@
                                     <goal>test</goal>
                                 </goals>
                                 <configuration>
+                                    <privateEnvironmentVariables>ARTIFACTS_AWS_ACCESS_KEY_ID,ARTIFACTS_AWS_SECRET_ACCESS_KEY,SONATYPE_NEXUS_SNAPSHOT_USER,SONATYPE_NEXUS_SNAPSHOT_PASSWORD</privateEnvironmentVariables>
                                     <containerProcesses>
                                         <containerProcess>
                                             <id>baseline</id>
