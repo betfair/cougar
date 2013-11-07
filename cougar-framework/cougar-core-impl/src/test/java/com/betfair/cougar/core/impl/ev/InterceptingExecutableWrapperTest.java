@@ -74,6 +74,7 @@ public class InterceptingExecutableWrapperTest {
     @Test
     public void testPreInterceptorHappyCase() {
         ExecutionPreProcessor preIntercerptor = Mockito.mock(ExecutionPreProcessor.class);
+        when(preIntercerptor.getExecutionRequirement()).thenReturn(ExecutionRequirement.EXACTLY_ONCE);
         when(preIntercerptor.invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class))).thenReturn(SUCCESS);
 
         preExecutionInterceptorList.add(preIntercerptor);
@@ -89,9 +90,11 @@ public class InterceptingExecutableWrapperTest {
     @Test
     public void testPreInterceptorsOneGoodOneBadUnchecked() {
         ExecutionPreProcessor preIntercerptorGood = Mockito.mock(ExecutionPreProcessor.class);
+        when(preIntercerptorGood.getExecutionRequirement()).thenReturn(ExecutionRequirement.EXACTLY_ONCE);
         when(preIntercerptorGood.invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class))).thenReturn(SUCCESS);
 
         ExecutionPreProcessor preIntercerptorBad = Mockito.mock(ExecutionPreProcessor.class);
+        when(preIntercerptorBad.getExecutionRequirement()).thenReturn(ExecutionRequirement.EXACTLY_ONCE);
         when(preIntercerptorBad.invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class))).thenReturn(FAILURE_UNCHECKED);
 
         preExecutionInterceptorList.add(preIntercerptorGood);
@@ -121,9 +124,11 @@ public class InterceptingExecutableWrapperTest {
     @Test
     public void testPreInterceptorsOneBadCheckedOneGood() {
         ExecutionPreProcessor preIntercerptorBad = Mockito.mock(ExecutionPreProcessor.class);
+        when(preIntercerptorBad.getExecutionRequirement()).thenReturn(ExecutionRequirement.EXACTLY_ONCE);
         when(preIntercerptorBad.invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class))).thenReturn(FAILURE_CHECKED);
 
         ExecutionPreProcessor preIntercerptorGood = Mockito.mock(ExecutionPreProcessor.class);
+        when(preIntercerptorGood.getExecutionRequirement()).thenReturn(ExecutionRequirement.EXACTLY_ONCE);
 
         preExecutionInterceptorList.add(preIntercerptorBad);
         preExecutionInterceptorList.add(preIntercerptorGood);
