@@ -57,18 +57,18 @@ public class Main {
 		
         // First let's mangle the document if need be.
         if (transform.getManglers() != null) {
-        	log.info("mangling IDL using "+transform.getManglers().size()+" pre validations");
+        	log.debug("mangling IDL using "+transform.getManglers().size()+" pre validations");
         	for(DocumentMangler m : transform.getManglers()) {
-        		log.info(m.getName());
+        		log.debug(m.getName());
            	 	reader.mangle(m);
             }
-    		log.info(reader.serialize());
+    		log.debug(reader.serialize());
         }
        	
 		for (Validator v: transform.getPreValidations()) {
 			reader.validate(v);
 		}
-		log.info(reader.serialize());
+		log.debug(reader.serialize());
 		reader.runMerge(transform.getTransformations());
 		
 		reader.writeResult();

@@ -249,11 +249,12 @@ public class IdlToDSMojo extends AbstractMojo {
     public void execute()
         throws MojoExecutionException
     {
+        getLog().info("Starting Cougar code generation");
         if (isOffline()) {
             getLog().warn("Maven in offline mode, plugin is NOT validating IDDs against schemas");
         }
         else {
-        	getLog().info("Unbundling schemas for validation");
+        	getLog().debug("Unbundling schemas for validation");
         	catalogFile = unwrapSchemas();
         }
         initResourceLoader();
@@ -270,7 +271,7 @@ public class IdlToDSMojo extends AbstractMojo {
 
 
         try {
-            getLog().info("Starting IDL to Java");
+            getLog().debug("Starting IDL to Java");
 
             for (Service service : getServices() ) {
                 processService(service);
@@ -284,7 +285,7 @@ public class IdlToDSMojo extends AbstractMojo {
             throw new MojoExecutionException("Failed processing IDL: " + e, e);
         }
 
-        getLog().info("Done");
+        getLog().info("Completed Cougar code generation");
     }
 
     private void prepIddStripperXsl() throws MojoExecutionException {
@@ -333,13 +334,13 @@ public class IdlToDSMojo extends AbstractMojo {
      */
     private void processService(Service service) throws Exception {
 
-        getLog().info("Service: " + service.getServiceName());
+        getLog().info("  Service: " + service.getServiceName());
 
         Document iddDoc = parseIddFile(service.getServiceName());
 
         // 1. validate
         if (!isOffline()) {
-            getLog().info("Validating XML..");
+            getLog().debug("Validating XML..");
             new XmlValidator(resolver).validate(iddDoc);
         }
 
@@ -350,7 +351,7 @@ public class IdlToDSMojo extends AbstractMojo {
     private void generateExposedIDD(Document iddDoc, String serviceName, String version) throws Exception {
 
         File iddFile = new File(getBaseDir(), "target/generated-resources/idd/" + serviceName+"_"+version.replace("_",".") + "_Exposed.idd");
-        getLog().info("Writing to idd file " + iddFile);
+        getLog().debug("Writing to idd file " + iddFile);
         initOutputDir(iddFile.getParentFile());
 
         ExposedIDDGenerator.transform(iddDoc, iddStripperXsl, iddFile);
@@ -444,15 +445,15 @@ public class IdlToDSMojo extends AbstractMojo {
         runMerge(reader);
 
         // also create the stripped down, combined version of the IDD doc
-        getLog().info("Generating combined IDD sans comments...");
+        getLog().debug("Generating combined IDD sans comments...");
         Document combinedIDDDoc = parseIddFromString(reader.serialize());
         // WARNING: this absolutely has to be run after a call to reader.runMerge (called by runMerge above) as otherwise the version will be null...
         generateExposedIDD(combinedIDDDoc, reader.getInterfaceName(), reader.getInterfaceMajorMinorVersion());
 
         // generate WSDL/XSD
-        getLog().info("Generating wsdl...");
+        getLog().debug("Generating wsdl...");
         generateWsdl(iddDoc, reader.getInterfaceName(), reader.getInterfaceMajorMinorVersion());
-        getLog().info("Generating xsd...");
+        getLog().debug("Generating xsd...");
         generateXsd(iddDoc, reader.getInterfaceName(), reader.getInterfaceMajorMinorVersion());
 	}
 
@@ -479,7 +480,7 @@ public class IdlToDSMojo extends AbstractMojo {
 	private void generateWsdl(Document iddDoc, String serviceName, String version) throws Exception {
 
 	    File wsdlFile = new File(getBaseDir(), "target/generated-resources/wsdl/" + serviceName +"_"+version.replace("_",".")+ ".wsdl");
-	    getLog().info("Writing to wsdl file " + wsdlFile);
+	    getLog().debug("Writing to wsdl file " + wsdlFile);
 	    initOutputDir(wsdlFile.getParentFile());
 
 	    new XmlGenerator().transform(iddDoc, wsdlXsl, wsdlFile);
@@ -488,7 +489,7 @@ public class IdlToDSMojo extends AbstractMojo {
 	private void generateXsd(Document iddDoc, String serviceName, String version) throws Exception {
 
 	    File xsdFile = new File(getBaseDir(), "target/generated-resources/xsd/" + serviceName +"_"+version.replace("_",".")+ ".xsd");
-	    getLog().info("Writing to xsd file " + xsdFile);
+	    getLog().debug("Writing to xsd file " + xsdFile);
 	    initOutputDir(xsdFile.getParentFile());
 
 	    new XmlGenerator().transform(iddDoc, xsdXsl, xsdFile);
@@ -502,7 +503,7 @@ public class IdlToDSMojo extends AbstractMojo {
 
 	    FileUtil.resourceToFile(wsdlXslResource, xslFile, getClass());
 
-        getLog().info("Wrote wsdl stylesheet from resource " + wsdlXslResource + " to " + xslFile);
+        getLog().debug("Wrote wsdl stylesheet from resource " + wsdlXslResource + " to " + xslFile);
     }
 
     private void writeXsdStylesheet(File xslFile) throws Exception {
@@ -513,7 +514,7 @@ public class IdlToDSMojo extends AbstractMojo {
 
 	    FileUtil.resourceToFile(xsdXslResource, xslFile, getClass());
 
-        getLog().info("Wrote xsd stylesheet from resource " + xsdXslResource + " to " + xslFile);
+        getLog().debug("Wrote xsd stylesheet from resource " + xsdXslResource + " to " + xslFile);
     }
     private void writeIDDStylesheet(File xslFile) throws Exception {
 
@@ -523,7 +524,7 @@ public class IdlToDSMojo extends AbstractMojo {
 
 	    FileUtil.resourceToFile(iddStripperXslResource, xslFile, getClass());
 
-        getLog().info("Wrote IDD stylesheet from resource " + iddStripperXslResource + " to " + xslFile);
+        getLog().debug("Wrote IDD stylesheet from resource " + iddStripperXslResource + " to " + xslFile);
     }
 
     private File unwrapSchemas() {
@@ -543,24 +544,24 @@ public class IdlToDSMojo extends AbstractMojo {
 
         // First let's mangle the document if need be.
         if (transformations.getManglers() != null) {
-        	getLog().info("mangling IDL using "+transformations.getManglers().size()+" manglers");
+        	getLog().debug("mangling IDL using "+transformations.getManglers().size()+" manglers");
         	for(DocumentMangler m : transformations.getManglers()) {
-                getLog().info(m.getName());
+                getLog().debug(m.getName());
            	 	reader.mangle(m);
             }
         }
 
         if (transformations.getPreValidations() != null) {
-        	getLog().info("Pre validating IDL using "+transformations.getPreValidations().size()+" pre validations");
+        	getLog().debug("Pre validating IDL using "+transformations.getPreValidations().size()+" pre validations");
             for(Validator v : transformations.getPreValidations()) {
-                getLog().info(v.getName());
+                getLog().debug(v.getName());
                 reader.validate(v);
             }
 
         }
 
         for(Transformation t : transformations.getTransformations()) {
-            getLog().info(t.toString());
+            getLog().debug(t.toString());
         }
         reader.runMerge(transformations.getTransformations());
 
@@ -597,7 +598,7 @@ public class IdlToDSMojo extends AbstractMojo {
     	File generatedSources = new File(getBaseDir(), generatedSourceDir);
 
         this.getProject().addCompileSourceRoot( generatedSources.getAbsolutePath() );
-        this.getLog().info( "Source directory " + generatedSources + " added." );
+        this.getLog().debug( "Source directory " + generatedSources + " added." );
 	}
 
     private void initResolver() {

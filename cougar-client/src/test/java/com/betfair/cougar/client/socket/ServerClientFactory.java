@@ -180,7 +180,7 @@ public class ServerClientFactory {
         cmdProcessor.onCougarStart();
 
 
-        final NioLogger nioLogger = new NioLogger("NONE");
+        final NioLogger nioLogger = new NioLogger("ALL");
         ExecutionVenueServerHandler handler = new ExecutionVenueServerHandler(nioLogger, cmdProcessor, new HessianObjectIOFactory());
         server.setServerHandler(handler);
 

@@ -10,14 +10,19 @@ notifications:
     on_failure: always
 before_install:
    - "gem install travis-artifacts"
-script: "mvn integration-test -Pintegration-test -B -Denv.M2_HOME=/usr/share/maven"
+install: "echo 'No install command here!'"
+script: "mvn install -Pintegration-test -B -Denv.M2_HOME=/usr/share/maven"
 after_failure:
   - "bash uploadSurefireReports.sh"
+after_success:
+  - "mvn deploy -DskipTests=true -s upload_settings.xml"
 env:
  global:
    - "ARTIFACTS_AWS_REGION=eu-west-1"
    - "ARTIFACTS_S3_BUCKET=betfair.travis-ci"
+   # S3 credentials
    - secure: "PMdX+2QqkQPpGbKiMRQDPRQeYNMLAqnXvnGb/EhEWdRF9o7pxten5AllxUAVXkx5b88X5x1wPhd4UZj43/lDoRLIwsnHe7Nstc3kWX4g0xXsKty2s2he40bu4Q7aZvsEfpTjm/KNe5cLVOcBKWP3ovgY4JFUP7qWz9R0Z+ttU5Y="
    - secure: "UIM47HAplfuaXAQLe3R10KpK1wCDtzVTLb2Vu6gp92JTlAxnMDJj7AYt0aN7ETaVF+6ZPac7kELQdufctcSKSD6N93tpOusw5yKmk2yk10t8uhzbXsHkN3scUi/0VSZ7gdHOWaNFVejtKSFOHqHOgN6ll93T0iviMhvl6xj7Y/c="
-    
-
+   # Sonatype Snapshot repo credentials
+   - secure: "dN4cQEqoxAs4jMWLJqOfuJobSh7lqj5Ugo64sQcKLzJqpwBXaMyQvFsQxarWqbFWRjzSu8lw1+vQmz6R+dW6ysPDkQ/MqD1ETieBJjuQ46ynYMOVdR5hh4ovMnfCsCzpoaCdsuNFv+PwU6BN5LzQA7iKHSYDINzQKy1gobzzYtA="
+   - secure: "bFEuZ3TbP/saFjqPF2naGi2QVRCfghMx/ztYR2GUuBy1NI70NSXkUhkob8Lyef2+zI9dDz4rF3+DocIb4Yx7BGoV16qxdOhGUPAKRyFKzgN9xH/8gSNJmtZvuHfrTA4lfluiu8NTbqBq7I2T4L4LQCldpmSvWgHr+Ag4hJ2kotk="
