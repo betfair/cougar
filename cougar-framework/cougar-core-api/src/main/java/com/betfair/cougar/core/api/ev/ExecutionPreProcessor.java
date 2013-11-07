@@ -20,6 +20,7 @@ import com.betfair.cougar.api.ExecutionContext;
 
 public interface ExecutionPreProcessor {
 
+    public ExecutionRequirement getExecutionRequirement();
 	public InterceptorResult invoke(ExecutionContext ctx, OperationKey key, Object[] args);
 	public String getName();
 }

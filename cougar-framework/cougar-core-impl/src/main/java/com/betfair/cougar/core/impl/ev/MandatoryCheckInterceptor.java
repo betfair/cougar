@@ -19,6 +19,7 @@ package com.betfair.cougar.core.impl.ev;
 import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.Validatable;
 import com.betfair.cougar.core.api.ev.ExecutionPreProcessor;
+import com.betfair.cougar.core.api.ev.ExecutionRequirement;
 import com.betfair.cougar.core.api.ev.ExecutionVenue;
 import com.betfair.cougar.core.api.ev.InterceptorResult;
 import com.betfair.cougar.core.api.ev.InterceptorState;
@@ -68,4 +69,9 @@ public class MandatoryCheckInterceptor implements ExecutionPreProcessor {
 	public String getName() {
 		return NAME;
 	}
+
+    @Override
+    public ExecutionRequirement getExecutionRequirement() {
+        return ExecutionRequirement.EXACTLY_ONCE;
+    }
 }
