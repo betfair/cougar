@@ -10,6 +10,11 @@ if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
   exit 2
 fi
 
+#
+# NOTE: This code isn't exactly thread safe, if 2 builds are publishing at the same time then this could get messy
+#       Kinda assuming that's extremely unlikely, and if it were to happen, we could just re-run the build
+#
+
 ARTIFACTS_S3_BUCKET_URL=http://$ARTIFACTS_S3_BUCKET.s3-website-$ARTIFACTS_AWS_REGION.amazonaws.com
 
 # Create our tarballs for upload
@@ -30,8 +35,20 @@ else
 fi
 
 # Add this build to the branch index
-echo "<a href=\"$TRAVIS_BUILD_ID/index.html\">$TRAVIS_BUILD_ID</a><br/>" >> index.html
-travis-artifacts upload --target-path $TRAVIS_REPO_SLUG/$TRAVIS_BRANCH --path index.html
+grep -q "$TRAVIS_BUILD_ID" index.html
+RESULT=$?
+if [ $RESULT -eq 1 ]; then
+  echo "<a href=\"$TRAVIS_BUILD_ID/index.html\">$TRAVIS_BUILD_ID</a><br/>" >> index.html
+  travis-artifacts upload --target-path $TRAVIS_REPO_SLUG/$TRAVIS_BRANCH/$TRAVIS_BUILD_ID --path index.html
+  rm index.html
+  touch index.html
+else
+  wget -O index.html $UPLOAD_S3_BUCKET_URL/$TRAVIS_REPO_SLUG/$TRAVIS_BRANCH/$TRAVIS_BUILD_ID/index.html
+fi
+
+# Add this job to the build index
+echo "<a href=\"$TRAVIS_JOB_ID/index.html\">$TRAVIS_JOB_ID</a><br/>" >> index.html
+travis-artifacts upload --target-path $TRAVIS_REPO_SLUG/$TRAVIS_BRANCH/$TRAVIS_BUILD_ID --path index.html
 
 # Create and upload the build index and tarballs
 echo "<a href=\"logs.tar\">logs.tar</a><br/>" > index.html
@@ -39,28 +56,5 @@ echo "<a href=\"TEST-xml.tar\">TEST-xml.tar</a><br/>" >> index.html
 travis-artifacts upload --target-path $TRAVIS_REPO_SLUG/$TRAVIS_BRANCH/$TRAVIS_BUILD_ID --path index.html
 travis-artifacts upload --target-path $TRAVIS_REPO_SLUG/$TRAVIS_BRANCH/$TRAVIS_BUILD_ID --path logs.tar
 travis-artifacts upload --target-path $TRAVIS_REPO_SLUG/$TRAVIS_BRANCH/$TRAVIS_BUILD_ID --path TEST-xml.tar
-
-#for i in `find . -name surefire-reports`; do
-#  PATH1=`echo "$i" | cut -c2-1000`
-#  PATH_SO_FAR=""
-#  SEP=""
-#  for dir in `echo "$PATH1" | sed -e 's/\// /g'`; do
-#    NEW_PATH_SO_FAR="$PATH_SO_FAR$SEP$dir"
-#    SEP="/"
-#    OUTPUT=$PATH_SO_FAR/index.html
-#    if [ -z "$PATH_SO_FAR" ]; then
-#      OUTPUT=index.html
-#    fi
-#    echo "<a href='$dir/index.html'>$dir</a><br/>" >> $OUTPUT
-#    travis-artifacts upload --target-path $TRAVIS_REPO_SLUG --path $OUTPUT
-#    if [ $dir == "surefire-reports" ]; then
-#      for file in `ls $NEW_PATH_SO_FAR`; do
-#        echo "<a href='$file'>$file</a><br/>" >> $NEW_PATH_SO_FAR/index.html
-#      done
-#      travis-artifacts upload --target-path $TRAVIS_REPO_SLUG --path $NEW_PATH_SO_FAR
-#    fi
-#    PATH_SO_FAR=$NEW_PATH_SO_FAR
-#  done
-#done
 
 echo "Artifacts uploaded to $ARTIFACTS_S3_BUCKET_URL/$TRAVIS_REPO_SLUG/$TRAVIS_BRANCH/$TRAVIS_BUILD_ID"
