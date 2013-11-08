@@ -11,10 +11,10 @@ Authors
 * S.F.
 * Alexsei Makarenko 
 * Teresa Christianson
-* James Dodd 
+* [James Dodd ](https://github.com/dodderish)
 * [Colin Pretorius](http://github.com/colinpretorius)
 * Gary Fry	
-* Manjunath Shivakumar
+* [Manjunath Shivakumar](https://github.com/ManjunathShivakumar)
 
 Contributors
 ============
