@@ -78,7 +78,7 @@ public class ClientConnectedObjectManagerTest {
     @Before
     public void before() {
         subject = new ClientConnectedObjectManager();
-        subject.setMaxInitialPopulationWait(20L);
+        subject.setMaxInitialPopulationWait(50L);
         subject.setPullerAwaitTimeout(20L);
         subject.setMissingDeltaTimeout(20L);
         subject.setMaxDeltaQueue(10);
