@@ -21,7 +21,7 @@ ARTIFACTS_S3_BUCKET_URL=http://$ARTIFACTS_S3_BUCKET.s3-website-$ARTIFACTS_AWS_RE
 find . -name "*.log" -exec tar rvf logs.tar {} \; >/dev/null
 
 mkdir testxml
-find . -name "TEST-*.xml" -exec cp {} testxml \;
+find . -name "TEST-*.xml" > 1; for i in `cat 1`; do cp {} testxml; done; rm 1
 cd testxml
 for i in `grep "failures=\"[1-9]"`; do
   echo "<a href=\"$i\">$i</a>" >> index.html
