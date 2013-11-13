@@ -126,7 +126,7 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
         // if some operations were bound then register in our "special" executable for resolving identities
         // thread-safely prior to batch executions
         if (operationsBound) {
-            getExecutionVenue().registerOperation(IDENTITY_RESOLUTION_NAMESPACE,IDENTITY_RESOLUTION_OPDEF,IDENTITY_RESOLUTION_EXEC, IDENTITY_RESOLUTION_TIMING_RECORDER);
+            getExecutionVenue().registerOperation(IDENTITY_RESOLUTION_NAMESPACE,IDENTITY_RESOLUTION_OPDEF,IDENTITY_RESOLUTION_EXEC, IDENTITY_RESOLUTION_TIMING_RECORDER, 0);
         }
 	}
 

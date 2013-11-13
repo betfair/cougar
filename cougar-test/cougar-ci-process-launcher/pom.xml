@@ -63,7 +63,7 @@
                     <plugin>
                         <groupId>com.betfair.plugins</groupId>
                         <artifactId>maven-test-process-plugin</artifactId>
-                        <version>1.2</version>
+                        <version>1.3</version>
                         <executions>
                             <execution>
                                 <id>tests</id>
@@ -72,10 +72,11 @@
                                     <goal>test</goal>
                                 </goals>
                                 <configuration>
+                                    <privateEnvironmentVariables>ARTIFACTS_AWS_ACCESS_KEY_ID,ARTIFACTS_AWS_SECRET_ACCESS_KEY,SONATYPE_NEXUS_SNAPSHOT_USER,SONATYPE_NEXUS_SNAPSHOT_PASSWORD</privateEnvironmentVariables>
                                     <containerProcesses>
                                         <containerProcess>
                                             <id>baseline</id>
-                                            <command>${mavenCommand} -Dcougar.log.echoToStdout=true exec:java</command>
+                                            <command>${mavenCommand} -Dcougar.log.echoToStdout=true exec:java -B</command>
                                             <workingDir>baseline/baseline-launch</workingDir>
                                             <startWatchString>COUGAR HAS STARTED</startWatchString>
                                             <failureWatchString>PanicInTheCougar</failureWatchString>
@@ -84,28 +85,28 @@
                                     <testProcesses>
                                         <testProcess>
                                             <id>binaryprotocol</id>
-                                            <command>${mavenCommand} test -Prun-integration-tests</command>
+                                            <command>${mavenCommand} test -Prun-integration-tests -B</command>
                                             <workingDir>cougar-test/cougar-binaryprotocol-tests</workingDir>
                                             <failureWatchString>Failures: [1-9]|BUILD FAILURE</failureWatchString>
                                             <watchString>Failures: 0</watchString>
                                         </testProcess>
                                         <testProcess>
                                             <id>iddversions</id>
-                                            <command>${mavenCommand} test -Prun-integration-tests</command>
+                                            <command>${mavenCommand} test -Prun-integration-tests -B</command>
                                             <workingDir>cougar-test/cougar-iddversion-tests</workingDir>
                                             <failureWatchString>Failures: [1-9]|BUILD FAILURE</failureWatchString>
                                             <watchString>Failures: 0</watchString>
                                         </testProcess>
                                         <testProcess>
                                             <id>clientNG</id>
-                                            <command>${mavenCommand} test -Prun-integration-tests</command>
+                                            <command>${mavenCommand} test -Prun-integration-tests -B</command>
                                             <workingDir>cougar-test/cougar-client-code-tests</workingDir>
                                             <failureWatchString>Failures: [1-9]|BUILD FAILURE</failureWatchString>
                                             <watchString>Failures: 0</watchString>
                                         </testProcess>
                                         <testProcess>
                                             <id>normalNG</id>
-                                            <command>${mavenCommand} test -Prun-integration-tests</command>
+                                            <command>${mavenCommand} test -Prun-integration-tests -B</command>
                                             <workingDir>cougar-test/cougar-normal-code-tests</workingDir>
                                             <failureWatchString>Failures: [1-9]|BUILD FAILURE</failureWatchString>
                                             <watchString>Failures: 0</watchString>

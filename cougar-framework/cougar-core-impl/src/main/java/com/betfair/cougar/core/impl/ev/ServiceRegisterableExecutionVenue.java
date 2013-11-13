@@ -30,7 +30,6 @@ import com.betfair.cougar.logging.CougarLoggingUtils;
 import com.betfair.cougar.util.configuration.PropertyConfigurer;
 import com.betfair.tornjak.kpi.KPIMonitor;
 import com.betfair.tornjak.monitor.MonitorRegistry;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -71,11 +70,16 @@ public class ServiceRegisterableExecutionVenue extends BaseExecutionVenue implem
         String serviceStatName = getServiceStatName(namespace, serviceDefinition);
         for (OperationDefinition op : serviceDefinition.getOperationDefinitions()) {
             OperationKey namespacedOperationKey = namespace == null ? op.getOperationKey() : new OperationKey(op.getOperationKey(), namespace);
+            String timeoutPropertyName = "timeout."+namespacedOperationKey;
+            String timeoutValue = PropertyConfigurer.getAllLoadedProperties().get(timeoutPropertyName);
+            if (logger.isLoggable(Level.INFO) && timeoutValue != null) {
+                logger.log(Level.INFO, "Setting timeout for "+namespacedOperationKey+" to "+timeoutValue+"ms");
+            }
             registerOperation(
                 namespace,
                 op,
                 resolver.resolveExecutable(namespacedOperationKey, this),
-                stats != null ? new ServiceOperationExecutionTimingRecorder(stats, serviceStatName, op.getOperationKey().getOperationName()) : new NullExecutionTimingRecorder());
+                stats != null ? new ServiceOperationExecutionTimingRecorder(stats, serviceStatName, op.getOperationKey().getOperationName()) : new NullExecutionTimingRecorder(), timeoutValue != null ? Long.parseLong(timeoutValue) : 0);
         }
     }
 
@@ -141,6 +145,8 @@ public class ServiceRegisterableExecutionVenue extends BaseExecutionVenue implem
 		    dumpProperties();
             // now init the identity resolver
             setIdentityResolver(identityResolverFactory.getIdentityResolver());
+            // start
+            start();
 		}
 	}
 

@@ -3,6 +3,7 @@ package com.betfair.cougar.core.impl.interceptors;
 import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.geolocation.GeoLocationDetails;
 import com.betfair.cougar.core.api.ev.ExecutionPreProcessor;
+import com.betfair.cougar.core.api.ev.ExecutionRequirement;
 import com.betfair.cougar.core.api.ev.InterceptorResult;
 import com.betfair.cougar.core.api.ev.InterceptorState;
 import com.betfair.cougar.core.api.ev.OperationKey;
@@ -35,5 +36,10 @@ public class PrivateOnlyInterceptor implements ExecutionPreProcessor {
     @Override
     public String getName() {
         return "OnlyPrivateIPs";
+    }
+
+    @Override
+    public ExecutionRequirement getExecutionRequirement() {
+        return ExecutionRequirement.EXACTLY_ONCE;
     }
 }

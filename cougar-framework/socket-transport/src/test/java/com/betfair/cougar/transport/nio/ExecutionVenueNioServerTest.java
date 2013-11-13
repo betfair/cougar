@@ -224,7 +224,7 @@ public class ExecutionVenueNioServerTest {
 
         ev = new ExecutionVenue() {
             @Override
-            public void registerOperation(String ns, OperationDefinition def, Executable executable, ExecutionTimingRecorder recorder) {
+            public void registerOperation(String ns, OperationDefinition def, Executable executable, ExecutionTimingRecorder recorder, long maxExecutionTime) {
             }
 
             @Override
@@ -244,6 +244,16 @@ public class ExecutionVenueNioServerTest {
                 } else {
                     observer.onResult(new ExecutionResult(new CougarServiceException(ServerFaultCode.FrameworkError, THE_ITALIAN_JOB)));
                 }
+            }
+
+            @Override
+            public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, final ExecutionObserver observer, final Executor executor) {
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        execute(ctx, key, args, observer);
+                    }
+                });
             }
 
             @Override

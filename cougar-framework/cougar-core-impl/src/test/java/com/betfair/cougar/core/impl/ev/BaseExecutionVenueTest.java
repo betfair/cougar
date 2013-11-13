@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.ExecutionContextWithTokens;
@@ -92,6 +94,11 @@ public class BaseExecutionVenueTest {
         public String getName() {
             return "checkedExceptionThrowingPreProcessor";
         }
+
+        @Override
+        public ExecutionRequirement getExecutionRequirement() {
+            return ExecutionRequirement.EXACTLY_ONCE;
+        }
     };
 
 	/** 
@@ -107,6 +114,11 @@ public class BaseExecutionVenueTest {
 		public String getName() {
 			return "exceptionThrowingPreProcessor";
 		}
+
+        @Override
+        public ExecutionRequirement getExecutionRequirement() {
+            return ExecutionRequirement.EXACTLY_ONCE;
+        }
 	};
 
 	private ExecutionPreProcessor continuePreProcessor = new ExecutionPreProcessor() {
@@ -119,6 +131,11 @@ public class BaseExecutionVenueTest {
 		public String getName() {
 			return "continuePreProcessor";
 		}
+
+        @Override
+        public ExecutionRequirement getExecutionRequirement() {
+            return ExecutionRequirement.EXACTLY_ONCE;
+        }
 	};
 
 	private ExecutionPreProcessor forceOnResultPreProcessor = new ExecutionPreProcessor() {
@@ -131,6 +148,11 @@ public class BaseExecutionVenueTest {
 		public String getName() {
 			return "forceOnResultPreProcessor";
 		}
+
+        @Override
+        public ExecutionRequirement getExecutionRequirement() {
+            return ExecutionRequirement.EXACTLY_ONCE;
+        }
 	};
 
 	/**
@@ -282,34 +304,31 @@ public class BaseExecutionVenueTest {
         };
     }
 	
-	private BaseExecutionVenue bev = new BaseExecutionVenue();
-	private List<ExecutionPreProcessor> preProcessorList = new ArrayList<ExecutionPreProcessor>();
-	private List<ExecutionPostProcessor> postProcessorList = new ArrayList<ExecutionPostProcessor>();
-	private ExecutionContextWithTokens mockExecutionContext = mock(ExecutionContextWithTokens.class);
+	private BaseExecutionVenue bev;
+	private List<ExecutionPreProcessor> preProcessorList;
+	private List<ExecutionPostProcessor> postProcessorList;
+	private ExecutionContextWithTokens mockExecutionContext;
 	private OperationKey mockOperationKey;
 	private Object[] args = new Object[0];
 	private OperationDefinition mockOperationDef;
-//	private ServiceLogManager mockServiceLogManager;
 	private ExecutionTimingRecorder mockTimingRecorder;
 	private Executable mockExecutable;
-	private EventLogger eventLogger;
 	private RequestUUID uuid = new RequestUUIDImpl();
 	
 	@Before
 	public void setup() {
+        bev = new BaseExecutionVenue();
+        preProcessorList = new ArrayList<ExecutionPreProcessor>();
+        postProcessorList = new ArrayList<ExecutionPostProcessor>();
 		bev.setPreProcessors(preProcessorList);
 		bev.setPostProcessors(postProcessorList);
-		preProcessorList.clear();
-		postProcessorList.clear();
+        mockExecutionContext = mock(ExecutionContextWithTokens.class);
 
         mockOperationKey = new OperationKey(new ServiceVersion(1,0), "SomeService", "someOperation");
 		mockOperationDef = new SimpleOperationDefinition(mockOperationKey, new Parameter[0], new ParameterType(Void.class, new ParameterType[0]));
 		mockExecutable = mock(Executable.class);
-//		mockServiceLogManager = mock(ServiceLogManager.class);
         mockTimingRecorder = mock(ExecutionTimingRecorder.class);
 
-		eventLogger = mock(EventLogger.class);
-		bev.setEventLogger(eventLogger);
 
 		when(mockExecutionContext.getRequestUUID()).thenReturn(uuid);
 	}
@@ -317,70 +336,134 @@ public class BaseExecutionVenueTest {
 	@Test
 	public void testForceOnExceptionForPostProcessorWhenExecutablePasses() {
 		postProcessorList.add(forceOnExceptionMockPostProcessor);
-		bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder);
+		bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
 		bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver);
 	}
 	
 	@Test
 	public void testOnExceptionCalledWhenPreProcessorFails() {
 		preProcessorList.add(exceptionThrowingPreProcessor);
-		bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder);
+		bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
 		bev.execute(mockExecutionContext, mockOperationKey, args, failOnResultExecutionObserver);
 	}
 
     @Test
     public void testOnExceptionWithServiceCheckedException() {
         preProcessorList.add(checkedExceptionThrowingPreProcessor);
-        bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder);
+        bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
         bev.execute(mockExecutionContext, mockOperationKey, args, cougarApplicationExceptionResultExecutionObserver);
     }
 	
 	@Test
 	public void testOnResultCalledWhenPreProcessorPasses() {
 		preProcessorList.add(continuePreProcessor);
-		bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder);
+		bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
 		bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver);
 	}
 
 	@Test
 	public void testExecutableNotCalledWhenPreProcessorSaySo() {
 		preProcessorList.add(forceOnResultPreProcessor);
-		bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder);
+		bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
 		bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver);
 	}
+
+    @Test
+    public void onlyOncePreProcessorViaExecutorExecuteMethod() {
+        ExecutionPreProcessor preProcessor = mock(ExecutionPreProcessor.class);
+        when(preProcessor.getExecutionRequirement()).thenReturn(ExecutionRequirement.EXACTLY_ONCE);
+        when(preProcessor.invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class))).thenReturn(new InterceptorResult(InterceptorState.CONTINUE));
+        preProcessorList.add(preProcessor);
+        bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
+        bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver, thisThreadExecutor());
+        verify(preProcessor, times(1)).invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class));
+    }
+
+    @Test
+    public void everyPlacePreProcessorViaExecutorExecuteMethod() {
+        ExecutionPreProcessor preProcessor = mock(ExecutionPreProcessor.class);
+        when(preProcessor.getExecutionRequirement()).thenReturn(ExecutionRequirement.EVERY_OPPORTUNITY);
+        when(preProcessor.invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class))).thenReturn(new InterceptorResult(InterceptorState.CONTINUE));
+        preProcessorList.add(preProcessor);
+        bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
+        bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver, thisThreadExecutor());
+        verify(preProcessor, times(2)).invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class));
+    }
+
+    @Test
+    public void preQueueOnlyPreProcessorViaExecutorExecuteMethod() {
+        // processors are executed in order, so if the second is executed, but not the first then we're good
+        ExecutionPreProcessor preExecuteProcessor = mock(ExecutionPreProcessor.class);
+        when(preExecuteProcessor.getExecutionRequirement()).thenReturn(ExecutionRequirement.PRE_EXECUTE);
+        when(preExecuteProcessor.invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class))).thenReturn(new InterceptorResult(InterceptorState.CONTINUE));
+        preProcessorList.add(preExecuteProcessor);
+
+        // the second won't execute since we stopped things
+        ExecutionPreProcessor preQueueProcessor = mock(ExecutionPreProcessor.class);
+        when(preQueueProcessor.getExecutionRequirement()).thenReturn(ExecutionRequirement.PRE_QUEUE);
+        when(preQueueProcessor.invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class))).thenReturn(new InterceptorResult(InterceptorState.FORCE_ON_RESULT, null));
+        preProcessorList.add(preQueueProcessor);
+
+        bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
+        bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver, thisThreadExecutor());
+
+        verify(preQueueProcessor, times(1)).invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class));
+        verify(preExecuteProcessor, times(0)).invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class));
+    }
+
+    @Test
+    public void preExecuteOnlyPreProcessorViaExecutorExecuteMethod() {
+        // we know from the previous test that if we bomb out at queue that the execute one isn't run
+        // so this time allow the execution through from the queue and we should get an execute
+        ExecutionPreProcessor preExecuteProcessor = mock(ExecutionPreProcessor.class);
+        when(preExecuteProcessor.getExecutionRequirement()).thenReturn(ExecutionRequirement.PRE_EXECUTE);
+        when(preExecuteProcessor.invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class))).thenReturn(new InterceptorResult(InterceptorState.CONTINUE));
+        preProcessorList.add(preExecuteProcessor);
+
+        ExecutionPreProcessor preQueueProcessor = mock(ExecutionPreProcessor.class);
+        when(preQueueProcessor.getExecutionRequirement()).thenReturn(ExecutionRequirement.PRE_QUEUE);
+        when(preQueueProcessor.invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class))).thenReturn(new InterceptorResult(InterceptorState.CONTINUE));
+        preProcessorList.add(preQueueProcessor);
+
+        bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
+        bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver, thisThreadExecutor());
+
+        verify(preQueueProcessor, times(1)).invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class));
+        verify(preExecuteProcessor, times(1)).invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class));
+    }
 	
 	@Test
 	public void testFailingPostProcessorCallsOnExceptionWhenExecutableCompletesOK() {
 		postProcessorList.add(exceptionThrowingPostProcessor);
-		bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder);
+		bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
 		bev.execute(mockExecutionContext, mockOperationKey, args, failOnResultExecutionObserver);
 	}
 
     @Test
     public void testFailingPostProcessorCallsOnServiceCheckedExceptionWhenExecutableCompletesOK() {
         postProcessorList.add(checkedServiceExceptionThrowingPostProcessor);
-        bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder);
+        bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
         bev.execute(mockExecutionContext, mockOperationKey, args, cougarApplicationExceptionResultExecutionObserver);
     }
 
 	@Test
 	public void testSucceedingPostProcessorCallsOnResultWhenExecutableCompletesOK() {
 		postProcessorList.add(forceOnResultPostProcessor);
-		bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder);
+		bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
 		bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver);
 	}
 	
 	@Test
 	public void testPostProcessorForcesOnResultWhenExcecutableFails() {
 		postProcessorList.add(forceOnResultPostProcessor);
-		bev.registerOperation(null, mockOperationDef, failingExecutable, mockTimingRecorder);
+		bev.registerOperation(null, mockOperationDef, failingExecutable, mockTimingRecorder, 0);
 		bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver);
 	}
 	
 	@Test
 	public void testPostProcessorForcesOnExceptionWhenExcecutableFails() {
 		postProcessorList.add(forceOnExceptionMockPostProcessor);
-		bev.registerOperation(null, mockOperationDef, failingExecutable, mockTimingRecorder);
+		bev.registerOperation(null, mockOperationDef, failingExecutable, mockTimingRecorder, 0);
 		bev.execute(mockExecutionContext, mockOperationKey, args, failOnResultExecutionObserver);
 	}
 	
@@ -403,7 +486,7 @@ public class BaseExecutionVenueTest {
     @Test
     public void testNamepacedServiceNotSpecifiedInCallFail() {
         ExecutionObserver observer = mock(ExecutionObserver.class);
-        bev.registerOperation("MyNamespace", mockOperationDef, mockExecutable, mockTimingRecorder);
+        bev.registerOperation("MyNamespace", mockOperationDef, mockExecutable, mockTimingRecorder, 0);
         bev.execute(mockExecutionContext, mockOperationKey, args, observer);
 
         ArgumentCaptor<ExecutionResult> executionResultArgumentCaptor = ArgumentCaptor.forClass(ExecutionResult.class);
@@ -418,7 +501,7 @@ public class BaseExecutionVenueTest {
     @Test
     public void testServiceNamespaceSpecifiedInCallFail() {
         ExecutionObserver observer = mock(ExecutionObserver.class);
-        bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder);
+        bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
         bev.execute(mockExecutionContext, new OperationKey(mockOperationKey, "MyNamespace"), args, observer);
 
         ArgumentCaptor<ExecutionResult> executionResultArgumentCaptor = ArgumentCaptor.forClass(ExecutionResult.class);
@@ -439,9 +522,9 @@ public class BaseExecutionVenueTest {
         final ExecutionTimingRecorder mockTimingRecorderBar = mock(ExecutionTimingRecorder.class);
         final Executable mockExecutableBar = mock(Executable.class);
 
-        bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder);
-        bev.registerOperation("foo", mockOperationDef, mockExecutableFoo, mockTimingRecorderFoo);
-        bev.registerOperation("bar", mockOperationDef, mockExecutableBar, mockTimingRecorderBar);
+        bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
+        bev.registerOperation("foo", mockOperationDef, mockExecutableFoo, mockTimingRecorderFoo, 0);
+        bev.registerOperation("bar", mockOperationDef, mockExecutableBar, mockTimingRecorderBar, 0);
 
 
         // Test no namespace
@@ -462,7 +545,7 @@ public class BaseExecutionVenueTest {
     @Test
     public void testNewIdentityResolution() {
         ExecutionObserver observer = mock(ExecutionObserver.class);
-        bev.registerOperation(null, mockOperationDef, succeedingExecutable, mockTimingRecorder);
+        bev.registerOperation(null, mockOperationDef, succeedingExecutable, mockTimingRecorder, 0);
         bev.setIdentityResolver(newIdentityResolver);
 
 
@@ -511,7 +594,7 @@ public class BaseExecutionVenueTest {
 
             @Override
             public boolean isTransportSecure() {
-                return false;  //To change body of implemented methods use File | Settings | File Templates.
+                return false;
             }
         };
         bev.execute(context, mockOperationKey, args, observer);
@@ -527,7 +610,7 @@ public class BaseExecutionVenueTest {
     @Test
     public void testNewIdentityResolutionWithTokenWriteback() {
         ExecutionObserver observer = mock(ExecutionObserver.class);
-        bev.registerOperation(null, mockOperationDef, succeedingExecutable, mockTimingRecorder);
+        bev.registerOperation(null, mockOperationDef, succeedingExecutable, mockTimingRecorder, 0);
         bev.setIdentityResolver(newIdentityResolverWithToken);
 
         ExecutionContextWithTokens context = new ExecutionContextWithTokens() {
@@ -591,7 +674,7 @@ public class BaseExecutionVenueTest {
     @Test
     public void testNewIdentityResolutionFailsInspecific() {
         ExecutionObserver observer = mock(ExecutionObserver.class);
-        bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder);
+        bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
         bev.setIdentityResolver(failingGenericIdentityResolver(null));
 
         bev.execute(mockExecutionContext, mockOperationKey, args, observer);
@@ -606,7 +689,7 @@ public class BaseExecutionVenueTest {
     @Test
     public void testNewIdentityResolutionFailsSpecific() {
         ExecutionObserver observer = mock(ExecutionObserver.class);
-        bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder);
+        bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
         bev.setIdentityResolver(failingGenericIdentityResolver(CredentialFaultCode.BannedLocation));
 
         bev.execute(mockExecutionContext, mockOperationKey, args, observer);
@@ -618,27 +701,38 @@ public class BaseExecutionVenueTest {
         assertEquals(ServerFaultCode.BannedLocation, observerCaptor.getValue().getFault().getServerFaultCode());
     }
 
-	private void verifyEventLog(String loggerName, int numExtensionFields, CougarException exception) {
-		ArgumentCaptor<RequestLogEvent> loggerCaptor = ArgumentCaptor.forClass(RequestLogEvent.class);
-		if (numExtensionFields == 0) {
-			verify(eventLogger).logEvent(loggerCaptor.capture(), eq((Object[])null));
-		} else {
-			ArgumentCaptor<Object[]> extensionFieldsCaptor = ArgumentCaptor.forClass(Object[].class);
-			verify(eventLogger).logEvent(loggerCaptor.capture(), extensionFieldsCaptor.capture());
-			assertNotNull(extensionFieldsCaptor.getValue());
-			assertEquals(numExtensionFields, extensionFieldsCaptor.getValue().length);
-		}
-		assertNotNull(loggerCaptor.getValue());
-		assertEquals(loggerName, loggerCaptor.getValue().getLogName());
-		Object[] fieldsToLog = loggerCaptor.getValue().getFieldsToLog();
-		assertNotNull(fieldsToLog);
-		assertTrue(fieldsToLog[0] instanceof Date);
-		assertEquals(uuid, fieldsToLog[1]);
-		assertEquals("1.1", fieldsToLog[2]);
-		assertEquals("MockOperation", fieldsToLog[3]);
-		assertEquals(exception.getFault().getErrorCode(), fieldsToLog[4]);
-		assertEquals(0l, fieldsToLog[5]);
-		
-	}
+    @Test
+    public void expiringExecutable() {
+        ExecutionObserver observer = mock(ExecutionObserver.class);
+
+        bev.registerOperation(null, mockOperationDef, new Executable() {
+            @Override
+            public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, ExecutionVenue executionVenue) {
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {}
+            }
+        }, mockTimingRecorder, 1000);
+        bev.start();
+        bev.execute(mockExecutionContext, mockOperationKey, args, observer);
+
+        ArgumentCaptor<ExecutionResult> executionResultArgumentCaptor = ArgumentCaptor.forClass(ExecutionResult.class);
+        verify(observer).onResult(executionResultArgumentCaptor.capture());
+
+        assertNotNull(executionResultArgumentCaptor.getValue());
+        assertEquals(executionResultArgumentCaptor.getValue().getResultType(), ExecutionResult.ResultType.Fault);
+
+        assertEquals(ServerFaultCode.Timeout, executionResultArgumentCaptor.getValue().getFault().getServerFaultCode());
+
+    }
+
+    private Executor thisThreadExecutor() {
+        return new Executor() {
+            @Override
+            public void execute(Runnable command) {
+                command.run();
+            }
+        };
+    }
 
 }

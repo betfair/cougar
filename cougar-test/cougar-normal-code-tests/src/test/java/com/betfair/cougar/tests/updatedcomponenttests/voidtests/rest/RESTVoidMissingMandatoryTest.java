@@ -39,6 +39,7 @@ public class RESTVoidMissingMandatoryTest {
     public void doTest() throws Exception {
         // Set up the Http Call Bean to make the request
         CougarManager cougarManager1 = CougarManager.getInstance();
+        cougarManager1.setCougarFaultControllerJMXMBeanAttrbiute("DetailedFaults","false");
         HttpCallBean getNewHttpCallBean1 = cougarManager1.getNewHttpCallBean("87.248.113.14");
         cougarManager1 = cougarManager1;
         

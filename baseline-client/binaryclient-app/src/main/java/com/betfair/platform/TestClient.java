@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 import com.betfair.baseline.v2.enumerations.EnumOperationResponseObjectBodyParameterEnum;
@@ -40,7 +41,6 @@ import com.betfair.cougar.api.security.IdentityChain;
 import com.betfair.cougar.core.api.ServiceVersion;
 import com.betfair.cougar.core.api.ev.Executable;
 import com.betfair.cougar.core.api.ev.ExecutionTimingRecorder;
-import com.betfair.cougar.core.api.ev.ServiceLogManager;
 import com.betfair.cougar.core.api.ev.ExecutionObserver;
 import com.betfair.cougar.core.api.ev.ExecutionPostProcessor;
 import com.betfair.cougar.core.api.ev.ExecutionPreProcessor;
@@ -541,11 +541,12 @@ public class TestClient {
 		
 		return new ExecutionVenue() {
 			public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer) {}
+			public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, Executor executor) {}
 			public OperationDefinition getOperationDefinition(OperationKey key) {
 				return operationDef;
 			}
 			public Set<OperationKey> getOperationKeys() {return null;}
-            public void registerOperation(String namespace, OperationDefinition def, Executable executable, ExecutionTimingRecorder recorder) {}
+            public void registerOperation(String namespace, OperationDefinition def, Executable executable, ExecutionTimingRecorder recorder, long maxExecutionTime) {}
 			public void setPostProcessors(List<ExecutionPostProcessor> preProcessorList) {}
 			public void setPreProcessors(List<ExecutionPreProcessor> preProcessorList) {}
 			
