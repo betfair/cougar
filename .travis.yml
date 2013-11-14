@@ -13,7 +13,7 @@ before_install:
 install: "echo 'No install command here!'"
 script: "mvn install -Pintegration-test -B -Denv.M2_HOME=/usr/share/maven"
 after_failure:
-  - "bash uploadSurefireReports.sh"
+  - "bash -x uploadSurefireReports.sh"
 after_success:
   - "bash deploySnapshotBuild.sh"
 env:
