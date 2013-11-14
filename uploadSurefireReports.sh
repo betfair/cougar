@@ -23,7 +23,7 @@ find . -name "*.log" -exec tar rvf logs.tar {} \; >/dev/null
 mkdir testxml
 find . -name "TEST-*.xml" > 1; for i in `cat 1`; do cp $i testxml; done; rm 1
 cd testxml
-for i in `grep -H "failures=\"[1-9]" testxml/* | cut -d: -f1`; do
+for i in `grep -H "failures=\"[1-9]" * | cut -d: -f1`; do
   echo "<a href=\"$i\">$i</a>" >> index.html
 done
 cd ..
