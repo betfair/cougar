@@ -16,6 +16,8 @@
 
 package com.betfair.cougar.client;
 
+import com.betfair.cougar.core.api.exception.CougarValidationException;
+import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.transport.api.protocol.http.rescript.RescriptOperationBindingDescriptor;
 import com.betfair.cougar.transport.api.protocol.http.rescript.RescriptParamBindingDescriptor;
@@ -46,7 +48,7 @@ public class MessageBuilder {
 			}
 
 			if (param.isMandatory() && currentArgument == null) {
-				throw new IllegalArgumentException("MANDATORY parameter cannot be null: " + parameterName);
+				throw new CougarValidationException(ServerFaultCode.MandatoryNotDefined,"MANDATORY parameter cannot be null: " + parameterName);
 			}
 
             switch (parameterSource) {
