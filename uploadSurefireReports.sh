@@ -23,8 +23,8 @@ find . -name "*.log" -exec tar rvf logs.tar {} \; >/dev/null
 mkdir testxml
 find . -name "TEST-*.xml" > 1; for i in `cat 1`; do cp $i testxml; done; rm 1
 cd testxml
-for i in `grep "failures=\"[1-9]"`; do
-  echo "<a href=\"$i\">$i</a>" >> index.html
+for i in `grep -H "failures=\"[1-9]" * | cut -d: -f1`; do
+  echo "<a href=\"$i\">$i</a><br/>" >> index.html
 done
 cd ..
 tar cf TEST-xml.tar testxml
@@ -61,7 +61,6 @@ travis-artifacts upload --target-path $TRAVIS_REPO_SLUG/$TRAVIS_BRANCH/$TRAVIS_B
 # Create and upload the build index and tarballs
 echo "<a href=\"logs.tar\">logs.tar</a><br/>" > index.html
 
-mkdir testxml
 echo "<a href=\"TEST-xml.tar\">TEST-xml.tar</a><br/>" >> index.html
 travis-artifacts upload --target-path $TRAVIS_REPO_SLUG/$TRAVIS_BRANCH/$TRAVIS_BUILD_ID/$TRAVIS_JOB_ID --path index.html
 travis-artifacts upload --target-path $TRAVIS_REPO_SLUG/$TRAVIS_BRANCH/$TRAVIS_BUILD_ID/$TRAVIS_JOB_ID --path logs.tar
