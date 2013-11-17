@@ -25,6 +25,7 @@ import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.logging.CougarLogger;
 import com.betfair.cougar.logging.CougarLoggingUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -74,7 +75,8 @@ public class InterceptingExecutableWrapper implements ExecutableWrapper {
 
         List<ExecutionPreProcessor> unexecuted = unexecutedPreProcessorsByThread.get(Thread.currentThread());
         if (unexecuted == null) {
-            unexecuted = preExecutionInterceptorList;
+            // this has to be a new list since the InterceptionUtils.execute call below is allowed to (expected to even) mutate the second list passed in
+            unexecuted = new ArrayList<>(preExecutionInterceptorList);
         }
 
         try {

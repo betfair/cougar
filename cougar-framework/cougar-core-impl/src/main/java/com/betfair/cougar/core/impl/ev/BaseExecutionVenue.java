@@ -169,6 +169,7 @@ public class BaseExecutionVenue implements ExecutionVenue {
 
         final DefinedExecutable de = registry.get(key);
         final InterceptingExecutableWrapper interceptingExecutableWrapper = ExecutableWrapperUtils.findChild(InterceptingExecutableWrapper.class, de.exec);
+        // this has to be a new list since the InterceptionUtils.execute call below is allowed to (expected to even) mutate the second list passed in
         final List<ExecutionPreProcessor> remainingProcessors = new ArrayList<>(preProcessorList);
 
         final Runnable execution = new Runnable() {

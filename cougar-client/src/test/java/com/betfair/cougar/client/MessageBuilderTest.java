@@ -22,6 +22,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.betfair.cougar.core.api.exception.CougarValidationException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -141,7 +142,7 @@ public class MessageBuilderTest {
 			mb.build(new Object[] {null}, mockParameters, mockOperationBinding);
 			fail();
 			
-		} catch (IllegalArgumentException a) {
+		} catch (CougarValidationException a) {
 			//pass
 		}
 	}
