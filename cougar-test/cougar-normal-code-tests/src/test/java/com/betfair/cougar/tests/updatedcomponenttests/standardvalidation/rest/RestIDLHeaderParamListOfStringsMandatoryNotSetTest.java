@@ -41,6 +41,7 @@ public class RestIDLHeaderParamListOfStringsMandatoryNotSetTest {
         CougarManager cougarManager1 = CougarManager.getInstance();
         HttpCallBean httpCallBeanBaseline = cougarManager1.getNewHttpCallBean();
         CougarManager cougarManagerBaseline = cougarManager1;
+        cougarManager1.setCougarFaultControllerJMXMBeanAttrbiute("DetailedFaults", "false");
         // Get the cougar logging attribute for getting log entries later
         // Point the created HttpCallBean at the correct service
         httpCallBeanBaseline.setServiceName("baseline", "cougarBaseline");
