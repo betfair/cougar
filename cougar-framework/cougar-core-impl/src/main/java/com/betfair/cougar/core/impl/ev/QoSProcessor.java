@@ -8,6 +8,7 @@ import com.betfair.cougar.core.api.ev.InterceptorState;
 import com.betfair.cougar.core.api.ev.OperationKey;
 import com.betfair.tornjak.monitor.Monitor;
 import com.betfair.tornjak.monitor.Status;
+import com.betfair.tornjak.monitor.StatusSource;
 
 /**
  * Quality of Service ExecutionPreProcessor. Always executed.
@@ -15,11 +16,11 @@ import com.betfair.tornjak.monitor.Status;
  */
 public class QoSProcessor implements ExecutionPreProcessor {
 
-    private Monitor trigger;
+    private StatusSource trigger;
     private Status triggeringStatus;
     private ExecutionPreProcessor processor;
 
-    public QoSProcessor(Monitor trigger, Status triggeringStatus, ExecutionPreProcessor processor) {
+    public QoSProcessor(StatusSource trigger, Status triggeringStatus, ExecutionPreProcessor processor) {
         this.trigger = trigger;
         this.triggeringStatus = triggeringStatus;
         this.processor = processor;
