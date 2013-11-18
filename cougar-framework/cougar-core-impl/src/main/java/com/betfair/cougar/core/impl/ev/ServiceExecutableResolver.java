@@ -71,7 +71,7 @@ public class ServiceExecutableResolver extends CompoundExecutableResolverImpl {
 		return null;
 	}
 
-	private class RequestContextExecutable implements Executable {
+	private class RequestContextExecutable implements ExecutableWrapper {
 		private final Executable executable;
 		private final ServiceLogManager manager;
 	
@@ -97,6 +97,16 @@ public class ServiceExecutableResolver extends CompoundExecutableResolverImpl {
                                 "Exception thrown by service method",
                                 e)));
             }
+        }
+
+        @Override
+        public Executable getWrappedExecutable() {
+            return executable;
+        }
+
+        @Override
+        public <T extends Executable> T findChild(Class<T> clazz) {
+            return ExecutableWrapperUtils.findChild(clazz, this);
         }
     }
 

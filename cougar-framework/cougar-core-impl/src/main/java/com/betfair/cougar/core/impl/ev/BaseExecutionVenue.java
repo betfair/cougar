@@ -23,20 +23,15 @@ import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
-import com.betfair.cougar.core.api.logging.EventLogger;
-import com.betfair.cougar.core.api.security.IdentityResolverFactory;
-import com.betfair.cougar.core.impl.logging.RequestLogEvent;
 import com.betfair.cougar.core.impl.security.IdentityChainImpl;
 import com.betfair.cougar.logging.CougarLogger;
 import com.betfair.cougar.logging.CougarLoggingUtils;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.Executor;
-import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
@@ -170,19 +165,35 @@ public class BaseExecutionVenue implements ExecutionVenue {
     }
 
     @Override
-    public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, ExecutionObserver observer, final Executor executor) {
+    public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, final ExecutionObserver observer, final Executor executor) {
+
         final DefinedExecutable de = registry.get(key);
-        final long expiryTime = de != null ? de.maxExecutionTime : 0;
-        final ExpiringObserver expiringObserver = new ExpiringObserver(observer, expiryTime);
-        if (expiringObserver.expires()) {
-            registerExpiringObserver(expiringObserver);
-        }
-        executor.execute(new Runnable() {
+        final InterceptingExecutableWrapper interceptingExecutableWrapper = ExecutableWrapperUtils.findChild(InterceptingExecutableWrapper.class, de.exec);
+        // this has to be a new list since the InterceptionUtils.execute call below is allowed to (expected to even) mutate the second list passed in
+        final List<ExecutionPreProcessor> remainingProcessors = new ArrayList<>(preProcessorList);
+
+        final Runnable execution = new Runnable() {
             @Override
             public void run() {
-                execute(ctx, key, args, expiringObserver);
+                final long expiryTime = de != null ? de.maxExecutionTime : 0;
+                final ExpiringObserver expiringObserver = new ExpiringObserver(observer, expiryTime);
+                if (expiringObserver.expires()) {
+                    registerExpiringObserver(expiringObserver);
+                }
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        // this gets run on the executor thread, so will be visible in the wrapper when executed
+                        if (interceptingExecutableWrapper != null) {
+                            interceptingExecutableWrapper.setUnexecutedPreProcessorsForThisThread(remainingProcessors);
+                        }
+                        execute(ctx, key, args, expiringObserver);
+                    }
+                });
             }
-        });
+        };
+
+        InterceptionUtils.execute(preProcessorList, remainingProcessors, ExecutionRequirement.PRE_QUEUE, execution, ctx, key, args, observer);
     }
 
     protected void start() {
@@ -342,7 +353,7 @@ public class BaseExecutionVenue implements ExecutionVenue {
 
         if (de != null) {
             if (de.exec instanceof InterceptingExecutableWrapper) {
-                return ((InterceptingExecutableWrapper) de.exec).getExec();
+                return ((InterceptingExecutableWrapper) de.exec).getWrappedExecutable();
             }
             return de.exec;
         }

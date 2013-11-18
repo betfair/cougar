@@ -15,7 +15,7 @@ script: "mvn install -Pintegration-test -B -Denv.M2_HOME=/usr/share/maven"
 after_failure:
   - "bash uploadSurefireReports.sh"
 after_success:
-  - "mvn deploy -DskipTests=true -s upload_settings.xml"
+  - "bash deploySnapshotBuild.sh"
 env:
  global:
    - "ARTIFACTS_AWS_REGION=eu-west-1"

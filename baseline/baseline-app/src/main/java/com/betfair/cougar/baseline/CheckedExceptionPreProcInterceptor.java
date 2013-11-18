@@ -22,6 +22,7 @@ import com.betfair.baseline.v2.exception.SimpleException;
 import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.ResponseCode;
 import com.betfair.cougar.core.api.ev.ExecutionPreProcessor;
+import com.betfair.cougar.core.api.ev.ExecutionRequirement;
 import com.betfair.cougar.core.api.ev.InterceptorResult;
 import com.betfair.cougar.core.api.ev.InterceptorState;
 import com.betfair.cougar.core.api.ev.OperationKey;
@@ -51,5 +52,10 @@ public class CheckedExceptionPreProcInterceptor implements ExecutionPreProcessor
     @Override
     public String getName() {
         return "Checked Exception Preprocessing interceptor";
+    }
+
+    @Override
+    public ExecutionRequirement getExecutionRequirement() {
+        return ExecutionRequirement.PRE_EXECUTE;
     }
 }

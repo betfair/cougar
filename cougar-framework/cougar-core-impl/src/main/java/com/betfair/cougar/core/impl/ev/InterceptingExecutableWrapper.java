@@ -25,16 +25,19 @@ import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.logging.CougarLogger;
 import com.betfair.cougar.logging.CougarLoggingUtils;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
-public class InterceptingExecutableWrapper implements Executable {
-	private static final InterceptorResult CONTINUE = new InterceptorResult(InterceptorState.CONTINUE);
-	private final static CougarLogger logger = CougarLoggingUtils.getLogger(InterceptingExecutableWrapper.class);
-	
+public class InterceptingExecutableWrapper implements ExecutableWrapper {
+
 	private final Executable exec;
 	private final List<ExecutionPreProcessor> preExecutionInterceptorList;
 	private final List<ExecutionPostProcessor> postExecutionInterceptorList;
+
+    private Map<Thread, List<ExecutionPreProcessor>> unexecutedPreProcessorsByThread = new ConcurrentHashMap<>();
 
 	public InterceptingExecutableWrapper(Executable exec, List<ExecutionPreProcessor> preExecutionInterceptorList, List<ExecutionPostProcessor> postExecutionInterceptorList) {
 		this.exec = exec;
@@ -43,86 +46,58 @@ public class InterceptingExecutableWrapper implements Executable {
 	}
 	
 	@Override
-	public void execute(ExecutionContext ctx, OperationKey key, Object[] args,
-			ExecutionObserver observer, ExecutionVenue executionVenue) {
+	public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, final ExecutionObserver observer, final ExecutionVenue executionVenue) {
 
-		InterceptorResult result = invokePreProcessingInterceptors(ctx, key, args);
-		
-		/**
-		 * Pre-processors can force ON_EXCEPTION or ON_RESULT without execution.
-		 * The shouldInvoke will indicate whether actual invocation should take place.
-		 */
-		if (result.getState().shouldInvoke()) {
-			observer = new PostProcessingInterceptorWrapper(observer, postExecutionInterceptorList, ctx, key, args);
+        final Runnable execution = new Runnable() {
+            @Override
+            public void run() {
+                ExecutionObserver newObserver = new PostProcessingInterceptorWrapper(observer, postExecutionInterceptorList, ctx, key, args);
 
-			try {
-				exec.execute(
-						ctx, 
-						key,
-						args, 
-						observer, 
-						executionVenue);
-			
-			} catch (CougarException e) {
-				observer.onResult(new ExecutionResult(e));
-			}
-			 catch (Exception e) {
-				observer.onResult(new ExecutionResult(
-						new CougarServiceException(ServerFaultCode.ServiceRuntimeException, 
-								"Exception thrown by service method",
-								e)));
-			}
-		} else {
-			if (InterceptorState.FORCE_ON_EXCEPTION.equals(result.getState())) {
-                Object interceptorResult = result.getResult();
-                ExecutionResult executionResult;
-                if (interceptorResult instanceof CougarException) {
-                    executionResult = new ExecutionResult((CougarException)interceptorResult);
-                } else if (interceptorResult instanceof CougarApplicationException) {
-                    executionResult = new ExecutionResult((CougarApplicationException)interceptorResult);
-                } else if (result.getResult() instanceof Exception) {
-                    executionResult = new ExecutionResult(
-                            new CougarServiceException(ServerFaultCode.ServiceRuntimeException,
-                                    "Interceptor forced exception", (Exception)result.getResult()));
-                } else {
-                    // onException forced, but result is not an exception
-                    executionResult = new ExecutionResult(
-                            new CougarServiceException(ServerFaultCode.ServiceRuntimeException,
-                                    "Interceptor forced exception, but result was not an exception - I found a " +
-                                            result.getResult()));
+                try {
+                    exec.execute(
+                            ctx,
+                            key,
+                            args,
+                            newObserver,
+                            executionVenue);
+
+                } catch (CougarException e) {
+                    newObserver.onResult(new ExecutionResult(e));
                 }
-                observer.onResult(executionResult);
+                catch (Exception e) {
+                    newObserver.onResult(new ExecutionResult(
+                            new CougarServiceException(ServerFaultCode.ServiceRuntimeException,
+                                    "Exception thrown by service method",
+                                    e)));
+                }
+            }
+        };
 
-			} else if (InterceptorState.FORCE_ON_RESULT.equals(result.getState())) {
-				observer.onResult(new ExecutionResult(result.getResult()));
-			}
-		}
-	}
+        List<ExecutionPreProcessor> unexecuted = unexecutedPreProcessorsByThread.get(Thread.currentThread());
+        if (unexecuted == null) {
+            // this has to be a new list since the InterceptionUtils.execute call below is allowed to (expected to even) mutate the second list passed in
+            unexecuted = new ArrayList<>(preExecutionInterceptorList);
+        }
 
-	private InterceptorResult invokePreProcessingInterceptors(ExecutionContext ctx, OperationKey key, Object[] args) {
-		InterceptorResult result = CONTINUE;
-		
-		for (ExecutionPreProcessor pre : preExecutionInterceptorList) {
-			try {
-				result = pre.invoke(ctx, key, args);
-				if (result == null || result.getState() == null) {
-					// defensive
-					throw new IllegalStateException(pre.getName() +" did not return a valid InterceptorResult");
-				}
-			} catch (Exception e) {
-				logger.log(Level.SEVERE, "Pre Processor " + pre.getName() + " has failed.");
-				logger.log(e);
-				result = new InterceptorResult(InterceptorState.FORCE_ON_EXCEPTION, e);
-				break;
-			}
-			if (result.getState().shouldAbortInterceptorChain()) {
-				break;
-			}
-		}
-		return result;
-	}
+        try {
+            InterceptionUtils.execute(preExecutionInterceptorList, unexecuted, ExecutionRequirement.PRE_EXECUTE, execution, ctx, key, args, observer);
+        }
+        finally {
+            unexecutedPreProcessorsByThread.remove(Thread.currentThread());
+        }
+    }
 
-    Executable getExec() {
+    @Override
+    public Executable getWrappedExecutable() {
         return exec;
+    }
+
+    @Override
+    public <T extends Executable> T findChild(Class<T> clazz) {
+        return ExecutableWrapperUtils.findChild(clazz, this);
+    }
+
+    public void setUnexecutedPreProcessorsForThisThread(List<ExecutionPreProcessor> remainingProcessors) {
+        unexecutedPreProcessorsByThread.put(Thread.currentThread(), remainingProcessors);
     }
 }

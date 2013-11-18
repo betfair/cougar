@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.ExecutionContextWithTokens;
@@ -92,6 +94,11 @@ public class BaseExecutionVenueTest {
         public String getName() {
             return "checkedExceptionThrowingPreProcessor";
         }
+
+        @Override
+        public ExecutionRequirement getExecutionRequirement() {
+            return ExecutionRequirement.EXACTLY_ONCE;
+        }
     };
 
 	/** 
@@ -107,6 +114,11 @@ public class BaseExecutionVenueTest {
 		public String getName() {
 			return "exceptionThrowingPreProcessor";
 		}
+
+        @Override
+        public ExecutionRequirement getExecutionRequirement() {
+            return ExecutionRequirement.EXACTLY_ONCE;
+        }
 	};
 
 	private ExecutionPreProcessor continuePreProcessor = new ExecutionPreProcessor() {
@@ -119,6 +131,11 @@ public class BaseExecutionVenueTest {
 		public String getName() {
 			return "continuePreProcessor";
 		}
+
+        @Override
+        public ExecutionRequirement getExecutionRequirement() {
+            return ExecutionRequirement.EXACTLY_ONCE;
+        }
 	};
 
 	private ExecutionPreProcessor forceOnResultPreProcessor = new ExecutionPreProcessor() {
@@ -131,6 +148,11 @@ public class BaseExecutionVenueTest {
 		public String getName() {
 			return "forceOnResultPreProcessor";
 		}
+
+        @Override
+        public ExecutionRequirement getExecutionRequirement() {
+            return ExecutionRequirement.EXACTLY_ONCE;
+        }
 	};
 
 	/**
@@ -282,10 +304,10 @@ public class BaseExecutionVenueTest {
         };
     }
 	
-	private BaseExecutionVenue bev = new BaseExecutionVenue();
-	private List<ExecutionPreProcessor> preProcessorList = new ArrayList<ExecutionPreProcessor>();
-	private List<ExecutionPostProcessor> postProcessorList = new ArrayList<ExecutionPostProcessor>();
-	private ExecutionContextWithTokens mockExecutionContext = mock(ExecutionContextWithTokens.class);
+	private BaseExecutionVenue bev;
+	private List<ExecutionPreProcessor> preProcessorList;
+	private List<ExecutionPostProcessor> postProcessorList;
+	private ExecutionContextWithTokens mockExecutionContext;
 	private OperationKey mockOperationKey;
 	private Object[] args = new Object[0];
 	private OperationDefinition mockOperationDef;
@@ -295,10 +317,12 @@ public class BaseExecutionVenueTest {
 	
 	@Before
 	public void setup() {
+        bev = new BaseExecutionVenue();
+        preProcessorList = new ArrayList<ExecutionPreProcessor>();
+        postProcessorList = new ArrayList<ExecutionPostProcessor>();
 		bev.setPreProcessors(preProcessorList);
 		bev.setPostProcessors(postProcessorList);
-		preProcessorList.clear();
-		postProcessorList.clear();
+        mockExecutionContext = mock(ExecutionContextWithTokens.class);
 
         mockOperationKey = new OperationKey(new ServiceVersion(1,0), "SomeService", "someOperation");
 		mockOperationDef = new SimpleOperationDefinition(mockOperationKey, new Parameter[0], new ParameterType(Void.class, new ParameterType[0]));
@@ -343,6 +367,70 @@ public class BaseExecutionVenueTest {
 		bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
 		bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver);
 	}
+
+    @Test
+    public void onlyOncePreProcessorViaExecutorExecuteMethod() {
+        ExecutionPreProcessor preProcessor = mock(ExecutionPreProcessor.class);
+        when(preProcessor.getExecutionRequirement()).thenReturn(ExecutionRequirement.EXACTLY_ONCE);
+        when(preProcessor.invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class))).thenReturn(new InterceptorResult(InterceptorState.CONTINUE));
+        preProcessorList.add(preProcessor);
+        bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
+        bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver, thisThreadExecutor());
+        verify(preProcessor, times(1)).invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class));
+    }
+
+    @Test
+    public void everyPlacePreProcessorViaExecutorExecuteMethod() {
+        ExecutionPreProcessor preProcessor = mock(ExecutionPreProcessor.class);
+        when(preProcessor.getExecutionRequirement()).thenReturn(ExecutionRequirement.EVERY_OPPORTUNITY);
+        when(preProcessor.invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class))).thenReturn(new InterceptorResult(InterceptorState.CONTINUE));
+        preProcessorList.add(preProcessor);
+        bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
+        bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver, thisThreadExecutor());
+        verify(preProcessor, times(2)).invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class));
+    }
+
+    @Test
+    public void preQueueOnlyPreProcessorViaExecutorExecuteMethod() {
+        // processors are executed in order, so if the second is executed, but not the first then we're good
+        ExecutionPreProcessor preExecuteProcessor = mock(ExecutionPreProcessor.class);
+        when(preExecuteProcessor.getExecutionRequirement()).thenReturn(ExecutionRequirement.PRE_EXECUTE);
+        when(preExecuteProcessor.invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class))).thenReturn(new InterceptorResult(InterceptorState.CONTINUE));
+        preProcessorList.add(preExecuteProcessor);
+
+        // the second won't execute since we stopped things
+        ExecutionPreProcessor preQueueProcessor = mock(ExecutionPreProcessor.class);
+        when(preQueueProcessor.getExecutionRequirement()).thenReturn(ExecutionRequirement.PRE_QUEUE);
+        when(preQueueProcessor.invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class))).thenReturn(new InterceptorResult(InterceptorState.FORCE_ON_RESULT, null));
+        preProcessorList.add(preQueueProcessor);
+
+        bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
+        bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver, thisThreadExecutor());
+
+        verify(preQueueProcessor, times(1)).invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class));
+        verify(preExecuteProcessor, times(0)).invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class));
+    }
+
+    @Test
+    public void preExecuteOnlyPreProcessorViaExecutorExecuteMethod() {
+        // we know from the previous test that if we bomb out at queue that the execute one isn't run
+        // so this time allow the execution through from the queue and we should get an execute
+        ExecutionPreProcessor preExecuteProcessor = mock(ExecutionPreProcessor.class);
+        when(preExecuteProcessor.getExecutionRequirement()).thenReturn(ExecutionRequirement.PRE_EXECUTE);
+        when(preExecuteProcessor.invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class))).thenReturn(new InterceptorResult(InterceptorState.CONTINUE));
+        preProcessorList.add(preExecuteProcessor);
+
+        ExecutionPreProcessor preQueueProcessor = mock(ExecutionPreProcessor.class);
+        when(preQueueProcessor.getExecutionRequirement()).thenReturn(ExecutionRequirement.PRE_QUEUE);
+        when(preQueueProcessor.invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class))).thenReturn(new InterceptorResult(InterceptorState.CONTINUE));
+        preProcessorList.add(preQueueProcessor);
+
+        bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
+        bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver, thisThreadExecutor());
+
+        verify(preQueueProcessor, times(1)).invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class));
+        verify(preExecuteProcessor, times(1)).invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class));
+    }
 	
 	@Test
 	public void testFailingPostProcessorCallsOnExceptionWhenExecutableCompletesOK() {
@@ -506,7 +594,7 @@ public class BaseExecutionVenueTest {
 
             @Override
             public boolean isTransportSecure() {
-                return false;  //To change body of implemented methods use File | Settings | File Templates.
+                return false;
             }
         };
         bev.execute(context, mockOperationKey, args, observer);
@@ -636,6 +724,15 @@ public class BaseExecutionVenueTest {
 
         assertEquals(ServerFaultCode.Timeout, executionResultArgumentCaptor.getValue().getFault().getServerFaultCode());
 
+    }
+
+    private Executor thisThreadExecutor() {
+        return new Executor() {
+            @Override
+            public void execute(Runnable command) {
+                command.run();
+            }
+        };
     }
 
 }
