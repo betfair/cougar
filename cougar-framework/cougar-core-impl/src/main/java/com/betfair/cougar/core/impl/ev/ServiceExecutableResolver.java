@@ -85,10 +85,11 @@ public class ServiceExecutableResolver extends CompoundExecutableResolverImpl {
                             final OperationKey key,
                             final Object[] args,
                             final ExecutionObserver observer,
-                            final ExecutionVenue executionVenue) {
+                            final ExecutionVenue executionVenue,
+                            final long expiryTime) {
             final ExecutionContextAdapter ctxAdapter = new ExecutionContextAdapter(key, ctx, observer, manager);
             try {
-                executable.execute(ctxAdapter, key, args, ctxAdapter, executionVenue);
+                executable.execute(ctxAdapter, key, args, ctxAdapter, executionVenue, expiryTime);
             } catch (CougarException e) {
                 ctxAdapter.onResult(new ExecutionResult(e));
             } catch (Exception e) {

@@ -30,7 +30,7 @@ import java.util.Set;
  */
 public class OldVersionBaselineServiceImpl implements BaselineService {
     @Override
-    public SimpleResponse testSimpleGet(RequestContext ctx, String message) throws SimpleException {
+    public SimpleResponse testSimpleGet(RequestContext ctx, String message, long expiryTime) throws SimpleException {
         SimpleResponse simpleResponse = new SimpleResponse();
 
         simpleResponse.setMessage(message + " emitted by version 1.0.0 of Baseline");

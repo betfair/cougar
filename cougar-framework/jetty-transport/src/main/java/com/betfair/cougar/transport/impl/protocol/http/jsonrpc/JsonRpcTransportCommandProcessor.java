@@ -96,7 +96,7 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
     // package private for testing
     static final Executable IDENTITY_RESOLUTION_EXEC = new Executable() {
         @Override
-        public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, ExecutionVenue executionVenue) {
+        public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, ExecutionVenue executionVenue, long expiry) {
             observer.onResult(new ExecutionResult(null));
         }
     };
@@ -199,6 +199,11 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
                                     public Object[] getArgs() {
                                         return args;
                                     }
+
+                                    @Override
+                                    public long getExpiry() {
+                                        return 0; // todo: try to get this from somewhere
+                                    }
                                 });
                             } catch (Exception e) {
                                 responses.add(JsonRpcErrorResponse.buildErrorResponse(rpc, new JsonRpcError(INVALID_PARAMS, ServerFaultCode.MandatoryNotDefined.getDetail(), null)));
@@ -279,6 +284,11 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
                             executeCommand(exec, context);
                         }
                     }
+                }
+
+                @Override
+                public long getExpiry() {
+                    return 0; // todo: should this really be zero?
                 }
             };
             executeCommand(resolveCommand, ctx);

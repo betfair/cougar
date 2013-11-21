@@ -238,7 +238,7 @@ public class ExecutionVenueNioServerTest {
             }
 
             @Override
-            public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer) {
+            public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, long clientExpiryTime) {
                 if ((Boolean)args[0]) {
                     observer.onResult(new ExecutionResult(args[1]));
                 } else {
@@ -247,11 +247,11 @@ public class ExecutionVenueNioServerTest {
             }
 
             @Override
-            public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, final ExecutionObserver observer, final Executor executor) {
+            public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, final ExecutionObserver observer, final Executor executor, final long clientExpiryTime) {
                 executor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        execute(ctx, key, args, observer);
+                        execute(ctx, key, args, observer, clientExpiryTime);
                     }
                 });
             }

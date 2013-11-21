@@ -116,7 +116,7 @@ public class HealthServiceImplTest {
       
         when(monitorRegistry.getStatusAggregator()).thenReturn(new DefaultStatusAggregator(Status.OK));
         inOutServiceMonitor.setInService(false);
-        HealthSummaryResponse response = service.isHealthy(requestContext);
+        HealthSummaryResponse response = service.isHealthy(requestContext, 0);
         response.validateMandatory();
         assertEquals(RestrictedHealthStatus.FAIL, response.getHealthy());
     }
@@ -158,7 +158,7 @@ public class HealthServiceImplTest {
         });
         when(monitorRegistry.getStatusAggregator()).thenReturn(new DefaultStatusAggregator(Status.OK));
         inOutServiceMonitor.setInService(false);
-        HealthDetailResponse response = service.getDetailedHealthStatus(requestContext);
+        HealthDetailResponse response = service.getDetailedHealthStatus(requestContext, 0);
         response.validateMandatory();
         assertEquals(HealthStatus.OUT_OF_SERVICE, response.getHealth());
         assertEquals(1, response.getSubComponentList().size());
@@ -170,7 +170,7 @@ public class HealthServiceImplTest {
                 new ServiceInfo(null, service, "HealthService", "3.0", new ArrayList<String>())
         });
         when(monitorRegistry.getStatusAggregator()).thenReturn(new DefaultStatusAggregator(Status.OK));
-        HealthDetailResponse response = service.getDetailedHealthStatus(requestContext);
+        HealthDetailResponse response = service.getDetailedHealthStatus(requestContext, 0);
         response.validateMandatory();
         assertEquals(HealthStatus.OK, response.getHealth());
         assertEquals(1, response.getSubComponentList().size());
@@ -187,7 +187,7 @@ public class HealthServiceImplTest {
         DefaultMonitor otherMonitor = new DefaultMonitor("Fred", Status.OK);
         when(monitorRegistry.getMonitorSet()).thenReturn(monitors(inOutServiceMonitor, otherMonitor));
 
-        HealthDetailResponse response = service.getDetailedHealthStatus(requestContext);
+        HealthDetailResponse response = service.getDetailedHealthStatus(requestContext, 0);
         response.validateMandatory();
         assertEquals(HealthStatus.OK, response.getHealth());
 
@@ -211,7 +211,7 @@ public class HealthServiceImplTest {
         DefaultMonitor otherMonitor = new DefaultMonitor("Fred", Status.OK);
         when(monitorRegistry.getMonitorSet()).thenReturn(monitors(inOutServiceMonitor, otherMonitor));
 
-        HealthDetailResponse response = service.getDetailedHealthStatus(requestContext);
+        HealthDetailResponse response = service.getDetailedHealthStatus(requestContext, 0);
         response.validateMandatory();
         assertEquals(HealthStatus.WARN, response.getHealth());
 
@@ -235,7 +235,7 @@ public class HealthServiceImplTest {
         DefaultMonitor otherMonitor = new DefaultMonitor("Fred", Status.OK);
         when(monitorRegistry.getMonitorSet()).thenReturn(monitors(inOutServiceMonitor, otherMonitor));
 
-        HealthDetailResponse response = service.getDetailedHealthStatus(requestContext);
+        HealthDetailResponse response = service.getDetailedHealthStatus(requestContext, 0);
         response.validateMandatory();
         assertEquals(HealthStatus.FAIL, response.getHealth());
 
@@ -249,7 +249,7 @@ public class HealthServiceImplTest {
     }
 
     private HealthSummaryResponse getResponse() throws HealthException {
-    	HealthSummaryResponse response = service.isHealthy(requestContext);
+    	HealthSummaryResponse response = service.isHealthy(requestContext, 0);
         response.validateMandatory();
         return response;
 

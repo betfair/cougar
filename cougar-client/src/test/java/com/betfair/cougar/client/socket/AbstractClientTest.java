@@ -211,7 +211,7 @@ public abstract class AbstractClientTest {
     }
 
     void performRequestAsync(ExecutionVenueNioClient client, ClientTestExecutionObserver observer, Object[] args) throws IOException, InterruptedException {
-        client.execute(new SimpleExecutionContext(), OPERATION_DEFINITION, args, observer);
+        client.execute(new SimpleExecutionContext(), OPERATION_DEFINITION, args, observer, 0);
     }
     
     void performRequest(ExecutionVenueNioClient client, ClientTestExecutionObserver observer, Object[] args) throws IOException, InterruptedException {

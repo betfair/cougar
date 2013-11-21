@@ -25,4 +25,5 @@ import com.betfair.cougar.core.api.ev.OperationKey;
 public interface ExecutionCommand extends ExecutionObserver {
 	public OperationKey getOperationKey();
 	public Object [] getArgs();
+    long getExpiry();
 }

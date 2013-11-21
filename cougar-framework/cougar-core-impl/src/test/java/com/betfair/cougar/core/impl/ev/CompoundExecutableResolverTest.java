@@ -40,7 +40,7 @@ public class CompoundExecutableResolverTest {
 		@Override
 		public void execute(ExecutionContext ctx, OperationKey key,
 				Object[] args, ExecutionObserver observer,
-				ExecutionVenue executionVenue) {
+				ExecutionVenue executionVenue, long expiryTime) {
 			
 		}};
 	private Executable ex2 = new Executable() {
@@ -48,7 +48,7 @@ public class CompoundExecutableResolverTest {
 		@Override
 		public void execute(ExecutionContext ctx, OperationKey key,
 				Object[] args, ExecutionObserver observer,
-				ExecutionVenue executionVenue) {
+				ExecutionVenue executionVenue, long expiryTime) {
 			
 		}};
 

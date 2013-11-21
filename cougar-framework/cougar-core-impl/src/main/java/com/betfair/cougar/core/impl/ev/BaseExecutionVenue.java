@@ -131,14 +131,19 @@ public class BaseExecutionVenue implements ExecutionVenue {
     }
 
     @Override
-    public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, ExecutionObserver observer) {
+    public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, ExecutionObserver observer, long clientExpiryTime) {
         final DefinedExecutable de = registry.get(key);
         if (de == null) {
             logger.log(Level.FINE, "Not request logging request to URI: %s as no operation was found", key.toString());
             observer.onResult(new ExecutionResult(new CougarServiceException(ServerFaultCode.NoSuchOperation, "Operation not found: "+key.toString())));
         } else {
+            long serverExpiryTime = de.maxExecutionTime == 0 ? Long.MAX_VALUE : System.currentTimeMillis() + de.maxExecutionTime;
+            clientExpiryTime = clientExpiryTime == 0 ? Long.MAX_VALUE : clientExpiryTime;
+            long expiryTime = Math.min(clientExpiryTime, serverExpiryTime);
+            if (expiryTime == Long.MAX_VALUE) {
+                expiryTime = 0;
+            }
             if (!(observer instanceof ExpiringObserver)) {
-                final long expiryTime = de.maxExecutionTime;
                 final ExpiringObserver expiringObserver = new ExpiringObserver(observer, expiryTime);
                 if (expiringObserver.expires()) {
                     registerExpiringObserver(expiringObserver);
@@ -149,7 +154,7 @@ public class BaseExecutionVenue implements ExecutionVenue {
 
             try {
                 ExecutionContext contextToUse = resolveIdentitiesIfRequired(ctx);
-                de.exec.execute(contextToUse, key, args, observer, this);
+                de.exec.execute(contextToUse, key, args, observer, this, expiryTime);
             } catch (CougarException e) {
                 observer.onResult(new ExecutionResult(e));
             } catch (Exception e) {
@@ -165,7 +170,7 @@ public class BaseExecutionVenue implements ExecutionVenue {
     }
 
     @Override
-    public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, final ExecutionObserver observer, final Executor executor) {
+    public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, final ExecutionObserver observer, final Executor executor, final long clientExpiryTime) {
 
         final DefinedExecutable de = registry.get(key);
         final InterceptingExecutableWrapper interceptingExecutableWrapper = ExecutableWrapperUtils.findChild(InterceptingExecutableWrapper.class, de.exec);
@@ -175,11 +180,17 @@ public class BaseExecutionVenue implements ExecutionVenue {
         final Runnable execution = new Runnable() {
             @Override
             public void run() {
-                final long expiryTime = de != null ? de.maxExecutionTime : 0;
+                long serverExpiryTime = de.maxExecutionTime == 0 ? Long.MAX_VALUE : System.currentTimeMillis() + de.maxExecutionTime;
+                long clientExpiryTimeCopy = clientExpiryTime == 0 ? Long.MAX_VALUE : clientExpiryTime;
+                long expiryTime = Math.min(clientExpiryTimeCopy, serverExpiryTime);
+                if (expiryTime == Long.MAX_VALUE) {
+                    expiryTime = 0;
+                }
                 final ExpiringObserver expiringObserver = new ExpiringObserver(observer, expiryTime);
                 if (expiringObserver.expires()) {
                     registerExpiringObserver(expiringObserver);
                 }
+                final long finalExpiryTime = expiryTime;
                 executor.execute(new Runnable() {
                     @Override
                     public void run() {
@@ -187,7 +198,7 @@ public class BaseExecutionVenue implements ExecutionVenue {
                         if (interceptingExecutableWrapper != null) {
                             interceptingExecutableWrapper.setUnexecutedPreProcessorsForThisThread(remainingProcessors);
                         }
-                        execute(ctx, key, args, expiringObserver);
+                        execute(ctx, key, args, expiringObserver, finalExpiryTime);
                     }
                 });
             }

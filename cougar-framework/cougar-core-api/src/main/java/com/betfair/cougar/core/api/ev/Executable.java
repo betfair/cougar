@@ -31,7 +31,8 @@ public interface Executable {
 	 * @param args The arguments to be provided to the operation
 	 * @param observer The ExecutionObserver is notified of either the result of the execution, or of an exception thrown during execution.
 	 * @param executionVenue The EV that invoked this Executable. Can be useful for chaining execution.
+     * @param expiryTime The time at which this execution request expires, at which point this execute call MAY return a timeout fault.
 	 */
-	public void execute(ExecutionContext ctx, OperationKey key, Object [] args, ExecutionObserver observer, ExecutionVenue executionVenue);
+	public void execute(ExecutionContext ctx, OperationKey key, Object [] args, ExecutionObserver observer, ExecutionVenue executionVenue, long expiryTime);
 	
 }

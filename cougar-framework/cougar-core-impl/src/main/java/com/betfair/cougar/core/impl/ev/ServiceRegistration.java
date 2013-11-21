@@ -44,7 +44,7 @@ public class ServiceRegistration extends AbstractServiceRegistration {
                         public void onResult(ExecutionResult result) {
                             eventTransport.publish((Event)result.getResult());
                         }
-                    });
+                    },0);
                 }
             }
         }

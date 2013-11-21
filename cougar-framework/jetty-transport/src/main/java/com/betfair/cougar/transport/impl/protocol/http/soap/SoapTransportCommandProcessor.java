@@ -252,6 +252,11 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
                 return operationBinding.getOperationKey();
             }
 
+            @Override
+            public long getExpiry() {
+                return 0;  //TODO
+            }
+
             public void onResult(ExecutionResult result) {
                 if (command.getStatus() == CommandStatus.InProcess) {
                     try {

@@ -57,6 +57,24 @@ public interface  ${service}AsyncService extends com.betfair.cougar.api.Service 
     public void ${method} <@compress single_line=true> (
     	RequestContext ctx <#recurse .node> , ExecutionObserver observer) ;
 	    </@compress>
+
+   /**
+    <#if .node.description?has_content>
+    * ${.node.description?trim}
+    </#if>
+    * @param ctx the context of the request.
+      <#list .node.parameters.request.parameter as x><#t>
+    * <@compress single_line=true>@param ${x.@name} ${x.description}
+       <#if x.@mandatory?? && (x.@mandatory?size > 0)>
+       	(mandatory)
+       </#if></@compress>
+     </#list><#t>
+    * @param observer notified by the application of the result or any exception that occurred during execution
+    * @param expiryTime The time at which this execution request expires, at which point this call MAY return a timeout fault.
+    */
+    public void ${method} <@compress single_line=true> (
+    	RequestContext ctx <#recurse .node> , ExecutionObserver observer, long expiryTime) ;
+	    </@compress>
 </#macro><#t>
 
 <#macro parameters>

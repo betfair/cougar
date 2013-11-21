@@ -66,6 +66,7 @@ public interface  ${service}Service extends com.betfair.cougar.api.Service {<#t>
        </#if></@compress>
 
       </#list><#t>
+    * @param expiryTime The time at which this execution request expires, at which point this call MAY return a timeout fault.
     * @return ${.node.parameters.simpleResponse.@type} ${.node.parameters.simpleResponse.description?trim}
       <#list .node.parameters.exceptions.exception as x><#t>
     * @exception ${x.@type} ${x.description?trim}
@@ -83,7 +84,7 @@ public interface  ${service}Service extends com.betfair.cougar.api.Service {<#t>
 
 <#macro request>
     <#recurse .node>
-    )<#t>
+    , long expiryTime)<#t>
 </#macro>
 
 <#macro exceptions>

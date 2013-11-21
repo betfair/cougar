@@ -160,7 +160,8 @@ public class  ${service}SyncClientImpl implements ${service}SyncClient {<#t>
                         ${param.paramName}
                    </#list>
                    },</@compress>
-                   observer);
+                   observer,
+                   System.currentTimeMillis()+timeoutMillis);
 
         if (!observer.await(timeoutMillis)) {
             throw new TimeoutException("Operation ${operation.operationName} timed out!");
@@ -265,7 +266,7 @@ public class  ${service}SyncClientImpl implements ${service}SyncClient {<#t>
      * @param observer the observer to allow the application to publish events with
      */
     public void subscribeTo${eventName} (ExecutionContext ctx, Object[] args, ExecutionObserver observer) {
-        ev.execute(ctx, getOperationKey(${serviceDefinitionName}.subscribeTo${eventName}OperationKey), args, observer);
+        ev.execute(ctx, getOperationKey(${serviceDefinitionName}.subscribeTo${eventName}OperationKey), args, observer, 0);
     }
     </#list>
 

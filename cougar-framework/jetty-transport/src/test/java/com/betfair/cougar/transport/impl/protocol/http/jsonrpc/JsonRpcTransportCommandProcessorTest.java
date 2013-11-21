@@ -205,7 +205,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         else {
             Executable noop = new Executable() {
                 @Override
-                public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, ExecutionVenue executionVenue) {
+                public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, ExecutionVenue executionVenue, long expirtyTime) {
                     observer.onResult(new ExecutionResult(null));
                 }
             };
@@ -1047,12 +1047,12 @@ public class JsonRpcTransportCommandProcessorTest  {
         }
 
         @Override
-        public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer) {
+        public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, long clientExpiryTime) {
             throw new NullPointerException("BANG");
         }
 
         @Override
-        public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, Executor executor) {
+        public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, Executor executor, long clientExpiryTime) {
             throw new NullPointerException("BANG");
         }
 
@@ -1092,9 +1092,9 @@ public class JsonRpcTransportCommandProcessorTest  {
     private class TestBaseExecutionVenue extends BaseExecutionVenue {
         private List<ExecutionRequest> requests = new ArrayList<ExecutionRequest>();
         @Override
-        public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer) {
+        public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, long expirtyTime) {
             requests.add(new ExecutionRequest(ctx, key, args, observer));
-            super.execute(ctx, key, args, observer);
+            super.execute(ctx, key, args, observer, expirtyTime);
         }
     }
     private class ExecutionRequest {

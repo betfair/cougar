@@ -96,7 +96,7 @@ public class ServiceRegistrationTest {
         verify((ServiceRegistrar)ev).registerService(eq((String) null), eq(serviceDefinition), eq(service), eq(compoundExecutableResolver));
 
         ArgumentCaptor<OperationKey> keyCaptor = ArgumentCaptor.forClass(OperationKey.class);
-        verify(ev).execute(any(ExecutionContext.class), keyCaptor.capture(), any(Object[].class), any(ExecutionObserver.class));
+        verify(ev).execute(any(ExecutionContext.class), keyCaptor.capture(), any(Object[].class), any(ExecutionObserver.class), eq(0));
         assertTrue(keyCaptor.getValue().getType() == OperationKey.Type.Event);
     }
 
@@ -113,7 +113,7 @@ public class ServiceRegistrationTest {
         verify((ServiceRegistrar)ev).registerService(eq("foo"), eq(serviceDefinition), eq(service),eq(compoundExecutableResolver));
 
         ArgumentCaptor<OperationKey> keyCaptor = ArgumentCaptor.forClass(OperationKey.class);
-        verify(ev).execute(any(ExecutionContext.class), keyCaptor.capture(), any(Object[].class), any(ExecutionObserver.class));
+        verify(ev).execute(any(ExecutionContext.class), keyCaptor.capture(), any(Object[].class), any(ExecutionObserver.class), eq(0));
         assertTrue(keyCaptor.getValue().getType() == OperationKey.Type.Event);
         assertEquals(null, keyCaptor.getValue().getNamespace()); // Events are non namespace aware.
     }

@@ -49,7 +49,6 @@ import com.betfair.cougar.transport.api.protocol.http.rescript.RescriptBody;
 import com.betfair.cougar.transport.api.protocol.http.rescript.RescriptOperationBindingDescriptor;
 import com.betfair.cougar.transport.api.protocol.http.rescript.RescriptParamBindingDescriptor;
 import com.betfair.cougar.transport.api.protocol.http.rescript.RescriptResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -235,7 +234,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
                 any(ParameterType.class), anyString())).thenReturn(tr);
 
 
-        mockAndMakeCall(mockGetMethod, HttpServletResponse.SC_OK, response, 18, client, ec, key, new Object[]{TEST_TEXT}, observer, ev);
+        mockAndMakeCall(mockGetMethod, HttpServletResponse.SC_OK, response, 18, client, ec, key, new Object[]{TEST_TEXT}, observer, ev, 0);
 
         TestResponse resp = (TestResponse)observer.getResult().getResult();
         assertEquals(TEST_TEXT, resp.getResult());
@@ -301,7 +300,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
         when(mockedUnMarshaller.unmarshall(any(InputStream.class),
                 any(ParameterType.class), anyString())).thenReturn(tr);
 
-        mockAndMakeCall(mockGetMethod, HttpServletResponse.SC_OK, response, 18, client, createEC(null, null, false), key, new Object[]{TEST_TEXT}, observer, ev);
+        mockAndMakeCall(mockGetMethod, HttpServletResponse.SC_OK, response, 18, client, createEC(null, null, false), key, new Object[]{TEST_TEXT}, observer, ev, 0);
 
         TestResponse resp = (TestResponse)observer.getResult().getResult();
         assertEquals(TEST_TEXT, resp.getResult());
@@ -316,7 +315,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
         observer = new PassFailExecutionObserver(true, false);
 
         try {
-            client.execute(createEC(null, null, false), key, new Object[] {TEST_TEXT }, observer, ev);
+            client.execute(createEC(null, null, false), key, new Object[] {TEST_TEXT }, observer, ev, 0);
         } catch (NullPointerException e) {
             // correct - the provided key was not right
             assert true;
@@ -330,7 +329,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
         observer = new PassFailExecutionObserver(true, false);
 
         try {
-            client.execute(createEC(null, null, false), key, new Object[] {TEST_TEXT }, observer, ev);
+            client.execute(createEC(null, null, false), key, new Object[] {TEST_TEXT }, observer, ev, 0);
         } catch (NullPointerException e) {
             // correct - the provided key was not right
         }
@@ -364,7 +363,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
                         };
 
                         try {
-                            client.execute(ec, key, new Object[] {TEST_TEXT }, observer, ev);
+                            client.execute(ec, key, new Object[] {TEST_TEXT }, observer, ev, 0);
                             if (iterations % 5 == 0 && threadId == 0) {
                                 client.setRemoteAddress("http://localhost:" + iterations + "/");
                             }
@@ -396,7 +395,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
         observer = new PassFailExecutionObserver(true, false);
 
         try {
-            client.execute(createEC(null, null, false), key, new Object[] {TEST_TEXT }, observer, ev);
+            client.execute(createEC(null, null, false), key, new Object[] {TEST_TEXT }, observer, ev, 0);
         } catch (NullPointerException e) {
             // correct - the provided key was not right
         }
@@ -422,7 +421,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
         OperationKey key = TestServiceDefinition.TEST_POST;
         observer = new PassFailExecutionObserver(true, false);
 
-        mockAndMakeCall(mockPostMethod, HttpServletResponse.SC_OK, response, 18, client, createEC(null, null, false), key, new Object[]{TEST_TEXT}, observer, ev);
+        mockAndMakeCall(mockPostMethod, HttpServletResponse.SC_OK, response, 18, client, createEC(null, null, false), key, new Object[]{TEST_TEXT}, observer, ev, 0);
 
         TestResponse resp = (TestResponse)observer.getResult().getResult();
         assertEquals(TEST_TEXT, resp.getResult());
@@ -448,7 +447,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
         when(mockedUnMarshaller.unmarshall(any(InputStream.class), any(ParameterType.class), anyString()))
                 .thenReturn(testResponse);
 
-        mockAndMakeCall(mockPostMethod, HttpServletResponse.SC_OK, response, 18, client, createEC(null, null, false), key, new Object[]{TEST_TEXT, TEST_TEXT}, observer, ev);
+        mockAndMakeCall(mockPostMethod, HttpServletResponse.SC_OK, response, 18, client, createEC(null, null, false), key, new Object[]{TEST_TEXT, TEST_TEXT}, observer, ev, 0);
 
         TestResponse resp = (TestResponse)observer.getResult().getResult();
         assertEquals(TEST_TEXT + TEST_TEXT, resp.getResult());
@@ -758,6 +757,6 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
     }
 
     protected abstract void mockAndMakeCall(HttpRequest request, int httpCode, String response, int responseSize,
-                                                 AbstractHttpExecutable<HttpRequest> client, ExecutionContext ec, OperationKey key,
-                                                 Object[] params, ObservableObserver observer, ExecutionVenue ev) throws InterruptedException;
+                                            AbstractHttpExecutable<HttpRequest> client, ExecutionContext ec, OperationKey key,
+                                            Object[] params, ObservableObserver observer, ExecutionVenue ev, long expiryTime) throws InterruptedException;
 }

@@ -178,7 +178,12 @@ public class RescriptTransportCommandProcessor extends AbstractTerminateableHttp
 					return binding.getOperationKey();
 				}
 
-                public void onResult(ExecutionResult executionResult) {
+            @Override
+            public long getExpiry() {
+                return 0;  //TODO
+            }
+
+            public void onResult(ExecutionResult executionResult) {
                     if (executionResult.getResultType() == ExecutionResult.ResultType.Success) {
                         writeResponse(command, binding, executionResult.getResult(), context, requestMediaType, bytesRead);
                     } else if (executionResult.getResultType() == ExecutionResult.ResultType.Fault) {

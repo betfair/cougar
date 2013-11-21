@@ -99,10 +99,10 @@ public class ServiceExecutableResolverTest {
 		Executable resultExecutable = serviceResolver.resolveExecutable(op1Key, ev);
 		
 		//Execute the returned executable
-		resultExecutable.execute(context, op1Key, new Object[] {}, mock(ExecutionObserver.class), mock(ExecutionVenue.class));
+		resultExecutable.execute(context, op1Key, new Object[] {}, mock(ExecutionObserver.class), mock(ExecutionVenue.class), 0);
 		
 		//Verify that the registered executable was invoked with a RequestContext
-		verify(executable).execute(any(RequestContext.class), eq(op1Key), any(Object[].class), any(ExecutionObserver.class), any(ExecutionVenue.class));
+		verify(executable).execute(any(RequestContext.class), eq(op1Key), any(Object[].class), any(ExecutionObserver.class), any(ExecutionVenue.class), eq(0));
 	}
 	
 	@Test
@@ -132,7 +132,7 @@ public class ServiceExecutableResolverTest {
 		when(simpleResolver.resolveExecutable(op1Key, ev)).thenReturn(executable);
 		
 		Executable resultExecutable = serviceResolver.resolveExecutable(op1Key, ev);
-		resultExecutable.execute(context, op1Key, new Object[] {}, mock(ExecutionObserver.class), mock(ExecutionVenue.class));
+		resultExecutable.execute(context, op1Key, new Object[] {}, mock(ExecutionObserver.class), mock(ExecutionVenue.class),0);
 		
 		LoggableEvent event = mock(LoggableEvent.class);
 		
@@ -197,7 +197,7 @@ public class ServiceExecutableResolverTest {
 		@Override
 		public void execute(ExecutionContext ctx, OperationKey key,
 				Object[] args, ExecutionObserver observer,
-				ExecutionVenue executionVenue) {
+				ExecutionVenue executionVenue, long expiryTime) {
 			this.observer = observer;
 			this.context = (RequestContext)ctx;
 		}

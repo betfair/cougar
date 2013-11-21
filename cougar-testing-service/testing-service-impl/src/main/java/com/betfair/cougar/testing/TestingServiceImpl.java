@@ -99,7 +99,7 @@ public class TestingServiceImpl implements TestingService {
     }
 
     @Override
-    public CallResponse refreshCache(RequestContext ctx, String name)
+    public CallResponse refreshCache(RequestContext ctx, String name, long expiryTime)
             throws TestingException {
         CallResponse response = new CallResponse();
         boolean found = false;
@@ -119,7 +119,7 @@ public class TestingServiceImpl implements TestingService {
     }
 
     @Override
-    public IDD getIDD(RequestContext ctx, String name) throws TestingException {
+    public IDD getIDD(RequestContext ctx, String name, long expiryTime) throws TestingException {
         InputStream iddStream = getClass().getResourceAsStream("/idd/" + name);
         logger.log(Level.FINE, "Retriving IDD %s", "/idd/" + name);
         if (iddStream != null) {
@@ -156,7 +156,7 @@ public class TestingServiceImpl implements TestingService {
     }
 
     @Override
-    public CallResponse refreshAllCaches(RequestContext ctx)
+    public CallResponse refreshAllCaches(RequestContext ctx, long expiryTime)
             throws TestingException {
         CallResponse response = new CallResponse();
         boolean done = false;
@@ -176,7 +176,7 @@ public class TestingServiceImpl implements TestingService {
 
     @Override
     public LogFileResponse getLogEntriesByDateRange(RequestContext ctx,
-                                                    String logFileName, String startDateTime, String endDateTime)
+                                                    String logFileName, String startDateTime, String endDateTime, long expiryTime)
             throws TestingException {
         List<String> logLines = null;
         String physicalLogFileName = this.getBaseLogDirectory() + logFileName;
@@ -219,7 +219,7 @@ public class TestingServiceImpl implements TestingService {
 
     @Override
     public LogFileResponse getLogEntries(RequestContext ctx, String logFileName,
-                                         Integer numberOfLines) throws TestingException {
+                                         Integer numberOfLines, long expiryTime) throws TestingException {
         long start = System.nanoTime();
         List<String> logLines = null;
         String physicalLogFileName = this.getBaseLogDirectory() + logFileName;

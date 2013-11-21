@@ -70,7 +70,7 @@ public class ${service}ClientImpl implements ${service}Client {<#t>
     }
 
     private void execute(final ExecutionContext ctx, final OperationKey operationKey,
-                         final Object[] args, final ExecutionObserver observer) {
+                         final Object[] args, final ExecutionObserver observer, final long timeoutMillis) {
 
         final ExecutionObserver wrappedObserver = new ExecutionObserver() {
             @Override
@@ -88,7 +88,8 @@ public class ${service}ClientImpl implements ${service}Client {<#t>
                     operationKey,
                     args,
                     wrappedObserver,
-                    executor);
+                    executor,
+                    System.currentTimeMillis()+timeoutMillis);
     }
 
 <#list operations as operation>
@@ -98,6 +99,23 @@ public class ${service}ClientImpl implements ${service}Client {<#t>
 			<@createTypeDecl param.paramType/> ${param.paramName},
 		</#list>
 		ExecutionObserver obs)
+
+		{<#t>
+</@compress>
+        <@compress single_line=true>${operation.operationName}(ctx,
+		<#list operation.params as param>
+			${param.paramName},
+		</#list>
+		obs, 0L);
+</@compress>
+    }
+
+	<@compress single_line=true>public void ${operation.operationName}(
+		ExecutionContext ctx,
+		<#list operation.params as param>
+			<@createTypeDecl param.paramType/> ${param.paramName},
+		</#list>
+		ExecutionObserver obs, long timeoutMillis)
 
 		{<#t>
 </@compress>
@@ -112,7 +130,7 @@ public class ${service}ClientImpl implements ${service}Client {<#t>
 				${param.paramName}
 			</#list>
 			},
-			obs
+			obs, timeoutMillis
 			);
 	</@compress>
 
@@ -124,7 +142,7 @@ public class ${service}ClientImpl implements ${service}Client {<#t>
 <#list doc.event as event><#t>
 <#assign eventClassName = event.@name?cap_first><#t>
     public void subscribeTo${eventClassName}(ExecutionContext ctx, Object[] args, ExecutionObserver obs) {
-        execute(ctx, getOperationKey(${serviceDefinitionName}.subscribeTo${event.@name?cap_first}OperationKey), args, obs);
+        execute(ctx, getOperationKey(${serviceDefinitionName}.subscribeTo${event.@name?cap_first}OperationKey), args, obs, 0);
     }
 
 </#list>

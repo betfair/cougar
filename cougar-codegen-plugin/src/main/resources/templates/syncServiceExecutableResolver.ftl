@@ -79,13 +79,13 @@ public class ${service}SyncServiceExecutableResolver implements ExecutableResolv
                 <#assign call=call + ", (" + javaType + ")args["  + argPos + "]"><#t>
                 <#assign argPos = argPos + 1><#t>
             </#list><#t>
-            <#assign call=call + ");"><#t>
+            <#assign call=call + ", expiryTime);"><#t>
 	  	executableMap.put(${service}ServiceDefinition.${method}Key,
             new Executable() {
                 @Override
                 public void execute(ExecutionContext ctx, OperationKey key,
                         Object[] args, ExecutionObserver observer,
-                        ExecutionVenue executionVenue) {
+                        ExecutionVenue executionVenue, long expiryTime) {
 
                 try {
                     <#if returnType!="void">
@@ -114,7 +114,7 @@ public class ${service}SyncServiceExecutableResolver implements ExecutableResolv
                 @Override
                 public void execute(ExecutionContext ctx, OperationKey key,
 							Object[] args, ExecutionObserver observer,
-							ExecutionVenue executionVenue) {
+							ExecutionVenue executionVenue, long expiryTime) {
 		  			service.${method}(ctx, args, observer);
 
             }

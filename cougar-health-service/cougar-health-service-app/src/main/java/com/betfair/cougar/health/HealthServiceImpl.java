@@ -55,8 +55,8 @@ public class HealthServiceImpl implements HealthService {
         this.monitorRegistry = cc.getMonitorRegistry();
 	}
 	
-	
-	public HealthSummaryResponse isHealthy(final RequestContext ctx) throws HealthException {
+	@Override
+	public HealthSummaryResponse isHealthy(final RequestContext ctx, long expiryTime) throws HealthException {
 		HealthSummaryResponse response = new HealthSummaryResponse();
 		
 		if (isSystemInService()) {
@@ -93,7 +93,7 @@ public class HealthServiceImpl implements HealthService {
 	}
 
 	@Override
-	public HealthDetailResponse getDetailedHealthStatus(RequestContext reqCtx) throws HealthException {
+	public HealthDetailResponse getDetailedHealthStatus(RequestContext reqCtx, long expiryTime) throws HealthException {
 		HealthDetailResponse detail = new HealthDetailResponse();
 
         List<SubComponentStatus> subStatuses = new ArrayList<>();
@@ -137,7 +137,7 @@ public class HealthServiceImpl implements HealthService {
 	@ManagedAttribute
 	public boolean isSystemHealthy() {
 		try {
-			HealthStatus status = getDetailedHealthStatus(null).getHealth();
+			HealthStatus status = getDetailedHealthStatus(null, 0).getHealth();
 			return status == HealthStatus.OK || status == HealthStatus.WARN;
 		
 		} catch (HealthException e) {

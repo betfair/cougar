@@ -62,7 +62,7 @@ public class ${service}ClientExecutableResolver implements RegisterableClientExe
                 @Override
                 public void execute(ExecutionContext ctx, OperationKey key,
                         Object[] args, ExecutionObserver observer,
-                        ExecutionVenue executionVenue) {
+                        ExecutionVenue executionVenue, long expiryTime) {
                             OperationDefinition opDef = executionVenue.getOperationDefinition(key);
                             eventTransport.subscribe("${event.@name}", args, observer);
                         }

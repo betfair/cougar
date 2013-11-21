@@ -487,7 +487,7 @@ public class AbstractHttpCommandProcessorTest {
 
 		@Override
 		public void execute(ExecutionContext ctx, OperationKey key,
-				Object[] args, ExecutionObserver observer) {
+				Object[] args, ExecutionObserver observer, long clientExpiryTime) {
 			invokedCount++;
 			this.key = key;
 			this.args = args;
@@ -495,11 +495,11 @@ public class AbstractHttpCommandProcessorTest {
 		}
 
         @Override
-        public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, final ExecutionObserver observer, final Executor executor) {
+        public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, final ExecutionObserver observer, final Executor executor, final long clientExpiryTime) {
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    execute(ctx, key, args, observer);
+                    execute(ctx, key, args, observer, clientExpiryTime);
                 }
             });
         }
@@ -683,6 +683,11 @@ public class AbstractHttpCommandProcessorTest {
 
                         @Override
                         public void onResult(ExecutionResult executionResult) {
+                        }
+
+                        @Override
+                        public long getExpiry() {
+                            return 0;
                         }
                     });
                     return commands;

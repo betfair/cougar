@@ -254,7 +254,7 @@ public class BaseExecutionVenueTest {
 	
 	private Executable failingExecutable = new Executable() {
 		@Override
-		public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, ExecutionVenue executionVenue) {
+		public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, ExecutionVenue executionVenue, long expiryTime) {
 			throw new IllegalStateException("Failure can now be an option!");
 		}
 	};
@@ -262,7 +262,7 @@ public class BaseExecutionVenueTest {
 
 	private Executable succeedingExecutable = new Executable() {
 		@Override
-		public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, ExecutionVenue executionVenue) {
+		public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, ExecutionVenue executionVenue, long expiryTime) {
 			observer.onResult(new ExecutionResult(null));
 		}
 	};
@@ -337,35 +337,35 @@ public class BaseExecutionVenueTest {
 	public void testForceOnExceptionForPostProcessorWhenExecutablePasses() {
 		postProcessorList.add(forceOnExceptionMockPostProcessor);
 		bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
-		bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver);
+		bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver,0);
 	}
 	
 	@Test
 	public void testOnExceptionCalledWhenPreProcessorFails() {
 		preProcessorList.add(exceptionThrowingPreProcessor);
 		bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
-		bev.execute(mockExecutionContext, mockOperationKey, args, failOnResultExecutionObserver);
+		bev.execute(mockExecutionContext, mockOperationKey, args, failOnResultExecutionObserver,0);
 	}
 
     @Test
     public void testOnExceptionWithServiceCheckedException() {
         preProcessorList.add(checkedExceptionThrowingPreProcessor);
         bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
-        bev.execute(mockExecutionContext, mockOperationKey, args, cougarApplicationExceptionResultExecutionObserver);
+        bev.execute(mockExecutionContext, mockOperationKey, args, cougarApplicationExceptionResultExecutionObserver,0);
     }
 	
 	@Test
 	public void testOnResultCalledWhenPreProcessorPasses() {
 		preProcessorList.add(continuePreProcessor);
 		bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
-		bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver);
+		bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver,0);
 	}
 
 	@Test
 	public void testExecutableNotCalledWhenPreProcessorSaySo() {
 		preProcessorList.add(forceOnResultPreProcessor);
 		bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
-		bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver);
+		bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver,0);
 	}
 
     @Test
@@ -375,7 +375,7 @@ public class BaseExecutionVenueTest {
         when(preProcessor.invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class))).thenReturn(new InterceptorResult(InterceptorState.CONTINUE));
         preProcessorList.add(preProcessor);
         bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
-        bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver, thisThreadExecutor());
+        bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver, thisThreadExecutor(), 0);
         verify(preProcessor, times(1)).invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class));
     }
 
@@ -386,7 +386,7 @@ public class BaseExecutionVenueTest {
         when(preProcessor.invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class))).thenReturn(new InterceptorResult(InterceptorState.CONTINUE));
         preProcessorList.add(preProcessor);
         bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
-        bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver, thisThreadExecutor());
+        bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver, thisThreadExecutor(), 0);
         verify(preProcessor, times(2)).invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class));
     }
 
@@ -405,7 +405,7 @@ public class BaseExecutionVenueTest {
         preProcessorList.add(preQueueProcessor);
 
         bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
-        bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver, thisThreadExecutor());
+        bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver, thisThreadExecutor(), 0);
 
         verify(preQueueProcessor, times(1)).invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class));
         verify(preExecuteProcessor, times(0)).invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class));
@@ -426,7 +426,7 @@ public class BaseExecutionVenueTest {
         preProcessorList.add(preQueueProcessor);
 
         bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
-        bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver, thisThreadExecutor());
+        bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver, thisThreadExecutor(), 0);
 
         verify(preQueueProcessor, times(1)).invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class));
         verify(preExecuteProcessor, times(1)).invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class));
@@ -436,42 +436,42 @@ public class BaseExecutionVenueTest {
 	public void testFailingPostProcessorCallsOnExceptionWhenExecutableCompletesOK() {
 		postProcessorList.add(exceptionThrowingPostProcessor);
 		bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
-		bev.execute(mockExecutionContext, mockOperationKey, args, failOnResultExecutionObserver);
+		bev.execute(mockExecutionContext, mockOperationKey, args, failOnResultExecutionObserver,0);
 	}
 
     @Test
     public void testFailingPostProcessorCallsOnServiceCheckedExceptionWhenExecutableCompletesOK() {
         postProcessorList.add(checkedServiceExceptionThrowingPostProcessor);
         bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
-        bev.execute(mockExecutionContext, mockOperationKey, args, cougarApplicationExceptionResultExecutionObserver);
+        bev.execute(mockExecutionContext, mockOperationKey, args, cougarApplicationExceptionResultExecutionObserver,0);
     }
 
 	@Test
 	public void testSucceedingPostProcessorCallsOnResultWhenExecutableCompletesOK() {
 		postProcessorList.add(forceOnResultPostProcessor);
 		bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
-		bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver);
+		bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver,0);
 	}
 	
 	@Test
 	public void testPostProcessorForcesOnResultWhenExcecutableFails() {
 		postProcessorList.add(forceOnResultPostProcessor);
 		bev.registerOperation(null, mockOperationDef, failingExecutable, mockTimingRecorder, 0);
-		bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver);
+		bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver,0);
 	}
 	
 	@Test
 	public void testPostProcessorForcesOnExceptionWhenExcecutableFails() {
 		postProcessorList.add(forceOnExceptionMockPostProcessor);
 		bev.registerOperation(null, mockOperationDef, failingExecutable, mockTimingRecorder, 0);
-		bev.execute(mockExecutionContext, mockOperationKey, args, failOnResultExecutionObserver);
+		bev.execute(mockExecutionContext, mockOperationKey, args, failOnResultExecutionObserver,0);
 	}
 	
 	@Test
 	public void testNoOperation() {
 		ExecutionObserver observer = mock(ExecutionObserver.class);
 		
-		bev.execute(mockExecutionContext, mockOperationKey, args, observer);
+		bev.execute(mockExecutionContext, mockOperationKey, args, observer, 0);
 		
 		ArgumentCaptor<ExecutionResult> executionResultArgumentCaptor = ArgumentCaptor.forClass(ExecutionResult.class);
 		verify(observer).onResult(executionResultArgumentCaptor.capture());
@@ -487,7 +487,7 @@ public class BaseExecutionVenueTest {
     public void testNamepacedServiceNotSpecifiedInCallFail() {
         ExecutionObserver observer = mock(ExecutionObserver.class);
         bev.registerOperation("MyNamespace", mockOperationDef, mockExecutable, mockTimingRecorder, 0);
-        bev.execute(mockExecutionContext, mockOperationKey, args, observer);
+        bev.execute(mockExecutionContext, mockOperationKey, args, observer, 0);
 
         ArgumentCaptor<ExecutionResult> executionResultArgumentCaptor = ArgumentCaptor.forClass(ExecutionResult.class);
         verify(observer).onResult(executionResultArgumentCaptor.capture());
@@ -502,7 +502,7 @@ public class BaseExecutionVenueTest {
     public void testServiceNamespaceSpecifiedInCallFail() {
         ExecutionObserver observer = mock(ExecutionObserver.class);
         bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
-        bev.execute(mockExecutionContext, new OperationKey(mockOperationKey, "MyNamespace"), args, observer);
+        bev.execute(mockExecutionContext, new OperationKey(mockOperationKey, "MyNamespace"), args, observer, 0);
 
         ArgumentCaptor<ExecutionResult> executionResultArgumentCaptor = ArgumentCaptor.forClass(ExecutionResult.class);
         verify(observer).onResult(executionResultArgumentCaptor.capture());
@@ -528,18 +528,18 @@ public class BaseExecutionVenueTest {
 
 
         // Test no namespace
-        bev.execute(mockExecutionContext, mockOperationKey, args, observer);
-        verify(mockExecutable).execute(any(ExecutionContext.class), eq(mockOperationKey), any(Object[].class), any(ExecutionObserver.class), eq(bev));
+        bev.execute(mockExecutionContext, mockOperationKey, args, observer, 0);
+        verify(mockExecutable).execute(any(ExecutionContext.class), eq(mockOperationKey), any(Object[].class), any(ExecutionObserver.class), eq(bev), eq(0));
 
         // Test foo
         OperationKey key = new OperationKey(mockOperationKey, "foo");
-        bev.execute(mockExecutionContext, key, args, observer);
-        verify(mockExecutableFoo).execute(any(ExecutionContext.class), eq(key), any(Object[].class), any(ExecutionObserver.class), eq(bev));
+        bev.execute(mockExecutionContext, key, args, observer, 0);
+        verify(mockExecutableFoo).execute(any(ExecutionContext.class), eq(key), any(Object[].class), any(ExecutionObserver.class), eq(bev), eq(0));
 
         // Test bar
         OperationKey barKey = new OperationKey(mockOperationKey, "bar");
-        bev.execute(mockExecutionContext, barKey, args, observer);
-        verify(mockExecutableBar).execute(any(ExecutionContext.class), eq(barKey), any(Object[].class), any(ExecutionObserver.class), eq(bev));
+        bev.execute(mockExecutionContext, barKey, args, observer, 0);
+        verify(mockExecutableBar).execute(any(ExecutionContext.class), eq(barKey), any(Object[].class), any(ExecutionObserver.class), eq(bev), eq(0));
     }
 
     @Test
@@ -597,7 +597,7 @@ public class BaseExecutionVenueTest {
                 return false;
             }
         };
-        bev.execute(context, mockOperationKey, args, observer);
+        bev.execute(context, mockOperationKey, args, observer, 0);
 
         ArgumentCaptor<ExecutionResult> observerCaptor = ArgumentCaptor.forClass(ExecutionResult.class);
         verify(observer).onResult(observerCaptor.capture());
@@ -661,7 +661,7 @@ public class BaseExecutionVenueTest {
                 return false;
             }
         };
-        bev.execute(context, mockOperationKey, args, observer);
+        bev.execute(context, mockOperationKey, args, observer, 0);
 
         ArgumentCaptor<ExecutionResult> observerCaptor = ArgumentCaptor.forClass(ExecutionResult.class);
         verify(observer).onResult(observerCaptor.capture());
@@ -677,7 +677,7 @@ public class BaseExecutionVenueTest {
         bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
         bev.setIdentityResolver(failingGenericIdentityResolver(null));
 
-        bev.execute(mockExecutionContext, mockOperationKey, args, observer);
+        bev.execute(mockExecutionContext, mockOperationKey, args, observer, 0);
 
         ArgumentCaptor<ExecutionResult> observerCaptor = ArgumentCaptor.forClass(ExecutionResult.class);
         verify(observer).onResult(observerCaptor.capture());
@@ -692,7 +692,7 @@ public class BaseExecutionVenueTest {
         bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
         bev.setIdentityResolver(failingGenericIdentityResolver(CredentialFaultCode.BannedLocation));
 
-        bev.execute(mockExecutionContext, mockOperationKey, args, observer);
+        bev.execute(mockExecutionContext, mockOperationKey, args, observer, 0);
 
         ArgumentCaptor<ExecutionResult> observerCaptor = ArgumentCaptor.forClass(ExecutionResult.class);
         verify(observer).onResult(observerCaptor.capture());
@@ -707,14 +707,14 @@ public class BaseExecutionVenueTest {
 
         bev.registerOperation(null, mockOperationDef, new Executable() {
             @Override
-            public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, ExecutionVenue executionVenue) {
+            public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, ExecutionVenue executionVenue, long expiryTime) {
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {}
             }
         }, mockTimingRecorder, 1000);
         bev.start();
-        bev.execute(mockExecutionContext, mockOperationKey, args, observer);
+        bev.execute(mockExecutionContext, mockOperationKey, args, observer, 0);
 
         ArgumentCaptor<ExecutionResult> executionResultArgumentCaptor = ArgumentCaptor.forClass(ExecutionResult.class);
         verify(observer).onResult(executionResultArgumentCaptor.capture());

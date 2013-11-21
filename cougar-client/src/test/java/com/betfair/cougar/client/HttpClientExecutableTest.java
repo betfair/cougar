@@ -26,7 +26,6 @@ import com.betfair.cougar.core.api.ev.OperationKey;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ExceptionFactory;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
-import com.betfair.cougar.logging.CougarLoggingUtils;
 import com.betfair.cougar.marshalling.api.databinding.Marshaller;
 import com.betfair.cougar.transport.api.protocol.http.HttpServiceBindingDescriptor;
 import com.betfair.cougar.util.configuration.PropertyConfigurer;
@@ -43,7 +42,6 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
 import org.apache.http.params.HttpParams;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -120,11 +118,11 @@ public class HttpClientExecutableTest extends AbstractHttpExecutableTest<HttpUri
     }
 
     @Override
-    protected void mockAndMakeCall(HttpUriRequest httpUriRequest, int httpCode, String response, int responseSize, AbstractHttpExecutable<HttpUriRequest> client, ExecutionContext ec, OperationKey key, Object[] params, ObservableObserver observer, ExecutionVenue ev) throws InterruptedException {
+    protected void mockAndMakeCall(HttpUriRequest httpUriRequest, int httpCode, String response, int responseSize, AbstractHttpExecutable<HttpUriRequest> client, ExecutionContext ec, OperationKey key, Object[] params, ObservableObserver observer, ExecutionVenue ev, long expiryTime) throws InterruptedException {
         // mocks before
         mockHttpResponse(httpUriRequest, response, httpCode);
         // executes second
-        client.execute(ec, key, params, observer, ev);
+        client.execute(ec, key, params, observer, ev, expiryTime);
     }
 
     // Method containing common mocking code for tests checking exception handling in compatability mode
@@ -149,7 +147,7 @@ public class HttpClientExecutableTest extends AbstractHttpExecutableTest<HttpUri
         OperationKey key = TestServiceDefinition.TEST_GET;
         PassFailExecutionObserver observer = new PassFailExecutionObserver(false, true);
 
-        client.execute(ec, key, new Object[]{TEST_TEXT}, observer, ev);
+        client.execute(ec, key, new Object[]{TEST_TEXT}, observer, ev, 0);
 
         return observer;
     }
@@ -192,7 +190,7 @@ public class HttpClientExecutableTest extends AbstractHttpExecutableTest<HttpUri
 
 
         ExecutionObserver mockedObserver = mock(ExecutionObserver.class);
-        client.execute(createEC(null, null, false), TestServiceDefinition.TEST_MIXED, new Object[] {TEST_TEXT, TEST_TEXT }, mockedObserver, ev);
+        client.execute(createEC(null, null, false), TestServiceDefinition.TEST_MIXED, new Object[] {TEST_TEXT, TEST_TEXT }, mockedObserver, ev, 0);
 
         ArgumentCaptor<ExecutionResult> resultCaptor = ArgumentCaptor.forClass(ExecutionResult.class);
         verify(mockedObserver).onResult(resultCaptor.capture());
@@ -224,7 +222,7 @@ public class HttpClientExecutableTest extends AbstractHttpExecutableTest<HttpUri
         when(httpResponse.getStatusLine()).thenReturn(statusLine);
 
         ExecutionObserver mockedObserver = mock(ExecutionObserver.class);
-        client.execute(createEC(null, null, false), TestServiceDefinition.TEST_MIXED, new Object[] {TEST_TEXT, TEST_TEXT }, mockedObserver, ev);
+        client.execute(createEC(null, null, false), TestServiceDefinition.TEST_MIXED, new Object[] {TEST_TEXT, TEST_TEXT }, mockedObserver, ev, 0);
 
         ArgumentCaptor<ExecutionResult> resultCaptor = ArgumentCaptor.forClass(ExecutionResult.class);
         verify(mockedObserver).onResult(resultCaptor.capture());

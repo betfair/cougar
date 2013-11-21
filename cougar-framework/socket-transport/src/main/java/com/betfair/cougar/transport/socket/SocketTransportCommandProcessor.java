@@ -196,6 +196,11 @@ public class SocketTransportCommandProcessor extends AbstractCommandProcessor<So
                             writeErrorResponse(rpcCommand, requestContext, result.getFault());
                         }
                     }
+
+                    @Override
+                    public long getExpiry() {
+                        return 0;  //TODO
+                    }
                 };
 
                 return new SingleExecutionCommandResolver<SocketTransportCommand>() {

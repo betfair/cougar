@@ -115,7 +115,7 @@ public class ServerClientFactory {
             }
 
             @Override
-            public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer) {
+            public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, long expiryTime) {
                 switch (Integer.parseInt(args[1].toString())) {
             	case COMMAND_STOP_SERVER:
                     logger.log(Level.INFO, "Stopping server");
@@ -134,11 +134,11 @@ public class ServerClientFactory {
             	
             }
 
-            public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, final ExecutionObserver observer, Executor executor) {
+            public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, final ExecutionObserver observer, Executor executor, final long expiryTime) {
                 executor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        execute(ctx, key, args, observer);
+                        execute(ctx, key, args, observer, expiryTime);
                     }
                 });
             }
