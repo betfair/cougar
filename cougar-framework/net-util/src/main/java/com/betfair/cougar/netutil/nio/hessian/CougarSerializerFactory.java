@@ -17,25 +17,19 @@
 package com.betfair.cougar.netutil.nio.hessian;
 
 import com.betfair.cougar.core.api.transcription.TranscribableParams;
-import com.betfair.cougar.netutil.nio.CougarProtocol;
 import com.caucho.hessian.io.Deserializer;
 import com.caucho.hessian.io.HessianProtocolException;
 import com.caucho.hessian.io.SerializerFactory;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-/**
- *
- */
 public class CougarSerializerFactory extends SerializerFactory {
 
-
     private Set<TranscribableParams> transcriptionParams;
+
+    private Set<String> missingTypes = Collections.newSetFromMap(new ConcurrentHashMap());
 
     public CougarSerializerFactory(Set<TranscribableParams> transcriptionParams) {
         this.transcriptionParams = transcriptionParams;
@@ -59,6 +53,30 @@ public class CougarSerializerFactory extends SerializerFactory {
             // look for vMajor
             type = ClassnameCompatibilityMapper.toMajorOnlyPackaging(type);
         }
-        return super.getDeserializer(type);
+
+        return optimizedGetDeserializer(type);
+    }
+
+    /**
+     * If a Cougar server response contains a class the client doesn't know about (which is legal and backwards compatible
+     * in cases) then the default behavior of Hessian is to perform a lookup, fail, throw an exception and log it.
+     * This has been measured at about 25 times slower than the happy path, and Hessian does not negatively cache 'misses',
+     * so this is a per-response slowdown. This implementation caches type lookup misses, and so eradicates the problem.
+     */
+    private Deserializer optimizedGetDeserializer(String type)
+            throws HessianProtocolException {
+        if (missingTypes.contains(type)) {
+            return null;
+        }
+        Deserializer answer = super.getDeserializer(type);
+        if (answer == null) {
+            missingTypes.add(type);
+        }
+        return answer;
+    }
+
+    /** Visible for testing */
+    Set<String> getMissingTypes() {
+        return missingTypes;
     }
 }
