@@ -529,17 +529,17 @@ public class BaseExecutionVenueTest {
 
         // Test no namespace
         bev.execute(mockExecutionContext, mockOperationKey, args, observer, 0);
-        verify(mockExecutable).execute(any(ExecutionContext.class), eq(mockOperationKey), any(Object[].class), any(ExecutionObserver.class), eq(bev), eq(0));
+        verify(mockExecutable).execute(any(ExecutionContext.class), eq(mockOperationKey), any(Object[].class), any(ExecutionObserver.class), eq(bev), eq(0L));
 
         // Test foo
         OperationKey key = new OperationKey(mockOperationKey, "foo");
         bev.execute(mockExecutionContext, key, args, observer, 0);
-        verify(mockExecutableFoo).execute(any(ExecutionContext.class), eq(key), any(Object[].class), any(ExecutionObserver.class), eq(bev), eq(0));
+        verify(mockExecutableFoo).execute(any(ExecutionContext.class), eq(key), any(Object[].class), any(ExecutionObserver.class), eq(bev), eq(0L));
 
         // Test bar
         OperationKey barKey = new OperationKey(mockOperationKey, "bar");
         bev.execute(mockExecutionContext, barKey, args, observer, 0);
-        verify(mockExecutableBar).execute(any(ExecutionContext.class), eq(barKey), any(Object[].class), any(ExecutionObserver.class), eq(bev), eq(0));
+        verify(mockExecutableBar).execute(any(ExecutionContext.class), eq(barKey), any(Object[].class), any(ExecutionObserver.class), eq(bev), eq(0L));
     }
 
     @Test

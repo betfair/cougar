@@ -102,7 +102,7 @@ public class ServiceExecutableResolverTest {
 		resultExecutable.execute(context, op1Key, new Object[] {}, mock(ExecutionObserver.class), mock(ExecutionVenue.class), 0);
 		
 		//Verify that the registered executable was invoked with a RequestContext
-		verify(executable).execute(any(RequestContext.class), eq(op1Key), any(Object[].class), any(ExecutionObserver.class), any(ExecutionVenue.class), eq(0));
+		verify(executable).execute(any(RequestContext.class), eq(op1Key), any(Object[].class), any(ExecutionObserver.class), any(ExecutionVenue.class), eq(0L));
 	}
 	
 	@Test

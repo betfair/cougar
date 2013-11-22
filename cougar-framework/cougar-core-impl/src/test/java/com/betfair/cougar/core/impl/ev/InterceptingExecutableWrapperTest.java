@@ -84,7 +84,7 @@ public class InterceptingExecutableWrapperTest {
 
         verify(preIntercerptor).invoke(eq(ctx), eq(key), any(Object[].class));
 
-        verify(executable).execute(eq(ctx), eq(key), any(Object[].class), any(ExecutionObserver.class), eq(ev), eq(0));
+        verify(executable).execute(eq(ctx), eq(key), any(Object[].class), any(ExecutionObserver.class), eq(ev), eq(0L));
     }
 
     @Test
@@ -118,7 +118,7 @@ public class InterceptingExecutableWrapperTest {
         assertEquals(ex.getServerFaultCode(), ServerFaultCode.ServiceRuntimeException);
 
         //Check that the ev WAS NOT called - should never happen
-        verify(ev, never()).execute(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class), any(ExecutionObserver.class), eq(0));
+        verify(ev, never()).execute(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class), any(ExecutionObserver.class), eq(0L));
     }
 
     @Test
@@ -149,7 +149,7 @@ public class InterceptingExecutableWrapperTest {
         verify(preIntercerptorGood, never()).invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class));
 
         //Check that the ev WAS NOT called - should never happen
-        verify(ev, never()).execute(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class), any(ExecutionObserver.class), eq(0));
+        verify(ev, never()).execute(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class), any(ExecutionObserver.class), eq(0L));
     }
 
     @Test
