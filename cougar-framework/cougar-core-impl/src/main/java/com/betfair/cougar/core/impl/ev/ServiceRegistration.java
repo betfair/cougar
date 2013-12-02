@@ -20,6 +20,7 @@ import com.betfair.cougar.core.api.*;
 import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.events.Event;
 import com.betfair.cougar.core.api.transports.EventTransport;
+import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -44,7 +45,7 @@ public class ServiceRegistration extends AbstractServiceRegistration {
                         public void onResult(ExecutionResult result) {
                             eventTransport.publish((Event)result.getResult());
                         }
-                    },0);
+                    }, DefaultTimeConstraints.NO_CONSTRAINTS);
                 }
             }
         }

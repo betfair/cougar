@@ -269,13 +269,13 @@ public class ExecutionVenueNioClient extends AbstractClientTransport implements 
 
     @Override
     public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer,
-                        ExecutionVenue executionVenue, long expiryTime) {
+                        ExecutionVenue executionVenue, TimeConstraints timeConstraints) {
 
-        execute(ctx, executionVenue.getOperationDefinition(key), args, observer, expiryTime);
+        execute(ctx, executionVenue.getOperationDefinition(key), args, observer, timeConstraints);
     }
 
     public void execute(final ExecutionContext ctx, final OperationDefinition def, final Object[] args,
-                        final ExecutionObserver observer, long expiryTime) { //todo
+                        final ExecutionObserver observer, TimeConstraints timeConstraints) { //todo
 
         if (validateCTX(ctx, observer)) {
             final IoSession session = sessionFactory.getSession();

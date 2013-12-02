@@ -31,6 +31,7 @@ import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
+import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 
 import com.betfair.tornjak.monitor.MonitorRegistry;
 
@@ -148,6 +149,40 @@ public class  ${service}SyncClientImpl implements ${service}SyncClient {<#t>
                 , ${e}
             </#list>
 	    { </@compress>
+	    <@compress single_line=true><#if operation.returnType.javaType!="void">return </#if>${operation.operationName}(${argsToBePassed},
+                   timeoutMillis == 0 ? DefaultTimeConstraints.NO_CONSTRAINTS : DefaultTimeConstraints.fromTimeout(timeoutMillis));</@compress>
+  }
+
+ /**
+  * ${operation.description?trim}.  Calls ${operation.operationName} allowing you to specify a timeout
+  * @param ctx the context of the request.
+    <#list operation.params as p><#t>
+  * <@compress single_line=true>@param ${p.paramName} ${p.description}
+     <#if p.isMandatory?? && (p.isMandatory)>
+     	(mandatory)
+     </#if></@compress>
+
+    </#list>
+  * @param timeConstraints - allows you to specify time constraints for this operation.  If you want a blocking call,
+  *                          use DefaultTimeConstraints.NO_CONSTRAINTS, or call the overloading without the timeout argument
+  * @return returns ${responseType}
+  * @throws TimeoutException if call does not complete in the specified time (providing timeout > 0)
+  * @throws InterruptedException if the blocking call thread was interrupted
+  <#list operation.exceptions as e>
+  * @throws ${e} if the remote Application threw ${e}
+  </#list>
+  */
+  public ${responseType} ${operation.operationName} (ExecutionContext ctx <@compress single_line=true>
+        <#assign argsToBePassed="ctx">
+        <#list operation.params as parameter>
+            <#assign argsToBePassed = argsToBePassed + "," + parameter.paramName>
+		    , <@createTypeDecl parameter.paramType/> ${parameter.paramName}
+        </#list>
+            , TimeConstraints timeConstraints) throws TimeoutException, InterruptedException <#t>
+            <#list operation.exceptions as e><#t>
+                , ${e}
+            </#list>
+	    { </@compress>
 
         final WaitingObserver observer = new WaitingObserver();
 
@@ -161,9 +196,9 @@ public class  ${service}SyncClientImpl implements ${service}SyncClient {<#t>
                    </#list>
                    },</@compress>
                    observer,
-                   System.currentTimeMillis()+timeoutMillis);
+                   timeConstraints);
 
-        if (!observer.await(timeoutMillis)) {
+        if (timeConstraints.getTimeRemaining() != null && !observer.await(timeConstraints.getTimeRemaining())) {
             throw new TimeoutException("Operation ${operation.operationName} timed out!");
         }
 
@@ -266,7 +301,7 @@ public class  ${service}SyncClientImpl implements ${service}SyncClient {<#t>
      * @param observer the observer to allow the application to publish events with
      */
     public void subscribeTo${eventName} (ExecutionContext ctx, Object[] args, ExecutionObserver observer) {
-        ev.execute(ctx, getOperationKey(${serviceDefinitionName}.subscribeTo${eventName}OperationKey), args, observer, 0);
+        ev.execute(ctx, getOperationKey(${serviceDefinitionName}.subscribeTo${eventName}OperationKey), args, observer, DefaultTimeConstraints.NO_CONSTRAINTS);
     }
     </#list>
 

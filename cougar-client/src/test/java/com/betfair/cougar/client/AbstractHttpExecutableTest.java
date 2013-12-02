@@ -39,6 +39,7 @@ import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.fault.Fault;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
+import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.logging.CougarLoggingUtils;
 import com.betfair.cougar.marshalling.api.databinding.DataBindingFactory;
 import com.betfair.cougar.marshalling.api.databinding.FaultMarshaller;
@@ -234,7 +235,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
                 any(ParameterType.class), anyString())).thenReturn(tr);
 
 
-        mockAndMakeCall(mockGetMethod, HttpServletResponse.SC_OK, response, 18, client, ec, key, new Object[]{TEST_TEXT}, observer, ev, 0);
+        mockAndMakeCall(mockGetMethod, HttpServletResponse.SC_OK, response, 18, client, ec, key, new Object[]{TEST_TEXT}, observer, ev, DefaultTimeConstraints.NO_CONSTRAINTS);
 
         TestResponse resp = (TestResponse)observer.getResult().getResult();
         assertEquals(TEST_TEXT, resp.getResult());
@@ -300,7 +301,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
         when(mockedUnMarshaller.unmarshall(any(InputStream.class),
                 any(ParameterType.class), anyString())).thenReturn(tr);
 
-        mockAndMakeCall(mockGetMethod, HttpServletResponse.SC_OK, response, 18, client, createEC(null, null, false), key, new Object[]{TEST_TEXT}, observer, ev, 0);
+        mockAndMakeCall(mockGetMethod, HttpServletResponse.SC_OK, response, 18, client, createEC(null, null, false), key, new Object[]{TEST_TEXT}, observer, ev, DefaultTimeConstraints.NO_CONSTRAINTS);
 
         TestResponse resp = (TestResponse)observer.getResult().getResult();
         assertEquals(TEST_TEXT, resp.getResult());
@@ -315,7 +316,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
         observer = new PassFailExecutionObserver(true, false);
 
         try {
-            client.execute(createEC(null, null, false), key, new Object[] {TEST_TEXT }, observer, ev, 0);
+            client.execute(createEC(null, null, false), key, new Object[] {TEST_TEXT }, observer, ev, DefaultTimeConstraints.NO_CONSTRAINTS);
         } catch (NullPointerException e) {
             // correct - the provided key was not right
             assert true;
@@ -329,7 +330,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
         observer = new PassFailExecutionObserver(true, false);
 
         try {
-            client.execute(createEC(null, null, false), key, new Object[] {TEST_TEXT }, observer, ev, 0);
+            client.execute(createEC(null, null, false), key, new Object[] {TEST_TEXT }, observer, ev, DefaultTimeConstraints.NO_CONSTRAINTS);
         } catch (NullPointerException e) {
             // correct - the provided key was not right
         }
@@ -363,7 +364,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
                         };
 
                         try {
-                            client.execute(ec, key, new Object[] {TEST_TEXT }, observer, ev, 0);
+                            client.execute(ec, key, new Object[] {TEST_TEXT }, observer, ev, DefaultTimeConstraints.NO_CONSTRAINTS);
                             if (iterations % 5 == 0 && threadId == 0) {
                                 client.setRemoteAddress("http://localhost:" + iterations + "/");
                             }
@@ -395,7 +396,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
         observer = new PassFailExecutionObserver(true, false);
 
         try {
-            client.execute(createEC(null, null, false), key, new Object[] {TEST_TEXT }, observer, ev, 0);
+            client.execute(createEC(null, null, false), key, new Object[] {TEST_TEXT }, observer, ev, DefaultTimeConstraints.NO_CONSTRAINTS);
         } catch (NullPointerException e) {
             // correct - the provided key was not right
         }
@@ -421,7 +422,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
         OperationKey key = TestServiceDefinition.TEST_POST;
         observer = new PassFailExecutionObserver(true, false);
 
-        mockAndMakeCall(mockPostMethod, HttpServletResponse.SC_OK, response, 18, client, createEC(null, null, false), key, new Object[]{TEST_TEXT}, observer, ev, 0);
+        mockAndMakeCall(mockPostMethod, HttpServletResponse.SC_OK, response, 18, client, createEC(null, null, false), key, new Object[]{TEST_TEXT}, observer, ev, DefaultTimeConstraints.NO_CONSTRAINTS);
 
         TestResponse resp = (TestResponse)observer.getResult().getResult();
         assertEquals(TEST_TEXT, resp.getResult());
@@ -447,7 +448,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
         when(mockedUnMarshaller.unmarshall(any(InputStream.class), any(ParameterType.class), anyString()))
                 .thenReturn(testResponse);
 
-        mockAndMakeCall(mockPostMethod, HttpServletResponse.SC_OK, response, 18, client, createEC(null, null, false), key, new Object[]{TEST_TEXT, TEST_TEXT}, observer, ev, 0);
+        mockAndMakeCall(mockPostMethod, HttpServletResponse.SC_OK, response, 18, client, createEC(null, null, false), key, new Object[]{TEST_TEXT, TEST_TEXT}, observer, ev, DefaultTimeConstraints.NO_CONSTRAINTS);
 
         TestResponse resp = (TestResponse)observer.getResult().getResult();
         assertEquals(TEST_TEXT + TEST_TEXT, resp.getResult());
@@ -758,5 +759,5 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
 
     protected abstract void mockAndMakeCall(HttpRequest request, int httpCode, String response, int responseSize,
                                             AbstractHttpExecutable<HttpRequest> client, ExecutionContext ec, OperationKey key,
-                                            Object[] params, ObservableObserver observer, ExecutionVenue ev, long expiryTime) throws InterruptedException;
+                                            Object[] params, ObservableObserver observer, ExecutionVenue ev, TimeConstraints timeConstraints) throws InterruptedException;
 }

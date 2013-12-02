@@ -84,7 +84,7 @@ public interface  ${service}Service extends com.betfair.cougar.api.Service {<#t>
 
 <#macro request>
     <#recurse .node>
-    , long expiryTime)<#t>
+    , TimeConstraints timeConstraints)<#t>
 </#macro>
 
 <#macro exceptions>

@@ -35,12 +35,14 @@ import com.betfair.cougar.core.api.ServiceBindingDescriptor;
 import com.betfair.cougar.core.api.ev.ExecutionResult;
 import com.betfair.cougar.core.api.ev.OperationDefinition;
 import com.betfair.cougar.core.api.ev.OperationKey;
+import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 import com.betfair.cougar.core.api.exception.CougarValidationException;
 import com.betfair.cougar.core.api.exception.PanicInTheCougar;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.transcription.EnumUtils;
+import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.logging.CougarLogger;
 import com.betfair.cougar.logging.CougarLoggingUtils;
 import com.betfair.cougar.marshalling.api.databinding.DataBindingFactory;
@@ -170,17 +172,17 @@ public class RescriptTransportCommandProcessor extends AbstractTerminateableHttp
 		final Object[] finalArgs = args;
 		final long bytesRead = iStream != null ? iStream.getCount() : 0;
 		return new ExecutionCommand() {
-				public Object[] getArgs() {
-					return finalArgs;
-				}
+            public Object[] getArgs() {
+                return finalArgs;
+            }
 
-				public OperationKey getOperationKey() {
-					return binding.getOperationKey();
-				}
+            public OperationKey getOperationKey() {
+                return binding.getOperationKey();
+            }
 
             @Override
-            public long getExpiry() {
-                return 0;  //TODO
+            public TimeConstraints getTimeConstraints() {
+                return DefaultTimeConstraints.NO_CONSTRAINTS; // TODO
             }
 
             public void onResult(ExecutionResult executionResult) {

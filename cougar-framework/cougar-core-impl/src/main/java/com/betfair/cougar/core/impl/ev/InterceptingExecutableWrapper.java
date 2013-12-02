@@ -46,7 +46,7 @@ public class InterceptingExecutableWrapper implements ExecutableWrapper {
 	}
 	
 	@Override
-	public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, final ExecutionObserver observer, final ExecutionVenue executionVenue, final long expiryTime) {
+	public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, final ExecutionObserver observer, final ExecutionVenue executionVenue, final TimeConstraints timeConstraints) {
 
         final Runnable execution = new Runnable() {
             @Override
@@ -60,7 +60,7 @@ public class InterceptingExecutableWrapper implements ExecutableWrapper {
                             args,
                             newObserver,
                             executionVenue,
-                            expiryTime);
+                            timeConstraints);
 
                 } catch (CougarException e) {
                     newObserver.onResult(new ExecutionResult(e));

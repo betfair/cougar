@@ -29,6 +29,7 @@ import com.betfair.cougar.core.api.OperationBindingDescriptor;
 import com.betfair.cougar.core.api.ServiceBindingDescriptor;
 import com.betfair.cougar.core.api.ServiceVersion;
 import com.betfair.cougar.core.api.ev.ExecutionTimingRecorder;
+import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.core.impl.security.CommonNameCertInfoExtractor;
 import com.betfair.cougar.logging.CougarLogger;
 import com.betfair.cougar.logging.CougarLoggingUtils;
@@ -115,7 +116,7 @@ public class ServerClientFactory {
             }
 
             @Override
-            public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, long expiryTime) {
+            public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, TimeConstraints timeConstraints) {
                 switch (Integer.parseInt(args[1].toString())) {
             	case COMMAND_STOP_SERVER:
                     logger.log(Level.INFO, "Stopping server");
@@ -134,11 +135,11 @@ public class ServerClientFactory {
             	
             }
 
-            public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, final ExecutionObserver observer, Executor executor, final long expiryTime) {
+            public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, final ExecutionObserver observer, Executor executor, final TimeConstraints timeConstraints) {
                 executor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        execute(ctx, key, args, observer, expiryTime);
+                        execute(ctx, key, args, observer, timeConstraints);
                     }
                 });
             }

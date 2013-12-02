@@ -125,7 +125,7 @@ public abstract class AbstractCommandProcessor<T extends TransportCommand> imple
                    finalExec.getArgs(),
                    finalExec,
                    executor,
-                   finalExec.getExpiry());
+                   finalExec.getTimeConstraints());
     }
 
     protected void executeError(final T finalExec, final ExecutionContextWithTokens finalCtx, final CougarException finalError) {

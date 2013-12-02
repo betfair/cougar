@@ -21,6 +21,7 @@ import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
+import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.logging.CougarLoggingUtils;
 import org.junit.*;
 import org.mockito.ArgumentCaptor;
@@ -80,11 +81,11 @@ public class InterceptingExecutableWrapperTest {
         preExecutionInterceptorList.add(preIntercerptor);
 
         InterceptingExecutableWrapper executableWrapper = new InterceptingExecutableWrapper(executable, preExecutionInterceptorList, postExecutionInterceptorList);
-        executableWrapper.execute(ctx, key, new Object[]{}, observer, ev, 0);
+        executableWrapper.execute(ctx, key, new Object[]{}, observer, ev, DefaultTimeConstraints.NO_CONSTRAINTS);
 
         verify(preIntercerptor).invoke(eq(ctx), eq(key), any(Object[].class));
 
-        verify(executable).execute(eq(ctx), eq(key), any(Object[].class), any(ExecutionObserver.class), eq(ev), eq(0L));
+        verify(executable).execute(eq(ctx), eq(key), any(Object[].class), any(ExecutionObserver.class), eq(ev), eq(DefaultTimeConstraints.NO_CONSTRAINTS));
     }
 
     @Test
@@ -102,7 +103,7 @@ public class InterceptingExecutableWrapperTest {
 
 
         InterceptingExecutableWrapper executableWrapper = new InterceptingExecutableWrapper(executable, preExecutionInterceptorList, postExecutionInterceptorList);
-        executableWrapper.execute(ctx, key, new Object[]{}, observer, ev,0);
+        executableWrapper.execute(ctx, key, new Object[]{}, observer, ev,DefaultTimeConstraints.NO_CONSTRAINTS);
 
         //Firstly check that the first good one worked correctly
         verify(preIntercerptorGood).invoke(eq(ctx), eq(key), any(Object[].class));
@@ -118,7 +119,7 @@ public class InterceptingExecutableWrapperTest {
         assertEquals(ex.getServerFaultCode(), ServerFaultCode.ServiceRuntimeException);
 
         //Check that the ev WAS NOT called - should never happen
-        verify(ev, never()).execute(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class), any(ExecutionObserver.class), eq(0L));
+        verify(ev, never()).execute(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class), any(ExecutionObserver.class), eq(DefaultTimeConstraints.NO_CONSTRAINTS));
     }
 
     @Test
@@ -134,7 +135,7 @@ public class InterceptingExecutableWrapperTest {
         preExecutionInterceptorList.add(preIntercerptorGood);
 
         InterceptingExecutableWrapper executableWrapper = new InterceptingExecutableWrapper(executable, preExecutionInterceptorList, postExecutionInterceptorList);
-        executableWrapper.execute(ctx, key, new Object[]{}, observer, ev,0);
+        executableWrapper.execute(ctx, key, new Object[]{}, observer, ev,DefaultTimeConstraints.NO_CONSTRAINTS);
 
         //For the second failing interceptor
         ArgumentCaptor<ExecutionResult> executionResultArgumentCaptor = ArgumentCaptor.forClass(ExecutionResult.class);
@@ -149,7 +150,7 @@ public class InterceptingExecutableWrapperTest {
         verify(preIntercerptorGood, never()).invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class));
 
         //Check that the ev WAS NOT called - should never happen
-        verify(ev, never()).execute(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class), any(ExecutionObserver.class), eq(0L));
+        verify(ev, never()).execute(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class), any(ExecutionObserver.class), eq(DefaultTimeConstraints.NO_CONSTRAINTS));
     }
 
     @Test
@@ -158,14 +159,14 @@ public class InterceptingExecutableWrapperTest {
 
         InterceptingExecutableWrapper executableWrapper = new InterceptingExecutableWrapper(new Executable() {
             @Override
-            public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, ExecutionVenue executionVenue, long expiryTime) {
+            public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, ExecutionVenue executionVenue, TimeConstraints timeConstraints) {
                 assertTrue("Observer should be wrapped by PostProcessorInterceptorWrapper", observer instanceof PostProcessingInterceptorWrapper);
 
                 PostProcessingInterceptorWrapper ppiw = (PostProcessingInterceptorWrapper) observer;
                 ppiw.onResult(new ExecutionResult());
             }
         }, preExecutionInterceptorList, postExecutionInterceptorList);
-        executableWrapper.execute(ctx, key, new Object[]{Boolean.TRUE}, observer, ev, 0);
+        executableWrapper.execute(ctx, key, new Object[]{Boolean.TRUE}, observer, ev, DefaultTimeConstraints.NO_CONSTRAINTS);
 
         ArgumentCaptor<ExecutionResult> executionResultArgumentCaptor = ArgumentCaptor.forClass(ExecutionResult.class);
         verify(observer).onResult(executionResultArgumentCaptor.capture());
@@ -181,14 +182,14 @@ public class InterceptingExecutableWrapperTest {
 
         InterceptingExecutableWrapper executableWrapper = new InterceptingExecutableWrapper(new Executable() {
             @Override
-            public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, ExecutionVenue executionVenue, long expiryTime) {
+            public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, ExecutionVenue executionVenue, TimeConstraints timeConstraints) {
                 assertTrue("Observer should be wrapped by PostProcessorInterceptorWrapper", observer instanceof PostProcessingInterceptorWrapper);
 
                 PostProcessingInterceptorWrapper ppiw = (PostProcessingInterceptorWrapper) observer;
                 ppiw.onResult(new ExecutionResult());
             }
         }, preExecutionInterceptorList, postExecutionInterceptorList);
-        executableWrapper.execute(ctx, key, new Object[]{Boolean.FALSE}, observer, ev, 0);
+        executableWrapper.execute(ctx, key, new Object[]{Boolean.FALSE}, observer, ev, DefaultTimeConstraints.NO_CONSTRAINTS);
 
         ArgumentCaptor<ExecutionResult> executionResultArgumentCaptor = ArgumentCaptor.forClass(ExecutionResult.class);
         verify(observer).onResult(executionResultArgumentCaptor.capture());

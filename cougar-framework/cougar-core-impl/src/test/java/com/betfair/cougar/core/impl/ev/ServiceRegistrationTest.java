@@ -21,6 +21,7 @@ import com.betfair.cougar.api.Service;
 import com.betfair.cougar.core.api.*;
 import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.transports.EventTransport;
+import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -96,7 +97,7 @@ public class ServiceRegistrationTest {
         verify((ServiceRegistrar)ev).registerService(eq((String) null), eq(serviceDefinition), eq(service), eq(compoundExecutableResolver));
 
         ArgumentCaptor<OperationKey> keyCaptor = ArgumentCaptor.forClass(OperationKey.class);
-        verify(ev).execute(any(ExecutionContext.class), keyCaptor.capture(), any(Object[].class), any(ExecutionObserver.class), eq(0L));
+        verify(ev).execute(any(ExecutionContext.class), keyCaptor.capture(), any(Object[].class), any(ExecutionObserver.class), eq(DefaultTimeConstraints.NO_CONSTRAINTS));
         assertTrue(keyCaptor.getValue().getType() == OperationKey.Type.Event);
     }
 
@@ -113,7 +114,7 @@ public class ServiceRegistrationTest {
         verify((ServiceRegistrar)ev).registerService(eq("foo"), eq(serviceDefinition), eq(service),eq(compoundExecutableResolver));
 
         ArgumentCaptor<OperationKey> keyCaptor = ArgumentCaptor.forClass(OperationKey.class);
-        verify(ev).execute(any(ExecutionContext.class), keyCaptor.capture(), any(Object[].class), any(ExecutionObserver.class), eq(0L));
+        verify(ev).execute(any(ExecutionContext.class), keyCaptor.capture(), any(Object[].class), any(ExecutionObserver.class), eq(DefaultTimeConstraints.NO_CONSTRAINTS));
         assertTrue(keyCaptor.getValue().getType() == OperationKey.Type.Event);
         assertEquals(null, keyCaptor.getValue().getNamespace()); // Events are non namespace aware.
     }

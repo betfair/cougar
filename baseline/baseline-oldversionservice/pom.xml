@@ -78,6 +78,11 @@
         </dependency>
         <dependency>
             <groupId>com.betfair.cougar</groupId>
+            <artifactId>cougar-core-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.betfair.cougar</groupId>
             <artifactId>cougar-marshalling-api</artifactId>
             <version>${project.version}</version>
         </dependency>

@@ -34,6 +34,7 @@ import java.util.*;
 import java.util.concurrent.Executor;
 import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.ServiceVersion;
+import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.tornjak.monitor.MonitorRegistry;
 
 <@compress single_line=true>
@@ -70,7 +71,7 @@ public class ${service}ClientImpl implements ${service}Client {<#t>
     }
 
     private void execute(final ExecutionContext ctx, final OperationKey operationKey,
-                         final Object[] args, final ExecutionObserver observer, final long timeoutMillis) {
+                         final Object[] args, final ExecutionObserver observer, final TimeConstraints timeConstraints) {
 
         final ExecutionObserver wrappedObserver = new ExecutionObserver() {
             @Override
@@ -89,7 +90,7 @@ public class ${service}ClientImpl implements ${service}Client {<#t>
                     args,
                     wrappedObserver,
                     executor,
-                    System.currentTimeMillis()+timeoutMillis);
+                    timeConstraints);
     }
 
 <#list operations as operation>
@@ -130,7 +131,7 @@ public class ${service}ClientImpl implements ${service}Client {<#t>
 				${param.paramName}
 			</#list>
 			},
-			obs, timeoutMillis
+			obs, DefaultTimeConstraints.fromTimeout(timeoutMillis)
 			);
 	</@compress>
 
@@ -142,7 +143,7 @@ public class ${service}ClientImpl implements ${service}Client {<#t>
 <#list doc.event as event><#t>
 <#assign eventClassName = event.@name?cap_first><#t>
     public void subscribeTo${eventClassName}(ExecutionContext ctx, Object[] args, ExecutionObserver obs) {
-        execute(ctx, getOperationKey(${serviceDefinitionName}.subscribeTo${event.@name?cap_first}OperationKey), args, obs, 0);
+        execute(ctx, getOperationKey(${serviceDefinitionName}.subscribeTo${event.@name?cap_first}OperationKey), args, obs, DefaultTimeConstraints.NO_CONSTRAINTS);
     }
 
 </#list>

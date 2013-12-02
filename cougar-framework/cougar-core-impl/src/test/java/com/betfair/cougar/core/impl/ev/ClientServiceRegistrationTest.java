@@ -76,7 +76,7 @@ public class ClientServiceRegistrationTest {
         verify(compoundExecutableResolver).registerExecutableResolver(eq((String)null), eq(executableResolver));
         verify((ServiceRegistrar)ev).registerService(eq((String)null), eq(serviceDefinition), any(Service.class), eq(compoundExecutableResolver));
 
-        verify(ev, never()).execute(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class), any(ExecutionObserver.class), anyInt());
+        verify(ev, never()).execute(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class), any(ExecutionObserver.class), any(TimeConstraints.class));
     }
 
     @Test
@@ -86,7 +86,7 @@ public class ClientServiceRegistrationTest {
         verify(compoundExecutableResolver).registerExecutableResolver(eq("foo"), eq(executableResolver));
         verify((ServiceRegistrar)ev).registerService(eq("foo"), eq(serviceDefinition), any(Service.class), eq(compoundExecutableResolver));
 
-        verify(ev, never()).execute(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class), any(ExecutionObserver.class), anyInt());
+        verify(ev, never()).execute(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class), any(ExecutionObserver.class), any(TimeConstraints.class));
     }
 
     @Test

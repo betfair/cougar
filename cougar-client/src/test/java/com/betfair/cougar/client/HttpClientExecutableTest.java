@@ -23,9 +23,11 @@ import com.betfair.cougar.core.api.ev.ExecutionObserver;
 import com.betfair.cougar.core.api.ev.ExecutionResult;
 import com.betfair.cougar.core.api.ev.ExecutionVenue;
 import com.betfair.cougar.core.api.ev.OperationKey;
+import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ExceptionFactory;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
+import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.marshalling.api.databinding.Marshaller;
 import com.betfair.cougar.transport.api.protocol.http.HttpServiceBindingDescriptor;
 import com.betfair.cougar.util.configuration.PropertyConfigurer;
@@ -118,11 +120,11 @@ public class HttpClientExecutableTest extends AbstractHttpExecutableTest<HttpUri
     }
 
     @Override
-    protected void mockAndMakeCall(HttpUriRequest httpUriRequest, int httpCode, String response, int responseSize, AbstractHttpExecutable<HttpUriRequest> client, ExecutionContext ec, OperationKey key, Object[] params, ObservableObserver observer, ExecutionVenue ev, long expiryTime) throws InterruptedException {
+    protected void mockAndMakeCall(HttpUriRequest httpUriRequest, int httpCode, String response, int responseSize, AbstractHttpExecutable<HttpUriRequest> client, ExecutionContext ec, OperationKey key, Object[] params, ObservableObserver observer, ExecutionVenue ev, TimeConstraints timeConstraints) throws InterruptedException {
         // mocks before
         mockHttpResponse(httpUriRequest, response, httpCode);
         // executes second
-        client.execute(ec, key, params, observer, ev, expiryTime);
+        client.execute(ec, key, params, observer, ev, timeConstraints);
     }
 
     // Method containing common mocking code for tests checking exception handling in compatability mode
@@ -147,7 +149,7 @@ public class HttpClientExecutableTest extends AbstractHttpExecutableTest<HttpUri
         OperationKey key = TestServiceDefinition.TEST_GET;
         PassFailExecutionObserver observer = new PassFailExecutionObserver(false, true);
 
-        client.execute(ec, key, new Object[]{TEST_TEXT}, observer, ev, 0);
+        client.execute(ec, key, new Object[]{TEST_TEXT}, observer, ev, DefaultTimeConstraints.NO_CONSTRAINTS);
 
         return observer;
     }
@@ -190,7 +192,7 @@ public class HttpClientExecutableTest extends AbstractHttpExecutableTest<HttpUri
 
 
         ExecutionObserver mockedObserver = mock(ExecutionObserver.class);
-        client.execute(createEC(null, null, false), TestServiceDefinition.TEST_MIXED, new Object[] {TEST_TEXT, TEST_TEXT }, mockedObserver, ev, 0);
+        client.execute(createEC(null, null, false), TestServiceDefinition.TEST_MIXED, new Object[] {TEST_TEXT, TEST_TEXT }, mockedObserver, ev, DefaultTimeConstraints.NO_CONSTRAINTS);
 
         ArgumentCaptor<ExecutionResult> resultCaptor = ArgumentCaptor.forClass(ExecutionResult.class);
         verify(mockedObserver).onResult(resultCaptor.capture());
@@ -222,7 +224,7 @@ public class HttpClientExecutableTest extends AbstractHttpExecutableTest<HttpUri
         when(httpResponse.getStatusLine()).thenReturn(statusLine);
 
         ExecutionObserver mockedObserver = mock(ExecutionObserver.class);
-        client.execute(createEC(null, null, false), TestServiceDefinition.TEST_MIXED, new Object[] {TEST_TEXT, TEST_TEXT }, mockedObserver, ev, 0);
+        client.execute(createEC(null, null, false), TestServiceDefinition.TEST_MIXED, new Object[] {TEST_TEXT, TEST_TEXT }, mockedObserver, ev, DefaultTimeConstraints.NO_CONSTRAINTS);
 
         ArgumentCaptor<ExecutionResult> resultCaptor = ArgumentCaptor.forClass(ExecutionResult.class);
         verify(mockedObserver).onResult(resultCaptor.capture());

@@ -21,9 +21,11 @@ import com.betfair.cougar.core.api.ev.ClientExecutionResult;
 import com.betfair.cougar.core.api.ev.ExecutionResult;
 import com.betfair.cougar.core.api.ev.ExecutionVenue;
 import com.betfair.cougar.core.api.ev.OperationKey;
+import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ExceptionFactory;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
+import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.transport.api.protocol.http.HttpServiceBindingDescriptor;
 import com.betfair.cougar.util.configuration.PropertyConfigurer;
 import org.eclipse.jetty.client.HttpClient;
@@ -110,18 +112,18 @@ public class AsyncHttpExecutableTest extends AbstractHttpExecutableTest<Request>
 
     protected void mockAndMakeCall(Request request, int httpCode, String response, int responseSize,
                                    final AbstractHttpExecutable<Request> client, final ExecutionContext ec, final OperationKey key,
-                                   final Object[] params, final ObservableObserver observer, final ExecutionVenue ev, long expiryTime) throws InterruptedException {
-        mockAndMakeCall(request, httpCode, response, responseSize, false, client, ec, key, params, observer, ev, 0);
+                                   final Object[] params, final ObservableObserver observer, final ExecutionVenue ev, TimeConstraints timeConstraints) throws InterruptedException {
+        mockAndMakeCall(request, httpCode, response, responseSize, false, client, ec, key, params, observer, ev, timeConstraints);
     }
 
     private void mockAndMakeCall(Request request, int httpCode, String response, int responseSize, boolean ioException,
                                  final AbstractHttpExecutable<Request> client, final ExecutionContext ec, final OperationKey key,
-                                 final Object[] params, final ObservableObserver observer, final ExecutionVenue ev, final long expiryTime) throws InterruptedException {
+                                 final Object[] params, final ObservableObserver observer, final ExecutionVenue ev, final TimeConstraints timeConstraints) throws InterruptedException {
         // calls first (but in new thread)
         new Thread(new Runnable() {
             @Override
             public void run() {
-                client.execute(ec, key, params, observer, ev, expiryTime);
+                client.execute(ec, key, params, observer, ev, timeConstraints);
             }
         }).start();
 
@@ -141,7 +143,7 @@ public class AsyncHttpExecutableTest extends AbstractHttpExecutableTest<Request>
         new Thread(new Runnable() {
             @Override
             public void run() {
-                client.execute(ec, key, new Object[] {TEST_TEXT }, observer, ev, 0);
+                client.execute(ec, key, new Object[] {TEST_TEXT }, observer, ev, DefaultTimeConstraints.NO_CONSTRAINTS);
             }
         }).start();
 
@@ -168,7 +170,7 @@ public class AsyncHttpExecutableTest extends AbstractHttpExecutableTest<Request>
             @Override
             public void run() {
                 client.execute(createEC(null, null, false), TestServiceDefinition.TEST_MIXED,
-                        new Object[] {TEST_TEXT, TEST_TEXT }, observer, ev, 0);
+                        new Object[] {TEST_TEXT, TEST_TEXT }, observer, ev, DefaultTimeConstraints.NO_CONSTRAINTS);
             }
         }).start();
 
@@ -192,7 +194,7 @@ public class AsyncHttpExecutableTest extends AbstractHttpExecutableTest<Request>
             @Override
             public void run() {
                 client.execute(createEC(null, null, false), TestServiceDefinition.TEST_MIXED,
-                        new Object[] {TEST_TEXT, TEST_TEXT }, observer, ev, 0);
+                        new Object[] {TEST_TEXT, TEST_TEXT }, observer, ev, DefaultTimeConstraints.NO_CONSTRAINTS);
             }
         }).start();
 
@@ -234,7 +236,7 @@ public class AsyncHttpExecutableTest extends AbstractHttpExecutableTest<Request>
         generateEV(tsd, null);
         final PassFailExecutionObserver mockObserver = new PassFailExecutionObserver(false, true);
 
-        mockAndMakeCall(mockRequest, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, 34, true, client, createEC(null, null, false), TestServiceDefinition.TEST_GET, new Object[]{TEST_TEXT}, mockObserver, ev, 0);
+        mockAndMakeCall(mockRequest, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, 34, true, client, createEC(null, null, false), TestServiceDefinition.TEST_GET, new Object[]{TEST_TEXT}, mockObserver, ev, DefaultTimeConstraints.NO_CONSTRAINTS);
     }
 
     @Test

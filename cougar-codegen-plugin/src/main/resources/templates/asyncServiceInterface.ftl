@@ -73,7 +73,7 @@ public interface  ${service}AsyncService extends com.betfair.cougar.api.Service 
     * @param expiryTime The time at which this execution request expires, at which point this call MAY return a timeout fault.
     */
     public void ${method} <@compress single_line=true> (
-    	RequestContext ctx <#recurse .node> , ExecutionObserver observer, long expiryTime) ;
+    	RequestContext ctx <#recurse .node> , ExecutionObserver observer, TimeConstraints timeConstraints) ;
 	    </@compress>
 </#macro><#t>
 

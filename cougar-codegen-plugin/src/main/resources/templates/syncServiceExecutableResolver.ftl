@@ -36,6 +36,7 @@ import com.betfair.cougar.core.api.ev.ExecutionObserver;
 import com.betfair.cougar.core.api.ev.ExecutionResult;
 import com.betfair.cougar.core.api.ev.ExecutionVenue;
 import com.betfair.cougar.core.api.ev.OperationKey;
+import com.betfair.cougar.core.api.ev.TimeConstraints;
 
 import java.util.*;
 
@@ -79,13 +80,13 @@ public class ${service}SyncServiceExecutableResolver implements ExecutableResolv
                 <#assign call=call + ", (" + javaType + ")args["  + argPos + "]"><#t>
                 <#assign argPos = argPos + 1><#t>
             </#list><#t>
-            <#assign call=call + ", expiryTime);"><#t>
+            <#assign call=call + ", timeConstraints);"><#t>
 	  	executableMap.put(${service}ServiceDefinition.${method}Key,
             new Executable() {
                 @Override
                 public void execute(ExecutionContext ctx, OperationKey key,
                         Object[] args, ExecutionObserver observer,
-                        ExecutionVenue executionVenue, long expiryTime) {
+                        ExecutionVenue executionVenue, TimeConstraints timeConstraints) {
 
                 try {
                     <#if returnType!="void">
@@ -114,7 +115,7 @@ public class ${service}SyncServiceExecutableResolver implements ExecutableResolv
                 @Override
                 public void execute(ExecutionContext ctx, OperationKey key,
 							Object[] args, ExecutionObserver observer,
-							ExecutionVenue executionVenue, long expiryTime) {
+							ExecutionVenue executionVenue, TimeConstraints timeConstraints) {
 		  			service.${method}(ctx, args, observer);
 
             }

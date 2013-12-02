@@ -34,6 +34,7 @@ import com.betfair.cougar.core.api.exception.PanicInTheCougar;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
+import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.logging.CougarLoggingUtils;
 import com.betfair.cougar.transport.api.CommandResolver;
 import com.betfair.cougar.transport.api.CommandValidator;
@@ -487,7 +488,7 @@ public class AbstractHttpCommandProcessorTest {
 
 		@Override
 		public void execute(ExecutionContext ctx, OperationKey key,
-				Object[] args, ExecutionObserver observer, long clientExpiryTime) {
+				Object[] args, ExecutionObserver observer, TimeConstraints clientExpiryTime) {
 			invokedCount++;
 			this.key = key;
 			this.args = args;
@@ -495,7 +496,7 @@ public class AbstractHttpCommandProcessorTest {
 		}
 
         @Override
-        public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, final ExecutionObserver observer, final Executor executor, final long clientExpiryTime) {
+        public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, final ExecutionObserver observer, final Executor executor, final TimeConstraints clientExpiryTime) {
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -686,8 +687,8 @@ public class AbstractHttpCommandProcessorTest {
                         }
 
                         @Override
-                        public long getExpiry() {
-                            return 0;
+                        public TimeConstraints getTimeConstraints() {
+                            return DefaultTimeConstraints.NO_CONSTRAINTS;
                         }
                     });
                     return commands;

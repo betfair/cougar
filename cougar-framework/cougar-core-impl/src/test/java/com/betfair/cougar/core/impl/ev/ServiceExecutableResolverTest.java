@@ -19,6 +19,7 @@ package com.betfair.cougar.core.impl.ev;
 import java.util.Date;
 
 import com.betfair.cougar.core.api.ev.*;
+import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.logging.CougarLoggingUtils;
 import com.betfair.cougar.util.UUIDGeneratorImpl;
 import org.junit.Before;
@@ -99,10 +100,10 @@ public class ServiceExecutableResolverTest {
 		Executable resultExecutable = serviceResolver.resolveExecutable(op1Key, ev);
 		
 		//Execute the returned executable
-		resultExecutable.execute(context, op1Key, new Object[] {}, mock(ExecutionObserver.class), mock(ExecutionVenue.class), 0);
+		resultExecutable.execute(context, op1Key, new Object[] {}, mock(ExecutionObserver.class), mock(ExecutionVenue.class), DefaultTimeConstraints.NO_CONSTRAINTS);
 		
 		//Verify that the registered executable was invoked with a RequestContext
-		verify(executable).execute(any(RequestContext.class), eq(op1Key), any(Object[].class), any(ExecutionObserver.class), any(ExecutionVenue.class), eq(0L));
+		verify(executable).execute(any(RequestContext.class), eq(op1Key), any(Object[].class), any(ExecutionObserver.class), any(ExecutionVenue.class), eq(DefaultTimeConstraints.NO_CONSTRAINTS));
 	}
 	
 	@Test
@@ -132,7 +133,7 @@ public class ServiceExecutableResolverTest {
 		when(simpleResolver.resolveExecutable(op1Key, ev)).thenReturn(executable);
 		
 		Executable resultExecutable = serviceResolver.resolveExecutable(op1Key, ev);
-		resultExecutable.execute(context, op1Key, new Object[] {}, mock(ExecutionObserver.class), mock(ExecutionVenue.class),0);
+		resultExecutable.execute(context, op1Key, new Object[] {}, mock(ExecutionObserver.class), mock(ExecutionVenue.class),DefaultTimeConstraints.NO_CONSTRAINTS);
 		
 		LoggableEvent event = mock(LoggableEvent.class);
 		
@@ -197,7 +198,7 @@ public class ServiceExecutableResolverTest {
 		@Override
 		public void execute(ExecutionContext ctx, OperationKey key,
 				Object[] args, ExecutionObserver observer,
-				ExecutionVenue executionVenue, long expiryTime) {
+				ExecutionVenue executionVenue, TimeConstraints timeConstraints) {
 			this.observer = observer;
 			this.context = (RequestContext)ctx;
 		}

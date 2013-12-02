@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import com.betfair.cougar.core.api.ev.TimeConstraints;
+import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.tornjak.monitor.service.InOutServiceMonitor;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -56,7 +58,7 @@ public class HealthServiceImpl implements HealthService {
 	}
 	
 	@Override
-	public HealthSummaryResponse isHealthy(final RequestContext ctx, long expiryTime) throws HealthException {
+	public HealthSummaryResponse isHealthy(final RequestContext ctx, TimeConstraints timeConstraints) throws HealthException {
 		HealthSummaryResponse response = new HealthSummaryResponse();
 		
 		if (isSystemInService()) {
@@ -93,7 +95,7 @@ public class HealthServiceImpl implements HealthService {
 	}
 
 	@Override
-	public HealthDetailResponse getDetailedHealthStatus(RequestContext reqCtx, long expiryTime) throws HealthException {
+	public HealthDetailResponse getDetailedHealthStatus(RequestContext reqCtx, TimeConstraints timeConstraints) throws HealthException {
 		HealthDetailResponse detail = new HealthDetailResponse();
 
         List<SubComponentStatus> subStatuses = new ArrayList<>();
@@ -137,7 +139,7 @@ public class HealthServiceImpl implements HealthService {
 	@ManagedAttribute
 	public boolean isSystemHealthy() {
 		try {
-			HealthStatus status = getDetailedHealthStatus(null, 0).getHealth();
+			HealthStatus status = getDetailedHealthStatus(null, DefaultTimeConstraints.NO_CONSTRAINTS).getHealth();
 			return status == HealthStatus.OK || status == HealthStatus.WARN;
 		
 		} catch (HealthException e) {

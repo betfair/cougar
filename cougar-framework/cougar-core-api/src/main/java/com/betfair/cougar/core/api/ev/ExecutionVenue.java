@@ -59,11 +59,12 @@ public interface ExecutionVenue {
 	 * @param key Defines the operation to be executed
 	 * @param args The arguments to be provided to the operation
 	 * @param observer The ExecutionObserver is notified of either the result of the execution, or of an exception thrown during execution.
-     * @param expiryTime The time that this execution request expires, after which point the call may be timed out. The client
-     *                   doesn't guarantee to hang around waiting for the timeout response. A value of zero indicates no timeout
-     *                   has been specified by the client.
+     * @param timeConstraints External constraints on the execution time of this call. These constraints may specify a
+     *                        time that this execution request expires, after which point the call may be timed out. The client
+     *                        doesn't guarantee to hang around waiting for the timeout response. A value of zero indicates no timeout
+     *                        has been specified by the client.
 	 */
-	public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, long expiryTime);
+	public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, TimeConstraints timeConstraints);
 
 	/**
 	 * Execute the Executable registered for the provided OperationKey in the provided executor
@@ -72,11 +73,12 @@ public interface ExecutionVenue {
 	 * @param args The arguments to be provided to the operation
 	 * @param observer The ExecutionObserver is notified of either the result of the execution, or of an exception thrown during execution.
      * @param executor An executor to perform this request on.
-     * @param expiryTime The time that this execution request expires, after which point the call may be timed out. The client
-     *                   doesn't guarantee to hang around waiting for the timeout response. A value of zero indicates no timeout
-     *                   has been specified by the client.
+     * @param timeConstraints External constraints on the execution time of this call. These constraints may specify a
+     *                        time that this execution request expires, after which point the call may be timed out. The client
+     *                        doesn't guarantee to hang around waiting for the timeout response. A value of zero indicates no timeout
+     *                        has been specified by the client.
 	 */
-	public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, Executor executor, long expiryTime);
+	public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, Executor executor, TimeConstraints timeConstraints);
 
 	public void setPreProcessors(List<ExecutionPreProcessor> preProcessorList);
 	

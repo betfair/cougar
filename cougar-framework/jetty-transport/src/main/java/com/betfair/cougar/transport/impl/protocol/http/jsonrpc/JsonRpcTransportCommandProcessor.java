@@ -37,6 +37,7 @@ import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.exception.*;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
+import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.logging.CougarLogger;
 import com.betfair.cougar.logging.CougarLoggingUtils;
 import com.betfair.cougar.transport.api.CommandResolver;
@@ -96,7 +97,7 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
     // package private for testing
     static final Executable IDENTITY_RESOLUTION_EXEC = new Executable() {
         @Override
-        public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, ExecutionVenue executionVenue, long expiry) {
+        public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, ExecutionVenue executionVenue, TimeConstraints expiry) {
             observer.onResult(new ExecutionResult(null));
         }
     };
@@ -201,8 +202,8 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
                                     }
 
                                     @Override
-                                    public long getExpiry() {
-                                        return 0; // todo: try to get this from somewhere
+                                    public TimeConstraints getTimeConstraints() {
+                                        return DefaultTimeConstraints.NO_CONSTRAINTS; // todo: try to get this from somewhere
                                     }
                                 });
                             } catch (Exception e) {
@@ -287,8 +288,8 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
                 }
 
                 @Override
-                public long getExpiry() {
-                    return 0; // todo: should this really be zero?
+                public TimeConstraints getTimeConstraints() {
+                    return DefaultTimeConstraints.NO_CONSTRAINTS; // todo: should this really be zero?
                 }
             };
             executeCommand(resolveCommand, ctx);

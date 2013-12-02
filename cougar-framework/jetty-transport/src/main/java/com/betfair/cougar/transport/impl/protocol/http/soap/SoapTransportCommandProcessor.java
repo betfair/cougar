@@ -25,6 +25,7 @@ import com.betfair.cougar.core.api.ServiceBindingDescriptor;
 import com.betfair.cougar.core.api.ev.ExecutionResult;
 import com.betfair.cougar.core.api.ev.OperationDefinition;
 import com.betfair.cougar.core.api.ev.OperationKey;
+import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 import com.betfair.cougar.core.api.exception.CougarValidationException;
@@ -33,6 +34,7 @@ import com.betfair.cougar.core.api.fault.CougarFault;
 import com.betfair.cougar.core.api.fault.FaultController;
 import com.betfair.cougar.core.api.fault.FaultDetail;
 import com.betfair.cougar.core.api.transcription.*;
+import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.logging.CougarLogger;
 import com.betfair.cougar.logging.CougarLoggingUtils;
 import com.betfair.cougar.marshalling.impl.databinding.xml.JdkEmbeddedXercesSchemaValidationFailureParser;
@@ -253,8 +255,8 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
             }
 
             @Override
-            public long getExpiry() {
-                return 0;  //TODO
+            public TimeConstraints getTimeConstraints() {
+                return DefaultTimeConstraints.NO_CONSTRAINTS; //todo
             }
 
             public void onResult(ExecutionResult result) {

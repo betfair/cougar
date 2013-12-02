@@ -19,6 +19,7 @@ package com.betfair.cougar.core.impl.ev;
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 
+import com.betfair.cougar.core.api.ev.TimeConstraints;
 import org.junit.Test;
 
 import com.betfair.cougar.api.ExecutionContext;
@@ -40,7 +41,7 @@ public class CompoundExecutableResolverTest {
 		@Override
 		public void execute(ExecutionContext ctx, OperationKey key,
 				Object[] args, ExecutionObserver observer,
-				ExecutionVenue executionVenue, long expiryTime) {
+				ExecutionVenue executionVenue, TimeConstraints timeConstraints) {
 			
 		}};
 	private Executable ex2 = new Executable() {
@@ -48,7 +49,7 @@ public class CompoundExecutableResolverTest {
 		@Override
 		public void execute(ExecutionContext ctx, OperationKey key,
 				Object[] args, ExecutionObserver observer,
-				ExecutionVenue executionVenue, long expiryTime) {
+				ExecutionVenue executionVenue, TimeConstraints timeConstraints) {
 			
 		}};
 

@@ -36,6 +36,7 @@ import com.betfair.cougar.core.api.ev.ExecutionResult;
 import com.betfair.cougar.core.api.ev.ExecutionVenue;
 import com.betfair.cougar.core.api.ev.OperationDefinition;
 import com.betfair.cougar.core.api.ev.OperationKey;
+import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.CougarValidationException;
@@ -205,7 +206,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         else {
             Executable noop = new Executable() {
                 @Override
-                public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, ExecutionVenue executionVenue, long expirtyTime) {
+                public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, ExecutionVenue executionVenue, TimeConstraints expirtyTime) {
                     observer.onResult(new ExecutionResult(null));
                 }
             };
@@ -1047,12 +1048,12 @@ public class JsonRpcTransportCommandProcessorTest  {
         }
 
         @Override
-        public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, long clientExpiryTime) {
+        public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, TimeConstraints clientExpiryTime) {
             throw new NullPointerException("BANG");
         }
 
         @Override
-        public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, Executor executor, long clientExpiryTime) {
+        public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, Executor executor, TimeConstraints clientExpiryTime) {
             throw new NullPointerException("BANG");
         }
 
@@ -1092,7 +1093,7 @@ public class JsonRpcTransportCommandProcessorTest  {
     private class TestBaseExecutionVenue extends BaseExecutionVenue {
         private List<ExecutionRequest> requests = new ArrayList<ExecutionRequest>();
         @Override
-        public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, long expirtyTime) {
+        public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, TimeConstraints expirtyTime) {
             requests.add(new ExecutionRequest(ctx, key, args, observer));
             super.execute(ctx, key, args, observer, expirtyTime);
         }

@@ -21,6 +21,7 @@ import com.betfair.cougar.api.RequestContext;
 import com.betfair.cougar.api.ResponseCode;
 import com.betfair.cougar.caching.CacheFrameworkIntegration;
 import com.betfair.cougar.caching.CacheFrameworkRegistry;
+import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.logging.CougarLogger;
 import com.betfair.cougar.logging.CougarLoggingUtils;
 import com.betfair.testingservice.v1.TestingService;
@@ -99,7 +100,7 @@ public class TestingServiceImpl implements TestingService {
     }
 
     @Override
-    public CallResponse refreshCache(RequestContext ctx, String name, long expiryTime)
+    public CallResponse refreshCache(RequestContext ctx, String name, TimeConstraints timeConstraints)
             throws TestingException {
         CallResponse response = new CallResponse();
         boolean found = false;
@@ -119,7 +120,7 @@ public class TestingServiceImpl implements TestingService {
     }
 
     @Override
-    public IDD getIDD(RequestContext ctx, String name, long expiryTime) throws TestingException {
+    public IDD getIDD(RequestContext ctx, String name, TimeConstraints timeConstraints) throws TestingException {
         InputStream iddStream = getClass().getResourceAsStream("/idd/" + name);
         logger.log(Level.FINE, "Retriving IDD %s", "/idd/" + name);
         if (iddStream != null) {
@@ -156,7 +157,7 @@ public class TestingServiceImpl implements TestingService {
     }
 
     @Override
-    public CallResponse refreshAllCaches(RequestContext ctx, long expiryTime)
+    public CallResponse refreshAllCaches(RequestContext ctx, TimeConstraints timeConstraints)
             throws TestingException {
         CallResponse response = new CallResponse();
         boolean done = false;
@@ -176,7 +177,7 @@ public class TestingServiceImpl implements TestingService {
 
     @Override
     public LogFileResponse getLogEntriesByDateRange(RequestContext ctx,
-                                                    String logFileName, String startDateTime, String endDateTime, long expiryTime)
+                                                    String logFileName, String startDateTime, String endDateTime, TimeConstraints timeConstraints)
             throws TestingException {
         List<String> logLines = null;
         String physicalLogFileName = this.getBaseLogDirectory() + logFileName;
@@ -219,7 +220,7 @@ public class TestingServiceImpl implements TestingService {
 
     @Override
     public LogFileResponse getLogEntries(RequestContext ctx, String logFileName,
-                                         Integer numberOfLines, long expiryTime) throws TestingException {
+                                         Integer numberOfLines, TimeConstraints timeConstraints) throws TestingException {
         long start = System.nanoTime();
         List<String> logLines = null;
         String physicalLogFileName = this.getBaseLogDirectory() + logFileName;

@@ -21,6 +21,7 @@ import com.betfair.baseline.v1.exception.SimpleException;
 import com.betfair.baseline.v1.to.SimpleResponse;
 import com.betfair.cougar.api.ContainerContext;
 import com.betfair.cougar.api.RequestContext;
+import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.tornjak.monitor.*;
 
 import java.util.Collections;
@@ -30,7 +31,7 @@ import java.util.Set;
  */
 public class OldVersionBaselineServiceImpl implements BaselineService {
     @Override
-    public SimpleResponse testSimpleGet(RequestContext ctx, String message, long expiryTime) throws SimpleException {
+    public SimpleResponse testSimpleGet(RequestContext ctx, String message, TimeConstraints timeConstraints) throws SimpleException {
         SimpleResponse simpleResponse = new SimpleResponse();
 
         simpleResponse.setMessage(message + " emitted by version 1.0.0 of Baseline");

@@ -29,6 +29,7 @@ import com.betfair.cougar.core.api.ev.OperationKey;
 import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
+import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.core.impl.transports.TransportRegistryImpl;
 import com.betfair.cougar.netutil.nio.CougarProtocol;
 import com.betfair.cougar.netutil.nio.NioConfig;
@@ -211,7 +212,7 @@ public abstract class AbstractClientTest {
     }
 
     void performRequestAsync(ExecutionVenueNioClient client, ClientTestExecutionObserver observer, Object[] args) throws IOException, InterruptedException {
-        client.execute(new SimpleExecutionContext(), OPERATION_DEFINITION, args, observer, 0);
+        client.execute(new SimpleExecutionContext(), OPERATION_DEFINITION, args, observer, DefaultTimeConstraints.NO_CONSTRAINTS);
     }
     
     void performRequest(ExecutionVenueNioClient client, ClientTestExecutionObserver observer, Object[] args) throws IOException, InterruptedException {

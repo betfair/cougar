@@ -28,6 +28,7 @@ import com.betfair.cougar.core.api.ev.ExecutableResolver;
 import com.betfair.cougar.core.api.ev.ExecutionObserver;
 import com.betfair.cougar.core.api.ev.ExecutionVenue;
 import com.betfair.cougar.core.api.ev.OperationKey;
+import com.betfair.cougar.core.api.ev.TimeConstraints;
 
 import java.util.*;
 
@@ -51,7 +52,7 @@ public class ${service}ServiceExecutableResolver implements ExecutableResolver {
 					@Override
 					public void execute(ExecutionContext ctx, OperationKey key,
 							Object[] args, ExecutionObserver observer,
-							ExecutionVenue executionVenue, long expiryTime) {
+							ExecutionVenue executionVenue, TimeConstraints timeConstraints) {
 		  			service.${method}((RequestContext)ctx<@compress single_line=true>
 		  			<#assign argPos = 0>
 		        	<#list operation.parameters.request.parameter as parameter>
@@ -71,7 +72,7 @@ public class ${service}ServiceExecutableResolver implements ExecutableResolver {
 					    , (${javaType})args[${argPos}]
 				  		<#assign argPos = argPos + 1>
 			        </#list>
-			    	, observer, expiryTime);
+			    	, observer, timeConstraints);
 				    </@compress>
 				    
 				}
@@ -85,7 +86,7 @@ public class ${service}ServiceExecutableResolver implements ExecutableResolver {
                 @Override
                 public void execute(ExecutionContext ctx, OperationKey key,
 							Object[] args, ExecutionObserver observer,
-							ExecutionVenue executionVenue, long expiryTime) {
+							ExecutionVenue executionVenue, TimeConstraints timeConstraints) {
 		  			service.${method}(ctx, args, observer);
 
             }

@@ -23,6 +23,7 @@ import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
+import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.core.impl.security.IdentityChainImpl;
 import com.betfair.cougar.logging.CougarLogger;
 import com.betfair.cougar.logging.CougarLoggingUtils;
@@ -131,14 +132,14 @@ public class BaseExecutionVenue implements ExecutionVenue {
     }
 
     @Override
-    public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, ExecutionObserver observer, long clientExpiryTime) {
+    public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, ExecutionObserver observer, TimeConstraints timeConstraints) {
         final DefinedExecutable de = registry.get(key);
         if (de == null) {
             logger.log(Level.FINE, "Not request logging request to URI: %s as no operation was found", key.toString());
             observer.onResult(new ExecutionResult(new CougarServiceException(ServerFaultCode.NoSuchOperation, "Operation not found: "+key.toString())));
         } else {
             long serverExpiryTime = de.maxExecutionTime == 0 ? Long.MAX_VALUE : System.currentTimeMillis() + de.maxExecutionTime;
-            clientExpiryTime = clientExpiryTime == 0 ? Long.MAX_VALUE : clientExpiryTime;
+            long clientExpiryTime = timeConstraints.getExpiryTime() == null ? Long.MAX_VALUE : timeConstraints.getExpiryTime();
             long expiryTime = Math.min(clientExpiryTime, serverExpiryTime);
             if (expiryTime == Long.MAX_VALUE) {
                 expiryTime = 0;
@@ -154,7 +155,7 @@ public class BaseExecutionVenue implements ExecutionVenue {
 
             try {
                 ExecutionContext contextToUse = resolveIdentitiesIfRequired(ctx);
-                de.exec.execute(contextToUse, key, args, observer, this, expiryTime);
+                de.exec.execute(contextToUse, key, args, observer, this, timeConstraints);
             } catch (CougarException e) {
                 observer.onResult(new ExecutionResult(e));
             } catch (Exception e) {
@@ -170,7 +171,10 @@ public class BaseExecutionVenue implements ExecutionVenue {
     }
 
     @Override
-    public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, final ExecutionObserver observer, final Executor executor, final long clientExpiryTime) {
+    public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, final ExecutionObserver observer, final Executor executor, final TimeConstraints timeConstraints) {
+        if (timeConstraints == null) {
+            throw new IllegalArgumentException("Time constraints may not be null");
+        }
 
         final DefinedExecutable de = registry.get(key);
         final InterceptingExecutableWrapper interceptingExecutableWrapper = ExecutableWrapperUtils.findChild(InterceptingExecutableWrapper.class, de.exec);
@@ -181,7 +185,7 @@ public class BaseExecutionVenue implements ExecutionVenue {
             @Override
             public void run() {
                 long serverExpiryTime = de.maxExecutionTime == 0 ? Long.MAX_VALUE : System.currentTimeMillis() + de.maxExecutionTime;
-                long clientExpiryTimeCopy = clientExpiryTime == 0 ? Long.MAX_VALUE : clientExpiryTime;
+                long clientExpiryTimeCopy = timeConstraints.getExpiryTime() == null ? Long.MAX_VALUE : timeConstraints.getExpiryTime();
                 long expiryTime = Math.min(clientExpiryTimeCopy, serverExpiryTime);
                 if (expiryTime == Long.MAX_VALUE) {
                     expiryTime = 0;
@@ -190,7 +194,7 @@ public class BaseExecutionVenue implements ExecutionVenue {
                 if (expiringObserver.expires()) {
                     registerExpiringObserver(expiringObserver);
                 }
-                final long finalExpiryTime = expiryTime;
+                final TimeConstraints timeConstraints = expiryTime == 0 ? DefaultTimeConstraints.NO_CONSTRAINTS : DefaultTimeConstraints.fromExpiryTime(expiryTime);
                 executor.execute(new Runnable() {
                     @Override
                     public void run() {
@@ -198,7 +202,7 @@ public class BaseExecutionVenue implements ExecutionVenue {
                         if (interceptingExecutableWrapper != null) {
                             interceptingExecutableWrapper.setUnexecutedPreProcessorsForThisThread(remainingProcessors);
                         }
-                        execute(ctx, key, args, expiringObserver, finalExpiryTime);
+                        execute(ctx, key, args, expiringObserver, timeConstraints);
                     }
                 });
             }

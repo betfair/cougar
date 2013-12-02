@@ -22,10 +22,12 @@ import com.betfair.cougar.core.api.ev.ConnectedResponse;
 import com.betfair.cougar.core.api.ev.ExecutionResult;
 import com.betfair.cougar.core.api.ev.OperationDefinition;
 import com.betfair.cougar.core.api.ev.OperationKey;
+import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.core.api.exception.*;
 import com.betfair.cougar.core.api.security.IdentityResolverFactory;
 import com.betfair.cougar.core.api.transcription.EnumDerialisationException;
 import com.betfair.cougar.core.api.transcription.TranscriptionException;
+import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.logging.CougarLogger;
 import com.betfair.cougar.logging.CougarLoggingUtils;
 import com.betfair.cougar.logging.EventLoggingRegistry;
@@ -198,8 +200,8 @@ public class SocketTransportCommandProcessor extends AbstractCommandProcessor<So
                     }
 
                     @Override
-                    public long getExpiry() {
-                        return 0;  //TODO
+                    public TimeConstraints getTimeConstraints() {
+                        return DefaultTimeConstraints.NO_CONSTRAINTS; // TODO
                     }
                 };
 
