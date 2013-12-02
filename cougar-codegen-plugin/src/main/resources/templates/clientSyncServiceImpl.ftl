@@ -198,7 +198,7 @@ public class  ${service}SyncClientImpl implements ${service}SyncClient {<#t>
                    observer,
                    timeConstraints);
 
-        if (timeConstraints.getTimeRemaining() != null && !observer.await(timeConstraints.getTimeRemaining())) {
+        if (!observer.await(timeConstraints)) {
             throw new TimeoutException("Operation ${operation.operationName} timed out!");
         }
 
@@ -276,7 +276,7 @@ public class  ${service}SyncClientImpl implements ${service}SyncClient {<#t>
          </#if>
          { </@compress>
         try {
-            <#if operation.returnType.javaType!="void">return </#if>${operation.operationName}(${argsToBePassed}, 0);
+            <#if operation.returnType.javaType!="void">return </#if>${operation.operationName}(${argsToBePassed}, DefaultTimeConstraints.NO_CONSTRAINTS);
         } catch (TimeoutException ex) {
             //blocking call, so won't happen
         } catch (InterruptedException interrupted) {

@@ -60,4 +60,16 @@ public class WaitingObserver implements ExecutionObserver {
             return true;
         }
     }
+
+    public boolean await(TimeConstraints timeConstraints) throws InterruptedException {
+        long waitTime = 0;
+        boolean timedOut = false;
+        if (timeConstraints.getTimeRemaining() != null) {
+            waitTime = timeConstraints.getTimeRemaining();
+            if (waitTime <= 0) {
+                timedOut = true;
+            }
+        }
+        return !(timedOut || !await(waitTime));
+    }
 }
