@@ -38,14 +38,14 @@ public class SessionTestUtil {
     }
 
     public static IoSession newV1Session() {
-        return newSession(CougarProtocol.APPLICATION_PROTOCOL_VERSION_CLIENT_ONLY_RPC);
+        return newSession(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC);
     }
 
     public static IoSession newV2Session() {
-        return newSession(CougarProtocol.APPLICATION_PROTOCOL_VERSION_BIDIRECTION_RPC);
+        return newSession(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC);
     }
 
     public static IoSession newV3Session() {
-        return newSession(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS);
+        return newSession(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS);
     }
 }

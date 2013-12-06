@@ -36,6 +36,7 @@ import com.betfair.cougar.logging.CougarLoggingUtils;
 import com.betfair.cougar.netutil.nio.CougarProtocol;
 import com.betfair.cougar.netutil.nio.NioLogger;
 import com.betfair.cougar.netutil.nio.TlsNioConfig;
+import com.betfair.cougar.netutil.nio.marshalling.DefaultSocketTimeResolver;
 import com.betfair.cougar.netutil.nio.marshalling.SocketRMIMarshaller;
 import com.betfair.cougar.transport.api.protocol.socket.SocketBindingDescriptor;
 import com.betfair.cougar.transport.api.protocol.socket.SocketOperationBindingDescriptor;
@@ -94,7 +95,7 @@ public class ServerClientFactory {
 
         
         GeoIPLocator geo = Mockito.mock(GeoIPLocator.class);
-        SocketRMIMarshaller marshaller = new SocketRMIMarshaller(geo, new CommonNameCertInfoExtractor());
+        SocketRMIMarshaller marshaller = new SocketRMIMarshaller(geo, new CommonNameCertInfoExtractor(), new DefaultSocketTimeResolver(true));
         IdentityResolverFactory identityResolverFactory = new IdentityResolverFactory();
         identityResolverFactory.setIdentityResolver(Mockito.mock(IdentityResolver.class));
 
@@ -217,7 +218,7 @@ public class ServerClientFactory {
 	
 	public static ExecutionVenueNioClient createClient (String connectionString, NioConfig cfg) {
         GeoIPLocator geo = Mockito.mock(GeoIPLocator.class);
-        SocketRMIMarshaller marshaller = new SocketRMIMarshaller(geo, new CommonNameCertInfoExtractor());
+        SocketRMIMarshaller marshaller = new SocketRMIMarshaller(geo, new CommonNameCertInfoExtractor(), new DefaultSocketTimeResolver());
         IdentityResolverFactory factory = new IdentityResolverFactory();
         factory.setIdentityResolver(Mockito.mock(IdentityResolver.class));
 

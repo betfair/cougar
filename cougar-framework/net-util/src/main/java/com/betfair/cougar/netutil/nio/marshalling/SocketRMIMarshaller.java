@@ -28,6 +28,7 @@ import com.betfair.cougar.core.api.client.EnumWrapper;
 import com.betfair.cougar.core.api.ev.ExecutionObserver;
 import com.betfair.cougar.core.api.ev.ExecutionResult;
 import com.betfair.cougar.core.api.ev.OperationKey;
+import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
@@ -37,11 +38,13 @@ import com.betfair.cougar.core.api.transcription.EnumUtils;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
 import com.betfair.cougar.core.api.transcription.TranscriptionException;
+import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.core.impl.security.CertInfoExtractor;
 import com.betfair.cougar.core.impl.security.CommonNameCertInfoExtractor;
 import com.betfair.cougar.core.impl.security.SSLAwareTokenResolver;
 import com.betfair.cougar.marshalling.api.socket.RemotableMethodInvocationMarshaller;
 import com.betfair.cougar.netutil.nio.CougarProtocol;
+import com.betfair.cougar.transport.api.RequestTimeResolver;
 import com.betfair.cougar.transport.api.protocol.CougarObjectInput;
 import com.betfair.cougar.transport.api.protocol.CougarObjectOutput;
 import com.betfair.cougar.transport.api.protocol.http.ExecutionContextFactory;
@@ -64,17 +67,20 @@ import java.util.List;
  * transcribe requests/responses over the the binary socket transport
  */
 public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller {
+
     private final GeoIPLocator geoIpLocator;
     private final IdentityTokenResolver<CougarObjectInput, CougarObjectOutput, X509Certificate[]> identityTokenResolver;
+    private final RequestTimeResolver<Long, CougarObjectOutput> requestTimeResolver;
     private boolean hardFailEnumDeserialisation;
 
     // For client side, as the GeoIpLocator/cert regex is only necessary server side.
-    public SocketRMIMarshaller() {
-    	this(null,new CommonNameCertInfoExtractor());
+    public SocketRMIMarshaller(RequestTimeResolver<Long, CougarObjectOutput> requestTimeResolver) {
+    	this(null,new CommonNameCertInfoExtractor(),requestTimeResolver);
     }
 
-    public SocketRMIMarshaller(GeoIPLocator geoIpLocator, CertInfoExtractor certInfoExtractor) {
+    public SocketRMIMarshaller(GeoIPLocator geoIpLocator, CertInfoExtractor certInfoExtractor, RequestTimeResolver<Long, CougarObjectOutput> requestTimeResolver) {
         this.geoIpLocator = geoIpLocator;
+        this.requestTimeResolver = requestTimeResolver;
         this.identityTokenResolver = new SSLAwareTokenResolver<CougarObjectInput, CougarObjectOutput, X509Certificate[]>(certInfoExtractor) {
                 @Override
                 public List<IdentityToken> resolve(CougarObjectInput input, X509Certificate[] certificateChain) {
@@ -160,9 +166,16 @@ public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller 
 
     @Override
 	public void writeInvocationRequest(InvocationRequest request, CougarObjectOutput out, IdentityResolver identityResolver, byte protocolVersion) throws IOException {
+        // todo: decide if we want app protocol versioning too?
+        // note that new additions to the app protocol must be backwards compatible from the client side, the server side response may be breaking since it knows what
+        // the client version is..
+//        if (protocolVersion >= CougarProtocol.TRANSPORT_PROTOCOL_VERSION_TIME_CONSTRAINTS) {
+//            out.writeBytes(new byte[] {CougarProtocol.TRANSPORT_PROTOCOL_VERSION_TIME_CONSTRAINTS});
+//        }
 		writeExecutionContext(request.getExecutionContext(), out, identityResolver, protocolVersion);
 		writeOperationKey(request.getOperationKey(), out);
 		writeArgs(request.getParameters(), request.getArgs(), out);
+        writeTimeConstraints(request.getTimeConstraints(), out, protocolVersion);
 	}
 
     @Override
@@ -170,7 +183,7 @@ public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller 
 		out.writeBoolean(response.isSuccess());
 		if (response.isSuccess()) {
             // make sure we serialise enum responses as strings.. unless of course we're on an old version
-            if (protocolVersion >= CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS && response.getResult() != null && Enum.class.isAssignableFrom(response.getResult().getClass())) {
+            if (protocolVersion >= CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS && response.getResult() != null && Enum.class.isAssignableFrom(response.getResult().getClass())) {
                 out.writeObject(((Enum)response.getResult()).name());
             }
             else {
@@ -250,6 +263,16 @@ public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller 
 		out.writeObject(args);
 	}
 
+    void writeTimeConstraints(TimeConstraints timeConstraints, CougarObjectOutput out, byte protocolVersion) throws IOException {
+        if (protocolVersion >= CougarProtocol.TRANSPORT_PROTOCOL_VERSION_TIME_CONSTRAINTS) {
+            boolean haveTimeConstraints = timeConstraints.getTimeRemaining() != null;
+            out.writeBoolean(haveTimeConstraints);
+            if (haveTimeConstraints) {
+                out.writeLong(timeConstraints.getTimeRemaining());
+            }
+        }
+    }
+
 	public Object [] readArgs(Parameter [] argTypes, CougarObjectInput in) throws IOException {
         EnumUtils.setHardFailureForThisThread(hardFailEnumDeserialisation);
 		try {
@@ -274,9 +297,16 @@ public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller 
         writeRequestUUID(ctx.getRequestUUID(), out);
         writeReceivedTime(ctx.getReceivedTime(), out);
         out.writeBoolean(ctx.traceLoggingEnabled());
-	}
+        writeRequestTime(out, protocolVersion);
+    }
 
-    private ExecutionContextWithTokens resolveExecutionContext(CougarObjectInput in, GeoLocationDetails geo, List<IdentityToken> tokens, int transportSecurityStrengthFactor) throws IOException {
+    void writeRequestTime(CougarObjectOutput out, byte protocolVersion) {
+        if (protocolVersion >= CougarProtocol.TRANSPORT_PROTOCOL_VERSION_TIME_CONSTRAINTS) {
+            requestTimeResolver.writeRequestTime(out);
+        }
+    }
+
+    private ExecutionContextWithTokens resolveExecutionContext(CougarObjectInput in, GeoLocationDetails geo, List<IdentityToken> tokens, int transportSecurityStrengthFactor, byte protocolVersion) throws IOException {
 
 
         final RequestUUID uuid = readRequestUUID(in);
@@ -284,7 +314,10 @@ public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller 
 
         final boolean traceEnabled = in.readBoolean();
 
-        return ExecutionContextFactory.resolveExecutionContext(tokens, uuid, geo, receivedTime, traceEnabled, transportSecurityStrengthFactor);
+        final Long requestTime = protocolVersion >= CougarProtocol.TRANSPORT_PROTOCOL_VERSION_TIME_CONSTRAINTS ? in.readLong() : System.currentTimeMillis();
+        Date requestDate = requestTimeResolver.resolveRequestTime(requestTime);
+
+        return ExecutionContextFactory.resolveExecutionContext(tokens, uuid, geo, receivedTime, traceEnabled, transportSecurityStrengthFactor, requestDate);
 
     }
 
@@ -296,8 +329,20 @@ public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller 
 
         List<IdentityToken> tokens = identityTokenResolver.resolve(in, clientCertChain);
 
-        return resolveExecutionContext(in, geo, tokens, transportSecurityStrengthFactor);
+        return resolveExecutionContext(in, geo, tokens, transportSecurityStrengthFactor, protocolVersion);
 	}
+
+    @Override
+    public TimeConstraints readTimeConstraintsIfPresent(CougarObjectInput in, byte protocolVersion) throws IOException {
+        if (protocolVersion >= CougarProtocol.TRANSPORT_PROTOCOL_VERSION_TIME_CONSTRAINTS) {
+            boolean haveTimeConstraints = in.readBoolean();
+            if (haveTimeConstraints) {
+                long timeout = in.readLong();
+                return DefaultTimeConstraints.fromTimeout(timeout); //todo: client-timeout: should this take account of the time resolver?
+            }
+        }
+        return DefaultTimeConstraints.NO_CONSTRAINTS;
+    }
 
     void writeIdentity(IdentityChain identity, CougarObjectOutput out, IdentityResolver identityResolver) throws IOException {
 		List<IdentityToken> identityTokens = null;
@@ -315,7 +360,7 @@ public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller 
         String resolvedAddresses = in.readString();
         List<String> addressList = RemoteAddressUtils.parse(null, resolvedAddresses);
         String inferredCountry = null;
-        if (protocolVersion >= CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS) {
+        if (protocolVersion >= CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS) {
             inferredCountry = in.readString();
         }
 
@@ -327,7 +372,7 @@ public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller 
         // See comment about reading geo location.
         String resolvedAddresses = RemoteAddressUtils.externaliseWithLocalAddresses(geo.getResolvedAddresses());
         out.writeString(resolvedAddresses);
-        if (protocolVersion >= CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS) {
+        if (protocolVersion >= CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS) {
             out.writeString(geo.getInferredCountry());
         }
 	}

@@ -125,6 +125,11 @@ public class EventConsumer implements ApplicationListener {
         }
 
         @Override
+        public Date getRequestTime() {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        @Override
         public boolean traceLoggingEnabled() {
             return false;  //To change body of implemented methods use File | Settings | File Templates.
         }

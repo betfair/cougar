@@ -84,7 +84,7 @@ public class HttpClientExecutableTest extends AbstractHttpExecutableTest<HttpUri
 		// Add dependent mocks to cougar client execution venue
 
         HttpUriRequest request = mock(HttpUriRequest.class);
-        when(mockMethodFactory.create(any(String.class), any(String.class), any(Message.class), any(Marshaller.class), any(String.class), any(ExecutionContext.class))).thenReturn(request);
+        when(mockMethodFactory.create(any(String.class), any(String.class), any(Message.class), any(Marshaller.class), any(String.class), any(ExecutionContext.class), any(TimeConstraints.class))).thenReturn(request);
 
 		HttpParams mockParams = mock(HttpParams.class);
 		mockGetMethod = mock(HttpGet.class);
@@ -141,7 +141,7 @@ public class HttpClientExecutableTest extends AbstractHttpExecutableTest<HttpUri
         when(response.getEntity()).thenReturn(entity);
         when(response.getStatusLine()).thenReturn(statusLine);
 
-        when(mockMethodFactory.create(anyString(), anyString(), any(Message.class), any(Marshaller.class), anyString(), any(ExecutionContext.class))).thenReturn(mockGetMethod);
+        when(mockMethodFactory.create(anyString(), anyString(), any(Message.class), any(Marshaller.class), anyString(), any(ExecutionContext.class), any(TimeConstraints.class))).thenReturn(mockGetMethod);
         when(mockHttpClient.execute(any(HttpUriRequest.class))).thenReturn(response);
 
         generateEV(tsd, null);
@@ -184,7 +184,7 @@ public class HttpClientExecutableTest extends AbstractHttpExecutableTest<HttpUri
         HttpUriRequest mockMethod = mock(HttpUriRequest.class);
         final BasicHttpResponse httpResponse = new BasicHttpResponse(new BasicStatusLine(HttpVersion.HTTP_1_1, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ""));
         when(mockHttpClient.execute(any(HttpUriRequest.class))).thenReturn(httpResponse);
-        when(mockMethodFactory.create(anyString(), anyString(), any(Message.class), any(Marshaller.class), anyString(), any(ExecutionContext.class))).thenReturn(mockMethod);
+        when(mockMethodFactory.create(anyString(), anyString(), any(Message.class), any(Marshaller.class), anyString(), any(ExecutionContext.class), any(TimeConstraints.class))).thenReturn(mockMethod);
         when(mockedHttpErrorTransformer.convert(any(InputStream.class), any(ExceptionFactory.class), anyInt())).thenReturn(new CougarServiceException(ServerFaultCode.RemoteCougarCommunicationFailure, "bang"));
 
         HttpParams mockParams = mock(HttpParams.class);
@@ -213,7 +213,7 @@ public class HttpClientExecutableTest extends AbstractHttpExecutableTest<HttpUri
         when(httpResponse.getEntity()).thenReturn(null);
 
         when(mockHttpClient.execute(any(HttpUriRequest.class))).thenReturn(httpResponse);
-        when(mockMethodFactory.create(anyString(), anyString(), any(Message.class), any(Marshaller.class), anyString(), any(ExecutionContext.class))).thenReturn(mockMethod);
+        when(mockMethodFactory.create(anyString(), anyString(), any(Message.class), any(Marshaller.class), anyString(), any(ExecutionContext.class), any(TimeConstraints.class))).thenReturn(mockMethod);
         when(mockedHttpErrorTransformer.convert(any(InputStream.class),  any(ExceptionFactory.class), anyInt())).thenReturn(new CougarServiceException(ServerFaultCode.RemoteCougarCommunicationFailure, "bang"));
 
         HttpParams mockParams = mock(HttpParams.class);

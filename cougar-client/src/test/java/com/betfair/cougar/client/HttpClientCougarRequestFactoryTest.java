@@ -18,6 +18,7 @@ package com.betfair.cougar.client;
 
 import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.geolocation.GeoLocationDetails;
+import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.marshalling.api.databinding.Marshaller;
 import com.betfair.cougar.util.RequestUUIDImpl;
 import com.betfair.cougar.util.UUIDGeneratorImpl;
@@ -56,6 +57,8 @@ public class HttpClientCougarRequestFactoryTest {
     private Marshaller mockMarshaller;
     @Mock
     private GeoLocationDetails mockGeoLocation;
+    @Mock
+    private TimeConstraints mockTimeConstraints;
 
     private HttpClientCougarRequestFactory factory = new HttpClientCougarRequestFactory(new DefaultGeoLocationSerializer(), "X-REQUEST-UUID");
 
@@ -85,23 +88,23 @@ public class HttpClientCougarRequestFactoryTest {
     @Test
     public void shouldCreateGetRequest() {
         HttpUriRequest httpExchange = factory.create(uri, "GET", mockMessage, mockMarshaller, contentType,
-                mockContext);
+                mockContext, mockTimeConstraints);
 
         assertTrue(httpExchange instanceof HttpGet);
         assertEquals("GET", httpExchange.getMethod());
         assertEquals(uri, httpExchange.getURI().toString());
-        assertEquals(3, httpExchange.getAllHeaders().length);
+        assertEquals(5, httpExchange.getAllHeaders().length);
     }
 
     @Test
     public void shouldCreatePostRequest() throws Exception {
         HttpUriRequest httpExchange = factory.create(uri, "POST", mockMessage, mockMarshaller, contentType,
-                mockContext);
+                mockContext, mockTimeConstraints);
 
         assertTrue(httpExchange instanceof HttpPost);
         assertEquals("POST", httpExchange.getMethod());
         assertEquals(uri, httpExchange.getURI().toString());
-        assertEquals(3, httpExchange.getAllHeaders().length);
+        assertEquals(5, httpExchange.getAllHeaders().length);
         assertEquals(contentType + "; charset=utf-8",
                 ((HttpPost) httpExchange).getEntity().getContentType().getValue());
         assertEquals("some post data", IOUtils.toString(((HttpPost)httpExchange).getEntity().getContent()));
@@ -109,7 +112,7 @@ public class HttpClientCougarRequestFactoryTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void shouldNotCreateUnknownMethod() {
-        factory.create(uri, "TRACE", mockMessage, mockMarshaller, contentType, mockContext);
+        factory.create(uri, "TRACE", mockMessage, mockMarshaller, contentType, mockContext, mockTimeConstraints);
     }
 }
 

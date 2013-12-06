@@ -36,6 +36,7 @@ public class ClientExecutionContext implements ExecutionContext {
 
     private GeoLocationDetails geolocation;
     private Date receivedTime;
+    private Date requestTime;
     private RequestUUIDImpl requestUUID;
     private boolean traceEnabled;
     private IdentityChainImpl identityChain;
@@ -45,12 +46,14 @@ public class ClientExecutionContext implements ExecutionContext {
                                                  final String sessionToken,
                                                  final String adminSessionToken,
                                                  final Date receivedTime,
+                                                 final Date requestTime,
                                                  final String geoLocatedCountry,
                                                  final String inferredCountry,
                                                  final boolean traceEnabled) {
 
         this.traceEnabled = traceEnabled;
         this.receivedTime = receivedTime;
+        this.requestTime = requestTime;
         this.requestUUID = new RequestUUIDImpl();
 
         geolocation = new GeoLocationDetails() {
@@ -108,6 +111,10 @@ public class ClientExecutionContext implements ExecutionContext {
 
     public Date getReceivedTime() {
         return receivedTime;
+    }
+
+    public Date getRequestTime() {
+        return requestTime;
     }
 
     public RequestUUID getRequestUUID() {

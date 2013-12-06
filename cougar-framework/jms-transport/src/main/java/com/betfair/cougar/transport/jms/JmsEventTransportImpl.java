@@ -234,6 +234,9 @@ public class JmsEventTransportImpl extends AbstractRegisterableTransport impleme
                 public Date getReceivedTime() { return null; }
 
                 @Override
+                public Date getRequestTime() { return null; }
+
+                @Override
                 public boolean traceLoggingEnabled() { return false;}
 
                 @Override
@@ -293,6 +296,8 @@ public class JmsEventTransportImpl extends AbstractRegisterableTransport impleme
                     public RequestUUID getRequestUUID() { return delegateExecutionContext.getRequestUUID(); }
                     @Override
                     public Date getReceivedTime() { return delegateExecutionContext.getReceivedTime(); }
+                    @Override
+                    public Date getRequestTime() { return delegateExecutionContext.getRequestTime(); }
                     @Override
                     public boolean traceLoggingEnabled() { return delegateExecutionContext.traceLoggingEnabled(); }
                     @Override

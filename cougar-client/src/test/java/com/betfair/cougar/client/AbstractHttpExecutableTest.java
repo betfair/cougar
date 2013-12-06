@@ -170,7 +170,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
 
         mockMethodFactory = mock(CougarRequestFactory.class);
         when(mockMethodFactory.create(any(String.class), any(String.class), any(Message.class), any(Marshaller.class),
-                any(String.class), any(ExecutionContext.class))).thenReturn(mockGetMethod);
+                any(String.class), any(ExecutionContext.class), any(TimeConstraints.class))).thenReturn(mockGetMethod);
         qsgf = mock(QueryStringGeneratorFactory.class);
         queryStringGenerator = mock(QueryStringGenerator.class);
         when(qsgf.getQueryStringGenerator()).thenReturn(queryStringGenerator);
@@ -225,7 +225,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
         String response = "{\"result\":\"" + TEST_TEXT + "\"}";
 
         when(mockMethodFactory.create(anyString(), anyString(), any(Message.class), any(Marshaller.class),
-                anyString(), any(ExecutionContext.class))).thenReturn(mockGetMethod);
+                anyString(), any(ExecutionContext.class), any(TimeConstraints.class))).thenReturn(mockGetMethod);
 
         observer = new PassFailExecutionObserver(true, false);
         OperationKey key = TestServiceDefinition.TEST_GET;
@@ -288,7 +288,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
         String response = "{\"result\":\"" + TEST_TEXT + "\"}";
 
         when(mockMethodFactory.create(anyString(), anyString(), any(Message.class), any(Marshaller.class),
-                anyString(), any(ExecutionContext.class))).thenReturn(mockGetMethod);
+                anyString(), any(ExecutionContext.class), any(TimeConstraints.class))).thenReturn(mockGetMethod);
 
         TestResponse testResponse = new TestResponse();
         testResponse.setResult(TEST_TEXT);
@@ -408,7 +408,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
         when(queryStringGenerator.generate(any(Map.class))).thenReturn("");
 
         when(mockMethodFactory.create(anyString(), anyString(), any(Message.class), any(Marshaller.class),
-                anyString(), any(ExecutionContext.class))).thenAnswer(httpMethodFactoryCreatePostAnswer);
+                anyString(), any(ExecutionContext.class), any(TimeConstraints.class))).thenAnswer(httpMethodFactoryCreatePostAnswer);
         String response = "{\"result\":\"" + TEST_TEXT + "\"}";
 
         TestResponse tr = new TestResponse();
@@ -435,7 +435,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
         generateEV(tsd, null);
         when(queryStringGenerator.generate(any(Map.class))).thenReturn("?messageMixedQUERY=hello");
         when(mockMethodFactory.create(anyString(), anyString(), any(Message.class), any(Marshaller.class),
-                anyString(), any(ExecutionContext.class))).thenAnswer(httpMethodFactoryCreateMixedAnswer);
+                anyString(), any(ExecutionContext.class), any(TimeConstraints.class))).thenAnswer(httpMethodFactoryCreateMixedAnswer);
         String response = "{\"result\":\"" + TEST_TEXT + TEST_TEXT + "\"}";
 
 

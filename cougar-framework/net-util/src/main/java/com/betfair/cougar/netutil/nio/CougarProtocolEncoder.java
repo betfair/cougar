@@ -85,7 +85,7 @@ public class CougarProtocolEncoder extends ProtocolEncoderAdapter implements Exp
 
             case MESSAGE_REQUEST:
                 RequestMessage req = (RequestMessage) pm;
-                ProtocolMessageType reqMsgType = protocolVersion == CougarProtocol.APPLICATION_PROTOCOL_VERSION_CLIENT_ONLY_RPC ? ProtocolMessageType.MESSAGE : ProtocolMessageType.MESSAGE_REQUEST;
+                ProtocolMessageType reqMsgType = protocolVersion == CougarProtocol.TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC ? ProtocolMessageType.MESSAGE : ProtocolMessageType.MESSAGE_REQUEST;
                 buffer = NioUtils.createMessageHeader(req.getPayload().length + 8, reqMsgType);
                 buffer.putLong(req.getCorrelationId());
                 buffer.put(req.getPayload());
@@ -93,7 +93,7 @@ public class CougarProtocolEncoder extends ProtocolEncoderAdapter implements Exp
             case MESSAGE_RESPONSE:
                 ResponseMessage resp = (ResponseMessage) pm;
                 // backwards compatibility with version 1 protocol
-                ProtocolMessageType responseType = protocolVersion == CougarProtocol.APPLICATION_PROTOCOL_VERSION_CLIENT_ONLY_RPC ? ProtocolMessageType.MESSAGE : ProtocolMessageType.MESSAGE_RESPONSE;
+                ProtocolMessageType responseType = protocolVersion == CougarProtocol.TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC ? ProtocolMessageType.MESSAGE : ProtocolMessageType.MESSAGE_RESPONSE;
                 buffer = NioUtils.createMessageHeader(resp.getPayload().length + 8, responseType);
                 buffer.putLong(resp.getCorrelationId());
                 buffer.put(resp.getPayload());
@@ -101,7 +101,7 @@ public class CougarProtocolEncoder extends ProtocolEncoderAdapter implements Exp
 
             case EVENT:
                 EventMessage em = (EventMessage) pm;
-                if (protocolVersion < CougarProtocol.APPLICATION_PROTOCOL_VERSION_BIDIRECTION_RPC) {
+                if (protocolVersion < CougarProtocol.TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC) {
                     return null;
                 }
                 buffer = NioUtils.createMessageHeader(em.getPayload().length, em);
@@ -109,21 +109,21 @@ public class CougarProtocolEncoder extends ProtocolEncoderAdapter implements Exp
                 break;
 
             case SUSPEND:
-                if (protocolVersion < CougarProtocol.APPLICATION_PROTOCOL_VERSION_BIDIRECTION_RPC) {
+                if (protocolVersion < CougarProtocol.TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC) {
                     return null;
                 }
                 buffer = NioUtils.createMessageHeader(0, pm);
                 break;
 
             case START_TLS_REQUEST:
-                if (protocolVersion < CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS) {
+                if (protocolVersion < CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS) {
                     return null;
                 }
                 buffer = NioUtils.createMessageHeader(1, pm);
                 buffer.put(((StartTLSRequestMessage) pm).getRequirement().getValue());
                 break;
             case START_TLS_RESPONSE:
-                if (protocolVersion < CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS) {
+                if (protocolVersion < CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS) {
                     return null;
                 }
                 buffer = NioUtils.createMessageHeader(1, pm);
@@ -147,7 +147,7 @@ public class CougarProtocolEncoder extends ProtocolEncoderAdapter implements Exp
             Byte version = (Byte) session.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME);
             // go for lowest likely common denominator, since this will likely only occur for RejectMessages
             if (version == null) {
-                version = CougarProtocol.APPLICATION_PROTOCOL_VERSION_MIN_SUPPORTED;
+                version = CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MIN_SUPPORTED;
             }
             buffer = pm.getSerialisedForm(version);
             if (buffer == null) {

@@ -101,14 +101,17 @@ public class ExecutionContextFactory {
 
         GeoLocationDetails geoDetails = geoIPLocator.getGeoLocation(remoteAddress, resolvedAddresses, inferredCountry);
 
-        return resolveExecutionContext(tokens, requestUUID, geoDetails, receivedTime, traceEnabled, transportSecurityStrengthFactor, ignoreSubsequentWritesOfIdentity);
+        return resolveExecutionContext(tokens, requestUUID, geoDetails, receivedTime, traceEnabled, transportSecurityStrengthFactor, new Date(), ignoreSubsequentWritesOfIdentity);
     }
 
     public static ExecutionContextWithTokens resolveExecutionContext(final List<IdentityToken> tokens, final RequestUUID requestUUID, final GeoLocationDetails geoDetails, final Date receivedTime, final boolean traceEnabled, final int transportSecurityStrengthFactor) {
-        return resolveExecutionContext(tokens, requestUUID, geoDetails, receivedTime, traceEnabled, transportSecurityStrengthFactor, false);
+        return resolveExecutionContext(tokens, requestUUID, geoDetails, receivedTime, traceEnabled, transportSecurityStrengthFactor, new Date(), false);
+    }
+    public static ExecutionContextWithTokens resolveExecutionContext(final List<IdentityToken> tokens, final RequestUUID requestUUID, final GeoLocationDetails geoDetails, final Date receivedTime, final boolean traceEnabled, final int transportSecurityStrengthFactor, final Date requestDate) {
+        return resolveExecutionContext(tokens, requestUUID,geoDetails,receivedTime,traceEnabled,transportSecurityStrengthFactor,requestDate,false);
     }
 
-    private static ExecutionContextWithTokens resolveExecutionContext(final List<IdentityToken> tokens, final RequestUUID requestUUID, final GeoLocationDetails geoDetails, final Date receivedTime, final boolean traceEnabled, final int transportSecurityStrengthFactor, final boolean ignoreSubsequentWritesOfIdentity) {
+    private static ExecutionContextWithTokens resolveExecutionContext(final List<IdentityToken> tokens, final RequestUUID requestUUID, final GeoLocationDetails geoDetails, final Date receivedTime, final boolean traceEnabled, final int transportSecurityStrengthFactor, final Date requestDate, final boolean ignoreSubsequentWritesOfIdentity) {
         if (tokens == null) {
             throw new IllegalArgumentException("Tokens must not be null");
         }
@@ -165,6 +168,11 @@ public class ExecutionContextFactory {
                 identityChain = chain;
             }
 
+            @Override
+            public Date getRequestTime() {
+                return requestDate;
+            }
+
             public String toString() {
                 StringBuilder sb = new StringBuilder();
 
@@ -214,6 +222,11 @@ public class ExecutionContextFactory {
             @Override
             public boolean isTransportSecure() {
                 return tokenContext.isTransportSecure();
+            }
+
+            @Override
+            public Date getRequestTime() {
+                return tokenContext.getRequestTime();
             }
         };
     }

@@ -19,7 +19,12 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="clientSocketMarshaller" class="com.betfair.cougar.netutil.nio.marshalling.SocketRMIMarshaller"/>
+    <bean id="clientSocketMarshaller" class="com.betfair.cougar.netutil.nio.marshalling.SocketRMIMarshaller">
+        <constructor-arg index="0">
+            <!-- no arg constructor fine as the boolean only affects the server -->
+            <bean class="com.betfair.cougar.netutil.nio.marshalling.DefaultSocketTimeResolver"/>
+        </constructor-arg>
+    </bean>
 
     <bean id="nioClient" parent="cougar.client.AbstractSocketTransport">
         <constructor-arg index="5" value="127.0.0.1:9003"/>

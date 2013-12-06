@@ -51,8 +51,13 @@ public class ExecutionContextHelper {
 
     public static ExecutionContext createContext(String applicationKey, String ipAddress, String sessionToken, String adminSessionToken,
                                                     Date receivedTime, String geoLocatedCountry, String inferredCountry, boolean traceEnabled) {
+        return createContext(applicationKey, ipAddress, sessionToken, adminSessionToken, receivedTime, new Date(), geoLocatedCountry, inferredCountry, traceEnabled);
+    }
+
+    public static ExecutionContext createContext(String applicationKey, String ipAddress, String sessionToken, String adminSessionToken,
+                                                    Date receivedTime, Date requestTime, String geoLocatedCountry, String inferredCountry, boolean traceEnabled) {
         if (applicationKey == null) throw new IllegalArgumentException("Application key must be defined");
         return new ClientExecutionContext(applicationKey, ipAddress, sessionToken, adminSessionToken,
-                                            receivedTime, geoLocatedCountry, inferredCountry, traceEnabled);
+                                            receivedTime, requestTime, geoLocatedCountry, inferredCountry, traceEnabled);
     }
 }

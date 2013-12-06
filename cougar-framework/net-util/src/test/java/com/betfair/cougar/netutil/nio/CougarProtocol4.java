@@ -14,22 +14,16 @@
  * limitations under the License.
  */
 
-package com.betfair.cougar.transport.api.protocol.socket;
+package com.betfair.cougar.netutil.nio;
 
-import com.betfair.cougar.api.ExecutionContext;
-import com.betfair.cougar.core.api.ev.OperationKey;
-import com.betfair.cougar.core.api.ev.TimeConstraints;
-import com.betfair.cougar.core.api.transcription.Parameter;
+import org.apache.mina.filter.SSLFilter;
 
-public interface InvocationRequest {
-    public Object[] getArgs();
+/**
+ *
+ */
+public class CougarProtocol4 extends CougarProtocol implements ICougarProtocol {
 
-    public ExecutionContext getExecutionContext();
-
-    public OperationKey getOperationKey();
-
-    public Parameter[] getParameters();
-
-    public TimeConstraints getTimeConstraints();
-
+    public CougarProtocol4(boolean server, NioLogger nioLogger, int keepAliveInterval, int keepAliveTimeout, SSLFilter sslFilter, boolean supportsTls, boolean requiresTls, long rpcTimeoutMillis) {
+        super(server, nioLogger, keepAliveInterval, keepAliveTimeout, sslFilter, supportsTls, requiresTls, rpcTimeoutMillis);
+    }
 }

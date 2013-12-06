@@ -85,6 +85,11 @@ public class SocketRequestContextImpl implements RequestContext, ExecutionContex
     }
 
     @Override
+    public Date getRequestTime() {
+        return wrapped.getRequestTime();
+    }
+
+    @Override
     public boolean traceLoggingEnabled() {
         return wrapped.traceLoggingEnabled();
     }

@@ -57,7 +57,7 @@ public abstract class AbstractClientTest {
 
     public static Collection<Object[]> protocolVersionParams() {
         List<Object[]> ret = new ArrayList<Object[]>();
-        for (byte b=CougarProtocol.APPLICATION_PROTOCOL_VERSION_MIN_SUPPORTED; b<=CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED; b++) {
+        for (byte b=CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MIN_SUPPORTED; b<=CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED; b++) {
             ret.add(new Object[] {b});
         }
         return ret;
@@ -145,6 +145,11 @@ public abstract class AbstractClientTest {
         }
 
         @Override
+        public Date getRequestTime() {
+            return null;
+        }
+
+        @Override
         public boolean traceLoggingEnabled() {
             return false;
         }
@@ -205,10 +210,10 @@ public abstract class AbstractClientTest {
     	client.stop();
 
         // reset protocol versions
-        CougarProtocol.setMinServerProtocolVersion(CougarProtocol.APPLICATION_PROTOCOL_VERSION_MIN_SUPPORTED);
-        CougarProtocol.setMinClientProtocolVersion(CougarProtocol.APPLICATION_PROTOCOL_VERSION_MIN_SUPPORTED);
-        CougarProtocol.setMaxServerProtocolVersion(CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
-        CougarProtocol.setMaxClientProtocolVersion(CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+        CougarProtocol.setMinServerProtocolVersion(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MIN_SUPPORTED);
+        CougarProtocol.setMinClientProtocolVersion(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MIN_SUPPORTED);
+        CougarProtocol.setMaxServerProtocolVersion(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
+        CougarProtocol.setMaxClientProtocolVersion(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
     }
 
     void performRequestAsync(ExecutionVenueNioClient client, ClientTestExecutionObserver observer, Object[] args) throws IOException, InterruptedException {

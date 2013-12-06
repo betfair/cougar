@@ -120,7 +120,7 @@ public class PooledServerConnectedObjectManagerTest {
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         IoSession session = new MyIoSession(String.valueOf(ioSessionId++));
-        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
         when(command.getSession()).thenReturn(session);
 
         ExecutionContextWithTokens requestContext = mock(ExecutionContextWithTokens.class);
@@ -150,7 +150,7 @@ public class PooledServerConnectedObjectManagerTest {
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         MyIoSession session = new MyIoSession(String.valueOf(ioSessionId++));
-        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
         when(command.getSession()).thenReturn(session);
 
         ExecutionContextWithTokens requestContext = mock(ExecutionContextWithTokens.class);
@@ -194,7 +194,7 @@ public class PooledServerConnectedObjectManagerTest {
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         IoSession session = new MyIoSession(String.valueOf(ioSessionId++));
-        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
         when(command.getSession()).thenReturn(session);
 
         ExecutionContextWithTokens requestContext = mock(ExecutionContextWithTokens.class);
@@ -229,7 +229,7 @@ public class PooledServerConnectedObjectManagerTest {
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         IoSession session = new MyIoSession("1");
-        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
         when(command.getSession()).thenReturn(session);
 
         ExecutionContextWithTokens requestContext = mock(ExecutionContextWithTokens.class);
@@ -260,7 +260,7 @@ public class PooledServerConnectedObjectManagerTest {
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         IoSession session = new MyIoSession(String.valueOf(ioSessionId++));
-        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
         when(command.getSession()).thenReturn(session);
 
         ExecutionContextWithTokens requestContext = mock(ExecutionContextWithTokens.class);
@@ -299,7 +299,7 @@ public class PooledServerConnectedObjectManagerTest {
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         MyIoSession session = new MyIoSession(String.valueOf(ioSessionId++));
-        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
         when(command.getSession()).thenReturn(session);
 
         ExecutionContextWithTokens requestContext = mock(ExecutionContextWithTokens.class);
@@ -340,7 +340,7 @@ public class PooledServerConnectedObjectManagerTest {
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         MyIoSession session = new MyIoSession(String.valueOf(ioSessionId++));
-        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
         when(command.getSession()).thenReturn(session);
 
         ExecutionContextWithTokens requestContext = mock(ExecutionContextWithTokens.class);
@@ -389,7 +389,7 @@ public class PooledServerConnectedObjectManagerTest {
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         MyIoSession session = new MyIoSession(String.valueOf(ioSessionId++));
-        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
         when(command.getSession()).thenReturn(session);
 
         ExecutionContextWithTokens requestContext = mock(ExecutionContextWithTokens.class);
@@ -407,7 +407,7 @@ public class PooledServerConnectedObjectManagerTest {
         subject.addSubscription(commandProcessor, command, subscriptionResult, operationDefinition, requestContext, null);
 
         MyIoSession session2 = new MyIoSession(String.valueOf(ioSessionId++));
-        session2.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+        session2.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
         when(command.getSession()).thenReturn(session2);
 
         subject.addSubscription(commandProcessor, command, subscriptionResult, operationDefinition, requestContext, null);
@@ -436,7 +436,7 @@ public class PooledServerConnectedObjectManagerTest {
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         MyIoSession session = new MyIoSession(String.valueOf(ioSessionId++));
-        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
         when(command.getSession()).thenReturn(session);
 
         ExecutionContextWithTokens requestContext = mock(ExecutionContextWithTokens.class);
@@ -455,7 +455,7 @@ public class PooledServerConnectedObjectManagerTest {
         subject.addSubscription(commandProcessor, command, subscriptionResult, operationDefinition, requestContext, null);
 
         MyIoSession session2 = new MyIoSession(String.valueOf(ioSessionId++));
-        session2.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+        session2.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
         when(command.getSession()).thenReturn(session2);
 
         subject.addSubscription(commandProcessor, command, subscriptionResult, operationDefinition, requestContext, null);
@@ -495,7 +495,7 @@ public class PooledServerConnectedObjectManagerTest {
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         MyIoSession session = new MyIoSession(String.valueOf(ioSessionId++));
-        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
         when(command.getSession()).thenReturn(session);
 
         ExecutionContextWithTokens requestContext = mock(ExecutionContextWithTokens.class);
@@ -568,7 +568,7 @@ public class PooledServerConnectedObjectManagerTest {
         heap.endUpdate();
 
         MyIoSession session = new MyIoSession(String.valueOf(ioSessionId++));
-        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
         when(command.getSession()).thenReturn(session);
 
         subject.addSubscription(commandProcessor, command, subscriptionResult, operationDefinition, requestContext, null);
@@ -579,7 +579,7 @@ public class PooledServerConnectedObjectManagerTest {
         heap.endUpdate();
 
         MyIoSession session2 = new MyIoSession(String.valueOf(ioSessionId++));
-        session2.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+        session2.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
         when(command.getSession()).thenReturn(session2);
 
         subject.addSubscription(commandProcessor, command, subscriptionResult, operationDefinition, requestContext, null);
@@ -609,7 +609,7 @@ public class PooledServerConnectedObjectManagerTest {
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         MyIoSession session = new MyIoSession(String.valueOf(ioSessionId++));
-        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
         when(command.getSession()).thenReturn(session);
 
         ExecutionContextWithTokens requestContext = mock(ExecutionContextWithTokens.class);
@@ -681,7 +681,7 @@ public class PooledServerConnectedObjectManagerTest {
                 return super.close();
             }
         };
-        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
         when(command.getSession()).thenReturn(session);
 
         ExecutionContextWithTokens requestContext = mock(ExecutionContextWithTokens.class);
@@ -742,12 +742,12 @@ public class PooledServerConnectedObjectManagerTest {
         cougarOutput.setExpectedUpdates(expectedUpdates);
 
         MyIoSession session = new MyIoSession(String.valueOf(ioSessionId++));
-        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
         when(command.getSession()).thenReturn(session);
         subject.addSubscription(commandProcessor, command, subscriptionResult1, operationDefinition, requestContext, null);
 
         MyIoSession session2 = new MyIoSession(String.valueOf(ioSessionId++));
-        session2.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+        session2.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
         when(command.getSession()).thenReturn(session2);
         subject.addSubscription(commandProcessor, command, subscriptionResult2, operationDefinition, requestContext, null);
 
@@ -807,7 +807,7 @@ public class PooledServerConnectedObjectManagerTest {
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         MyIoSession session = new MyIoSession(String.valueOf(ioSessionId++));
-        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
         when(command.getSession()).thenReturn(session);
 
         ExecutionContextWithTokens requestContext = mock(ExecutionContextWithTokens.class);
@@ -871,7 +871,7 @@ public class PooledServerConnectedObjectManagerTest {
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         MyIoSession session = new MyIoSession(String.valueOf(ioSessionId++));
-        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
         when(command.getSession()).thenReturn(session);
 
         ExecutionContextWithTokens requestContext = mock(ExecutionContextWithTokens.class);
@@ -920,7 +920,7 @@ public class PooledServerConnectedObjectManagerTest {
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         MyIoSession session = new MyIoSession(String.valueOf(ioSessionId++));
-        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
         when(command.getSession()).thenReturn(session);
 
         ExecutionContextWithTokens requestContext = mock(ExecutionContextWithTokens.class);
@@ -962,7 +962,7 @@ public class PooledServerConnectedObjectManagerTest {
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         MyIoSession session = new MyIoSession(String.valueOf(ioSessionId++));
-        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
         when(command.getSession()).thenReturn(session);
 
         ExecutionContextWithTokens requestContext = mock(ExecutionContextWithTokens.class);
@@ -1006,7 +1006,7 @@ public class PooledServerConnectedObjectManagerTest {
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         MyIoSession session = new MyIoSession(String.valueOf(ioSessionId++));
-        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
         when(command.getSession()).thenReturn(session);
 
         ExecutionContextWithTokens requestContext = mock(ExecutionContextWithTokens.class);
@@ -1058,7 +1058,7 @@ public class PooledServerConnectedObjectManagerTest {
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         MyIoSession session = new MyIoSession(String.valueOf(ioSessionId++));
-        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
         when(command.getSession()).thenReturn(session);
 
         ExecutionContextWithTokens requestContext = mock(ExecutionContextWithTokens.class);

@@ -381,6 +381,7 @@ public class JmsEventTransportImplTest {
             public GeoLocationDetails getLocation() { return null; }
             public RequestUUID getRequestUUID() { return null; }
             public Date getReceivedTime() { return null; }
+            public Date getRequestTime() { return null; }
             public boolean traceLoggingEnabled() { return false; }
             public int getTransportSecurityStrengthFactor() { return 0; }
             public boolean isTransportSecure() { return false; }

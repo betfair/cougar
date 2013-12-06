@@ -79,33 +79,37 @@ public class CougarProtocolTest {
     private void setupProtocol(byte clientVersion, SSLFilter clientSslFilter, boolean clientSupportsTls, boolean clientRequiresTls,
                                byte serverVersion, SSLFilter serverSslFilter, boolean serverSupportsTls, boolean serverRequiresTls) {
         logger = new NioLogger("ALL");
-        if (clientVersion == CougarProtocol.APPLICATION_PROTOCOL_VERSION_CLIENT_ONLY_RPC) {
+        if (clientVersion == CougarProtocol.TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC) {
             if (clientSupportsTls) {
                 throw new IllegalArgumentException("Server version doesn't support TLS");
             }
-            client = new CougarProtocol1(false, logger, CougarProtocol.APPLICATION_PROTOCOL_VERSION_CLIENT_ONLY_RPC, 2000, 5000);
-        } else if (clientVersion == CougarProtocol.APPLICATION_PROTOCOL_VERSION_BIDIRECTION_RPC) {
+            client = new CougarProtocol1(false, logger, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC, 2000, 5000);
+        } else if (clientVersion == CougarProtocol.TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC) {
             if (clientSupportsTls) {
                 throw new IllegalArgumentException("Server version doesn't support TLS");
             }
             client = new CougarProtocol2(false, logger, 2000, 5000);
-        } else if (clientVersion == CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS) {
+        } else if (clientVersion == CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS) {
             client = new CougarProtocol3(false, logger, 2000, 5000, clientSslFilter, clientSupportsTls, clientRequiresTls, 0);
+        } else if (clientVersion == CougarProtocol.TRANSPORT_PROTOCOL_VERSION_TIME_CONSTRAINTS) {
+            client = new CougarProtocol4(false, logger, 2000, 5000, clientSslFilter, clientSupportsTls, clientRequiresTls, 0);
         } else {
             throw new IllegalArgumentException("Unsupported client version: " + clientVersion);
         }
-        if (serverVersion == CougarProtocol.APPLICATION_PROTOCOL_VERSION_CLIENT_ONLY_RPC) {
+        if (serverVersion == CougarProtocol.TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC) {
             if (serverSupportsTls) {
                 throw new IllegalArgumentException("Server version doesn't support TLS");
             }
-            server = new CougarProtocol1(true, logger, CougarProtocol.APPLICATION_PROTOCOL_VERSION_CLIENT_ONLY_RPC, 2000, 5000);
-        } else if (serverVersion == CougarProtocol.APPLICATION_PROTOCOL_VERSION_BIDIRECTION_RPC) {
+            server = new CougarProtocol1(true, logger, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC, 2000, 5000);
+        } else if (serverVersion == CougarProtocol.TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC) {
             if (serverSupportsTls) {
                 throw new IllegalArgumentException("Server version doesn't support TLS");
             }
             server = new CougarProtocol2(true, logger, 2000, 5000);
-        } else if (serverVersion == CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS) {
+        } else if (serverVersion == CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS) {
             server = new CougarProtocol3(true, logger, 2000, 5000, serverSslFilter, serverSupportsTls, serverRequiresTls, 0);
+        } else if (serverVersion == CougarProtocol.TRANSPORT_PROTOCOL_VERSION_TIME_CONSTRAINTS) {
+            server = new CougarProtocol4(true, logger, 2000, 5000, serverSslFilter, serverSupportsTls, serverRequiresTls, 0);
         } else {
             throw new IllegalArgumentException("Unsupported client version: " + clientVersion);
         }
@@ -122,12 +126,12 @@ public class CougarProtocolTest {
     // =================== Version mismatching ========================
 
     @Test
-    public void versionMismatchV4Only_V3() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS);
+    public void versionMismatchVNPlusOneOnly_VN() throws Exception {
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
 
         try {
-            CougarProtocol.setMinClientProtocolVersion((byte)4);
-            CougarProtocol.setMaxClientProtocolVersion((byte)4);
+            CougarProtocol.setMinClientProtocolVersion((byte)(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED+1));
+            CougarProtocol.setMaxClientProtocolVersion((byte)(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED+1));
 
             client.sessionOpened(nextFilter, clientSession);
 
@@ -136,8 +140,8 @@ public class CougarProtocolTest {
             assertFalse(handshake.successful());
         }
         finally {
-            CougarProtocol.setMinClientProtocolVersion(CougarProtocol.APPLICATION_PROTOCOL_VERSION_MIN_SUPPORTED);
-            CougarProtocol.setMaxClientProtocolVersion(CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+            CougarProtocol.setMinClientProtocolVersion(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MIN_SUPPORTED);
+            CougarProtocol.setMaxClientProtocolVersion(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
         }
     }
 
@@ -145,7 +149,7 @@ public class CougarProtocolTest {
 
     @Test
     public void successfulHandshakePlaintextV3_V3() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS);
 
         client.sessionOpened(nextFilter, clientSession);
 
@@ -153,13 +157,13 @@ public class CougarProtocolTest {
         assertTrue(handshake.await(5000));
         assertTrue(handshake.successful());
 
-        assertEquals(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, clientSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
-        assertEquals(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, serverSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
+        assertEquals(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, clientSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
+        assertEquals(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, serverSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
     }
 
     @Test
     public void successfulHandshakePlaintextV3_V2() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, CougarProtocol.APPLICATION_PROTOCOL_VERSION_BIDIRECTION_RPC);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC);
 
         client.sessionOpened(nextFilter, clientSession);
 
@@ -167,13 +171,13 @@ public class CougarProtocolTest {
         assertTrue(handshake.await(5000));
         assertTrue(handshake.successful());
 
-        assertEquals(CougarProtocol.APPLICATION_PROTOCOL_VERSION_BIDIRECTION_RPC, clientSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
-        assertEquals(CougarProtocol.APPLICATION_PROTOCOL_VERSION_BIDIRECTION_RPC, serverSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
+        assertEquals(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC, clientSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
+        assertEquals(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC, serverSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
     }
 
     @Test
     public void successfulHandshakePlaintextV3_V1() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, CougarProtocol.APPLICATION_PROTOCOL_VERSION_CLIENT_ONLY_RPC);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC);
 
         client.sessionOpened(nextFilter, clientSession);
 
@@ -181,12 +185,12 @@ public class CougarProtocolTest {
         assertTrue(handshake.await(5000));
         assertTrue(handshake.successful());
 
-        assertEquals(CougarProtocol.APPLICATION_PROTOCOL_VERSION_CLIENT_ONLY_RPC, clientSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
+        assertEquals(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC, clientSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
     }
 
     @Test
     public void successfulHandshakeV2_V3() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_BIDIRECTION_RPC, CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS);
 
         client.sessionOpened(nextFilter, clientSession);
 
@@ -194,13 +198,13 @@ public class CougarProtocolTest {
         assertTrue(handshake.await(5000));
         assertTrue(handshake.successful());
 
-        assertEquals(CougarProtocol.APPLICATION_PROTOCOL_VERSION_BIDIRECTION_RPC, clientSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
-        assertEquals(CougarProtocol.APPLICATION_PROTOCOL_VERSION_BIDIRECTION_RPC, serverSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
+        assertEquals(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC, clientSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
+        assertEquals(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC, serverSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
     }
 
     @Test
     public void successfulHandshakeV2_V2() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_BIDIRECTION_RPC, CougarProtocol.APPLICATION_PROTOCOL_VERSION_BIDIRECTION_RPC);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC);
 
         client.sessionOpened(nextFilter, clientSession);
 
@@ -208,13 +212,13 @@ public class CougarProtocolTest {
         assertTrue(handshake.await(5000));
         assertTrue(handshake.successful());
 
-        assertEquals(CougarProtocol.APPLICATION_PROTOCOL_VERSION_BIDIRECTION_RPC, clientSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
-        assertEquals(CougarProtocol.APPLICATION_PROTOCOL_VERSION_BIDIRECTION_RPC, serverSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
+        assertEquals(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC, clientSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
+        assertEquals(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC, serverSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
     }
 
     @Test
     public void successfulHandshakeV2_V1() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_BIDIRECTION_RPC, CougarProtocol.APPLICATION_PROTOCOL_VERSION_CLIENT_ONLY_RPC);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC);
 
         client.sessionOpened(nextFilter, clientSession);
 
@@ -222,12 +226,12 @@ public class CougarProtocolTest {
         assertTrue(handshake.await(5000));
         assertTrue(handshake.successful());
 
-        assertEquals(CougarProtocol.APPLICATION_PROTOCOL_VERSION_CLIENT_ONLY_RPC, clientSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
+        assertEquals(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC, clientSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
     }
 
     @Test
     public void successfulHandshakeV1_V3() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_CLIENT_ONLY_RPC, CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS);
 
         client.sessionOpened(nextFilter, clientSession);
 
@@ -235,12 +239,12 @@ public class CougarProtocolTest {
         assertTrue(handshake.await(5000));
         assertTrue(handshake.successful());
 
-        assertEquals(CougarProtocol.APPLICATION_PROTOCOL_VERSION_CLIENT_ONLY_RPC, serverSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
+        assertEquals(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC, serverSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
     }
 
     @Test
     public void successfulHandshakeV1_V2() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_CLIENT_ONLY_RPC, CougarProtocol.APPLICATION_PROTOCOL_VERSION_BIDIRECTION_RPC);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC);
 
         client.sessionOpened(nextFilter, clientSession);
 
@@ -248,12 +252,12 @@ public class CougarProtocolTest {
         assertTrue(handshake.await(5000));
         assertTrue(handshake.successful());
 
-        assertEquals(CougarProtocol.APPLICATION_PROTOCOL_VERSION_CLIENT_ONLY_RPC, serverSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
+        assertEquals(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC, serverSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
     }
 
     @Test
     public void successfulHandshakeV1_V1() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_CLIENT_ONLY_RPC, CougarProtocol.APPLICATION_PROTOCOL_VERSION_BIDIRECTION_RPC);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC);
 
         client.sessionOpened(nextFilter, clientSession);
 
@@ -261,14 +265,14 @@ public class CougarProtocolTest {
         assertTrue(handshake.await(5000));
         assertTrue(handshake.successful());
 
-        assertEquals(CougarProtocol.APPLICATION_PROTOCOL_VERSION_CLIENT_ONLY_RPC, serverSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
+        assertEquals(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC, serverSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
     }
 
     // =================== Server Disabled - Rejected ========================
 
     @Test
     public void serverDisabledV3_V3() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS);
         server.setEnabled(false);
 
         client.sessionOpened(nextFilter, clientSession);
@@ -280,7 +284,7 @@ public class CougarProtocolTest {
 
     @Test
     public void serverDisabledV3_V2() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, CougarProtocol.APPLICATION_PROTOCOL_VERSION_BIDIRECTION_RPC);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC);
         server.setEnabled(false);
 
         client.sessionOpened(nextFilter, clientSession);
@@ -292,7 +296,7 @@ public class CougarProtocolTest {
 
     @Test
     public void serverDisabledV3_V1() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, CougarProtocol.APPLICATION_PROTOCOL_VERSION_CLIENT_ONLY_RPC);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC);
         server.setEnabled(false);
 
         client.sessionOpened(nextFilter, clientSession);
@@ -304,7 +308,7 @@ public class CougarProtocolTest {
 
     @Test
     public void serverDisabledV2_V3() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_BIDIRECTION_RPC, CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS);
         server.setEnabled(false);
 
         client.sessionOpened(nextFilter, clientSession);
@@ -316,7 +320,7 @@ public class CougarProtocolTest {
 
     @Test
     public void serverDisabledV2_V2() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_BIDIRECTION_RPC, CougarProtocol.APPLICATION_PROTOCOL_VERSION_BIDIRECTION_RPC);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC);
         server.setEnabled(false);
 
         client.sessionOpened(nextFilter, clientSession);
@@ -328,7 +332,7 @@ public class CougarProtocolTest {
 
     @Test
     public void serverDisabledV2_V1() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_BIDIRECTION_RPC, CougarProtocol.APPLICATION_PROTOCOL_VERSION_CLIENT_ONLY_RPC);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC);
         server.setEnabled(false);
 
         client.sessionOpened(nextFilter, clientSession);
@@ -340,7 +344,7 @@ public class CougarProtocolTest {
 
     @Test
     public void serverDisabledV1_V3() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_CLIENT_ONLY_RPC, CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS);
         server.setEnabled(false);
 
         client.sessionOpened(nextFilter, clientSession);
@@ -352,7 +356,7 @@ public class CougarProtocolTest {
 
     @Test
     public void serverDisabledV1_V2() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_CLIENT_ONLY_RPC, CougarProtocol.APPLICATION_PROTOCOL_VERSION_BIDIRECTION_RPC);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC);
         server.setEnabled(false);
 
         client.sessionOpened(nextFilter, clientSession);
@@ -364,7 +368,7 @@ public class CougarProtocolTest {
 
     @Test
     public void serverDisabledV1_V1() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_CLIENT_ONLY_RPC, CougarProtocol.APPLICATION_PROTOCOL_VERSION_BIDIRECTION_RPC);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC);
         server.setEnabled(false);
 
         client.sessionOpened(nextFilter, clientSession);
@@ -378,8 +382,8 @@ public class CougarProtocolTest {
 
     @Test
     public void clientRequiresTlsServerTooOldV3_V2() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, sslFilter, true,
-                      CougarProtocol.APPLICATION_PROTOCOL_VERSION_BIDIRECTION_RPC, null, false);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, sslFilter, true,
+                      CougarProtocol.TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC, null, false);
 
         client.sessionOpened(nextFilter, clientSession);
 
@@ -389,8 +393,8 @@ public class CougarProtocolTest {
     }
     @Test
     public void clientRequiresTlsServerTooOldV3_V1() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, sslFilter, true,
-                CougarProtocol.APPLICATION_PROTOCOL_VERSION_CLIENT_ONLY_RPC, null, false);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, sslFilter, true,
+                CougarProtocol.TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC, null, false);
 
         client.sessionOpened(nextFilter, clientSession);
 
@@ -403,8 +407,8 @@ public class CougarProtocolTest {
 
     @Test
     public void clientTooOldServerRequiresTlsV2_V3() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_BIDIRECTION_RPC, null, false,
-                CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, sslFilter, true);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC, null, false,
+                CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, sslFilter, true);
 
         client.sessionOpened(nextFilter, clientSession);
 
@@ -414,8 +418,8 @@ public class CougarProtocolTest {
     }
     @Test
     public void clientTooOldServerRequiresTlsV1_V3() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_CLIENT_ONLY_RPC, null, false,
-                CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, sslFilter, true);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC, null, false,
+                CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, sslFilter, true);
 
         client.sessionOpened(nextFilter, clientSession);
 
@@ -427,8 +431,8 @@ public class CougarProtocolTest {
     // ============= TLS - Client & server versions sufficient, client requires, server doesn't support =====
     @Test
     public void clientRequiresTlsServerDoesntSupportTlsV3_V3() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, sslFilter, true,
-                CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, null, false);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, sslFilter, true,
+                CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, null, false);
 
         client.sessionOpened(nextFilter, clientSession);
 
@@ -439,8 +443,8 @@ public class CougarProtocolTest {
     // ============= TLS - Client & server versions sufficient, client requires, server supports =====
     @Test
     public void clientRequiresTlsServerSupportsTlsV3_V3() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, sslFilter, true,
-                CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, sslFilter, false);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, sslFilter, true,
+                CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, sslFilter, false);
 
         client.sessionOpened(nextFilter, clientSession);
 
@@ -451,16 +455,16 @@ public class CougarProtocolTest {
         verify(clientSession.getFilterChain()).addFirst("ssl", sslFilter);
         verify(serverSession.getFilterChain()).addFirst("ssl", sslFilter);
 
-        assertEquals(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, clientSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
+        assertEquals(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, clientSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
         assertEquals(TLSResult.SSL, clientSession.getAttribute(CougarProtocol.NEGOTIATED_TLS_LEVEL_ATTR_NAME));
-        assertEquals(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, serverSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
+        assertEquals(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, serverSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
         assertEquals(TLSResult.SSL, serverSession.getAttribute(CougarProtocol.NEGOTIATED_TLS_LEVEL_ATTR_NAME));
     }
     // ============= TLS - Client & server versions sufficient, client requires, server requires =====
     @Test
     public void clientRequiresTlsServerRequiresTlsV3_V3() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, sslFilter, true,
-                CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, sslFilter, true);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, sslFilter, true,
+                CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, sslFilter, true);
 
         client.sessionOpened(nextFilter, clientSession);
 
@@ -471,16 +475,16 @@ public class CougarProtocolTest {
         verify(clientSession.getFilterChain()).addFirst("ssl", sslFilter);
         verify(serverSession.getFilterChain()).addFirst("ssl", sslFilter);
 
-        assertEquals(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, clientSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
+        assertEquals(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, clientSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
         assertEquals(TLSResult.SSL, clientSession.getAttribute(CougarProtocol.NEGOTIATED_TLS_LEVEL_ATTR_NAME));
-        assertEquals(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, serverSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
+        assertEquals(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, serverSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
         assertEquals(TLSResult.SSL, serverSession.getAttribute(CougarProtocol.NEGOTIATED_TLS_LEVEL_ATTR_NAME));
     }
     // ============= TLS - Client & server versions sufficient, client supports, server doesn't =====
     @Test
     public void clientSupportsTlsServerDoesntSupportTlsV3_V3() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, sslFilter, false,
-                CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, null, false);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, sslFilter, false,
+                CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, null, false);
 
         client.sessionOpened(nextFilter, clientSession);
 
@@ -491,16 +495,16 @@ public class CougarProtocolTest {
         verify(clientSession.getFilterChain(), times(0)).addFirst("ssl", sslFilter);
         verify(serverSession.getFilterChain(), times(0)).addFirst("ssl", sslFilter);
 
-        assertEquals(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, clientSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
+        assertEquals(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, clientSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
         assertEquals(TLSResult.PLAINTEXT, clientSession.getAttribute(CougarProtocol.NEGOTIATED_TLS_LEVEL_ATTR_NAME));
-        assertEquals(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, serverSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
+        assertEquals(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, serverSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
         assertEquals(TLSResult.PLAINTEXT, serverSession.getAttribute(CougarProtocol.NEGOTIATED_TLS_LEVEL_ATTR_NAME));
     }
     // ============= TLS - Client & server versions sufficient, client supports, server supports =====
     @Test
     public void clientSupportsTlsServerSupportsTlsV3_V3() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, sslFilter, false,
-                CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, sslFilter, false);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, sslFilter, false,
+                CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, sslFilter, false);
 
         client.sessionOpened(nextFilter, clientSession);
 
@@ -511,16 +515,16 @@ public class CougarProtocolTest {
         verify(clientSession.getFilterChain()).addFirst("ssl", sslFilter);
         verify(serverSession.getFilterChain()).addFirst("ssl", sslFilter);
 
-        assertEquals(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, clientSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
+        assertEquals(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, clientSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
         assertEquals(TLSResult.SSL, clientSession.getAttribute(CougarProtocol.NEGOTIATED_TLS_LEVEL_ATTR_NAME));
-        assertEquals(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, serverSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
+        assertEquals(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, serverSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
         assertEquals(TLSResult.SSL, serverSession.getAttribute(CougarProtocol.NEGOTIATED_TLS_LEVEL_ATTR_NAME));
     }
     // ============= TLS - Client & server versions sufficient, client supports, server requires =====
     @Test
     public void clientSupportsTlsServerRequiresTlsV3_V3() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, sslFilter, false,
-                CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, sslFilter, true);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, sslFilter, false,
+                CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, sslFilter, true);
 
         client.sessionOpened(nextFilter, clientSession);
 
@@ -531,16 +535,16 @@ public class CougarProtocolTest {
         verify(clientSession.getFilterChain()).addFirst("ssl", sslFilter);
         verify(serverSession.getFilterChain()).addFirst("ssl", sslFilter);
 
-        assertEquals(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, clientSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
+        assertEquals(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, clientSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
         assertEquals(TLSResult.SSL, clientSession.getAttribute(CougarProtocol.NEGOTIATED_TLS_LEVEL_ATTR_NAME));
-        assertEquals(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, serverSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
+        assertEquals(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, serverSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
         assertEquals(TLSResult.SSL, serverSession.getAttribute(CougarProtocol.NEGOTIATED_TLS_LEVEL_ATTR_NAME));
     }
     // ============= TLS - Client & server versions sufficient, client doesn't support, server doesn't support =====
     @Test
     public void clientDoesntSupportTlsServerDoesntSupportTlsV3_V3() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, null, false,
-                CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, null, false);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, null, false,
+                CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, null, false);
 
         client.sessionOpened(nextFilter, clientSession);
 
@@ -551,16 +555,16 @@ public class CougarProtocolTest {
         verify(clientSession.getFilterChain(), times(0)).addFirst("ssl", sslFilter);
         verify(serverSession.getFilterChain(), times(0)).addFirst("ssl", sslFilter);
 
-        assertEquals(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, clientSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
+        assertEquals(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, clientSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
         assertEquals(TLSResult.PLAINTEXT, clientSession.getAttribute(CougarProtocol.NEGOTIATED_TLS_LEVEL_ATTR_NAME));
-        assertEquals(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, serverSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
+        assertEquals(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, serverSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
         assertEquals(TLSResult.PLAINTEXT, serverSession.getAttribute(CougarProtocol.NEGOTIATED_TLS_LEVEL_ATTR_NAME));
     }
     // ============= TLS - Client & server versions sufficient, client doesn't support, server supports =====
     @Test
     public void clientDoesntSupportTlsServerSupportsTlsV3_V3() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, null, false,
-                CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, sslFilter, false);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, null, false,
+                CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, sslFilter, false);
 
         client.sessionOpened(nextFilter, clientSession);
 
@@ -571,16 +575,16 @@ public class CougarProtocolTest {
         verify(clientSession.getFilterChain(), times(0)).addFirst("ssl", sslFilter);
         verify(serverSession.getFilterChain(), times(0)).addFirst("ssl", sslFilter);
 
-        assertEquals(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, clientSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
+        assertEquals(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, clientSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
         assertEquals(TLSResult.PLAINTEXT, clientSession.getAttribute(CougarProtocol.NEGOTIATED_TLS_LEVEL_ATTR_NAME));
-        assertEquals(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, serverSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
+        assertEquals(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, serverSession.getAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME));
         assertEquals(TLSResult.PLAINTEXT, serverSession.getAttribute(CougarProtocol.NEGOTIATED_TLS_LEVEL_ATTR_NAME));
     }
     // ============= TLS - Client & server versions sufficient, client doesn't support, server requires =====
     @Test
     public void clientDoesntSupportTlsServerRequiresTlsV3_V3() throws Exception {
-        setupProtocol(CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, null, false,
-                CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS, sslFilter, true);
+        setupProtocol(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, null, false,
+                CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS, sslFilter, true);
 
         client.sessionOpened(nextFilter, clientSession);
 

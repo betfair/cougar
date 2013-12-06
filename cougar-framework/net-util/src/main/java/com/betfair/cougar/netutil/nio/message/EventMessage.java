@@ -34,7 +34,7 @@ public class EventMessage extends AbstractMessage implements ProtocolMessage {
     }
 
     private void serialise() {
-        for (byte b=CougarProtocol.APPLICATION_PROTOCOL_VERSION_MIN_SUPPORTED; b<=CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED; b++) {
+        for (byte b=CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MIN_SUPPORTED; b<=CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED; b++) {
             serialisedForms.put(b, CougarProtocolEncoder.encode(this, b));
         }
     }

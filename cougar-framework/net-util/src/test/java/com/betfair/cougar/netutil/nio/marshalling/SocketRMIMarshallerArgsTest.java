@@ -71,9 +71,8 @@ public class SocketRMIMarshallerArgsTest {
 
     @Before
 	public void setup() {
-		cut= new SocketRMIMarshaller();
+		cut= new SocketRMIMarshaller(new DefaultSocketTimeResolver(true));
 		ioFactory = new HessianObjectIOFactory();
-
 	}
 	
 	@Test
@@ -101,7 +100,7 @@ public class SocketRMIMarshallerArgsTest {
 		params[0] = new Parameter("TO", new ParameterType(TO.class,parameterTypes),false);
 		
 		bos.reset();
-		CougarObjectOutput hoo = ioFactory.newCougarObjectOutput(bos, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+		CougarObjectOutput hoo = ioFactory.newCougarObjectOutput(bos, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
 		cut.writeArgs(params, new Object[] {o}, hoo);
 		hoo.flush();
 		
@@ -111,7 +110,7 @@ public class SocketRMIMarshallerArgsTest {
 		parameterTypes[1] = new ParameterType(int.class,null);
 		toParameters[0] = new Parameter("TO", new ParameterType(TO.class,parameterTypes) ,false);
 		
-		Object[] result = cut.readArgs(toParameters, ioFactory.newCougarObjectInput(new ByteArrayInputStream(bos.toByteArray()), CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED));
+		Object[] result = cut.readArgs(toParameters, ioFactory.newCougarObjectInput(new ByteArrayInputStream(bos.toByteArray()), CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED));
 		
 		Assert.assertEquals(1, result.length);
 		Assert.assertEquals(result[0].getClass(), TO.class);
@@ -152,14 +151,14 @@ public class SocketRMIMarshallerArgsTest {
 		params[0] = new Parameter("TO", new ParameterType(TO.class,null),false);
 		
 		bos.reset();
-		CougarObjectOutput hoo = ioFactory.newCougarObjectOutput(bos, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+		CougarObjectOutput hoo = ioFactory.newCougarObjectOutput(bos, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
 		cut.writeArgs(params, new Object[] {o}, hoo);
 		hoo.flush();
 		
 		params = new Parameter[1];
 		params[0] = new Parameter("TO", new ParameterType(TO.class,null) ,false);
 		
-		Object[] result = cut.readArgs(params, ioFactory.newCougarObjectInput(new ByteArrayInputStream(bos.toByteArray()), CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED));
+		Object[] result = cut.readArgs(params, ioFactory.newCougarObjectInput(new ByteArrayInputStream(bos.toByteArray()), CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED));
 		
 		Assert.assertEquals(1, result.length);
 		Assert.assertEquals(result[0].getClass(), TO.class);
@@ -199,10 +198,10 @@ public class SocketRMIMarshallerArgsTest {
 		params[0] = new Parameter("EnumTO", new ParameterType(EnumTO.class,null),false);
 		
 		bos.reset();
-		CougarObjectOutput hoo = ioFactory.newCougarObjectOutput(bos, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+		CougarObjectOutput hoo = ioFactory.newCougarObjectOutput(bos, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
 		cut.writeArgs(params, new Object[] {enumTO}, hoo);
 		hoo.flush();
-		Object[] result = cut.readArgs(params, ioFactory.newCougarObjectInput(new ByteArrayInputStream(bos.toByteArray()), CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED));
+		Object[] result = cut.readArgs(params, ioFactory.newCougarObjectInput(new ByteArrayInputStream(bos.toByteArray()), CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED));
 		
 		Assert.assertEquals(1, result.length);
 		Assert.assertEquals(result[0].getClass(), EnumTO.class);
@@ -244,10 +243,10 @@ public class SocketRMIMarshallerArgsTest {
 		params[0] = new Parameter("EnumTO", new ParameterType(EnumTO.class,null),false);
 		
 		bos.reset();
-		CougarObjectOutput hoo = ioFactory.newCougarObjectOutput(bos, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+		CougarObjectOutput hoo = ioFactory.newCougarObjectOutput(bos, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
 		cut.writeArgs(params, new Object[] {o}, hoo);
 		hoo.flush();
-		Object[] result = cut.readArgs(params, ioFactory.newCougarObjectInput(new ByteArrayInputStream(bos.toByteArray()), CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED));
+		Object[] result = cut.readArgs(params, ioFactory.newCougarObjectInput(new ByteArrayInputStream(bos.toByteArray()), CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED));
 		
 		
 	}
@@ -296,14 +295,14 @@ public class SocketRMIMarshallerArgsTest {
 		params[0] = new Parameter("ComplexTO", new ParameterType(clazz,null),false);
 		
 		bos.reset();
-		CougarObjectOutput hoo = ioFactory.newCougarObjectOutput(bos, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+		CougarObjectOutput hoo = ioFactory.newCougarObjectOutput(bos, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
 		cut.writeArgs(params, new Object[]{o}, hoo);
 		hoo.flush();
 		
 		params = new Parameter[1];
 		params[0] = new Parameter("ComplexTO", new ParameterType(ComplexTO.class,null),false);
 		
-		Object[] result = cut.readArgs(params, ioFactory.newCougarObjectInput(new ByteArrayInputStream(bos.toByteArray()), CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED));
+		Object[] result = cut.readArgs(params, ioFactory.newCougarObjectInput(new ByteArrayInputStream(bos.toByteArray()), CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED));
 		
 		Assert.assertEquals(12, ((ComplexTO)result[0]).to.i);
 		Assert.assertEquals(0, ((ComplexTO)result[0]).to.j);

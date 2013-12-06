@@ -34,8 +34,10 @@ import java.util.Map.Entry;
 
 import com.betfair.cougar.api.ExecutionContextWithTokens;
 import com.betfair.cougar.api.security.IdentityResolver;
+import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.transcription.TranscribableParams;
+import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.core.impl.security.CommonNameCertInfoExtractor;
 import com.betfair.cougar.marshalling.impl.RandomException;
 import com.betfair.cougar.marshalling.impl.SimpleApplicationException;
@@ -102,7 +104,7 @@ public class SocketRMIMarshallerTest {
     @Parameterized.Parameters
     public static Collection<Object[]> params() {
         List<Object[]> ret = new ArrayList<Object[]>();
-        for (byte b=CougarProtocol.APPLICATION_PROTOCOL_VERSION_MIN_SUPPORTED; b<=CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED; b++) {
+        for (byte b=CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MIN_SUPPORTED; b<=CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED; b++) {
             ret.add(new Object[] {b});
         }
         return ret;
@@ -188,7 +190,7 @@ public class SocketRMIMarshallerTest {
 	private static HessianObjectIOFactory ioFactory;
 
     private GeoIPLocator geoIpLocator = Mockito.mock(GeoIPLocator.class);
-    private SocketRMIMarshaller cut = new SocketRMIMarshaller(geoIpLocator,new CommonNameCertInfoExtractor());
+    private SocketRMIMarshaller cut = new SocketRMIMarshaller(geoIpLocator,new CommonNameCertInfoExtractor(),new DefaultSocketTimeResolver(true));
 
     @BeforeClass
     public static void suppressLogs() {
@@ -237,7 +239,7 @@ public class SocketRMIMarshallerTest {
         final String jamaica = "Jamaica";
         final String loopBackAddress = "127.0.0.1";
         String inferredCountry = null;
-        if (protocolVersion >= CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS) {
+        if (protocolVersion >= CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS) {
             inferredCountry = "JM";
         }
 
@@ -358,6 +360,7 @@ public class SocketRMIMarshallerTest {
         final Parameter[] params = new Parameter[] {
             new Parameter("param1", new ParameterType(String.class, null), true)
         };
+        final TimeConstraints timeConstraints = DefaultTimeConstraints.NO_CONSTRAINTS;
 
         final Object[] args = new Object[] {
             "hello"
@@ -385,6 +388,11 @@ public class SocketRMIMarshallerTest {
             @Override
             public Parameter[] getParameters() {
                 return params;
+            }
+
+            @Override
+            public TimeConstraints getTimeConstraints() {
+                return timeConstraints;
             }
         };
 
@@ -582,13 +590,14 @@ public class SocketRMIMarshallerTest {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         CougarObjectOutput cougarObjectOutput = ioFactory.newCougarObjectOutput(outputStream, protocolVersion);
         cougarObjectOutput.writeString("127.0.0.1"); // address
-        if (protocolVersion >= CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS) {
+        if (protocolVersion >= CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS) {
             cougarObjectOutput.writeString(null);
         }
         cut.writeIdentity(expected, cougarObjectOutput, identityResolver);
         cut.writeRequestUUID(new RequestUUIDImpl(), cougarObjectOutput);
         cut.writeReceivedTime(new Date(), cougarObjectOutput);
         cougarObjectOutput.writeBoolean(false); // traceEnabled
+        cut.writeRequestTime(cougarObjectOutput, protocolVersion);
         cougarObjectOutput.flush();
         ExecutionContextWithTokens ctx = cut.readExecutionContext(ioFactory.newCougarObjectInput(new ByteArrayInputStream(outputStream.toByteArray()), protocolVersion), "127.0.0.1", new X509Certificate[0], 0, protocolVersion);
         assertEquals(0, ctx.getIdentityTokens().size());
@@ -602,13 +611,14 @@ public class SocketRMIMarshallerTest {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         CougarObjectOutput cougarObjectOutput = ioFactory.newCougarObjectOutput(outputStream, protocolVersion);
         cougarObjectOutput.writeString("127.0.0.1"); // address
-        if (protocolVersion >= CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS) {
+        if (protocolVersion >= CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS) {
             cougarObjectOutput.writeString(null);
         }
         cut.writeIdentity(expected, cougarObjectOutput, identityResolver);
         cut.writeRequestUUID(new RequestUUIDImpl(), cougarObjectOutput);
         cut.writeReceivedTime(new Date(), cougarObjectOutput);
         cougarObjectOutput.writeBoolean(false); // traceEnabled
+        cut.writeRequestTime(cougarObjectOutput, protocolVersion);
         cougarObjectOutput.flush();
         ExecutionContextWithTokens ctx = cut.readExecutionContext(ioFactory.newCougarObjectInput(new ByteArrayInputStream(outputStream.toByteArray()), protocolVersion), "127.0.0.1", new X509Certificate[0], 0, protocolVersion);
         assertEquals(1, ctx.getIdentityTokens().size());
@@ -623,13 +633,14 @@ public class SocketRMIMarshallerTest {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         CougarObjectOutput cougarObjectOutput = ioFactory.newCougarObjectOutput(outputStream, protocolVersion);
         cougarObjectOutput.writeString("127.0.0.1"); // address
-        if (protocolVersion >= CougarProtocol.APPLICATION_PROTOCOL_VERSION_START_TLS) {
+        if (protocolVersion >= CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS) {
             cougarObjectOutput.writeString(null);
         }
         cut.writeIdentity(expected, cougarObjectOutput, identityResolver);
         cut.writeRequestUUID(new RequestUUIDImpl(), cougarObjectOutput);
         cut.writeReceivedTime(new Date(), cougarObjectOutput);
         cougarObjectOutput.writeBoolean(false); // traceEnabled
+        cut.writeRequestTime(cougarObjectOutput, protocolVersion);
         cougarObjectOutput.flush();
         ExecutionContextWithTokens ctx = cut.readExecutionContext(ioFactory.newCougarObjectInput(new ByteArrayInputStream(outputStream.toByteArray()), protocolVersion), "127.0.0.1", new X509Certificate[0], 0, protocolVersion);
         assertEquals(2, ctx.getIdentityTokens().size());

@@ -390,6 +390,11 @@ public class HealthServiceImplTest {
 		}
 
         @Override
+        public Date getRequestTime() {
+            return null;
+        }
+
+        @Override
         public boolean traceLoggingEnabled() {
             return false;
         }

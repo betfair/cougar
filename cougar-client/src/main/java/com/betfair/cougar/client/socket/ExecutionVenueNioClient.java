@@ -275,7 +275,7 @@ public class ExecutionVenueNioClient extends AbstractClientTransport implements 
     }
 
     public void execute(final ExecutionContext ctx, final OperationDefinition def, final Object[] args,
-                        final ExecutionObserver observer, TimeConstraints timeConstraints) { //todo
+                        final ExecutionObserver observer, final TimeConstraints timeConstraints) { //todo
 
         if (validateCTX(ctx, observer)) {
             final IoSession session = sessionFactory.getSession();
@@ -314,6 +314,11 @@ public class ExecutionVenueNioClient extends AbstractClientTransport implements 
                         @Override
                         public Parameter[] getParameters() {
                             return def.getParameters();
+                        }
+
+                        @Override
+                        public TimeConstraints getTimeConstraints() {
+                            return timeConstraints;
                         }
                     }, out, getIdentityResolver(), protocolVersion);
                     out.close();

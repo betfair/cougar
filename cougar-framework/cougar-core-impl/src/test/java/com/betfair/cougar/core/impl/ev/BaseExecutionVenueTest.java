@@ -584,6 +584,11 @@ public class BaseExecutionVenueTest {
             }
 
             @Override
+            public Date getRequestTime() {
+                return null;
+            }
+
+            @Override
             public boolean traceLoggingEnabled() {
                 return false;
             }
@@ -644,6 +649,11 @@ public class BaseExecutionVenueTest {
 
             @Override
             public Date getReceivedTime() {
+                return null;
+            }
+
+            @Override
+            public Date getRequestTime() {
                 return null;
             }
 

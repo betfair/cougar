@@ -573,7 +573,7 @@ public class ExecutionVenueNioClientTest extends AbstractClientTest {
 
 
             assertFalse("There should be no connected sessions", testClient.getSessionFactory().isConnected());
-            assertEquals("SUSPEND message check", (serverVersion != CougarProtocol.APPLICATION_PROTOCOL_VERSION_CLIENT_ONLY_RPC), session.containsAttribute(ProtocolMessage.ProtocolMessageType.SUSPEND.name()));
+            assertEquals("SUSPEND message check", (serverVersion != CougarProtocol.TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC), session.containsAttribute(ProtocolMessage.ProtocolMessageType.SUSPEND.name()));
             assertTrue("DISCONNECT message should have been received", session.containsAttribute(ProtocolMessage.ProtocolMessageType.DISCONNECT.name()));
         } finally {
             if (testServer != null) {

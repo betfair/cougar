@@ -139,6 +139,10 @@
 
     <!-- binary transport -->
     <bean id="clientSocketMarshaller" class="com.betfair.cougar.netutil.nio.marshalling.SocketRMIMarshaller">
+        <constructor-arg index="0">
+            <!-- no arg constructor fine as the boolean only affects the server -->
+            <bean class="com.betfair.cougar.netutil.nio.marshalling.DefaultSocketTimeResolver"/>
+        </constructor-arg>
         <property name="hardFailEnumDeserialisation" value="$COUGAR_CLIENT{cougar.client.socket.enums.hardFailure}"/>
     </bean>
 

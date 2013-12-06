@@ -63,6 +63,11 @@ public class SimpleExecutionContext implements ExecutionContext {
     }
 
     @Override
+    public Date getRequestTime() {
+        return null;
+    }
+
+    @Override
     public boolean traceLoggingEnabled() {
         return false;
     }

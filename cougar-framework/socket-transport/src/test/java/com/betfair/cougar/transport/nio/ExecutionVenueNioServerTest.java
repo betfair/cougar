@@ -32,9 +32,11 @@ import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.security.IdentityResolverFactory;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
+import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.core.impl.security.CommonNameCertInfoExtractor;
 import com.betfair.cougar.core.impl.transports.TransportRegistryImpl;
 import com.betfair.cougar.logging.CougarLoggingUtils;
+import com.betfair.cougar.netutil.nio.marshalling.DefaultSocketTimeResolver;
 import com.betfair.cougar.netutil.nio.marshalling.SocketRMIMarshaller;
 import com.betfair.cougar.netutil.nio.CougarProtocol;
 import com.betfair.cougar.netutil.nio.NioLogger;
@@ -97,7 +99,7 @@ public class ExecutionVenueNioServerTest {
 	public static Collection<Object[]> data() {
         String[] addresses = new String[] { "127.0.0.1" /*, "::1" */};
         Set<ByteArrayWrapper> versionCombinations = new HashSet<ByteArrayWrapper>();
-        addVersions(versionCombinations, new byte[] {}, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MIN_SUPPORTED);
+        addVersions(versionCombinations, new byte[] {}, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MIN_SUPPORTED);
         for (ByteArrayWrapper b : versionCombinations) {
             System.out.println("Version combo: "+Arrays.toString(b.getArray()));
         }
@@ -116,13 +118,13 @@ public class ExecutionVenueNioServerTest {
 	}
 
     private static void addVersions(Set<ByteArrayWrapper> versionCombinations, byte[] prefix, byte nextVersion) {
-        if (nextVersion > CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED) {
+        if (nextVersion > CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED) {
             return;
         }
         versionCombinations.add(new ByteArrayWrapper(new byte[] { nextVersion }));
         byte[] newPrefix = addToEnd(prefix, nextVersion);
         versionCombinations.add(new ByteArrayWrapper(newPrefix));
-        for (byte b=(byte) (nextVersion+1); b<=CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED; b++) {
+        for (byte b=(byte) (nextVersion+1); b<=CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED; b++) {
             addVersions(versionCombinations, newPrefix, b);
         }
     }
@@ -144,7 +146,8 @@ public class ExecutionVenueNioServerTest {
 	        new Parameter("echoMe", new ParameterType(String.class, null), true) };
 
     private static final ParameterType RETURN_PARAM_TYPE = new ParameterType(String.class, null);
-	
+
+    private static final TimeConstraints TIME_CONSTRAINTS = DefaultTimeConstraints.NO_CONSTRAINTS;
     
 	public static final OperationDefinition OPERATION_DEFINITION = new OperationDefinition() {
 		@Override
@@ -217,7 +220,7 @@ public class ExecutionVenueNioServerTest {
         };
 
         GeoIPLocator geo = Mockito.mock(GeoIPLocator.class);
-        marshaller = new SocketRMIMarshaller(geo, new CommonNameCertInfoExtractor());
+        marshaller = new SocketRMIMarshaller(geo, new CommonNameCertInfoExtractor(), new DefaultSocketTimeResolver(true));
         IdentityResolverFactory identityResolverFactory = new IdentityResolverFactory();
         identityResolverFactory.setIdentityResolver(Mockito.mock(IdentityResolver.class));
 
@@ -378,7 +381,7 @@ public class ExecutionVenueNioServerTest {
         if (message instanceof RequestMessage) {
             RequestMessage messageBody = (RequestMessage) message;
             s.writeInt(messageBody.getPayload().length + 9);
-            if (communicationVersion == CougarProtocol.APPLICATION_PROTOCOL_VERSION_CLIENT_ONLY_RPC) {
+            if (communicationVersion == CougarProtocol.TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC) {
                 s.writeByte(ProtocolMessageType.MESSAGE.getMessageType());
             }
             else {
@@ -406,7 +409,7 @@ public class ExecutionVenueNioServerTest {
         OutputStream output = connectedClient.getOutputStream();
         InputStream input = connectedClient.getInputStream();
 
-        byte communicationVersion = CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED + 1;
+        byte communicationVersion = CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED + 1;
 
         //We, a nonsense client, only support version 3 of the protocol
         writeMessageToOutputStream(new ConnectMessage(new byte[] {communicationVersion } ), output, communicationVersion);
@@ -420,7 +423,7 @@ public class ExecutionVenueNioServerTest {
         OutputStream output = connectedClient.getOutputStream();
         InputStream input = connectedClient.getInputStream();
 
-        byte communicationVersion = CougarProtocol.APPLICATION_PROTOCOL_VERSION_MIN_SUPPORTED; // handshake is set in stone
+        byte communicationVersion = CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MIN_SUPPORTED; // handshake is set in stone
 
         //start with handshake
         writeMessageToOutputStream(new ConnectMessage(clientConnectVersions ), output, communicationVersion);
@@ -515,6 +518,11 @@ public class ExecutionVenueNioServerTest {
                     }
 
                     @Override
+                    public Date getRequestTime() {
+                        return null;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    @Override
                     public boolean traceLoggingEnabled() {
                         return false;  //To change body of implemented methods use File | Settings | File Templates.
                     }
@@ -539,6 +547,11 @@ public class ExecutionVenueNioServerTest {
             @Override
             public Parameter[] getParameters() {
                 return OP_PARAMS;
+            }
+
+            @Override
+            public TimeConstraints getTimeConstraints() {
+                return TIME_CONSTRAINTS;
             }
         };
     }    

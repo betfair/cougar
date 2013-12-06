@@ -65,7 +65,8 @@ public abstract class TestSuite {
                                         public String getInferredCountry() {return "GBR";}
 					public boolean isLowConfidenceGeoLocation() {return false;}};
 			}
-			public Date getReceivedTime() {return new Date();};
+			public Date getReceivedTime() {return new Date();}
+			public Date getRequestTime() {return new Date();}
 			public RequestUUID getRequestUUID() {return new RequestUUIDImpl();}
 			public boolean traceLoggingEnabled() {return false;}
 

@@ -181,7 +181,12 @@ public class ServiceExecutableResolver extends CompoundExecutableResolverImpl {
 			return original.getReceivedTime();
 		}
 
-		@Override
+        @Override
+        public Date getRequestTime() {
+            return original.getRequestTime();
+        }
+
+        @Override
 		public RequestUUID getRequestUUID() {
 			return original.getRequestUUID();
 		}

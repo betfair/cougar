@@ -221,8 +221,8 @@ public class CougarProtocolTest {
     @Test
     public void testReject() throws IOException {
         // force version to an unsupported one (the next one)
-        CougarProtocol.setMinClientProtocolVersion((byte) (CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED + 1));
-        CougarProtocol.setMaxClientProtocolVersion((byte) (CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED + 1));
+        CougarProtocol.setMinClientProtocolVersion((byte) (CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED + 1));
+        CougarProtocol.setMaxClientProtocolVersion((byte) (CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED + 1));
         try {
             TlsNioConfig nioConfig = new TlsNioConfig();
             nioConfig.setNioLogger(new NioLogger("ALL"));
@@ -249,8 +249,8 @@ public class CougarProtocolTest {
 
             assertEquals("connection shouldn't have been successful", false, success);
         } finally {
-            CougarProtocol.setMinClientProtocolVersion(CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
-            CougarProtocol.setMaxClientProtocolVersion(CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+            CougarProtocol.setMinClientProtocolVersion(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
+            CougarProtocol.setMaxClientProtocolVersion(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
         }
 
     }

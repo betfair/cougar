@@ -21,6 +21,7 @@ import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.RequestUUID;
 import com.betfair.cougar.api.geolocation.GeoLocationDetails;
 import com.betfair.cougar.client.api.GeoLocationSerializer;
+import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.marshalling.api.databinding.Marshaller;
 import com.betfair.cougar.util.RequestUUIDImpl;
 import org.apache.http.Header;
@@ -31,6 +32,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -59,7 +61,7 @@ public abstract class CougarRequestFactory<HR> {
     }
 
     public HR create(final String uri, final String httpMethod, final Message message,
-                              final Marshaller marshaller, final String contentType, final ExecutionContext ctx) {
+                              final Marshaller marshaller, final String contentType, final ExecutionContext ctx, final TimeConstraints timeConstraints) {
 
         final HR httpRequest = createRequest(httpMethod, uri);
 
@@ -67,7 +69,7 @@ public abstract class CougarRequestFactory<HR> {
             addPostEntity(httpRequest, createPostEntity(message, marshaller), contentType);
         }
 
-        addHeaders(httpRequest, constructRequestHeaders(message, contentType, ctx));
+        addHeaders(httpRequest, constructRequestHeaders(message, contentType, ctx, timeConstraints));
         return httpRequest;
     }
 
@@ -111,7 +113,7 @@ public abstract class CougarRequestFactory<HR> {
     }
 
     private List<Header> constructRequestHeaders(final Message message, final String contentType,
-                                                 final ExecutionContext ctx) {
+                                                 final ExecutionContext ctx, TimeConstraints timeConstraints) {
 
         final List<Header> result = new ArrayList<Header>();
 
@@ -135,8 +137,14 @@ public abstract class CougarRequestFactory<HR> {
             result.add(new BasicHeader(xRequestUUIDHeader, requestUUID.toString()));
         }
 
+        // time headers
         if (ctx.getReceivedTime() != null) {
             result.add(new BasicHeader("X-ReceivedTime", DATE_TIME_FORMATTER.print(ctx.getReceivedTime().getTime())));
+        }
+        // todo: read these?
+        result.add(new BasicHeader("X-RequestTime", DATE_TIME_FORMATTER.print(System.currentTimeMillis())));
+        if (timeConstraints.getTimeRemaining() != null) {
+            result.add(new BasicHeader("X-RequestTimeout", String.valueOf(timeConstraints.getTimeRemaining())));
         }
 
         for (Map.Entry<String, Object> entry : message.getHeaderMap().entrySet()) {

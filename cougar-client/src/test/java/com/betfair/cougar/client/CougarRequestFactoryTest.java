@@ -18,6 +18,7 @@ package com.betfair.cougar.client;
 
 import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.geolocation.GeoLocationDetails;
+import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.marshalling.api.databinding.Marshaller;
 import com.betfair.cougar.util.RequestUUIDImpl;
 import com.betfair.cougar.util.UUIDGeneratorImpl;
@@ -58,6 +59,8 @@ public class CougarRequestFactoryTest {
     private Marshaller mockMarshaller;
     @Mock
     private GeoLocationDetails mockGeoLocation;
+    @Mock
+    private TimeConstraints mockTimeConstraints;
 
     private Object httpRequest = new Object();
     private List<Header> headers;
@@ -84,12 +87,15 @@ public class CougarRequestFactoryTest {
         contentType = CONTENT_TYPE;
         when(mockMessage.getHeaderMap()).thenReturn(Collections.<String, Object>emptyMap());
 
-        Object result = factory.create(uri, httpMethod, mockMessage, mockMarshaller, contentType, mockContext);
+        Object result = factory.create(uri, httpMethod, mockMessage, mockMarshaller, contentType, mockContext, mockTimeConstraints);
 
         assertSame(httpRequest, result);
-        assertEquals(3, headers.size());
+        assertEquals(5, headers.size());
         assertHeadersContains(headers, ACCEPT, contentType);
         assertHeadersContains(headers, USER_AGENT, CougarRequestFactory.USER_AGENT_HEADER);
+        assertHeadersContains(headers, "X-REQUEST-UUID");
+        assertHeadersContains(headers, "X-RequestTime");
+        assertHeadersContains(headers, "X-RequestTimeout", "0");
     }
 
     @Test
@@ -104,15 +110,17 @@ public class CougarRequestFactoryTest {
         when(mockContext.getReceivedTime()).thenReturn(date);
         factory.setGzipCompressionEnabled(true);
 
-        Object result = factory.create(uri, httpMethod, mockMessage, mockMarshaller, contentType, mockContext);
+        Object result = factory.create(uri, httpMethod, mockMessage, mockMarshaller, contentType, mockContext, mockTimeConstraints);
 
         assertSame(httpRequest, result);
-        assertEquals(7, headers.size());
+        assertEquals(9, headers.size());
         assertHeadersContains(headers, ACCEPT, contentType);
         assertHeadersContains(headers, USER_AGENT, CougarRequestFactory.USER_AGENT_HEADER);
         assertHeadersContains(headers, ACCEPT_ENCODING, "gzip");
         assertHeadersContains(headers, "X-Trace-Me", "true");
         assertHeadersContains(headers, "X-REQUEST-UUID", uuid);
+        assertHeadersContains(headers, "X-RequestTime");
+        assertHeadersContains(headers, "X-RequestTimeout", "0");
         assertHeadersContains(headers, "X-My-Header", "value");
         assertHeadersContains(headers, "X-ReceivedTime", DATE_TIME_FORMATTER.print(date.getTime()));
     }
@@ -136,12 +144,15 @@ public class CougarRequestFactoryTest {
         when(mockMessage.getHeaderMap()).thenReturn(Collections.<String, Object>emptyMap());
         doAnswer(postAnswer).when(mockMarshaller).marshall(any(ByteArrayOutputStream.class), anyObject(), anyString());
 
-        Object result = factory.create(uri, httpMethod, mockMessage, mockMarshaller, contentType, mockContext);
+        Object result = factory.create(uri, httpMethod, mockMessage, mockMarshaller, contentType, mockContext, mockTimeConstraints);
 
         assertSame(httpRequest, result);
-        assertEquals(3, headers.size());
+        assertEquals(5, headers.size());
         assertHeadersContains(headers, ACCEPT, contentType);
         assertHeadersContains(headers, USER_AGENT, CougarRequestFactory.USER_AGENT_HEADER);
+        assertHeadersContains(headers, "X-REQUEST-UUID");
+        assertHeadersContains(headers, "X-RequestTime");
+        assertHeadersContains(headers, "X-RequestTimeout", "0");
         assertEquals("some post data", postEntity);
     }
 
@@ -153,6 +164,15 @@ public class CougarRequestFactoryTest {
             }
         }
         fail("Did not find header '" + name + "' with value '" + value + "'");
+    }
+
+    private void assertHeadersContains(List<Header> headers, String name) {
+        for (Header h : headers) {
+            if (h.getName().equals(name) && (h.getValue() != null)) {
+                return;
+            }
+        }
+        fail("Did not find header '" + name + "'");
     }
 
 

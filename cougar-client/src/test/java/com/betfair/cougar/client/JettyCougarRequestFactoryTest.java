@@ -18,6 +18,7 @@ package com.betfair.cougar.client;
 
 import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.geolocation.GeoLocationDetails;
+import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.marshalling.api.databinding.Marshaller;
 import com.betfair.cougar.util.RequestUUIDImpl;
 import com.betfair.cougar.util.UUIDGeneratorImpl;
@@ -52,6 +53,8 @@ public class JettyCougarRequestFactoryTest {
     private Marshaller mockMarshaller;
     @Mock
     private GeoLocationDetails mockGeoLocation;
+    @Mock
+    private TimeConstraints mockTimeConstraints;
 
     private JettyCougarRequestFactory factory = new JettyCougarRequestFactory(new DefaultGeoLocationSerializer(), "X-REQUEST-UUID");
 
@@ -104,7 +107,7 @@ public class JettyCougarRequestFactoryTest {
 */
     @Test(expected = UnsupportedOperationException.class)
     public void shouldNotCreateUnknownMethod() {
-        factory.create(uri, "TRACE", mockMessage, mockMarshaller, contentType, mockContext);
+        factory.create(uri, "TRACE", mockMessage, mockMarshaller, contentType, mockContext, mockTimeConstraints);
     }
 
 }

@@ -164,7 +164,8 @@ public class SocketTransportCommandProcessor extends AbstractCommandProcessor<So
                         rpcCommand.getSession().setAttribute(CougarProtocol.TSSF_ATTR_NAME, transportSecurityStrengthFactor);
                     }
                 }
-                ExecutionContextWithTokens context = marshaller.readExecutionContext(in, command.getRemoteAddress(), clientCertChain, transportSecurityStrengthFactor, CougarProtocol.getProtocolVersion(command.getSession()));
+                byte protocolVersion = CougarProtocol.getProtocolVersion(command.getSession());
+                ExecutionContextWithTokens context = marshaller.readExecutionContext(in, command.getRemoteAddress(), clientCertChain, transportSecurityStrengthFactor, protocolVersion);
                 final SocketRequestContextImpl requestContext = new SocketRequestContextImpl(context);
                 OperationKey remoteOperationKey = marshaller.readOperationKey(in);
                 OperationDefinition opDef = findCompatibleBinding(remoteOperationKey);
@@ -174,6 +175,7 @@ public class SocketTransportCommandProcessor extends AbstractCommandProcessor<So
                 final OperationKey operationKey = opDef.getOperationKey(); // safer to read it from locally
                 final OperationDefinition operationDefinition = getExecutionVenue().getOperationDefinition(operationKey);
                 final Object[] args = marshaller.readArgs(operationDefinition.getParameters(), in);
+                final TimeConstraints timeConstraints = marshaller.readTimeConstraintsIfPresent(in, protocolVersion);
                 final ExecutionCommand exec = new ExecutionCommand() {
 
                     @Override

@@ -30,6 +30,7 @@ import com.betfair.cougar.core.api.transcription.EnumDerialisationException;
 import com.betfair.cougar.core.api.transcription.EnumUtils;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.marshalling.api.databinding.DataBindingFactory;
+import com.betfair.cougar.transport.api.RequestTimeResolver;
 import com.betfair.cougar.transport.api.protocol.http.HttpServiceBindingDescriptor;
 import com.betfair.cougar.transport.api.protocol.http.rescript.RescriptOperationBindingDescriptor;
 import com.betfair.cougar.util.configuration.PropertyConfigurer;
@@ -80,6 +81,7 @@ public abstract class AbstractHttpExecutable<HR> extends AbstractClientTransport
     private AtomicReference<String> remoteAddressRef = new AtomicReference<String>("NOT ASSIGNED");
     private DataBindingFactory dataBindingFactory;
     private IdentityTokenResolver<HR, HR, X509Certificate[]> identityTokenResolver;
+    private RequestTimeResolver<HR, HR> requestTimeResolver;
     private QueryStringGeneratorFactory queryStringGeneratorFactory;
     private ExceptionTransformer exceptionTransformer;
     private ExceptionFactory exceptionFactory;
@@ -138,7 +140,7 @@ public abstract class AbstractHttpExecutable<HR> extends AbstractClientTransport
 
     @Override
     public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args,
-                        final ExecutionObserver obs, final ExecutionVenue executionVenue, final TimeConstraints timeConstraints) { // TODO
+                        final ExecutionObserver obs, final ExecutionVenue executionVenue, final TimeConstraints timeConstraints) {
 
         final OperationDefinition operationDefinition = executionVenue.getOperationDefinition(key);
 
@@ -161,7 +163,7 @@ public abstract class AbstractHttpExecutable<HR> extends AbstractClientTransport
         // create http request
 
         HR request = requestFactory.create(uri + queryString, httpMethod, message,
-                dataBindingFactory.getMarshaller(), CONTENT_TYPE, ctx);
+                dataBindingFactory.getMarshaller(), CONTENT_TYPE, ctx, timeConstraints);
 
         Exception exception = null;
         Object result = null;
@@ -182,6 +184,10 @@ public abstract class AbstractHttpExecutable<HR> extends AbstractClientTransport
                 LOGGER.info("Rewrote tokens " + sb + " to http request");
             }
         }
+        if (requestTimeResolver != null) {
+            requestTimeResolver.writeRequestTime(request);
+        }
+
         // Send Request
 
         sendRequest(request, obs, operationDefinition);
@@ -370,9 +376,12 @@ public abstract class AbstractHttpExecutable<HR> extends AbstractClientTransport
         this.queryStringGeneratorFactory = queryStringGeneratorFactory;
     }
 
-    public void setIdentityTokenResolver(IdentityTokenResolver<HR, HR,
-            X509Certificate[]> identityTokenResolver) {
+    public void setIdentityTokenResolver(IdentityTokenResolver<HR, HR, X509Certificate[]> identityTokenResolver) {
         this.identityTokenResolver = identityTokenResolver;
+    }
+
+    public void setRequestTimeResolver(RequestTimeResolver<HR, HR> requestTimeResolver) {
+        this.requestTimeResolver = requestTimeResolver;
     }
 
     public void setExceptionTransformer(ExceptionTransformer exceptionTransformer) {

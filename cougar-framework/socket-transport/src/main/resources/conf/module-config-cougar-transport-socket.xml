@@ -39,8 +39,14 @@
     <bean id="defaultSocketCertInfoExtractor" class="com.betfair.cougar.core.impl.security.CommonNameCertInfoExtractor"/>
 
     <bean id="socketMarshaller" class="com.betfair.cougar.netutil.nio.marshalling.SocketRMIMarshaller">
-        <constructor-arg ref="cougar.core.GeoIPLocator"/>
-        <constructor-arg ref="$COUGAR-SOCKET-TRANSPORT{cougar.socket.tokenResolver.certInfoExtractor}"/>
+        <constructor-arg index="0" ref="cougar.core.GeoIPLocator"/>
+        <constructor-arg index="1" ref="$COUGAR-SOCKET-TRANSPORT{cougar.socket.tokenResolver.certInfoExtractor}"/>
+        <constructor-arg index="2">
+            <!-- no arg constructor fine as the boolean only affects the server -->
+            <bean class="com.betfair.cougar.netutil.nio.marshalling.DefaultSocketTimeResolver">
+                <constructor-arg index="0" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.timeResolver.clientSynchronized}"/>
+            </bean>
+        </constructor-arg>
         <property name="hardFailEnumDeserialisation" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.enums.hardFailure}"/>
     </bean>
 

@@ -107,6 +107,11 @@ public class SocketTransportCommandProcessorTest {
         }
 
         @Override
+        public Date getRequestTime() {
+            return new Date();
+        }
+
+        @Override
         public boolean traceLoggingEnabled() {
             return false;
         }
@@ -212,7 +217,7 @@ public class SocketTransportCommandProcessorTest {
             try {
                 final String success="success";
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                CougarObjectOutput dos = new HessianObjectIOFactory().newCougarObjectOutput(bos, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+                CougarObjectOutput dos = new HessianObjectIOFactory().newCougarObjectOutput(bos, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
                 dos.flush();
                 //Test onResult
                 cmd.onResult(new ExecutionResult(success));
@@ -310,9 +315,9 @@ public class SocketTransportCommandProcessorTest {
     @Test
     public void testCreateCommandResolver() throws IOException {
         SocketTransportRPCCommand command = Mockito.mock(SocketTransportRPCCommand.class);
-        when(command.getOutput()).thenReturn(new HessianObjectIOFactory().newCougarObjectOutput(out, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED));
+        when(command.getOutput()).thenReturn(new HessianObjectIOFactory().newCougarObjectOutput(out, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED));
         MyIoSession session = new MyIoSession("abc");
-        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED);
+        session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
         when(command.getSession()).thenReturn(session);
 
         when(marshaller.readExecutionContext(any(CougarObjectInput.class), any(String.class), any(X509Certificate[].class), anyInt(), anyByte())).thenReturn(ctx);

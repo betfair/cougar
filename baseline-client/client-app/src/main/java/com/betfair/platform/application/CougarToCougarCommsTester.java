@@ -135,6 +135,11 @@ public class CougarToCougarCommsTester implements ApplicationListener {
         }
 
         @Override
+        public Date getRequestTime() {
+            return null;
+        }
+
+        @Override
         public boolean traceLoggingEnabled() {
             return false;
         }

@@ -51,18 +51,19 @@ public class CougarProtocol extends IoFilterAdapter implements Exportable {
     public static final String CLIENT_CERTS_ATTR_NAME = "CougarProtocol.clientCertificateChain";
     public static final String TSSF_ATTR_NAME = "CougarProtocol.transportSecurityStrengthFactor";
 
-    public static final byte APPLICATION_PROTOCOL_VERSION_CLIENT_ONLY_RPC = 1;
-    public static final byte APPLICATION_PROTOCOL_VERSION_BIDIRECTION_RPC = 2;
-    public static final byte APPLICATION_PROTOCOL_VERSION_START_TLS = 3;
-    public static final byte APPLICATION_PROTOCOL_VERSION_MIN_SUPPORTED = APPLICATION_PROTOCOL_VERSION_CLIENT_ONLY_RPC;
-    public static final byte APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED = APPLICATION_PROTOCOL_VERSION_START_TLS;
-    public static final byte APPLICATION_PROTOCOL_VERSION_UNSUPPORTED = APPLICATION_PROTOCOL_VERSION_MIN_SUPPORTED - 1;
+    public static final byte TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC = 1;
+    public static final byte TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC = 2;
+    public static final byte TRANSPORT_PROTOCOL_VERSION_START_TLS = 3;
+    public static final byte TRANSPORT_PROTOCOL_VERSION_TIME_CONSTRAINTS = 4;
+    public static final byte TRANSPORT_PROTOCOL_VERSION_MIN_SUPPORTED = TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC;
+    public static final byte TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED = TRANSPORT_PROTOCOL_VERSION_TIME_CONSTRAINTS;
+    public static final byte TRANSPORT_PROTOCOL_VERSION_UNSUPPORTED = TRANSPORT_PROTOCOL_VERSION_MIN_SUPPORTED - 1;
 
     // these allow tests to force us to particular versions of the protocol, even invalid ones
-    private static byte maxServerProtocolVersion = APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED;
-    private static byte maxClientProtocolVersion = APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED;
-    private static byte minServerProtocolVersion = APPLICATION_PROTOCOL_VERSION_MIN_SUPPORTED;
-    private static byte minClientProtocolVersion = APPLICATION_PROTOCOL_VERSION_MIN_SUPPORTED;
+    private static byte maxServerProtocolVersion = TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED;
+    private static byte maxClientProtocolVersion = TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED;
+    private static byte minServerProtocolVersion = TRANSPORT_PROTOCOL_VERSION_MIN_SUPPORTED;
+    private static byte minClientProtocolVersion = TRANSPORT_PROTOCOL_VERSION_MIN_SUPPORTED;
 
     public static void setMaxServerProtocolVersion(byte maxServerProtocolVersion) {
         CougarProtocol.maxServerProtocolVersion = maxServerProtocolVersion;
@@ -100,10 +101,11 @@ public class CougarProtocol extends IoFilterAdapter implements Exportable {
 
     private static Set<TranscribableParams>[] transcribableParamsByProtocolVersion;
     static {
-        Set<TranscribableParams>[] map = new Set[APPLICATION_PROTOCOL_VERSION_MAX_SUPPORTED+1];
-        map[APPLICATION_PROTOCOL_VERSION_CLIENT_ONLY_RPC] =  Collections.unmodifiableSet(EnumSet.noneOf(TranscribableParams.class));
-        map[APPLICATION_PROTOCOL_VERSION_BIDIRECTION_RPC] =  Collections.unmodifiableSet(EnumSet.noneOf(TranscribableParams.class));
-        map[APPLICATION_PROTOCOL_VERSION_START_TLS] =  Collections.unmodifiableSet(EnumSet.of(TranscribableParams.EnumsWrittenAsStrings, TranscribableParams.MajorOnlyPackageNaming));
+        Set<TranscribableParams>[] map = new Set[TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED+1];
+        map[TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC] =  Collections.unmodifiableSet(EnumSet.noneOf(TranscribableParams.class));
+        map[TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC] =  Collections.unmodifiableSet(EnumSet.noneOf(TranscribableParams.class));
+        map[TRANSPORT_PROTOCOL_VERSION_START_TLS] =  Collections.unmodifiableSet(EnumSet.of(TranscribableParams.EnumsWrittenAsStrings, TranscribableParams.MajorOnlyPackageNaming));
+        map[TRANSPORT_PROTOCOL_VERSION_TIME_CONSTRAINTS] =  Collections.unmodifiableSet(EnumSet.of(TranscribableParams.EnumsWrittenAsStrings, TranscribableParams.MajorOnlyPackageNaming));
         transcribableParamsByProtocolVersion = map;
     }
 
@@ -187,7 +189,7 @@ public class CougarProtocol extends IoFilterAdapter implements Exportable {
 
     public void suspendSession(final IoSession ioSession) {
         final Byte protocolVersion = (Byte) ioSession.getAttribute(PROTOCOL_VERSION_ATTR_NAME);
-        if (protocolVersion == null || protocolVersion.equals(APPLICATION_PROTOCOL_VERSION_CLIENT_ONLY_RPC)) {
+        if (protocolVersion == null || protocolVersion.equals(TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC)) {
             return; // We don't need to do this for clients using older version, as they don't understand this message
         }
 
@@ -261,7 +263,7 @@ public class CougarProtocol extends IoFilterAdapter implements Exportable {
                     if (isEnabled()) {
                         ConnectMessage connectMessage = (ConnectMessage) protocolMessage;
                         //As a server, ensure that we support a version the client also supports
-                        byte protocolVersionToUse = APPLICATION_PROTOCOL_VERSION_UNSUPPORTED;
+                        byte protocolVersionToUse = TRANSPORT_PROTOCOL_VERSION_UNSUPPORTED;
                         for (byte testVersion = maxServerProtocolVersion; testVersion >= minServerProtocolVersion; testVersion--) {
                             if (Arrays.binarySearch(connectMessage.getApplicationVersions(), testVersion) >= 0) {
                                 protocolVersionToUse = testVersion;
@@ -270,7 +272,7 @@ public class CougarProtocol extends IoFilterAdapter implements Exportable {
                         }
                         if (protocolVersionToUse >= minServerProtocolVersion) {
                             // older versions of the protocol don't support TLS, so if we require it, then we have to stop here
-                            if (protocolVersionToUse < APPLICATION_PROTOCOL_VERSION_START_TLS && requiresTls) {
+                            if (protocolVersionToUse < TRANSPORT_PROTOCOL_VERSION_START_TLS && requiresTls) {
                                 nioLogger.log(PROTOCOL, session, "CougarProtocol: REJECTing connection request with version %s since we require TLS, which is not supported on this version", protocolVersionToUse);
                                 session.write(new RejectMessage(RejectMessageReason.INCOMPATIBLE_VERSION, getServerAcceptableVersions()));
                                 session.close();
@@ -312,7 +314,7 @@ public class CougarProtocol extends IoFilterAdapter implements Exportable {
                     session.setAttribute(RequestResponseManager.SESSION_KEY, new RequestResponseManagerImpl(session, nioLogger, rpcTimeoutMillis));
 
                     // if we're running version 3 or later then send our TLS request, otherwise we're done handshaking
-                    if (acceptMessage.getAcceptedVersion() >= APPLICATION_PROTOCOL_VERSION_START_TLS) {
+                    if (acceptMessage.getAcceptedVersion() >= TRANSPORT_PROTOCOL_VERSION_START_TLS) {
                         TLSRequirement requirement;
                         if (requiresTls) {
                             requirement = TLSRequirement.REQUIRED;

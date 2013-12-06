@@ -48,6 +48,13 @@ public interface ExecutionContext {
 	
 	public Date getReceivedTime();
 
+    /**
+     * The time this request was emitted by the client. Is the earliest time we're certain of. This means that
+     * if a server is uncertain as to whether it's time is synchronized with the client, then this will be the
+     * time the request was receive on the server.
+     */
+	public Date getRequestTime();
+
     public boolean traceLoggingEnabled();
 
     /**
