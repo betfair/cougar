@@ -148,7 +148,7 @@ public class ClientExceptionsTest {
         // Make call to the method via client and validate the response is as expected
         try {
             // this is gonna timeout!
-            wrapper.getClient().testSleep(wrapper.getCtx(), 1000L, 1L);
+            wrapper.getClient().testSleep(wrapper.getCtx(), 1000L, 200L);
             if (tt.isAsync()) {
                 fail("Expected exception");
             }
@@ -158,7 +158,15 @@ public class ClientExceptionsTest {
                 assertEquals("Operation testSleep timed out!", te.getMessage());
             }
             else {
-                Assert.fail("Don't expect a timeout on a sync transport");
+                fail("Expected a CougarServiceException for a sync transport");
+            }
+        }
+        catch (CougarServiceException cse) {
+            if (tt.isAsync()) {
+                fail("Expected a timeout exception on async transport");
+            }
+            else {
+                assertEquals("Expected timeout fault code", ServerFaultCode.Timeout, cse.getServerFaultCode());
             }
         }
     }

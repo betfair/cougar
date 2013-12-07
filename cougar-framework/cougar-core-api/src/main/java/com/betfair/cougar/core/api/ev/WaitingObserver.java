@@ -70,6 +70,14 @@ public class WaitingObserver implements ExecutionObserver {
                 timedOut = true;
             }
         }
-        return !(timedOut || !await(waitTime));
+        // if it timed out then just check to see if it's already there..
+        if (timedOut) {
+            return latch.await(0, TimeUnit.MILLISECONDS);
+        }
+        if (waitTime == 0) {
+            latch.await();
+            return true;
+        }
+        return latch.await(waitTime, TimeUnit.MILLISECONDS);
     }
 }
