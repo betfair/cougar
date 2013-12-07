@@ -158,12 +158,13 @@ public class ClientExceptionsTest {
                 assertEquals("Operation testSleep timed out!", te.getMessage());
             }
             else {
-                fail("Expected a CougarServiceException for a sync transport");
+                fail("Expected a CougarServiceException for a sync transport: "+tt);
             }
         }
         catch (CougarServiceException cse) {
             if (tt.isAsync()) {
-                fail("Expected a timeout exception on async transport");
+                cse.printStackTrace();
+                fail("Expected a timeout exception on async transport: "+tt);
             }
             else {
                 assertEquals("Expected timeout fault code", ServerFaultCode.Timeout, cse.getServerFaultCode());

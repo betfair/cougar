@@ -62,22 +62,17 @@ public class WaitingObserver implements ExecutionObserver {
     }
 
     public boolean await(TimeConstraints timeConstraints) throws InterruptedException {
-        long waitTime = 0;
-        boolean timedOut = false;
+        Long waitTime = null;
         if (timeConstraints.getTimeRemaining() != null) {
             waitTime = timeConstraints.getTimeRemaining();
-            if (waitTime <= 0) {
-                timedOut = true;
-            }
         }
-        // if it timed out then just check to see if it's already there..
-        if (timedOut) {
-            return latch.await(0, TimeUnit.MILLISECONDS);
-        }
-        if (waitTime == 0) {
+        // if waitTime is null then that means no constraint
+        if (waitTime == null) {
             latch.await();
             return true;
         }
-        return latch.await(waitTime, TimeUnit.MILLISECONDS);
+        else {
+            return latch.await(waitTime, TimeUnit.MILLISECONDS);
+        }
     }
 }
