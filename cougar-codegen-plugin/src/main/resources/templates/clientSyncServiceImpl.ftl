@@ -199,7 +199,8 @@ public class  ${service}SyncClientImpl implements ${service}SyncClient {<#t>
                    timeConstraints);
 
         if (!observer.await(timeConstraints)) {
-            throw new TimeoutException("Operation ${operation.operationName} timed out!");
+            // todo: we should really make this a client exception
+            throw new CougarServiceException(ServerFaultCode.Timeout, "Operation ${operation.operationName} timed out!");
         }
 
         final ExecutionResult er = observer.getExecutionResult();

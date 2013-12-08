@@ -153,22 +153,8 @@ public class ClientExceptionsTest {
                 fail("Expected exception");
             }
         }
-        catch (TimeoutException te) {
-            if (tt.isAsync()) {
-                assertEquals("Operation testSleep timed out!", te.getMessage());
-            }
-            else {
-                fail("Expected a CougarServiceException for a sync transport: "+tt);
-            }
-        }
         catch (CougarServiceException cse) {
-            if (tt.isAsync()) {
-                cse.printStackTrace();
-                fail("Expected a timeout exception on async transport: "+tt);
-            }
-            else {
-                assertEquals("Expected timeout fault code", ServerFaultCode.Timeout, cse.getServerFaultCode());
-            }
+            assertEquals("Expected timeout fault code", ServerFaultCode.Timeout, cse.getServerFaultCode());
         }
     }
 
