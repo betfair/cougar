@@ -42,6 +42,7 @@ import com.betfair.cougar.logging.CougarLogger;
 import com.betfair.cougar.logging.CougarLoggingUtils;
 import com.betfair.cougar.transport.api.CommandResolver;
 import com.betfair.cougar.core.api.transcription.EnumUtils;
+import com.betfair.cougar.transport.api.RequestTimeResolver;
 import com.betfair.cougar.transport.api.protocol.http.ExecutionContextFactory;
 import com.betfair.cougar.transport.api.protocol.http.GeoLocationDeserializer;
 import com.betfair.cougar.transport.impl.protocol.http.AbstractHttpCommandProcessor;
@@ -104,12 +105,13 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
     // package private for testing
     static final ExecutionTimingRecorder IDENTITY_RESOLUTION_TIMING_RECORDER = new NullExecutionTimingRecorder();
 
-    public JsonRpcTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader) {
-        this(geoIPLocator, deserializer, uuidHeader, null);
+    public JsonRpcTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, String requestTimeoutHeader, RequestTimeResolver requestTimeResolver) {
+        this(geoIPLocator, deserializer, uuidHeader, null, requestTimeoutHeader, requestTimeResolver);
     }
 
-	public JsonRpcTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, InferredCountryResolver<HttpServletRequest> countryResolver) {
-		super(geoIPLocator, deserializer, uuidHeader, countryResolver);
+	public JsonRpcTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, InferredCountryResolver<HttpServletRequest> countryResolver,
+                                            String requestTimeoutHeader, RequestTimeResolver requestTimeResolver) {
+		super(geoIPLocator, deserializer, uuidHeader, countryResolver, requestTimeoutHeader, requestTimeResolver);
 		setName("JsonRpcTransportCommandProcessor");
 	}
 
@@ -172,6 +174,7 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
                 if (requests.isEmpty()) {
                     writeErrorResponse(http, context, new CougarValidationException(ServerFaultCode.NoRequestsFound, "No Requests found in rpc call"));
                 } else {
+                    final TimeConstraints realTimeConstraints = DefaultTimeConstraints.rebaseFromNewStartTime(context.getRequestTime(), readRawTimeConstraints(http.getRequest()));
                     for (final JsonRpcRequest rpc : requests) {
                         final JsonRpcOperationBinding binding = bindings.get(stripMinorVersionFromUri(rpc.getMethod().toLowerCase()));
                         if (binding!=null) {
@@ -203,7 +206,7 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
 
                                     @Override
                                     public TimeConstraints getTimeConstraints() {
-                                        return DefaultTimeConstraints.NO_CONSTRAINTS; // todo: try to get this from somewhere
+                                        return realTimeConstraints;
                                     }
                                 });
                             } catch (Exception e) {
@@ -256,6 +259,7 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
             final CommandResolver<HttpCommand> resolver = createCommandResolver(command);
             ctx = resolver.resolveExecutionContext();
 
+            final TimeConstraints realTimeConstraints = DefaultTimeConstraints.rebaseFromNewStartTime(ctx.getRequestTime(), readRawTimeConstraints(command.getRequest()));
             final ExecutionContextWithTokens finalCtx = ctx;
             ExecutionCommand resolveCommand = new ExecutionCommand() {
                 @Override
@@ -289,7 +293,7 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
 
                 @Override
                 public TimeConstraints getTimeConstraints() {
-                    return DefaultTimeConstraints.NO_CONSTRAINTS; // todo: should this really be zero?
+                    return realTimeConstraints;
                 }
             };
             executeCommand(resolveCommand, ctx);

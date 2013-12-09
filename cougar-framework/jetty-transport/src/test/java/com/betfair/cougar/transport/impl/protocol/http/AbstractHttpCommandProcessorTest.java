@@ -395,7 +395,7 @@ public class AbstractHttpCommandProcessorTest {
         GeoLocationDetails gld = Mockito.mock(GeoLocationDetails.class);
         List ipAddresses = Collections.emptyList();
         when(geoIPLocator.getGeoLocation(null, ipAddresses, null)).thenReturn(gld);
-        AbstractHttpCommandProcessor underTest = new AbstractHttpCommandProcessor(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID") {
+        AbstractHttpCommandProcessor underTest = new AbstractHttpCommandProcessor(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID","X-RequestTimeout",new DontCareRequestTimeResolver()) {
             protected CommandResolver<HttpCommand> createCommandResolver(HttpCommand command) {return null;}
             protected void writeErrorResponse(HttpCommand command, ExecutionContextWithTokens context, CougarException e) {}
             public void onCougarStart() {}
@@ -658,7 +658,7 @@ public class AbstractHttpCommandProcessorTest {
         private LocalCommandProcessor() {
             super(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID", new InferredCountryResolver<HttpServletRequest>() {
                 public String inferCountry(HttpServletRequest input) { return AZ; }
-            });
+            },"X-RequestTimeout",new DontCareRequestTimeResolver());
         }
 
         @Override

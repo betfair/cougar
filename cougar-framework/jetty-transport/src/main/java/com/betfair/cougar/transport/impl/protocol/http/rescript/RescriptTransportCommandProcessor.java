@@ -51,6 +51,7 @@ import com.betfair.cougar.marshalling.api.databinding.Marshaller;
 import com.betfair.cougar.marshalling.impl.databinding.DataBindingManager;
 import com.betfair.cougar.transport.api.CommandResolver;
 import com.betfair.cougar.transport.api.ExecutionCommand;
+import com.betfair.cougar.transport.api.RequestTimeResolver;
 import com.betfair.cougar.transport.api.TransportCommand;
 import com.betfair.cougar.transport.api.protocol.http.GeoLocationDeserializer;
 import com.betfair.cougar.transport.api.protocol.http.HttpCommand;
@@ -75,12 +76,14 @@ public class RescriptTransportCommandProcessor extends AbstractTerminateableHttp
     final static CougarLogger logger = CougarLoggingUtils.getLogger(RescriptTransportCommandProcessor.class);
 	private Map<String, RescriptOperationBinding> bindings = new HashMap<String, RescriptOperationBinding>();
 
-    public RescriptTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader) {
-        this(geoIPLocator, deserializer, uuidHeader, null);
+    public RescriptTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader,
+                                             String requestTimeoutHeader, RequestTimeResolver requestTimeResolver) {
+        this(geoIPLocator, deserializer, uuidHeader, null, requestTimeoutHeader, requestTimeResolver);
     }
 
-	public RescriptTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, InferredCountryResolver<HttpServletRequest> countryResolver) {
-		super(geoIPLocator, deserializer, uuidHeader, countryResolver);
+	public RescriptTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, InferredCountryResolver<HttpServletRequest> countryResolver,
+                                             String requestTimeoutHeader, RequestTimeResolver requestTimeResolver) {
+		super(geoIPLocator, deserializer, uuidHeader, countryResolver, requestTimeoutHeader, requestTimeResolver);
 		setName("RescriptTransportCommandProcessor");
 	}
 
@@ -170,6 +173,7 @@ public class RescriptTransportCommandProcessor extends AbstractTerminateableHttp
 			}
 		}
 		final Object[] finalArgs = args;
+        final TimeConstraints realTimeConstraints = DefaultTimeConstraints.rebaseFromNewStartTime(context.getRequestTime(), readRawTimeConstraints(command.getRequest()));
 		final long bytesRead = iStream != null ? iStream.getCount() : 0;
 		return new ExecutionCommand() {
             public Object[] getArgs() {
@@ -182,7 +186,7 @@ public class RescriptTransportCommandProcessor extends AbstractTerminateableHttp
 
             @Override
             public TimeConstraints getTimeConstraints() {
-                return DefaultTimeConstraints.NO_CONSTRAINTS; // TODO
+                return realTimeConstraints;
             }
 
             public void onResult(ExecutionResult executionResult) {

@@ -175,7 +175,8 @@ public class SocketTransportCommandProcessor extends AbstractCommandProcessor<So
                 final OperationKey operationKey = opDef.getOperationKey(); // safer to read it from locally
                 final OperationDefinition operationDefinition = getExecutionVenue().getOperationDefinition(operationKey);
                 final Object[] args = marshaller.readArgs(operationDefinition.getParameters(), in);
-                final TimeConstraints timeConstraints = marshaller.readTimeConstraintsIfPresent(in, protocolVersion);
+                TimeConstraints rawTimeConstraints = marshaller.readTimeConstraintsIfPresent(in, protocolVersion);
+                final TimeConstraints timeConstraints = DefaultTimeConstraints.rebaseFromNewStartTime(context.getRequestTime(), rawTimeConstraints);
                 final ExecutionCommand exec = new ExecutionCommand() {
 
                     @Override
@@ -203,7 +204,7 @@ public class SocketTransportCommandProcessor extends AbstractCommandProcessor<So
 
                     @Override
                     public TimeConstraints getTimeConstraints() {
-                        return DefaultTimeConstraints.NO_CONSTRAINTS; // TODO
+                        return timeConstraints;
                     }
                 };
 

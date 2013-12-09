@@ -61,6 +61,7 @@ import com.betfair.cougar.transport.impl.AbstractCommandProcessor;
 import com.betfair.cougar.transport.impl.CommandValidatorRegistry;
 import com.betfair.cougar.transport.impl.protocol.http.ContentTypeNormaliser;
 import com.betfair.cougar.transport.impl.protocol.http.DefaultGeoLocationDeserializer;
+import com.betfair.cougar.transport.impl.protocol.http.DontCareRequestTimeResolver;
 import com.betfair.cougar.util.RequestUUIDImpl;
 import com.betfair.cougar.util.UUIDGeneratorImpl;
 import com.betfair.cougar.util.geolocation.GeoIPLocator;
@@ -1071,11 +1072,11 @@ public class JsonRpcTransportCommandProcessorTest  {
         public LocalJsonRpcCommandProcessor() {
             super(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID", new InferredCountryResolver<HttpServletRequest>() {
                 public String inferCountry(HttpServletRequest input) { return AZ;}
-            });
+            },"X-RequestTimeout",new DontCareRequestTimeResolver());
         }
 
         public LocalJsonRpcCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader) {
-            super(geoIPLocator, deserializer, uuidHeader, null);
+            super(geoIPLocator, deserializer, uuidHeader, null,"X-RequestTimeout",new DontCareRequestTimeResolver());
         }
 
         @Override

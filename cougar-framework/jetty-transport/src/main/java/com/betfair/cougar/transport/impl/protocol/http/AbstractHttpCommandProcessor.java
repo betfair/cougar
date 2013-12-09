@@ -23,15 +23,18 @@ import com.betfair.cougar.api.security.*;
 import com.betfair.cougar.core.api.CougarStartingGate;
 import com.betfair.cougar.core.api.GateListener;
 import com.betfair.cougar.core.api.ServiceBindingDescriptor;
+import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.PanicInTheCougar;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
+import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.logging.CougarLogger;
 import com.betfair.cougar.logging.CougarLoggingUtils;
 import com.betfair.cougar.transport.api.CommandValidator;
 import com.betfair.cougar.transport.api.RequestLogger;
+import com.betfair.cougar.transport.api.RequestTimeResolver;
 import com.betfair.cougar.transport.api.protocol.http.ExecutionContextFactory;
 import com.betfair.cougar.transport.api.protocol.http.GeoLocationDeserializer;
 import com.betfair.cougar.transport.api.protocol.http.HttpCommand;
@@ -78,8 +81,11 @@ public abstract class AbstractHttpCommandProcessor extends
 
 	private final String uuidHeader;
 
+    private final String requestTimeoutHeader;
+
     private InferredCountryResolver<HttpServletRequest> inferredCountryResolver;
 
+    private RequestTimeResolver requestTimeResolver;
 
 	private String name;
 
@@ -112,8 +118,9 @@ public abstract class AbstractHttpCommandProcessor extends
      *            the key of the Http Header containing the unique id for a request
      */
     public AbstractHttpCommandProcessor(GeoIPLocator geoIPLocator,
-                                        GeoLocationDeserializer geoLocationDeserializer, String uuidHeader){
-        this(geoIPLocator, geoLocationDeserializer, uuidHeader, null);
+                                        GeoLocationDeserializer geoLocationDeserializer, String uuidHeader,
+                                        String requestTimeoutHeader, RequestTimeResolver requestTimeResolver){
+        this(geoIPLocator, geoLocationDeserializer, uuidHeader, null, requestTimeoutHeader, requestTimeResolver);
     }
 
 	/**
@@ -127,11 +134,14 @@ public abstract class AbstractHttpCommandProcessor extends
 	 */
 	public AbstractHttpCommandProcessor(GeoIPLocator geoIPLocator,
                                         GeoLocationDeserializer geoLocationDeserializer, String uuidHeader,
-                                        InferredCountryResolver<HttpServletRequest> inferredCountryResolver) {
+                                        InferredCountryResolver<HttpServletRequest> inferredCountryResolver,
+                                        String requestTimeoutHeader, RequestTimeResolver requestTimeResolver) {
 		this.geoIPLocator = geoIPLocator;
         this.geoLocationDeserializer = geoLocationDeserializer;
 		this.uuidHeader = uuidHeader;
         this.inferredCountryResolver = inferredCountryResolver;
+        this.requestTimeoutHeader = requestTimeoutHeader;
+        this.requestTimeResolver = requestTimeResolver;
 	}
 
 	/**
@@ -224,6 +234,8 @@ public abstract class AbstractHttpCommandProcessor extends
         requestLogger.logAccess(command, context, bytesRead, bytesWritten, requestMediaType, responseMediaType,responseCode);
     }
 
+
+
     /**
      * Resolves an HttpCommand to an ExecutionContext for the error logging scenario. This will
      * never throw an exception although it might return null. The process is:
@@ -241,12 +253,29 @@ public abstract class AbstractHttpCommandProcessor extends
     protected ExecutionContextWithTokens resolveContextForErrorHandling(ExecutionContextWithTokens ctx, HttpCommand command) {
         if (ctx != null) return ctx;
         try {
-            return resolveExecutionContextWithTokens(command, null, false);
+            return resolveExecutionContextWithTokensAndRequestTime(command, null, false, new Date());
         } catch (RuntimeException e) {
             // Well that failed too... nothing to do but return null
             logger.log(Level.FINE, "Failed to resolve error execution context", e);
             return null;
         }
+    }
+
+
+    protected TimeConstraints readRawTimeConstraints(HttpServletRequest request) {
+        Long timeout = null;
+        if (requestTimeoutHeader != null) {
+            String timeoutString = request.getHeader(requestTimeoutHeader);
+            try {
+                timeout = Long.parseLong(timeoutString);
+            } catch (NumberFormatException nfe) {
+                // will default to null
+            }
+        }
+        if (timeout == null) {
+            return DefaultTimeConstraints.NO_CONSTRAINTS;
+        }
+        return DefaultTimeConstraints.fromTimeout(timeout);
     }
 
     /**
@@ -280,10 +309,12 @@ public abstract class AbstractHttpCommandProcessor extends
         if (identityTokenResolver != null) {
             tokens = identityTokenResolver.resolve(req, certs);
         }
-		return resolveExecutionContextWithTokens(http, tokens, ignoreSubsequentWritesOfIdentity);
+        RequestTimeResolver<Req, ?> localRTR = (RequestTimeResolver<Req, ?>) requestTimeResolver;
+        Date requestTime = localRTR.resolveRequestTime(req);
+		return resolveExecutionContextWithTokensAndRequestTime(http, tokens, ignoreSubsequentWritesOfIdentity, requestTime);
     }
 
-    private ExecutionContextWithTokens resolveExecutionContextWithTokens(HttpCommand command, List<IdentityToken> tokens, boolean ignoreSubsequentWritesOfIdentity) {
+    private ExecutionContextWithTokens resolveExecutionContextWithTokensAndRequestTime(HttpCommand command, List<IdentityToken> tokens, boolean ignoreSubsequentWritesOfIdentity, Date requestTime) {
            String inferredCountry = null;
            if (inferredCountryResolver != null) {
                inferredCountry = inferredCountryResolver.inferCountry(command.getRequest());
@@ -292,7 +323,7 @@ public abstract class AbstractHttpCommandProcessor extends
             if (command.getRequest().getScheme().equals("https")) {
                 keyLength = SSLRequestUtils.getTransportSecurityStrengthFactor(command.getRequest(), unknownCipherKeyLength);
             }
-           return ExecutionContextFactory.resolveExecutionContext(command, tokens, uuidHeader, geoLocationDeserializer, geoIPLocator, inferredCountry, keyLength, ignoreSubsequentWritesOfIdentity);
+           return ExecutionContextFactory.resolveExecutionContext(command, tokens, uuidHeader, geoLocationDeserializer, geoIPLocator, inferredCountry, keyLength, ignoreSubsequentWritesOfIdentity, requestTime);
    	}
 
     /**

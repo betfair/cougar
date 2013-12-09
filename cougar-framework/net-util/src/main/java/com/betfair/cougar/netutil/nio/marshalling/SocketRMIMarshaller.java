@@ -317,7 +317,7 @@ public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller 
         final Long requestTime = protocolVersion >= CougarProtocol.TRANSPORT_PROTOCOL_VERSION_TIME_CONSTRAINTS ? in.readLong() : System.currentTimeMillis();
         Date requestDate = requestTimeResolver.resolveRequestTime(requestTime);
 
-        return ExecutionContextFactory.resolveExecutionContext(tokens, uuid, geo, receivedTime, traceEnabled, transportSecurityStrengthFactor, requestDate);
+        return ExecutionContextFactory.resolveExecutionContext(tokens, uuid, geo, receivedTime, traceEnabled, transportSecurityStrengthFactor, requestDate, false);
 
     }
 
@@ -338,7 +338,8 @@ public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller 
             boolean haveTimeConstraints = in.readBoolean();
             if (haveTimeConstraints) {
                 long timeout = in.readLong();
-                return DefaultTimeConstraints.fromTimeout(timeout); //todo: client-timeout: should this take account of the time resolver?
+                // this is the 'raw' time constraint which will be combined with the resolved client request time in the command resolver
+                return DefaultTimeConstraints.fromTimeout(timeout);
             }
         }
         return DefaultTimeConstraints.NO_CONSTRAINTS;

@@ -22,6 +22,7 @@ import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 import com.betfair.cougar.transport.api.CommandResolver;
 import com.betfair.cougar.transport.api.ExecutionCommand;
+import com.betfair.cougar.transport.api.RequestTimeResolver;
 import com.betfair.cougar.transport.api.protocol.http.GeoLocationDeserializer;
 import com.betfair.cougar.transport.api.protocol.http.HttpCommand;
 import com.betfair.cougar.util.geolocation.GeoIPLocator;
@@ -44,7 +45,8 @@ public abstract class AbstractTerminateableHttpCommandProcessor extends Abstract
 	 *            the key of the Http Header containing the unique id for a request
 	 */
 	public AbstractTerminateableHttpCommandProcessor(GeoIPLocator geoIPLocator,
-                                                     GeoLocationDeserializer deserializer, String uuidHeader, InferredCountryResolver<HttpServletRequest> countryResolver) {
-        super(geoIPLocator, deserializer, uuidHeader, countryResolver);
+                                                     GeoLocationDeserializer deserializer, String uuidHeader, InferredCountryResolver<HttpServletRequest> countryResolver,
+                                                     String requestTimeoutHeader, RequestTimeResolver requestTimeResolver) {
+        super(geoIPLocator, deserializer, uuidHeader, countryResolver, requestTimeoutHeader, requestTimeResolver);
 	}
 }

@@ -35,6 +35,7 @@ import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.security.IdentityResolverFactory;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
+import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.logging.CougarLoggingUtils;
 import com.betfair.cougar.logging.EventLoggingRegistry;
 import com.betfair.cougar.marshalling.api.socket.RemotableMethodInvocationMarshaller;
@@ -323,6 +324,7 @@ public class SocketTransportCommandProcessorTest {
         when(marshaller.readExecutionContext(any(CougarObjectInput.class), any(String.class), any(X509Certificate[].class), anyInt(), anyByte())).thenReturn(ctx);
         when(marshaller.readOperationKey(any(CougarObjectInput.class))).thenReturn(key);
         when(marshaller.readArgs(any(Parameter[].class), any(CougarObjectInput.class))).thenReturn(args);
+        when(marshaller.readTimeConstraintsIfPresent(any(CougarObjectInput.class), anyByte())).thenReturn(DefaultTimeConstraints.NO_CONSTRAINTS);
 
         final OperationKey opKey = new OperationKey(new ServiceVersion(1,0), "TestingService", "TestCall");
         OperationDefinition opDef = Mockito.mock(OperationDefinition.class);

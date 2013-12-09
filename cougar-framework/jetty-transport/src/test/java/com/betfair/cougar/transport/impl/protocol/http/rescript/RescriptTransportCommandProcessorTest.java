@@ -58,6 +58,7 @@ import com.betfair.cougar.transport.api.protocol.http.rescript.RescriptResponse;
 import com.betfair.cougar.transport.impl.protocol.http.AbstractHttpCommandProcessorTest;
 import com.betfair.cougar.transport.impl.protocol.http.ContentTypeNormaliser;
 import com.betfair.cougar.transport.impl.protocol.http.DefaultGeoLocationDeserializer;
+import com.betfair.cougar.transport.impl.protocol.http.DontCareRequestTimeResolver;
 import com.betfair.cougar.util.RequestUUIDImpl;
 import com.betfair.cougar.util.UUIDGeneratorImpl;
 import org.junit.Before;
@@ -160,7 +161,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
 				new RescriptOperationBindingDescriptor(invalidOpKey, "/InvalidOp", "GET", invalidOpParamBindings, TestResponse.class),
                 new RescriptOperationBindingDescriptor(voidReturnOpKey, "/VoidReturnOp", "GET", voidReturnOpParamBindings, null)};
 		
-		rescriptCommandProcessor = new RescriptTransportCommandProcessor(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID");
+		rescriptCommandProcessor = new RescriptTransportCommandProcessor(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID","X-RequestTimeout",new DontCareRequestTimeResolver());
 		init(rescriptCommandProcessor);
 		ctn = mock(ContentTypeNormaliser.class);
 		when(ctn.getNormalisedResponseMediaType(any(HttpServletRequest.class))).thenReturn(MediaType.APPLICATION_XML_TYPE);
@@ -391,7 +392,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
         RescriptOperationBindingDescriptor op1 = new RescriptOperationBindingDescriptor(key, "url1", "GET", Collections.<RescriptParamBindingDescriptor>emptyList(), null);
         RescriptOperationBindingDescriptor op2 = new RescriptOperationBindingDescriptor(key, "url2", "POST", Collections.<RescriptParamBindingDescriptor>emptyList(), null);
 
-        RescriptTransportCommandProcessor sut = new RescriptTransportCommandProcessor(null, null, null, null);
+        RescriptTransportCommandProcessor sut = new RescriptTransportCommandProcessor(null, null, null, null,"X-RequestTimeout",new DontCareRequestTimeResolver());
         sut.setExecutionVenue(ev);
         sut.bindOperation(serviceDescriptor, op1);
         sut.bindOperation(serviceDescriptor, op2);

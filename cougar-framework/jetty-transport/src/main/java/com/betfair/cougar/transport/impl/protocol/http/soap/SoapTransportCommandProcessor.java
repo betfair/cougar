@@ -16,6 +16,7 @@
 
 package com.betfair.cougar.transport.impl.protocol.http.soap;
 
+import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.ExecutionContextWithTokens;
 import com.betfair.cougar.api.ResponseCode;
 import com.betfair.cougar.api.security.IdentityToken;
@@ -41,6 +42,7 @@ import com.betfair.cougar.marshalling.impl.databinding.xml.JdkEmbeddedXercesSche
 import com.betfair.cougar.marshalling.impl.databinding.xml.SchemaValidationFailureParser;
 import com.betfair.cougar.transport.api.CommandResolver;
 import com.betfair.cougar.transport.api.ExecutionCommand;
+import com.betfair.cougar.transport.api.RequestTimeResolver;
 import com.betfair.cougar.transport.api.TransportCommand.CommandStatus;
 import com.betfair.cougar.transport.api.protocol.http.GeoLocationDeserializer;
 import com.betfair.cougar.transport.api.protocol.http.HttpCommand;
@@ -104,14 +106,16 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
     private SchemaValidationFailureParser schemaValidationFailureParser;
 
     public SoapTransportCommandProcessor(GeoIPLocator geoIPLocator,
-                                         GeoLocationDeserializer deserializer, String uuidHeader, SchemaValidationFailureParser schemaValidationFailureParser) {
-        this(geoIPLocator, deserializer, uuidHeader, null, new JdkEmbeddedXercesSchemaValidationFailureParser());
+                                         GeoLocationDeserializer deserializer, String uuidHeader, SchemaValidationFailureParser schemaValidationFailureParser,
+                                         String requestTimeoutHeader, RequestTimeResolver requestTimeResolver) {
+        this(geoIPLocator, deserializer, uuidHeader, null, schemaValidationFailureParser, requestTimeoutHeader, requestTimeResolver);
     }
 
     // for testing only
     SoapTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader,
-                                         InferredCountryResolver<HttpServletRequest> countryResolver, SchemaValidationFailureParser schemaValidationFailureParser) {
-        super(geoIPLocator, deserializer, uuidHeader, countryResolver);
+                                         InferredCountryResolver<HttpServletRequest> countryResolver, SchemaValidationFailureParser schemaValidationFailureParser,
+                                         String requestTimeoutHeader, RequestTimeResolver requestTimeResolver) {
+        super(geoIPLocator, deserializer, uuidHeader, countryResolver, requestTimeoutHeader, requestTimeResolver);
         setName("SoapTransportCommandProcessor");
         this.schemaValidationFailureParser = schemaValidationFailureParser;
     }
@@ -201,7 +205,7 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
                     public ExecutionCommand resolveExecutionCommand() {
                         if (exec == null) {
                             exec = SoapTransportCommandProcessor.this.resolveExecutionCommand(binding, command,
-                                    context, requestNode, finalIn);
+                                    resolveExecutionContext(), requestNode, finalIn);
                         }
                         return exec;
                     }
@@ -238,13 +242,13 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
                 "The SOAP request could not be resolved to an operation");
     }
 
-
     private ExecutionCommand resolveExecutionCommand(
             final SoapOperationBinding operationBinding,
             final HttpCommand command, final ExecutionContextWithTokens context,
             OMElement requestNode, ByteCountingInputStream in) {
         final Object[] args = readArgs(operationBinding, requestNode);
         final long bytesRead = in.getCount();
+        final TimeConstraints realTimeConstraints = DefaultTimeConstraints.rebaseFromNewStartTime(context.getRequestTime(), readRawTimeConstraints(command.getRequest()));
         return new ExecutionCommand() {
             public Object[] getArgs() {
                 return args;
@@ -256,7 +260,7 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
 
             @Override
             public TimeConstraints getTimeConstraints() {
-                return DefaultTimeConstraints.NO_CONSTRAINTS; //todo
+                return realTimeConstraints;
             }
 
             public void onResult(ExecutionResult result) {

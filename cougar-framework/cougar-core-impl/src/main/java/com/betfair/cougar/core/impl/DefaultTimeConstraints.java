@@ -2,6 +2,8 @@ package com.betfair.cougar.core.impl;
 
 import com.betfair.cougar.core.api.ev.TimeConstraints;
 
+import java.util.Date;
+
 /**
  *
  */
@@ -34,5 +36,12 @@ public class DefaultTimeConstraints implements TimeConstraints {
 
     public static TimeConstraints fromTimeout(long timeout) {
         return new DefaultTimeConstraints(System.currentTimeMillis()+timeout);
+    }
+
+    public static TimeConstraints rebaseFromNewStartTime(Date requestTime, TimeConstraints rawTimeConstraints) {
+        if (rawTimeConstraints.getTimeRemaining() == null) {
+            return NO_CONSTRAINTS;
+        }
+        return new DefaultTimeConstraints(requestTime.getTime()+rawTimeConstraints.getTimeRemaining());
     }
 }

@@ -35,6 +35,7 @@ import com.betfair.cougar.transport.api.protocol.http.soap.SoapServiceBindingDes
 import com.betfair.cougar.transport.impl.protocol.http.AbstractHttpCommandProcessorTest;
 import com.betfair.cougar.transport.impl.protocol.http.ContentTypeNormaliser;
 import com.betfair.cougar.transport.impl.protocol.http.DefaultGeoLocationDeserializer;
+import com.betfair.cougar.transport.impl.protocol.http.DontCareRequestTimeResolver;
 import junit.framework.AssertionFailedError;
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
@@ -161,7 +162,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
 		soapCommandProcessor = new SoapTransportCommandProcessor(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID",
                 new InferredCountryResolver<HttpServletRequest>() {
                     public String inferCountry(HttpServletRequest input) { return AZ;}
-        }, new JdkEmbeddedXercesSchemaValidationFailureParser());
+        }, new JdkEmbeddedXercesSchemaValidationFailureParser(),"X-RequestTimeout",new DontCareRequestTimeResolver());
 		init(soapCommandProcessor);
 		ContentTypeNormaliser ctn = mock(ContentTypeNormaliser.class);
 		when(ctn.getNormalisedResponseMediaType(any(HttpServletRequest.class))).thenReturn(MediaType.APPLICATION_XML_TYPE);

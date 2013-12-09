@@ -275,7 +275,7 @@ public class ExecutionVenueNioClient extends AbstractClientTransport implements 
     }
 
     public void execute(final ExecutionContext ctx, final OperationDefinition def, final Object[] args,
-                        final ExecutionObserver observer, final TimeConstraints timeConstraints) { //todo
+                        final ExecutionObserver observer, final TimeConstraints timeConstraints) {
 
         if (validateCTX(ctx, observer)) {
             final IoSession session = sessionFactory.getSession();

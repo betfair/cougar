@@ -19,7 +19,10 @@ public abstract class SimpleRequestTimeResolver<I, O> implements RequestTimeReso
     @Override
     public Date resolveRequestTime(I input) {
         if (clientTimeSynchronizedWithServer) {
-            return readRequestTime(input);
+            Date d = readRequestTime(input);
+            if (d != null) {
+                return d;
+            }
         }
         return new Date();
     }

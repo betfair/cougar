@@ -37,45 +37,16 @@ public class ExecutionContextFactory {
 
     public static final String TRACE_ME_HEADER_PARAM = "X-Trace-Me";
 
-    public static ExecutionContextWithTokens resolveExecutionContext(final HttpCommand command, final List<IdentityToken> tokens,
-                                                       final String uuidHeader, GeoLocationDeserializer geoLocationDeserializer,
-                                                       final GeoIPLocator geoIPLocator,
-                                                       final int transportSecurityStrengthFactor) {
-
-        return resolveExecutionContext(command, tokens, uuidHeader, geoLocationDeserializer, geoIPLocator, null, transportSecurityStrengthFactor);
-    }
 
     public static ExecutionContextWithTokens resolveExecutionContext(final HttpCommand command, final List<IdentityToken> tokens,
                                                        final String uuidHeader, GeoLocationDeserializer geoLocationDeserializer,
                                                        final GeoIPLocator geoIPLocator,
                                                        final String inferredCountry,
-                                                       final int transportSecurityStrengthFactor) {
+                                                       final int transportSecurityStrengthFactor, final boolean ignoreSubsequentWritesOfIdentity, Date requestTime) {
         final HttpServletRequest request = command.getRequest();
         String uuidString = request.getHeader(uuidHeader);
 
-        return resolveExecutionContext(tokens, uuidString, request.getRemoteAddr(), geoLocationDeserializer.deserialize(request, request.getRemoteAddr()), geoIPLocator, inferredCountry, request.getHeader(TRACE_ME_HEADER_PARAM), transportSecurityStrengthFactor);
-    }
-
-    public static ExecutionContextWithTokens resolveExecutionContext(final HttpCommand command, final List<IdentityToken> tokens,
-                                                       final String uuidHeader, GeoLocationDeserializer geoLocationDeserializer,
-                                                       final GeoIPLocator geoIPLocator,
-                                                       final String inferredCountry,
-                                                       final int transportSecurityStrengthFactor, final boolean ignoreSubsequentWritesOfIdentity) {
-        final HttpServletRequest request = command.getRequest();
-        String uuidString = request.getHeader(uuidHeader);
-
-        return resolveExecutionContext(tokens, uuidString, request.getRemoteAddr(), geoLocationDeserializer.deserialize(request, request.getRemoteAddr()), geoIPLocator, inferredCountry, request.getHeader(TRACE_ME_HEADER_PARAM), transportSecurityStrengthFactor, ignoreSubsequentWritesOfIdentity);
-    }
-
-    public static ExecutionContextWithTokens resolveExecutionContext(List<IdentityToken> tokens,
-                                                       final String uuidString,
-                                                       final String remoteAddress,
-                                                       final List<String> resolvedAddresses,
-                                                       final GeoIPLocator geoIPLocator,
-                                                       final String inferredCountry,
-                                                       final String traceMeHeaderParamValue,
-                                                       final int transportSecurityStrengthFactor) {
-        return resolveExecutionContext(tokens, uuidString, remoteAddress, resolvedAddresses, geoIPLocator, inferredCountry, traceMeHeaderParamValue, transportSecurityStrengthFactor, false);
+        return resolveExecutionContext(tokens, uuidString, request.getRemoteAddr(), geoLocationDeserializer.deserialize(request, request.getRemoteAddr()), geoIPLocator, inferredCountry, request.getHeader(TRACE_ME_HEADER_PARAM), transportSecurityStrengthFactor, ignoreSubsequentWritesOfIdentity, requestTime);
     }
 
     private static ExecutionContextWithTokens resolveExecutionContext(List<IdentityToken> tokens,
@@ -86,7 +57,8 @@ public class ExecutionContextFactory {
                                                        final String inferredCountry,
                                                        final String traceMeHeaderParamValue,
                                                        final int transportSecurityStrengthFactor,
-                                                       final boolean ignoreSubsequentWritesOfIdentity) {
+                                                       final boolean ignoreSubsequentWritesOfIdentity,
+                                                       final Date requestTime) {
         if (tokens == null) {
             tokens = new ArrayList<IdentityToken>();
         }
@@ -101,17 +73,10 @@ public class ExecutionContextFactory {
 
         GeoLocationDetails geoDetails = geoIPLocator.getGeoLocation(remoteAddress, resolvedAddresses, inferredCountry);
 
-        return resolveExecutionContext(tokens, requestUUID, geoDetails, receivedTime, traceEnabled, transportSecurityStrengthFactor, new Date(), ignoreSubsequentWritesOfIdentity);
+        return resolveExecutionContext(tokens, requestUUID, geoDetails, receivedTime, traceEnabled, transportSecurityStrengthFactor, requestTime, ignoreSubsequentWritesOfIdentity);
     }
 
-    public static ExecutionContextWithTokens resolveExecutionContext(final List<IdentityToken> tokens, final RequestUUID requestUUID, final GeoLocationDetails geoDetails, final Date receivedTime, final boolean traceEnabled, final int transportSecurityStrengthFactor) {
-        return resolveExecutionContext(tokens, requestUUID, geoDetails, receivedTime, traceEnabled, transportSecurityStrengthFactor, new Date(), false);
-    }
-    public static ExecutionContextWithTokens resolveExecutionContext(final List<IdentityToken> tokens, final RequestUUID requestUUID, final GeoLocationDetails geoDetails, final Date receivedTime, final boolean traceEnabled, final int transportSecurityStrengthFactor, final Date requestDate) {
-        return resolveExecutionContext(tokens, requestUUID,geoDetails,receivedTime,traceEnabled,transportSecurityStrengthFactor,requestDate,false);
-    }
-
-    private static ExecutionContextWithTokens resolveExecutionContext(final List<IdentityToken> tokens, final RequestUUID requestUUID, final GeoLocationDetails geoDetails, final Date receivedTime, final boolean traceEnabled, final int transportSecurityStrengthFactor, final Date requestDate, final boolean ignoreSubsequentWritesOfIdentity) {
+    public static ExecutionContextWithTokens resolveExecutionContext(final List<IdentityToken> tokens, final RequestUUID requestUUID, final GeoLocationDetails geoDetails, final Date receivedTime, final boolean traceEnabled, final int transportSecurityStrengthFactor, final Date requestTime, final boolean ignoreSubsequentWritesOfIdentity) {
         if (tokens == null) {
             throw new IllegalArgumentException("Tokens must not be null");
         }
@@ -170,7 +135,7 @@ public class ExecutionContextFactory {
 
             @Override
             public Date getRequestTime() {
-                return requestDate;
+                return requestTime;
             }
 
             public String toString() {
@@ -180,6 +145,7 @@ public class ExecutionContextFactory {
                 sb.append("tokens=").append(tokens).append("|");
                 sb.append("requestUUID=").append(requestUUID).append("|");
                 sb.append("receivedTime=").append(receivedTime).append("|");
+                sb.append("requestTime=").append(requestTime).append("|");
                 sb.append("traceLoggingEnabled=").append(traceEnabled);
 
                 return sb.toString();

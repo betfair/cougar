@@ -41,6 +41,7 @@ import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.cert.X509Certificate;
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
@@ -158,7 +159,7 @@ public class StaticContentServiceHandler extends ContextHandler {
             keyLength = SSLRequestUtils.getTransportSecurityStrengthFactor(request, unknownCipherKeyLength);
         }
 
-        ExecutionContext ctx = ExecutionContextFactory.resolveExecutionContext(cmd, null, uuidHeader, deserializer, geoIPLocator, keyLength);
+        ExecutionContext ctx = ExecutionContextFactory.resolveExecutionContext(cmd, null, uuidHeader, deserializer, geoIPLocator, null, keyLength, false, new Date());
         requestLogger.logAccess(cmd, ctx, 0, bytesWritten, null, mediaType, responseCode);
     }
 

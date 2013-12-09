@@ -134,11 +134,18 @@
         <constructor-arg ref="cougar.core.GeoIPLocator" index="0"/>
         <constructor-arg ref="$COUGAR-JETTY{cougar.http.geoLocationDeserializerBean}" index="1"/>
         <constructor-arg value="$COUGAR-JETTY{cougar.http.uuidheader}" index="2"/>
+        <constructor-arg value="$COUGAR-JETTY{cougar.http.requestTimeoutHeader}" index="4"/>
+        <constructor-arg ref="$COUGAR-JETTY{cougar.http.requestTimeResolver}" index="5"/>
         <property name="executionVenue" ref="cougar.core.ExecutionVenue"/>
         <property name="startingGate" ref="cougar.core.StartingGate"/>
         <property name="executor" ref="cougar.core.CommandProcessorExecutor"/>
         <property name="requestLogger" ref="httpRequestLogger"/>
         <property name="validatorRegistry" ref="httpCommandValidatorRegistry"/>
+    </bean>
+
+    <bean id="defaultRequestTimeResolver" class="com.betfair.cougar.transport.impl.protocol.http.SimpleHttpRequestTimeResolver">
+        <constructor-arg index="0" value="$COUGAR-JETTY{cougar.http.defaultRequestTimeResolver.requestTimeHeader}"/>
+        <constructor-arg index="1" value="$COUGAR-JETTY{cougar.http.defaultRequestTimeResolver.isClientSynchronized}"/>
     </bean>
 
     <bean id="rescriptCommandProcessor" class="com.betfair.cougar.transport.impl.protocol.http.rescript.RescriptTransportCommandProcessor" parent="httpCommandProcessor" scope="singleton">

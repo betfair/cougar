@@ -31,5 +31,5 @@ public enum CredentialFaultCode {
     SubscriptionRequired,
     OperationForbidden,
     NoLocationSupplied,
-    BannedLocation;
+    BannedLocation
 }
