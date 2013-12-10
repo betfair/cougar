@@ -40,6 +40,7 @@ import com.betfair.cougar.transport.api.CommandResolver;
 import com.betfair.cougar.transport.api.CommandValidator;
 import com.betfair.cougar.transport.api.ExecutionCommand;
 import com.betfair.cougar.transport.api.RequestLogger;
+import com.betfair.cougar.transport.api.RequestTimeResolver;
 import com.betfair.cougar.transport.api.protocol.http.HttpCommand;
 import com.betfair.cougar.transport.impl.CommandValidatorRegistry;
 import com.betfair.cougar.transport.impl.protocol.http.rescript.RescriptOperationBindingTest;
@@ -119,8 +120,8 @@ public class AbstractHttpCommandProcessorTest {
 	protected GeoIPLocator geoIPLocator;
 	protected SuspectNetworkList suspectNetworks;
     protected CommandValidatorRegistry<HttpCommand> validatorRegistry = new CommandValidatorRegistry<HttpCommand>();
-	
-	protected LocalCommandProcessor commandProcessor;
+    protected RequestTimeResolver requestTimeResolver;
+    protected LocalCommandProcessor commandProcessor;
 
     @BeforeClass
     public static void suppressLogging() {
@@ -140,6 +141,7 @@ public class AbstractHttpCommandProcessorTest {
         when(request.getContextPath()).thenReturn(SERVICE_PATH);
         when(request.getHeaderNames()).thenReturn(RescriptOperationBindingTest.enumerator(new ArrayList<String>().iterator()));
 
+        requestTimeResolver = mock(RequestTimeResolver.class);
 
 		response = mock(HttpServletResponse.class);
 		testOut = new TestServletOutputStream();
@@ -364,10 +366,13 @@ public class AbstractHttpCommandProcessorTest {
 		//test an empty request
         List ipAddresses =  Collections.emptyList();
         when(geoIPLocator.getGeoLocation(null, ipAddresses, AZ)).thenReturn(gld);
+        Date requestTime = new Date();
+        when(requestTimeResolver.resolveRequestTime(any())).thenReturn(requestTime);
 		ExecutionContext context = commandProcessor.resolveExecutionContext(command, null, null);
 		assertNotNull(context);
 		assertNotNull(context.getRequestUUID());
 		assertNotNull(context.getReceivedTime());
+		assertEquals(requestTime, context.getRequestTime());
 		assertNotNull(context.getLocation());
 
 		//Test request contains uuid, id and remote address
@@ -395,7 +400,7 @@ public class AbstractHttpCommandProcessorTest {
         GeoLocationDetails gld = Mockito.mock(GeoLocationDetails.class);
         List ipAddresses = Collections.emptyList();
         when(geoIPLocator.getGeoLocation(null, ipAddresses, null)).thenReturn(gld);
-        AbstractHttpCommandProcessor underTest = new AbstractHttpCommandProcessor(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID","X-RequestTimeout",new DontCareRequestTimeResolver()) {
+        AbstractHttpCommandProcessor underTest = new AbstractHttpCommandProcessor(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID","X-RequestTimeout",requestTimeResolver) {
             protected CommandResolver<HttpCommand> createCommandResolver(HttpCommand command) {return null;}
             protected void writeErrorResponse(HttpCommand command, ExecutionContextWithTokens context, CougarException e) {}
             public void onCougarStart() {}
@@ -656,7 +661,7 @@ public class AbstractHttpCommandProcessorTest {
         private boolean errorCalled;
 
         private LocalCommandProcessor() {
-            super(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID", "X-RequestTimeout", new DontCareRequestTimeResolver(), new InferredCountryResolver<HttpServletRequest>() {
+            super(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID", "X-RequestTimeout", requestTimeResolver, new InferredCountryResolver<HttpServletRequest>() {
                 public String inferCountry(HttpServletRequest input) { return AZ; }
             });
         }

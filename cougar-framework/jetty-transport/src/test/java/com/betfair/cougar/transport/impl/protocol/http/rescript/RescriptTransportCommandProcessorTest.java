@@ -31,6 +31,7 @@ import com.betfair.cougar.core.api.ev.ExecutionResult;
 import com.betfair.cougar.core.api.ev.ExecutionVenue;
 import com.betfair.cougar.core.api.ev.OperationDefinition;
 import com.betfair.cougar.core.api.ev.OperationKey;
+import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.CougarValidationException;
 import com.betfair.cougar.core.api.exception.PanicInTheCougar;
@@ -47,7 +48,10 @@ import com.betfair.cougar.marshalling.api.databinding.Marshaller;
 import com.betfair.cougar.marshalling.api.databinding.UnMarshaller;
 import com.betfair.cougar.marshalling.impl.databinding.DataBindingManager;
 import com.betfair.cougar.marshalling.impl.databinding.DataBindingMap;
+import com.betfair.cougar.transport.api.CommandResolver;
+import com.betfair.cougar.transport.api.ExecutionCommand;
 import com.betfair.cougar.transport.api.TransportCommand.CommandStatus;
+import com.betfair.cougar.transport.api.protocol.http.HttpCommand;
 import com.betfair.cougar.transport.api.protocol.http.HttpServiceBindingDescriptor;
 import com.betfair.cougar.transport.api.protocol.http.rescript.RescriptBody;
 import com.betfair.cougar.transport.api.protocol.http.rescript.RescriptIdentityTokenResolver;
@@ -78,6 +82,7 @@ import java.io.OutputStream;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -161,7 +166,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
 				new RescriptOperationBindingDescriptor(invalidOpKey, "/InvalidOp", "GET", invalidOpParamBindings, TestResponse.class),
                 new RescriptOperationBindingDescriptor(voidReturnOpKey, "/VoidReturnOp", "GET", voidReturnOpParamBindings, null)};
 		
-		rescriptCommandProcessor = new RescriptTransportCommandProcessor(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID","X-RequestTimeout",new DontCareRequestTimeResolver());
+		rescriptCommandProcessor = new RescriptTransportCommandProcessor(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID","X-RequestTimeout",requestTimeResolver);
 		init(rescriptCommandProcessor);
 		ctn = mock(ContentTypeNormaliser.class);
 		when(ctn.getNormalisedResponseMediaType(any(HttpServletRequest.class))).thenReturn(MediaType.APPLICATION_XML_TYPE);
@@ -392,7 +397,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
         RescriptOperationBindingDescriptor op1 = new RescriptOperationBindingDescriptor(key, "url1", "GET", Collections.<RescriptParamBindingDescriptor>emptyList(), null);
         RescriptOperationBindingDescriptor op2 = new RescriptOperationBindingDescriptor(key, "url2", "POST", Collections.<RescriptParamBindingDescriptor>emptyList(), null);
 
-        RescriptTransportCommandProcessor sut = new RescriptTransportCommandProcessor(null, null, null, "X-RequestTimeout",new DontCareRequestTimeResolver());
+        RescriptTransportCommandProcessor sut = new RescriptTransportCommandProcessor(null, null, null, "X-RequestTimeout",requestTimeResolver);
         sut.setExecutionVenue(ev);
         sut.bindOperation(serviceDescriptor, op1);
         sut.bindOperation(serviceDescriptor, op2);
@@ -401,52 +406,127 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
         fail("Duplicate url binding forbidden, an exception should have been thrown");
     }
 
-// Temporary back-out of US6907
-//    @Test
-//    public void testSameOperationDifferentContextPaths() {
-//        // Ensure that allow more two of the same operation if the  are different
-//
-//        OperationDefinition op = Mockito.mock(OperationDefinition.class);
-//        when(op.getParameters()).thenReturn(new Parameter[0]);
-//
-//        ExecutionVenue ev = Mockito.mock(ExecutionVenue.class);
-//        OperationKey key = Mockito.mock(OperationKey.class);
-//        when(ev.getOperationDefinition(key)).thenReturn(op);
-//
-//        HttpServiceBindingDescriptor serviceDescriptorV1 = new HttpServiceBindingDescriptor() {
-//            @Override
-//            public String getServiceContextPath() {
-//                return "/I/v1.0";
-//            }
-//            @Override
-//            public OperationBindingDescriptor[] getOperationBindings() {
-//                return new OperationBindingDescriptor[0];
-//            }
-//            @Override
-//            public Protocol getServiceProtocol() {
-//                return null;
-//            }
-//        };
-//        HttpServiceBindingDescriptor serviceDescriptorV2 = new HttpServiceBindingDescriptor() {
-//            @Override
-//            public String getServiceContextPath() {
-//                return "/I/v2.0";
-//            }
-//            @Override
-//            public OperationBindingDescriptor[] getOperationBindings() {
-//                return new OperationBindingDescriptor[0];
-//            }
-//            @Override
-//            public Protocol getServiceProtocol() {
-//                return null;
-//            }
-//        };
-//        RescriptOperationBindingDescriptor op1 = new RescriptOperationBindingDescriptor(key, "url1", "GET", Collections.<RescriptParamBindingDescriptor>emptyList(), null);
-//        RescriptTransportCommandProcessor sut = new RescriptTransportCommandProcessor(null, null, null);
-//        sut.setExecutionVenue(ev);
-//        sut.bindOperation(serviceDescriptorV1, op1);
-//        sut.bindOperation(serviceDescriptorV2, op1);
-//    }
+    @Test
+    public void testSameOperationDifferentContextPaths() {
+        // Ensure that allow more two of the same operation if the  are different
+
+        OperationDefinition op = Mockito.mock(OperationDefinition.class);
+        when(op.getParameters()).thenReturn(new Parameter[0]);
+
+        ExecutionVenue ev = Mockito.mock(ExecutionVenue.class);
+        OperationKey key = Mockito.mock(OperationKey.class);
+        when(ev.getOperationDefinition(key)).thenReturn(op);
+
+        HttpServiceBindingDescriptor serviceDescriptorV1 = new HttpServiceBindingDescriptor() {
+            @Override
+            public String getServiceContextPath() {
+                return "/I/v1.0";
+            }
+            @Override
+            public OperationBindingDescriptor[] getOperationBindings() {
+                return new OperationBindingDescriptor[0];
+            }
+            @Override
+            public Protocol getServiceProtocol() {
+                return null;
+            }
+
+            @Override
+            public ServiceVersion getServiceVersion() {
+                return new ServiceVersion(1,0);
+            }
+
+            @Override
+            public String getServiceName() {
+                return "Wibble";
+            }
+        };
+        HttpServiceBindingDescriptor serviceDescriptorV2 = new HttpServiceBindingDescriptor() {
+            @Override
+            public String getServiceContextPath() {
+                return "/I/v2.0";
+            }
+            @Override
+            public OperationBindingDescriptor[] getOperationBindings() {
+                return new OperationBindingDescriptor[0];
+            }
+            @Override
+            public Protocol getServiceProtocol() {
+                return null;
+            }
+
+            @Override
+            public ServiceVersion getServiceVersion() {
+                return new ServiceVersion(2,0);
+            }
+
+            @Override
+            public String getServiceName() {
+                return "Wibble";
+            }
+        };
+        RescriptOperationBindingDescriptor op1 = new RescriptOperationBindingDescriptor(key, "url1", "GET", Collections.<RescriptParamBindingDescriptor>emptyList(), null);
+        RescriptTransportCommandProcessor sut = new RescriptTransportCommandProcessor(null, null, null, null, null);
+        sut.setExecutionVenue(ev);
+        sut.bindOperation(serviceDescriptorV1, op1);
+        sut.bindOperation(serviceDescriptorV2, op1);
+        // todo: not sure of the purpose of this test - it has no assertions..
+    }
+
+    @Test
+    public void createCommandResolver_NoTimeout() {
+        // Set up the input
+        command.setPathInfo("/FirstTestOp");
+        when(request.getParameter("FirstOpFirstParam")).thenReturn("hello");
+        when(request.getScheme()).thenReturn("http");
+
+        // resolve the command
+        CommandResolver<HttpCommand> cr = rescriptCommandProcessor.createCommandResolver(command);
+        Iterable<ExecutionCommand> executionCommands = cr.resolveExecutionCommands();
+
+        // check the output
+        ExecutionCommand executionCommand = executionCommands.iterator().next();
+        TimeConstraints constraints = executionCommand.getTimeConstraints();
+        assertNull(constraints.getExpiryTime());
+    }
+
+    @Test
+    public void createCommandResolver_WithTimeout() {
+        // Set up the input
+        command.setPathInfo("/FirstTestOp");
+        when(request.getParameter("FirstOpFirstParam")).thenReturn("hello");
+        when(request.getScheme()).thenReturn("http");
+
+        // resolve the command
+        when(request.getHeader("X-RequestTimeout")).thenReturn("10000");
+        when(requestTimeResolver.resolveRequestTime(any())).thenReturn(new Date());
+        CommandResolver<HttpCommand> cr = rescriptCommandProcessor.createCommandResolver(command);
+        Iterable<ExecutionCommand> executionCommands = cr.resolveExecutionCommands();
+
+        // check the output
+        ExecutionCommand executionCommand = executionCommands.iterator().next();
+        TimeConstraints constraints = executionCommand.getTimeConstraints();
+        assertNotNull(constraints.getExpiryTime());
+    }
+
+    @Test
+    public void createCommandResolver_WithTimeoutAndOldRequestTime() {
+        // Set up the input
+        command.setPathInfo("/FirstTestOp");
+        when(request.getParameter("FirstOpFirstParam")).thenReturn("hello");
+        when(request.getScheme()).thenReturn("http");
+
+        // resolve the command
+        when(request.getHeader("X-RequestTimeout")).thenReturn("10000");
+        when(requestTimeResolver.resolveRequestTime(any())).thenReturn(new Date(System.currentTimeMillis()-10001));
+        CommandResolver<HttpCommand> cr = rescriptCommandProcessor.createCommandResolver(command);
+        Iterable<ExecutionCommand> executionCommands = cr.resolveExecutionCommands();
+
+        // check the output
+        ExecutionCommand executionCommand = executionCommands.iterator().next();
+        TimeConstraints constraints = executionCommand.getTimeConstraints();
+        assertTrue(constraints.getExpiryTime() < System.currentTimeMillis());
+    }
 
 	private ArgumentMatcher<RescriptResponse> matchesResponse(final Object responseValue) {
 		return new ArgumentMatcher<RescriptResponse>() {

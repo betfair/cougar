@@ -23,10 +23,13 @@ import com.betfair.cougar.api.security.*;
 import com.betfair.cougar.core.api.OperationBindingDescriptor;
 import com.betfair.cougar.core.api.ServiceVersion;
 import com.betfair.cougar.core.api.ev.ExecutionResult;
+import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.fault.FaultController;
 import com.betfair.cougar.marshalling.impl.databinding.xml.JdkEmbeddedXercesSchemaValidationFailureParser;
+import com.betfair.cougar.transport.api.CommandResolver;
+import com.betfair.cougar.transport.api.ExecutionCommand;
 import com.betfair.cougar.transport.api.TransportCommand.CommandStatus;
 import com.betfair.cougar.transport.api.protocol.http.HttpCommand;
 import com.betfair.cougar.transport.api.protocol.http.soap.SoapIdentityTokenResolver;
@@ -160,7 +163,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
 	public void init() throws Exception {
 		super.init();
 		soapCommandProcessor = new SoapTransportCommandProcessor(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID",
-                "X-RequestTimeout", new DontCareRequestTimeResolver(), new JdkEmbeddedXercesSchemaValidationFailureParser(), new InferredCountryResolver<HttpServletRequest>() {
+                "X-RequestTimeout", requestTimeResolver, new JdkEmbeddedXercesSchemaValidationFailureParser(), new InferredCountryResolver<HttpServletRequest>() {
             public String inferCountry(HttpServletRequest input) { return AZ;}
         });
 		init(soapCommandProcessor);
@@ -723,6 +726,64 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
                 any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+    }
+
+    @Test
+    public void createCommandResolver_NoTimeout() throws IOException {
+
+        // Set up the input
+        when(request.getInputStream()).thenReturn(
+                new TestServletInputStream(buildSoapMessage(null, firstOpIn, null, null)));
+        when(request.getScheme()).thenReturn("http");
+
+        // resolve the command
+        CommandResolver<HttpCommand> cr = soapCommandProcessor.createCommandResolver(command);
+        Iterable<ExecutionCommand> executionCommands = cr.resolveExecutionCommands();
+
+        // check the output
+        ExecutionCommand executionCommand = executionCommands.iterator().next();
+        TimeConstraints constraints = executionCommand.getTimeConstraints();
+        assertNull(constraints.getExpiryTime());
+    }
+
+    @Test
+    public void createCommandResolver_WithTimeout() throws IOException {
+
+        // Set up the input
+        when(request.getInputStream()).thenReturn(
+                new TestServletInputStream(buildSoapMessage(null, firstOpIn, null, null)));
+        when(request.getScheme()).thenReturn("http");
+
+        // resolve the command
+        when(request.getHeader("X-RequestTimeout")).thenReturn("10000");
+        when(requestTimeResolver.resolveRequestTime(any())).thenReturn(new Date());
+        CommandResolver<HttpCommand> cr = soapCommandProcessor.createCommandResolver(command);
+        Iterable<ExecutionCommand> executionCommands = cr.resolveExecutionCommands();
+
+        // check the output
+        ExecutionCommand executionCommand = executionCommands.iterator().next();
+        TimeConstraints constraints = executionCommand.getTimeConstraints();
+        assertNotNull(constraints.getExpiryTime());
+    }
+
+    @Test
+    public void createCommandResolver_WithTimeoutAndOldRequestTime() throws IOException {
+
+        // Set up the input
+        when(request.getInputStream()).thenReturn(
+                new TestServletInputStream(buildSoapMessage(null, firstOpIn, null, null)));
+        when(request.getScheme()).thenReturn("http");
+
+        // resolve the command
+        when(request.getHeader("X-RequestTimeout")).thenReturn("10000");
+        when(requestTimeResolver.resolveRequestTime(any())).thenReturn(new Date(System.currentTimeMillis() - 10001));
+        CommandResolver<HttpCommand> cr = soapCommandProcessor.createCommandResolver(command);
+        Iterable<ExecutionCommand> executionCommands = cr.resolveExecutionCommands();
+
+        // check the output
+        ExecutionCommand executionCommand = executionCommands.iterator().next();
+        TimeConstraints constraints = executionCommand.getTimeConstraints();
+        assertTrue(constraints.getExpiryTime() < System.currentTimeMillis());
     }
 
     private String buildSoapMessage(String header, String body, String fault, String faultDetail) {

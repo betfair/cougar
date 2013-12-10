@@ -42,6 +42,7 @@ public class DefaultTimeConstraints implements TimeConstraints {
         if (rawTimeConstraints.getTimeRemaining() == null) {
             return NO_CONSTRAINTS;
         }
-        return new DefaultTimeConstraints(requestTime.getTime()+rawTimeConstraints.getTimeRemaining());
+        long timeRemaining = rawTimeConstraints.getTimeRemaining();
+        return new DefaultTimeConstraints(requestTime.getTime()+timeRemaining);
     }
 }

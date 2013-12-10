@@ -53,12 +53,14 @@ import com.betfair.cougar.transport.api.CommandResolver;
 import com.betfair.cougar.transport.api.CommandValidator;
 import com.betfair.cougar.transport.api.ExecutionCommand;
 import com.betfair.cougar.transport.api.RequestLogger;
+import com.betfair.cougar.transport.api.RequestTimeResolver;
 import com.betfair.cougar.transport.api.TransportCommand;
 import com.betfair.cougar.transport.api.protocol.http.GeoLocationDeserializer;
 import com.betfair.cougar.transport.api.protocol.http.HttpCommand;
 import com.betfair.cougar.transport.api.protocol.http.jsonrpc.JsonRpcOperationBindingDescriptor;
 import com.betfair.cougar.transport.impl.AbstractCommandProcessor;
 import com.betfair.cougar.transport.impl.CommandValidatorRegistry;
+import com.betfair.cougar.transport.impl.protocol.http.AbstractHttpCommandProcessorTest;
 import com.betfair.cougar.transport.impl.protocol.http.ContentTypeNormaliser;
 import com.betfair.cougar.transport.impl.protocol.http.DefaultGeoLocationDeserializer;
 import com.betfair.cougar.transport.impl.protocol.http.DontCareRequestTimeResolver;
@@ -88,6 +90,9 @@ import java.util.*;
 import java.util.concurrent.Executor;
 
 import static junit.framework.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -115,6 +120,7 @@ public class JsonRpcTransportCommandProcessorTest  {
     GeoIPLocator geoIPLocator;
     protected CommandValidatorRegistry<HttpCommand> validatorRegistry = new CommandValidatorRegistry<HttpCommand>();
     private ExecutionVenue ev;
+    private RequestTimeResolver requestTimeResolver;
 
     @BeforeClass
     public static void setupStatic() {
@@ -136,8 +142,9 @@ public class JsonRpcTransportCommandProcessorTest  {
         when(mockEventLoggingRegistry.getInvokableLogger(anyString())).thenReturn(logDef);
         when(logDef.getLogName()).thenReturn("");
 
+        requestTimeResolver = mock(RequestTimeResolver.class);
 
-        commandProcessor = new LocalJsonRpcCommandProcessor();
+        commandProcessor = new LocalJsonRpcCommandProcessor(requestTimeResolver);
         commandProcessor.setContentTypeNormaliser(ctn);
         commandProcessor.setRequestLogger(logger);
         commandProcessor.setValidatorRegistry(validatorRegistry);
@@ -148,8 +155,6 @@ public class JsonRpcTransportCommandProcessorTest  {
             }
         });
         commandProcessor.setExecutionVenue(ev = mock(ExecutionVenue.class));
-
-
 
 
         objectMapper = new ObjectMapper();
@@ -669,7 +674,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         bindOperations();
 
         LocalJsonRpcCommandProcessor commandProcessorWithoutCountryResolver =
-                new LocalJsonRpcCommandProcessor(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID");
+                new LocalJsonRpcCommandProcessor(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID", requestTimeResolver);
 
         HttpCommand command = mock(HttpCommand.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
@@ -931,6 +936,107 @@ public class JsonRpcTransportCommandProcessorTest  {
         BodyType result = (BodyType) mapper.convertValue(paramValue, TypeFactory.type(BodyType.class));
     }
 
+    @Test
+    public void createCommandResolver_NoTimeout() throws IOException {
+        bindOperations();
+
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getScheme()).thenReturn("http");
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        IdentityTokenResolver tokenResolver = mock(IdentityTokenResolver.class);
+        HttpCommand mockedCommand = mock(HttpCommand.class);
+        RequestTimer mockTimer = mock(RequestTimer.class);
+        when(mockedCommand.getRequest()).thenReturn(request);
+        when(mockedCommand.getResponse()).thenReturn(response);
+
+        when(mockedCommand.getIdentityTokenResolver()).thenReturn(tokenResolver);
+        when(mockedCommand.getStatus()).thenReturn(TransportCommand.CommandStatus.InProcess);
+        when(mockedCommand.getTimer()).thenReturn(mockTimer);
+        String body="{ \"method\": \"" + SERVICE_NAME + "/v1.0/" + OP_NAME + "\", \"params\": [\"Hello\", 333], \"id\": 1}";
+        TestInputStream tis = new TestInputStream(new ByteArrayInputStream(body.getBytes("UTF-8")));
+        when(request.getInputStream()).thenReturn(tis);
+
+        TestOutputStream tos = new TestOutputStream();
+        when(response.getOutputStream()).thenReturn(tos);
+        // resolve the command
+        CommandResolver<HttpCommand> cr = commandProcessor.createCommandResolver(mockedCommand);
+        Iterable<ExecutionCommand> executionCommands = cr.resolveExecutionCommands();
+
+        // check the output
+        ExecutionCommand executionCommand = executionCommands.iterator().next();
+        TimeConstraints constraints = executionCommand.getTimeConstraints();
+        assertNull(constraints.getExpiryTime());
+    }
+
+    @Test
+    public void createCommandResolver_WithTimeout() throws IOException {
+        bindOperations();
+
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getScheme()).thenReturn("http");
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        IdentityTokenResolver tokenResolver = mock(IdentityTokenResolver.class);
+        HttpCommand mockedCommand = mock(HttpCommand.class);
+        RequestTimer mockTimer = mock(RequestTimer.class);
+        when(mockedCommand.getRequest()).thenReturn(request);
+        when(mockedCommand.getResponse()).thenReturn(response);
+
+        when(mockedCommand.getIdentityTokenResolver()).thenReturn(tokenResolver);
+        when(mockedCommand.getStatus()).thenReturn(TransportCommand.CommandStatus.InProcess);
+        when(mockedCommand.getTimer()).thenReturn(mockTimer);
+        String body="{ \"method\": \"" + SERVICE_NAME + "/v1.0/" + OP_NAME + "\", \"params\": [\"Hello\", 333], \"id\": 1}";
+        TestInputStream tis = new TestInputStream(new ByteArrayInputStream(body.getBytes("UTF-8")));
+        when(request.getInputStream()).thenReturn(tis);
+
+        TestOutputStream tos = new TestOutputStream();
+        when(response.getOutputStream()).thenReturn(tos);
+        // resolve the command
+        when(request.getHeader("X-RequestTimeout")).thenReturn("10000");
+        when(requestTimeResolver.resolveRequestTime(any())).thenReturn(new Date());
+        CommandResolver<HttpCommand> cr = commandProcessor.createCommandResolver(mockedCommand);
+        Iterable<ExecutionCommand> executionCommands = cr.resolveExecutionCommands();
+
+        // check the output
+        ExecutionCommand executionCommand = executionCommands.iterator().next();
+        TimeConstraints constraints = executionCommand.getTimeConstraints();
+        assertNotNull(constraints.getExpiryTime());
+    }
+
+    @Test
+    public void createCommandResolver_WithTimeoutAndOldRequestTime() throws IOException {
+        bindOperations();
+
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getScheme()).thenReturn("http");
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        IdentityTokenResolver tokenResolver = mock(IdentityTokenResolver.class);
+        HttpCommand mockedCommand = mock(HttpCommand.class);
+        RequestTimer mockTimer = mock(RequestTimer.class);
+        when(mockedCommand.getRequest()).thenReturn(request);
+        when(mockedCommand.getResponse()).thenReturn(response);
+
+        when(mockedCommand.getIdentityTokenResolver()).thenReturn(tokenResolver);
+        when(mockedCommand.getStatus()).thenReturn(TransportCommand.CommandStatus.InProcess);
+        when(mockedCommand.getTimer()).thenReturn(mockTimer);
+        String body="{ \"method\": \"" + SERVICE_NAME + "/v1.0/" + OP_NAME + "\", \"params\": [\"Hello\", 333], \"id\": 1}";
+        TestInputStream tis = new TestInputStream(new ByteArrayInputStream(body.getBytes("UTF-8")));
+        when(request.getInputStream()).thenReturn(tis);
+
+        TestOutputStream tos = new TestOutputStream();
+        when(response.getOutputStream()).thenReturn(tos);
+
+        // resolve the command
+        when(request.getHeader("X-RequestTimeout")).thenReturn("10000");
+        when(requestTimeResolver.resolveRequestTime(any())).thenReturn(new Date(System.currentTimeMillis() - 10001));
+        CommandResolver<HttpCommand> cr = commandProcessor.createCommandResolver(mockedCommand);
+        Iterable<ExecutionCommand> executionCommands = cr.resolveExecutionCommands();
+
+        // check the output
+        ExecutionCommand executionCommand = executionCommands.iterator().next();
+        TimeConstraints constraints = executionCommand.getTimeConstraints();
+        assertTrue(constraints.getExpiryTime() < System.currentTimeMillis());
+    }
+
     public static class BodyType {
         private Integer integer;
         private Long looong;
@@ -975,7 +1081,7 @@ public class JsonRpcTransportCommandProcessorTest  {
 
     
     public void testBatchedWithFailures() {
-
+        // todo: empty test?
         ContentTypeNormaliser ctn = mock(ContentTypeNormaliser.class);
 
         
@@ -1069,14 +1175,14 @@ public class JsonRpcTransportCommandProcessorTest  {
 
     private class LocalJsonRpcCommandProcessor extends JsonRpcTransportCommandProcessor {
         private boolean errorCalled;
-        public LocalJsonRpcCommandProcessor() {
-            super(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID", "X-RequestTimeout", new DontCareRequestTimeResolver(), new InferredCountryResolver<HttpServletRequest>() {
+        public LocalJsonRpcCommandProcessor(RequestTimeResolver requestTimeResolver) {
+            super(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID", "X-RequestTimeout", requestTimeResolver, new InferredCountryResolver<HttpServletRequest>() {
                 public String inferCountry(HttpServletRequest input) { return AZ;}
             });
         }
 
-        public LocalJsonRpcCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader) {
-            super(geoIPLocator, deserializer, uuidHeader, "X-RequestTimeout", new DontCareRequestTimeResolver(), null);
+        public LocalJsonRpcCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, RequestTimeResolver requestTimeResolver) {
+            super(geoIPLocator, deserializer, uuidHeader, "X-RequestTimeout", requestTimeResolver, null);
         }
 
         @Override
