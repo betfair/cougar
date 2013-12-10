@@ -16,7 +16,6 @@
 
 package com.betfair.cougar.transport.impl.protocol.http.soap;
 
-import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.ExecutionContextWithTokens;
 import com.betfair.cougar.api.ResponseCode;
 import com.betfair.cougar.api.security.IdentityToken;
@@ -38,7 +37,6 @@ import com.betfair.cougar.core.api.transcription.*;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.logging.CougarLogger;
 import com.betfair.cougar.logging.CougarLoggingUtils;
-import com.betfair.cougar.marshalling.impl.databinding.xml.JdkEmbeddedXercesSchemaValidationFailureParser;
 import com.betfair.cougar.marshalling.impl.databinding.xml.SchemaValidationFailureParser;
 import com.betfair.cougar.transport.api.CommandResolver;
 import com.betfair.cougar.transport.api.ExecutionCommand;
@@ -106,15 +104,14 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
     private SchemaValidationFailureParser schemaValidationFailureParser;
 
     public SoapTransportCommandProcessor(GeoIPLocator geoIPLocator,
-                                         GeoLocationDeserializer deserializer, String uuidHeader, SchemaValidationFailureParser schemaValidationFailureParser,
-                                         String requestTimeoutHeader, RequestTimeResolver requestTimeResolver) {
-        this(geoIPLocator, deserializer, uuidHeader, null, schemaValidationFailureParser, requestTimeoutHeader, requestTimeResolver);
+                                         GeoLocationDeserializer deserializer, String uuidHeader, String requestTimeoutHeader, RequestTimeResolver requestTimeResolver, SchemaValidationFailureParser schemaValidationFailureParser) {
+        this(geoIPLocator, deserializer, uuidHeader, requestTimeoutHeader, requestTimeResolver, schemaValidationFailureParser, null);
     }
 
     // for testing only
     SoapTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader,
-                                         InferredCountryResolver<HttpServletRequest> countryResolver, SchemaValidationFailureParser schemaValidationFailureParser,
-                                         String requestTimeoutHeader, RequestTimeResolver requestTimeResolver) {
+                                  String requestTimeoutHeader, RequestTimeResolver requestTimeResolver, SchemaValidationFailureParser schemaValidationFailureParser,
+                                  InferredCountryResolver<HttpServletRequest> countryResolver) {
         super(geoIPLocator, deserializer, uuidHeader, countryResolver, requestTimeoutHeader, requestTimeResolver);
         setName("SoapTransportCommandProcessor");
         this.schemaValidationFailureParser = schemaValidationFailureParser;

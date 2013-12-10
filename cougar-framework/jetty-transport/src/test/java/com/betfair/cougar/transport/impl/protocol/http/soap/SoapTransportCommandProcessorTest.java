@@ -160,9 +160,9 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
 	public void init() throws Exception {
 		super.init();
 		soapCommandProcessor = new SoapTransportCommandProcessor(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID",
-                new InferredCountryResolver<HttpServletRequest>() {
-                    public String inferCountry(HttpServletRequest input) { return AZ;}
-        }, new JdkEmbeddedXercesSchemaValidationFailureParser(),"X-RequestTimeout",new DontCareRequestTimeResolver());
+                "X-RequestTimeout", new DontCareRequestTimeResolver(), new JdkEmbeddedXercesSchemaValidationFailureParser(), new InferredCountryResolver<HttpServletRequest>() {
+            public String inferCountry(HttpServletRequest input) { return AZ;}
+        });
 		init(soapCommandProcessor);
 		ContentTypeNormaliser ctn = mock(ContentTypeNormaliser.class);
 		when(ctn.getNormalisedResponseMediaType(any(HttpServletRequest.class))).thenReturn(MediaType.APPLICATION_XML_TYPE);

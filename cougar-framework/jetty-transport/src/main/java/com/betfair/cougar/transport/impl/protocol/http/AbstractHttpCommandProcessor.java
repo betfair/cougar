@@ -120,22 +120,20 @@ public abstract class AbstractHttpCommandProcessor extends
     public AbstractHttpCommandProcessor(GeoIPLocator geoIPLocator,
                                         GeoLocationDeserializer geoLocationDeserializer, String uuidHeader,
                                         String requestTimeoutHeader, RequestTimeResolver requestTimeResolver){
-        this(geoIPLocator, geoLocationDeserializer, uuidHeader, null, requestTimeoutHeader, requestTimeResolver);
+        this(geoIPLocator, geoLocationDeserializer, uuidHeader, requestTimeoutHeader, requestTimeResolver, null);
     }
 
 	/**
-	 * 
-	 * @param geoIPLocator
-	 *            Used for resolving the GeoLocationDetails
-	 * @param uuidHeader
-	 *            the key of the Http Header containing the unique id for a request
+	 *
+     * @param geoIPLocator
+     *            Used for resolving the GeoLocationDetails
+     * @param uuidHeader
+     *            the key of the Http Header containing the unique id for a request
      * @param inferredCountryResolver
-     *            The resolver used for inferring the country from the domain
-	 */
+     */
 	public AbstractHttpCommandProcessor(GeoIPLocator geoIPLocator,
                                         GeoLocationDeserializer geoLocationDeserializer, String uuidHeader,
-                                        InferredCountryResolver<HttpServletRequest> inferredCountryResolver,
-                                        String requestTimeoutHeader, RequestTimeResolver requestTimeResolver) {
+                                        String requestTimeoutHeader, RequestTimeResolver requestTimeResolver, InferredCountryResolver<HttpServletRequest> inferredCountryResolver) {
 		this.geoIPLocator = geoIPLocator;
         this.geoLocationDeserializer = geoLocationDeserializer;
 		this.uuidHeader = uuidHeader;

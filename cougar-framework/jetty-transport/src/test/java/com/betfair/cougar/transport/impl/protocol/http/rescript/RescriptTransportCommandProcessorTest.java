@@ -392,7 +392,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
         RescriptOperationBindingDescriptor op1 = new RescriptOperationBindingDescriptor(key, "url1", "GET", Collections.<RescriptParamBindingDescriptor>emptyList(), null);
         RescriptOperationBindingDescriptor op2 = new RescriptOperationBindingDescriptor(key, "url2", "POST", Collections.<RescriptParamBindingDescriptor>emptyList(), null);
 
-        RescriptTransportCommandProcessor sut = new RescriptTransportCommandProcessor(null, null, null, null,"X-RequestTimeout",new DontCareRequestTimeResolver());
+        RescriptTransportCommandProcessor sut = new RescriptTransportCommandProcessor(null, null, null, "X-RequestTimeout",new DontCareRequestTimeResolver());
         sut.setExecutionVenue(ev);
         sut.bindOperation(serviceDescriptor, op1);
         sut.bindOperation(serviceDescriptor, op2);

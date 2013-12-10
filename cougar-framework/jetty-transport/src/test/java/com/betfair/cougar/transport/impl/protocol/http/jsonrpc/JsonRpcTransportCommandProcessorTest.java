@@ -1070,13 +1070,13 @@ public class JsonRpcTransportCommandProcessorTest  {
     private class LocalJsonRpcCommandProcessor extends JsonRpcTransportCommandProcessor {
         private boolean errorCalled;
         public LocalJsonRpcCommandProcessor() {
-            super(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID", new InferredCountryResolver<HttpServletRequest>() {
+            super(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID", "X-RequestTimeout", new DontCareRequestTimeResolver(), new InferredCountryResolver<HttpServletRequest>() {
                 public String inferCountry(HttpServletRequest input) { return AZ;}
-            },"X-RequestTimeout",new DontCareRequestTimeResolver());
+            });
         }
 
         public LocalJsonRpcCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader) {
-            super(geoIPLocator, deserializer, uuidHeader, null,"X-RequestTimeout",new DontCareRequestTimeResolver());
+            super(geoIPLocator, deserializer, uuidHeader, "X-RequestTimeout", new DontCareRequestTimeResolver(), null);
         }
 
         @Override

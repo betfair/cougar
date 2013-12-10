@@ -134,8 +134,8 @@
         <constructor-arg ref="cougar.core.GeoIPLocator" index="0"/>
         <constructor-arg ref="$COUGAR-JETTY{cougar.http.geoLocationDeserializerBean}" index="1"/>
         <constructor-arg value="$COUGAR-JETTY{cougar.http.uuidheader}" index="2"/>
-        <constructor-arg value="$COUGAR-JETTY{cougar.http.requestTimeoutHeader}" index="4"/>
-        <constructor-arg ref="$COUGAR-JETTY{cougar.http.requestTimeResolver}" index="5"/>
+        <constructor-arg value="$COUGAR-JETTY{cougar.http.requestTimeoutHeader}" index="3"/>
+        <constructor-arg ref="$COUGAR-JETTY{cougar.http.requestTimeResolver}" index="4"/>
         <property name="executionVenue" ref="cougar.core.ExecutionVenue"/>
         <property name="startingGate" ref="cougar.core.StartingGate"/>
         <property name="executor" ref="cougar.core.CommandProcessorExecutor"/>
@@ -155,7 +155,7 @@
     </bean>
 
     <bean id="soapCommandProcessor" class="com.betfair.cougar.transport.impl.protocol.http.soap.SoapTransportCommandProcessor" parent="httpCommandProcessor" scope="singleton">
-        <constructor-arg index="3" ref="$COUGAR-JETTY{cougar.http.soap.schemaValidationFailureParserBean}"/>
+        <constructor-arg index="5" ref="$COUGAR-JETTY{cougar.http.soap.schemaValidationFailureParserBean}"/>
         <property name="contentTypeNormaliser" ref="contentTypeNormaliser"/>
         <property name="hardFailEnumDeserialisation" value="$COUGAR-JETTY{cougar.http.enums.hardFailure}"/>
         <property name="schemaValidationEnabled" value="$COUGAR-JETTY{cougar.http.soap.schemaValidationEnabled}"/>

@@ -16,7 +16,6 @@
 
 package com.betfair.cougar.transport.impl.protocol.http;
 
-import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.ExecutionContextWithTokens;
 import com.betfair.cougar.api.ResponseCode;
 import com.betfair.cougar.api.security.InferredCountryResolver;
@@ -27,16 +26,15 @@ import com.betfair.cougar.core.api.ServiceBindingDescriptor;
 import com.betfair.cougar.logging.CougarLogger;
 import com.betfair.cougar.logging.CougarLoggingUtils;
 import com.betfair.cougar.transport.api.CommandResolver;
+import com.betfair.cougar.transport.api.RequestTimeResolver;
 import com.betfair.cougar.transport.api.TransportCommand.CommandStatus;
 import com.betfair.cougar.transport.api.protocol.http.GeoLocationDeserializer;
 import com.betfair.cougar.transport.api.protocol.http.HttpCommand;
 import com.betfair.cougar.util.ServletResponseFileStreamer;
 import com.betfair.cougar.util.geolocation.GeoIPLocator;
-import com.betfair.cougar.util.geolocation.SuspectNetworkList;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.logging.Level;
 
@@ -53,13 +51,13 @@ public class ServiceNotFoundHttpCommandProcessor extends AbstractHttpCommandProc
 
 
 	public ServiceNotFoundHttpCommandProcessor(GeoIPLocator geoIPLocator,
-                                               GeoLocationDeserializer deserializer, String uuidHeader) {
-		this(geoIPLocator, deserializer, uuidHeader, null);
+                                               GeoLocationDeserializer deserializer, String uuidHeader, String requestTimeoutHeader, RequestTimeResolver requestTimeResolver) {
+		this(geoIPLocator, deserializer, uuidHeader, requestTimeoutHeader, requestTimeResolver, null);
 	}
 
     public ServiceNotFoundHttpCommandProcessor(GeoIPLocator geoIPLocator,
-			GeoLocationDeserializer deserializer, String uuidHeader, InferredCountryResolver<HttpServletRequest> resolver) {
-		super(geoIPLocator, deserializer, uuidHeader, resolver, "X-RequestTimeout", new DontCareRequestTimeResolver());
+			GeoLocationDeserializer deserializer, String uuidHeader, String requestTimeoutHeader, RequestTimeResolver requestTimeResolver, InferredCountryResolver<HttpServletRequest> resolver) {
+		super(geoIPLocator, deserializer, uuidHeader, requestTimeoutHeader, requestTimeResolver, resolver);
 		setName("ServiceNotFoundHttpCommandProcessor");
 		setPriority(0);
 	}

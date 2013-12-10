@@ -78,11 +78,11 @@ public class RescriptTransportCommandProcessor extends AbstractTerminateableHttp
 
     public RescriptTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader,
                                              String requestTimeoutHeader, RequestTimeResolver requestTimeResolver) {
-        this(geoIPLocator, deserializer, uuidHeader, null, requestTimeoutHeader, requestTimeResolver);
+        this(geoIPLocator, deserializer, uuidHeader, requestTimeoutHeader, requestTimeResolver, null);
     }
 
-	public RescriptTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, InferredCountryResolver<HttpServletRequest> countryResolver,
-                                             String requestTimeoutHeader, RequestTimeResolver requestTimeResolver) {
+	public RescriptTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader,
+                                             String requestTimeoutHeader, RequestTimeResolver requestTimeResolver, InferredCountryResolver<HttpServletRequest> countryResolver) {
 		super(geoIPLocator, deserializer, uuidHeader, countryResolver, requestTimeoutHeader, requestTimeResolver);
 		setName("RescriptTransportCommandProcessor");
 	}

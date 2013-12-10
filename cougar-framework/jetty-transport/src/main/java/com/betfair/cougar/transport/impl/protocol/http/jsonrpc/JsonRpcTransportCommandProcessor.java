@@ -106,12 +106,11 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
     static final ExecutionTimingRecorder IDENTITY_RESOLUTION_TIMING_RECORDER = new NullExecutionTimingRecorder();
 
     public JsonRpcTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, String requestTimeoutHeader, RequestTimeResolver requestTimeResolver) {
-        this(geoIPLocator, deserializer, uuidHeader, null, requestTimeoutHeader, requestTimeResolver);
+        this(geoIPLocator, deserializer, uuidHeader, requestTimeoutHeader, requestTimeResolver, null);
     }
 
-	public JsonRpcTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, InferredCountryResolver<HttpServletRequest> countryResolver,
-                                            String requestTimeoutHeader, RequestTimeResolver requestTimeResolver) {
-		super(geoIPLocator, deserializer, uuidHeader, countryResolver, requestTimeoutHeader, requestTimeResolver);
+	public JsonRpcTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, String requestTimeoutHeader, RequestTimeResolver requestTimeResolver, InferredCountryResolver<HttpServletRequest> countryResolver) {
+		super(geoIPLocator, deserializer, uuidHeader, requestTimeoutHeader, requestTimeResolver, countryResolver);
 		setName("JsonRpcTransportCommandProcessor");
 	}
 

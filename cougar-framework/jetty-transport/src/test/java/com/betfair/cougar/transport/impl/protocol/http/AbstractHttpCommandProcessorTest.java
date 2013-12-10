@@ -656,9 +656,9 @@ public class AbstractHttpCommandProcessorTest {
         private boolean errorCalled;
 
         private LocalCommandProcessor() {
-            super(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID", new InferredCountryResolver<HttpServletRequest>() {
+            super(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID", "X-RequestTimeout", new DontCareRequestTimeResolver(), new InferredCountryResolver<HttpServletRequest>() {
                 public String inferCountry(HttpServletRequest input) { return AZ; }
-            },"X-RequestTimeout",new DontCareRequestTimeResolver());
+            });
         }
 
         @Override

@@ -16,17 +16,10 @@
 
 package com.betfair.cougar.transport.impl.protocol.http;
 
-import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.security.InferredCountryResolver;
-import com.betfair.cougar.core.api.exception.CougarException;
-import com.betfair.cougar.core.api.exception.CougarFrameworkException;
-import com.betfair.cougar.transport.api.CommandResolver;
-import com.betfair.cougar.transport.api.ExecutionCommand;
 import com.betfair.cougar.transport.api.RequestTimeResolver;
 import com.betfair.cougar.transport.api.protocol.http.GeoLocationDeserializer;
-import com.betfair.cougar.transport.api.protocol.http.HttpCommand;
 import com.betfair.cougar.util.geolocation.GeoIPLocator;
-import com.betfair.cougar.util.geolocation.SuspectNetworkList;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -47,6 +40,6 @@ public abstract class AbstractTerminateableHttpCommandProcessor extends Abstract
 	public AbstractTerminateableHttpCommandProcessor(GeoIPLocator geoIPLocator,
                                                      GeoLocationDeserializer deserializer, String uuidHeader, InferredCountryResolver<HttpServletRequest> countryResolver,
                                                      String requestTimeoutHeader, RequestTimeResolver requestTimeResolver) {
-        super(geoIPLocator, deserializer, uuidHeader, countryResolver, requestTimeoutHeader, requestTimeResolver);
+        super(geoIPLocator, deserializer, uuidHeader, requestTimeoutHeader, requestTimeResolver, countryResolver);
 	}
 }
