@@ -307,7 +307,7 @@ public abstract class AbstractHttpCommandProcessor extends
         if (identityTokenResolver != null) {
             tokens = identityTokenResolver.resolve(req, certs);
         }
-        RequestTimeResolver<Req, ?> localRTR = (RequestTimeResolver<Req, ?>) requestTimeResolver;
+        RequestTimeResolver<Req> localRTR = (RequestTimeResolver<Req>) requestTimeResolver;
         Date requestTime = localRTR.resolveRequestTime(req);
 		return resolveExecutionContextWithTokensAndRequestTime(http, tokens, ignoreSubsequentWritesOfIdentity, requestTime);
     }
