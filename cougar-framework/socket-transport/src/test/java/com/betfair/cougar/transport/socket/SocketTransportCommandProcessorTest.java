@@ -29,6 +29,7 @@ import com.betfair.cougar.core.api.ev.ExecutionResult;
 import com.betfair.cougar.core.api.ev.ExecutionVenue;
 import com.betfair.cougar.core.api.ev.OperationDefinition;
 import com.betfair.cougar.core.api.ev.OperationKey;
+import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
@@ -46,6 +47,7 @@ import com.betfair.cougar.transport.api.ExecutionCommand;
 import com.betfair.cougar.transport.api.protocol.CougarObjectInput;
 import com.betfair.cougar.transport.api.protocol.CougarObjectOutput;
 import com.betfair.cougar.netutil.nio.hessian.HessianObjectIOFactory;
+import com.betfair.cougar.transport.api.protocol.http.HttpCommand;
 import com.betfair.cougar.transport.api.protocol.socket.InvocationResponse;
 import com.betfair.cougar.transport.api.protocol.socket.SocketOperationBindingDescriptor;
 import com.betfair.cougar.transport.impl.AbstractCommandProcessor;
@@ -85,7 +87,10 @@ public class SocketTransportCommandProcessorTest {
 
     private static final long CORRELATION_ID = 9999L;
 
-    private static final ExecutionContextWithTokens ctx = new ExecutionContextWithTokens() {
+    private Date receivedTime = new Date();
+    private Date requestTime = new Date();
+
+    private final ExecutionContextWithTokens ctx = new ExecutionContextWithTokens() {
 
         @Override
         public GeoLocationDetails getLocation() {
@@ -104,12 +109,12 @@ public class SocketTransportCommandProcessorTest {
 
         @Override
         public Date getReceivedTime() {
-            return new Date();
+            return receivedTime;
         }
 
         @Override
         public Date getRequestTime() {
-            return new Date();
+            return requestTime;
         }
 
         @Override
@@ -313,8 +318,7 @@ public class SocketTransportCommandProcessorTest {
         }
     }
 
-    @Test
-    public void testCreateCommandResolver() throws IOException {
+    private CommandResolver<SocketTransportCommand> createCommandResolver(TimeConstraints toReturn) throws IOException {
         SocketTransportRPCCommand command = Mockito.mock(SocketTransportRPCCommand.class);
         when(command.getOutput()).thenReturn(new HessianObjectIOFactory().newCougarObjectOutput(out, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED));
         MyIoSession session = new MyIoSession("abc");
@@ -324,7 +328,7 @@ public class SocketTransportCommandProcessorTest {
         when(marshaller.readExecutionContext(any(CougarObjectInput.class), any(String.class), any(X509Certificate[].class), anyInt(), anyByte())).thenReturn(ctx);
         when(marshaller.readOperationKey(any(CougarObjectInput.class))).thenReturn(key);
         when(marshaller.readArgs(any(Parameter[].class), any(CougarObjectInput.class))).thenReturn(args);
-        when(marshaller.readTimeConstraintsIfPresent(any(CougarObjectInput.class), anyByte())).thenReturn(DefaultTimeConstraints.NO_CONSTRAINTS);
+        when(marshaller.readTimeConstraintsIfPresent(any(CougarObjectInput.class), anyByte())).thenReturn(toReturn);
 
         final OperationKey opKey = new OperationKey(new ServiceVersion(1,0), "TestingService", "TestCall");
         OperationDefinition opDef = Mockito.mock(OperationDefinition.class);
@@ -343,7 +347,49 @@ public class SocketTransportCommandProcessorTest {
         when(desc.getServiceVersion()).thenReturn(opKey.getVersion());
         d.bind(desc);
         d.onCougarStart();
-        d.createCommandResolver(command);
+        return d.createCommandResolver(command);
+    }
+
+    @Test
+    public void testCreateCommandResolver() throws IOException {
+        createCommandResolver(DefaultTimeConstraints.NO_CONSTRAINTS);
+    }
+
+    @Test
+    public void createCommandResolver_NoTimeout() throws IOException {
+        // resolve the command
+        CommandResolver<SocketTransportCommand> cr = createCommandResolver(DefaultTimeConstraints.NO_CONSTRAINTS);
+        Iterable<ExecutionCommand> executionCommands = cr.resolveExecutionCommands();
+
+        // check the output
+        ExecutionCommand executionCommand = executionCommands.iterator().next();
+        TimeConstraints constraints = executionCommand.getTimeConstraints();
+        assertNull(constraints.getExpiryTime());
+    }
+
+    @Test
+    public void createCommandResolver_WithTimeout() throws IOException {
+        // resolve the command
+        CommandResolver<SocketTransportCommand> cr = createCommandResolver(DefaultTimeConstraints.fromTimeout(10000));
+        Iterable<ExecutionCommand> executionCommands = cr.resolveExecutionCommands();
+
+        // check the output
+        ExecutionCommand executionCommand = executionCommands.iterator().next();
+        TimeConstraints constraints = executionCommand.getTimeConstraints();
+        assertNotNull(constraints.getExpiryTime());
+    }
+
+    @Test
+    public void createCommandResolver_WithTimeoutAndOldRequestTime() throws IOException {
+        requestTime = new Date(System.currentTimeMillis()-10001);
+        // resolve the command
+        CommandResolver<SocketTransportCommand> cr = createCommandResolver(DefaultTimeConstraints.fromTimeout(10000));
+        Iterable<ExecutionCommand> executionCommands = cr.resolveExecutionCommands();
+
+        // check the output
+        ExecutionCommand executionCommand = executionCommands.iterator().next();
+        TimeConstraints constraints = executionCommand.getTimeConstraints();
+        assertTrue(constraints.getExpiryTime() < System.currentTimeMillis());
     }
 
 }

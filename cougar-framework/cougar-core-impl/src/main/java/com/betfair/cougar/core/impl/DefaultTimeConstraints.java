@@ -45,4 +45,11 @@ public class DefaultTimeConstraints implements TimeConstraints {
         long timeRemaining = rawTimeConstraints.getTimeRemaining();
         return new DefaultTimeConstraints(requestTime.getTime()+timeRemaining);
     }
+
+    @Override
+    public String toString() {
+        return "DefaultTimeConstraints{" +
+                "expiryTime=" + expiryTime +
+                '}';
+    }
 }
