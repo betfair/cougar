@@ -71,7 +71,7 @@ public class SocketRMIMarshallerArgsTest {
 
     @Before
 	public void setup() {
-		cut= new SocketRMIMarshaller(new DefaultSocketTimeResolver(true));
+		cut= new SocketRMIMarshaller();
 		ioFactory = new HessianObjectIOFactory();
 	}
 	
