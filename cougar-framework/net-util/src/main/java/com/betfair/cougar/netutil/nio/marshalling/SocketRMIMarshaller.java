@@ -70,7 +70,7 @@ public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller 
 
     private final GeoIPLocator geoIpLocator;
     private final IdentityTokenResolver<CougarObjectInput, CougarObjectOutput, X509Certificate[]> identityTokenResolver;
-    private final RequestTimeResolver<Long, CougarObjectOutput> requestTimeResolver;
+    private final RequestTimeResolver<Long> requestTimeResolver;
     private boolean hardFailEnumDeserialisation;
 
     // For client side, as the GeoIpLocator/cert regex & request time resolver is only necessary server side.
@@ -78,7 +78,7 @@ public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller 
     	this(null,new CommonNameCertInfoExtractor(),null);
     }
 
-    public SocketRMIMarshaller(GeoIPLocator geoIpLocator, CertInfoExtractor certInfoExtractor, RequestTimeResolver<Long, CougarObjectOutput> requestTimeResolver) {
+    public SocketRMIMarshaller(GeoIPLocator geoIpLocator, CertInfoExtractor certInfoExtractor, RequestTimeResolver<Long> requestTimeResolver) {
         this.geoIpLocator = geoIpLocator;
         this.requestTimeResolver = requestTimeResolver;
         this.identityTokenResolver = new SSLAwareTokenResolver<CougarObjectInput, CougarObjectOutput, X509Certificate[]>(certInfoExtractor) {
