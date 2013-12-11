@@ -81,7 +81,6 @@ public abstract class AbstractHttpExecutable<HR> extends AbstractClientTransport
     private AtomicReference<String> remoteAddressRef = new AtomicReference<String>("NOT ASSIGNED");
     private DataBindingFactory dataBindingFactory;
     private IdentityTokenResolver<HR, HR, X509Certificate[]> identityTokenResolver;
-    private RequestTimeResolver<HR, HR> requestTimeResolver;
     private QueryStringGeneratorFactory queryStringGeneratorFactory;
     private ExceptionTransformer exceptionTransformer;
     private ExceptionFactory exceptionFactory;
@@ -183,9 +182,6 @@ public abstract class AbstractHttpExecutable<HR> extends AbstractClientTransport
                 }
                 LOGGER.info("Rewrote tokens " + sb + " to http request");
             }
-        }
-        if (requestTimeResolver != null) {
-            requestTimeResolver.writeRequestTime(request);
         }
 
         // Send Request
@@ -378,10 +374,6 @@ public abstract class AbstractHttpExecutable<HR> extends AbstractClientTransport
 
     public void setIdentityTokenResolver(IdentityTokenResolver<HR, HR, X509Certificate[]> identityTokenResolver) {
         this.identityTokenResolver = identityTokenResolver;
-    }
-
-    public void setRequestTimeResolver(RequestTimeResolver<HR, HR> requestTimeResolver) {
-        this.requestTimeResolver = requestTimeResolver;
     }
 
     public void setExceptionTransformer(ExceptionTransformer exceptionTransformer) {

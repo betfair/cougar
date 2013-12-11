@@ -33,9 +33,4 @@ public class SimpleHttpRequestTimeResolver extends SimpleRequestTimeResolver<Htt
         }
         return null;
     }
-
-    @Override
-    public void writeRequestTime(Object output) {
-        throw new UnsupportedOperationException();
-    }
 }

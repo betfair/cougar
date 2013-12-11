@@ -141,7 +141,6 @@ public abstract class CougarRequestFactory<HR> {
         if (ctx.getReceivedTime() != null) {
             result.add(new BasicHeader("X-ReceivedTime", DATE_TIME_FORMATTER.print(ctx.getReceivedTime().getTime())));
         }
-        // todo: read these?
         result.add(new BasicHeader("X-RequestTime", DATE_TIME_FORMATTER.print(System.currentTimeMillis())));
         if (timeConstraints.getTimeRemaining() != null) {
             result.add(new BasicHeader("X-RequestTimeout", String.valueOf(timeConstraints.getTimeRemaining())));

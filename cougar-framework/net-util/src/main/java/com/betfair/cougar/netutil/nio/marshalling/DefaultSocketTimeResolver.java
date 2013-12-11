@@ -23,14 +23,4 @@ public class DefaultSocketTimeResolver extends SimpleRequestTimeResolver<Long, C
     protected Date readRequestTime(Long input) {
         return new Date(input);
     }
-
-    @Override
-    public void writeRequestTime(CougarObjectOutput output) {
-        try {
-            output.writeLong(System.currentTimeMillis());
-        }
-        catch (IOException ioe) {
-            throw new RuntimeException("Error writing request time",ioe);
-        }
-    }
 }

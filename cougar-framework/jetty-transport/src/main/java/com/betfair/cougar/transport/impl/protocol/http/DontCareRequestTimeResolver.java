@@ -12,9 +12,4 @@ public class DontCareRequestTimeResolver implements RequestTimeResolver {
     public Date resolveRequestTime(Object input) {
         return new Date();
     }
-
-    @Override
-    public void writeRequestTime(Object output) {
-        throw new UnsupportedOperationException();
-    }
 }

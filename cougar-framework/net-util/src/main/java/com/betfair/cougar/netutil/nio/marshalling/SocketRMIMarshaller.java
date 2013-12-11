@@ -73,9 +73,9 @@ public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller 
     private final RequestTimeResolver<Long, CougarObjectOutput> requestTimeResolver;
     private boolean hardFailEnumDeserialisation;
 
-    // For client side, as the GeoIpLocator/cert regex is only necessary server side.
-    public SocketRMIMarshaller(RequestTimeResolver<Long, CougarObjectOutput> requestTimeResolver) {
-    	this(null,new CommonNameCertInfoExtractor(),requestTimeResolver);
+    // For client side, as the GeoIpLocator/cert regex & request time resolver is only necessary server side.
+    public SocketRMIMarshaller() {
+    	this(null,new CommonNameCertInfoExtractor(),null);
     }
 
     public SocketRMIMarshaller(GeoIPLocator geoIpLocator, CertInfoExtractor certInfoExtractor, RequestTimeResolver<Long, CougarObjectOutput> requestTimeResolver) {
@@ -300,9 +300,9 @@ public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller 
         writeRequestTime(out, protocolVersion);
     }
 
-    void writeRequestTime(CougarObjectOutput out, byte protocolVersion) {
+    void writeRequestTime(CougarObjectOutput out, byte protocolVersion) throws IOException {
         if (protocolVersion >= CougarProtocol.TRANSPORT_PROTOCOL_VERSION_TIME_CONSTRAINTS) {
-            requestTimeResolver.writeRequestTime(out);
+            out.writeLong(System.currentTimeMillis());
         }
     }
 
