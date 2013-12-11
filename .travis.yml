@@ -11,7 +11,6 @@ notifications:
 before_install:
    - "gem install travis-artifacts"
 install: "echo 'No install command here!'"
-# -Denv.M2_HOME=/usr/local/maven
 script: "mvn install -Pintegration-test -B"
 after_failure:
   - "bash uploadSurefireReports.sh"
