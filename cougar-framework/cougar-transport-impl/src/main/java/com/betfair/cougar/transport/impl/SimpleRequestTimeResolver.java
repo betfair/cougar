@@ -7,7 +7,7 @@ import java.util.Date;
 /**
  *
  */
-public abstract class SimpleRequestTimeResolver<I, O> implements RequestTimeResolver<I, O> {
+public abstract class SimpleRequestTimeResolver<I> implements RequestTimeResolver<I> {
     private boolean clientTimeSynchronizedWithServer;
 
     public SimpleRequestTimeResolver(boolean clientTimeSynchronizedWithServer) {

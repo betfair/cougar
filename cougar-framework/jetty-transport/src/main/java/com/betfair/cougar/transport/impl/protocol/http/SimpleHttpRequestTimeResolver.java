@@ -8,7 +8,7 @@ import java.util.Date;
 /**
  *
  */
-public class SimpleHttpRequestTimeResolver extends SimpleRequestTimeResolver<HttpServletRequest,Object> {
+public class SimpleHttpRequestTimeResolver extends SimpleRequestTimeResolver<HttpServletRequest> {
 
     private String requestTimeHeader;
 

@@ -9,7 +9,7 @@ import java.util.Date;
 /**
  *
  */
-public class DefaultSocketTimeResolver extends SimpleRequestTimeResolver<Long, CougarObjectOutput> {
+public class DefaultSocketTimeResolver extends SimpleRequestTimeResolver<Long> {
 
     public DefaultSocketTimeResolver() {
         super(false);
