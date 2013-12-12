@@ -32,6 +32,53 @@
     <packaging>pom</packaging>
     <inceptionYear>2009</inceptionYear>
 
+    <organization>
+        <name>Betfair</name>
+        <url>http://www.betfair.com</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <id>all</id>
+            <name>All developers</name>
+            <email>cougar@googlegroups.com</email>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <url>http://betfair.github.io/cougar</url>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/betfair/cougar/issues</url>
+    </issueManagement>
+
+    <mailingLists>
+        <mailingList>
+            <name>cougar user list</name>
+            <post>cougar@googlegroups.com</post>
+            <archive>https://groups.google.com/forum/#!forum/cougar</archive>
+        </mailingList>
+    </mailingLists>
+
+    <scm>
+        <connection>scm:git:git@github.com:betfair/cougar.git</connection>
+        <url>https://github.com/betfair/cougar.git</url>
+        <developerConnection>scm:git:git@github.com:betfair/cougar</developerConnection>
+    </scm>
+
+    <ciManagement>
+        <system>Travis CI</system>
+        <url>https://travis-ci.org/betfair/cougar</url>
+    </ciManagement>
+
     <properties>
         <commons.lang.version>2.6</commons.lang.version>
         <!-- Note: 1.2.12 and higher cause issues in SoapTransportCommandProcessorTest that I don't understand -->
@@ -54,7 +101,7 @@
         <junit.dependency.version>4.11</junit.dependency.version>
         <log4j.version>1.2.17</log4j.version>
         <mockito-core.version>1.9.5</mockito-core.version>
-        <tornjak.version>3.0-SNAPSHOT</tornjak.version>
+        <tornjak.version>3.0.0.rc1</tornjak.version>
         <slf4j.version>1.7.5</slf4j.version>
         <spring.dependency.version>3.2.4.RELEASE</spring.dependency.version>
         <woodstox.version>4.2.0</woodstox.version>
@@ -63,7 +110,7 @@
             example,baseline,baseline-client,cougar-client-code-tests,cougar-component-code-tests,cougar-component-tests,cougar-normal-code-tests,baseline-versionidd-tests,cougar-ci-process-launcher,cougar-jett-ci-launcher,cougar-test-utils,cougar-binaryprotocol-tests,cougar-iddversion-tests
         </sonar.skippedModules>
         <hessian.version>4.0.33</hessian.version>
-        <virtualheap.version>1.3-SNAPSHOT</virtualheap.version>
+        <virtualheap.version>1.3.0</virtualheap.version>
     </properties>
 
     <modules>
