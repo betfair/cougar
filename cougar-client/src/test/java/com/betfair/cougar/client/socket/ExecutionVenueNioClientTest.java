@@ -140,11 +140,16 @@ public class ExecutionVenueNioClientTest extends AbstractClientTest {
         nioServer3.setHealthState(true);
 
         // list of two instances
-        ExecutionVenueNioClient client2 =
+        final ExecutionVenueNioClient client2 =
                 ServerClientFactory.createClient("127.0.0.1:" + nioServer2.getBoundPort() + ",127.0.0.1:" + nioServer3.getBoundPort());
         client2.start().get(10, TimeUnit.SECONDS);
-        assertTrue(client2.getSessionFactory().isConnected());
-        assertEquals(2, getNumOfConnectedSessions(client2.getSessionFactory().getConnectedStatus()));
+
+        assertTrue("Could not establish connections to both servers after 30s", awaitOutcome(new Outcome<Boolean>() {
+            @Override
+            public Boolean outcome() {
+                return ((getNumOfConnectedSessions(client2.getSessionFactory().getConnectedStatus())) == 2);
+            }
+        }, true, 30000));
 
 
         // fire one request and verify that we are ok
