@@ -95,7 +95,9 @@ fi
 if [ ! -z $NAME ]; then
   git config user.name "Simon Matic Langford"
 fi
-git commit -a -m "Pushing latest site updates"
+#find . -name ".git" -prune -o -print -exec git add {} \;
+git add -A
+git commit -m "Pushing latest site updates"
 # the sed is so we don't show the password in the log
 git push https://$USER_PASS@github.com/$REPO.git gh-pages | sed -e 's/\/\/.*\:.*@github\.com/\/\/github\.com/'
 cd ..
