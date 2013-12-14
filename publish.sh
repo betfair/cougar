@@ -85,7 +85,8 @@ cd gh-pages
 git config user.email "simon@exemel.co.uk"
 git config user.name "Simon Matic Langford"
 git commit -a -m "Pushing latest site updates"
-git push https://$USER_PASS@github.com/$REPO.git gh-pages
+# the sed is so we don't show the password in the log
+git push https://$USER_PASS@github.com/$REPO.git gh-pages | sed -e 's/\/\/.*\:.*@github\.com/\/\/github\.com/'
 cd ..
 
 echo "Cleanup.."
