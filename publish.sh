@@ -8,6 +8,8 @@ REPO=$1
 VERSION=$2
 USER=$GITHUB_USER
 PASS=$GITHUB_PASSWORD
+EMAIL=$GIT_EMAIL
+NAME=$GIT_NAME
 
 if [ -z $USER ]; then
   if [ ! -z "$3" ]; then
@@ -21,11 +23,16 @@ if [ -z $PASS ]; then
 fi
 
 if [ -z "$USER" ]; then
-  echo "Usage: publish.sh <repo> <version> [<gh-user> [gh-password]]"
-  echo "       Username/password may also be passed by setting environment variables:"
-  echo "       GITHUB_USER"
-  echo "       GITHUB_PASSWORD"
-  echo "       If no password set then will try to use private key"
+  echo "Usage: publish.sh <repo> <version> [<gh-user> [gh-password]]" >&2
+  echo "" >&2
+  echo "       Username/password may also be passed by setting environment variables:" >&2
+  echo "         GITHUB_USER" >&2
+  echo "         GITHUB_PASSWORD" >&2
+  echo "       If no password set then will try to use private key" >&2
+  echo "" >&2
+  echo "       Git name/email - if not set locally then need to be provided via environment variables:" >&2
+  echo "         GIT_EMAIL" >&2
+  echo "         GIT_NAME" >&2
   exit 1
 fi
 
@@ -63,7 +70,7 @@ fi
 echo "Generating maven site"
 mkdir -p $PAGES_DIR/maven
 cd source
-#mvn site:site site:deploy -Dsite.deploy.dir=$TMP_DIR/$PAGES_DIR/maven
+mvn site:site site:deploy -Dsite.deploy.dir=$TMP_DIR/$PAGES_DIR/maven
 cd ..
 
 echo "Copying maven site into place"
@@ -82,8 +89,12 @@ cd ..
 echo "Pushing to live"
 cd gh-pages
 # todo: move these to env variables
-git config user.email "simon@exemel.co.uk"
-git config user.name "Simon Matic Langford"
+if [ ! -z $EMAIL ]; then
+  git config user.email "simon@exemel.co.uk"
+fi
+if [ ! -z $NAME ]; then
+  git config user.name "Simon Matic Langford"
+fi
 git commit -a -m "Pushing latest site updates"
 # the sed is so we don't show the password in the log
 git push https://$USER_PASS@github.com/$REPO.git gh-pages | sed -e 's/\/\/.*\:.*@github\.com/\/\/github\.com/'
