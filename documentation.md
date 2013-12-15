@@ -37,6 +37,12 @@ References
 * [Archetypes](archetypes.html) - TODO
 * [Tuning](tuning.html) - TODO
 
+Notes
+-----
+
+* [Interface versioning](versioning.html) - TODO
+* [SOAP - why we don't like it](whats-wrong-with-soap.html) - TODO
+
 Older
 -----
 
