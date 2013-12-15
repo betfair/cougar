@@ -15,7 +15,7 @@ html, body {
 
 body {
 	background-color: white;
-	font: 13.34px helvetica, arial, clean, sans-serif;
+	font: 10.5pt helvetica, arial, clean, sans-serif;
 	*font-size: small;
 	text-align: center;
 }
@@ -73,11 +73,11 @@ blockquote {
 /*****************************************************************************/
 
 .site {
-	font-size: 110%;
+	font-size: 100%;
 	text-align: left;
-	width: 728px;
-	margin: 3em auto 2em auto;
-	line-height: 1.5em;
+	width: 800px;
+	margin: 1em auto 3em auto;
+	line-height: 1.25em;
 }
 
 h1, h2, h3, h4, h5, h6, .comments {
@@ -106,7 +106,7 @@ h1, h2, h3, h4, h5, h6, .comments {
 .site .footer {
 	font-size: 80%;
 	color: #666;
-	border-top: 4px solid #eee;
+	border-top: 2px solid #eee;
 	margin-top: 2em;
 	overflow: hidden;
 }
