@@ -1,0 +1,7 @@
+com.betfair.cougar.codegen
+com.betfair.cougar.codegen.except
+com.betfair.cougar.codegen.resolver
+com.betfair.cougar.codegen.resource
+com.betfair.cougar.transformations
+com.betfair.cougar.transformations.manglers
+com.betfair.cougar.transformations.validators

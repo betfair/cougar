@@ -70,7 +70,8 @@ fi
 echo "Generating maven site"
 mkdir -p $PAGES_DIR/maven
 cd source
-mvn site:site site:deploy -Dsite.deploy.dir=$TMP_DIR/$PAGES_DIR/maven
+mvn -q install -DskipTests=true
+mvn -q site:site site:deploy -Dsite.deploy.dir=$TMP_DIR/$PAGES_DIR/maven
 cd ..
 
 echo "Copying maven site into place"
@@ -79,24 +80,16 @@ cp -R doco-source/* $PAGES_DIR
 
 echo "Telling git about our changes"
 cd gh-pages
-if [ $VERSION == "master" ]; then
-  find . -exec git add {} \;
-else
-  find $VERSION -exec git add {} \;
-fi
-cd ..
-
-echo "Pushing to live"
-cd gh-pages
 # todo: move these to env variables
 if [ ! -z $EMAIL ]; then
-  git config user.email "simon@exemel.co.uk"
+  git config user.email $EMAIL
 fi
 if [ ! -z $NAME ]; then
-  git config user.name "Simon Matic Langford"
+  git config user.name $NAME
 fi
-#find . -name ".git" -prune -o -print -exec git add {} \;
 git add -A
+
+echo "Pushing to live"
 git commit -m "Pushing latest site updates"
 # the sed is so we don't show the password in the log
 git push https://$USER_PASS@github.com/$REPO.git gh-pages | sed -e 's/\/\/.*\:.*@github\.com/\/\/github\.com/'

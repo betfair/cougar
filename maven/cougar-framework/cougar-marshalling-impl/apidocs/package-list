@@ -1,0 +1,5 @@
+com.betfair.cougar.marshalling.impl.databinding
+com.betfair.cougar.marshalling.impl.databinding.json
+com.betfair.cougar.marshalling.impl.databinding.kpi
+com.betfair.cougar.marshalling.impl.databinding.xml
+com.betfair.cougar.marshalling.impl.util

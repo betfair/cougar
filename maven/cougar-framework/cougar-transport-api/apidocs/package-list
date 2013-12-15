@@ -1,0 +1,9 @@
+com.betfair.cougar.transport.api
+com.betfair.cougar.transport.api.protocol
+com.betfair.cougar.transport.api.protocol.events
+com.betfair.cougar.transport.api.protocol.events.jms
+com.betfair.cougar.transport.api.protocol.http
+com.betfair.cougar.transport.api.protocol.http.jsonrpc
+com.betfair.cougar.transport.api.protocol.http.rescript
+com.betfair.cougar.transport.api.protocol.http.soap
+com.betfair.cougar.transport.api.protocol.socket

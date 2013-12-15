@@ -1,0 +1,6 @@
+com.betfair.cougar.api
+com.betfair.cougar.api.annotations
+com.betfair.cougar.api.export
+com.betfair.cougar.api.fault
+com.betfair.cougar.api.geolocation
+com.betfair.cougar.api.security

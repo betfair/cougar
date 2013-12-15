@@ -1,0 +1,9 @@
+com.betfair.cougar
+com.betfair.cougar.core.impl
+com.betfair.cougar.core.impl.ev
+com.betfair.cougar.core.impl.interceptors
+com.betfair.cougar.core.impl.jmx
+com.betfair.cougar.core.impl.kpi
+com.betfair.cougar.core.impl.logging
+com.betfair.cougar.core.impl.security
+com.betfair.cougar.core.impl.transports
