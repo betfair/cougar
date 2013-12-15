@@ -13,6 +13,7 @@ Binding Descriptors (in Service Registration)
 ---------------------------------------------
 
 When registering a service, you specify the set of transport binding descriptors you want to be used. If a binding descriptor for a protocol is not in this set, then it is not eligible for binding this service interface:
+
 ```
 <bean class="com.betfair.cougar.core.impl.ev.ServiceRegistration">
   ...
@@ -65,4 +66,5 @@ Event transports are a bit unusual, in that it is possible to have more than one
   ...
 </bean>
 ```
-*Note that this is required in addition to the binding descriptor above.*
+
+**Note that this is required in addition to the binding descriptor above.**
