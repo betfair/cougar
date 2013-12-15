@@ -48,7 +48,7 @@
         <developer>
             <id>all</id>
             <name>All developers</name>
-            <email>cougar@googlegroups.com</email>
+            <email>betfair-cougar@googlegroups.com</email>
         </developer>
     </developers>
 
@@ -69,9 +69,14 @@
 
     <mailingLists>
         <mailingList>
-            <name>cougar user list</name>
-            <post>cougar@googlegroups.com</post>
-            <archive>https://groups.google.com/forum/#!forum/cougar</archive>
+            <name>Cougar user list</name>
+            <post>betfair-cougar@googlegroups.com</post>
+            <archive>https://groups.google.com/forum/#!forum/betfair-cougar</archive>
+        </mailingList>
+        <mailingList>
+            <name>Cougar developer notification list</name>
+            <post>betfair-cougar-dev@googlegroups.com</post>
+            <archive>https://groups.google.com/forum/#!forum/betfair-cougar-dev</archive>
         </mailingList>
     </mailingLists>
 
