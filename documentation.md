@@ -20,7 +20,7 @@ Guides
 References
 ----------
 
-* [Transport basics](transport-basics.html) - TODO
+* [Transport basics](transport-basics.html)
  * [Jetty transport](jetty-transport.html) - TODO
  * [Binary transport](binary-transport.html) - TODO
  * [JMS transports](jms-transports.html) - TODO
