@@ -38,6 +38,12 @@ a {
 	color: #00a;
 }
 
+code {
+    white-space: pre;
+    word-break: normal;
+    word-wrap: normal;
+}
+
 a:hover {
 	color: black;
 }
@@ -68,7 +74,7 @@ blockquote {
 
 .site {
 	font-size: 110%;
-	text-align: justify;
+	text-align: left;
 	width: 728px;
 	margin: 3em auto 2em auto;
 	line-height: 1.5em;
