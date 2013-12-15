@@ -27,15 +27,15 @@ Cougar has only recently been made an open source project after 4 years as a clo
 Whilst we're cleaning up Cougar (mostly in the documentation/archetype space), plus adding features we think are needed, Cougar is available as a SNAPSHOT release (3.0-SNAPSHOT to be precise) in the Sonatype OSS Repository:
 
 ```
-		<repository>
-			<id>sonatype-nexus-snapshots</id>
-			<name>Sonatype Nexus Snapshots</name>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
+<repository>
+  <id>sonatype-nexus-snapshots</id>
+  <name>Sonatype Nexus Snapshots</name>
+  <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+  <releases>
+    <enabled>false</enabled>
+  </releases>
+  <snapshots>
+    <enabled>true</enabled>
+  </snapshots>
+</repository>
 ```
