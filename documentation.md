@@ -12,7 +12,7 @@ Project Info
 Guides
 ------
 
-* [What is Cougar?](cougar-guide.html)
+* [What is Cougar?](cougar-guide.html) - In progress
 * [Cougar in under 5 minutes](getting-started.html) - TODO
 * [Securing Cougar](securing.html) - TODO
 * [Tips 'N' Tricks](tips-tricks.html) - TODO
@@ -20,9 +20,10 @@ Guides
 References
 ----------
 
-* [Jetty transport](jetty-transport.html) - TODO
-* [Binary transport](binary-transport.html) - TODO
-* [JMS transports](jms-transports.html) - TODO
+* [Transport basics](transport-basics.html) - TODO
+ * [Jetty transport](jetty-transport.html) - TODO
+ * [Binary transport](binary-transport.html) - TODO
+ * [JMS transports](jms-transports.html) - TODO
 * [Cougar client](client.html) - TODO
 * [Identities](identities.html) - TODO
 * [Geo-location](geolocation.html) - TODO
