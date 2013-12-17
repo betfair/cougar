@@ -98,7 +98,7 @@
         <aspectjweaver.version>1.7.3</aspectjweaver.version>
         <bcel.version>5.2</bcel.version>
         <apache.httpclient.version>4.3</apache.httpclient.version>
-        <testng.version>6.3.1</testng.version>
+        <testng.version>6.8.5</testng.version>
         <apache.httpcore.version>4.3</apache.httpcore.version>
         <json.version>20090211</json.version>
         <commons.exec.version>1.1</commons.exec.version>
