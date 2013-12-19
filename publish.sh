@@ -92,7 +92,7 @@ git add -A
 echo "Pushing to live"
 git commit -m "Pushing latest site updates"
 # the sed is so we don't show the password in the log
-git push https://$USER_PASS@github.com/$REPO.git gh-pages | sed -e 's/\/\/.*\:.*@github\.com/\/\/github\.com/'
+git push https://$USER_PASS@github.com/$REPO.git gh-pages 2>&1 | sed -e 's/\/\/.*\:.*@github\.com/\/\/github\.com/'
 cd ..
 
 echo "Cleanup.."
