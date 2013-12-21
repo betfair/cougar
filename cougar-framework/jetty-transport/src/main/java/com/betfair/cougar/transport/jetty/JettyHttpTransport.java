@@ -59,6 +59,7 @@ public class JettyHttpTransport extends AbstractRegisterableTransport implements
 
     private StaticContentServiceHandler wsdlStaticHandler;
     private StaticContentServiceHandler htmlStaticHandler;
+    private AliasHandler aliasHandler;
     private ContextHandlerCollection handlerCollection = new ContextHandlerCollection();
 
     private TransportCommandProcessorFactory<HttpCommandProcessor> commandProcessorFactory;
@@ -66,6 +67,8 @@ public class JettyHttpTransport extends AbstractRegisterableTransport implements
     private ProtocolBindingRegistry protocolBindingRegistry;
 
     private Map<String, JettyHandlerSpecification> handlerSpecificationMap = new HashMap<String, JettyHandlerSpecification>();
+
+    private Map<String, String> pathAliases = new HashMap<>();
 
     // created in setApplicationContext
     // set to empty initially so tests that don't set up channels and service binding descriptors will work OK
@@ -199,12 +202,14 @@ public class JettyHttpTransport extends AbstractRegisterableTransport implements
                 suppressCommasInAccessLogForStaticHtml);
         htmlStaticHandler.setUnknownCipherKeyLength(unknownCipherKeyLength);
 
+//        aliasHandler = new AliasHandler(pathAliases);
+
         StatisticsHandler statisticsHandler = new StatisticsHandler();
         statisticsHandler.setServer(server.getJettyServer());
 
         handlerCollection.setServer(server.getJettyServer());
 
-        JettyHandler defaultJettyServiceHandler = new JettyHandler(defaultCommandProcessor, suppressCommasInAccessLogForCalls);
+        JettyHandler defaultJettyServiceHandler = new AliasHandler(defaultCommandProcessor, suppressCommasInAccessLogForCalls, pathAliases);
         ContextHandler context = new ContextHandler();
         context.setContextPath("");
         context.setResourceBase(".");
@@ -213,6 +218,7 @@ public class JettyHttpTransport extends AbstractRegisterableTransport implements
 
         handlerCollection.addHandler(wsdlStaticHandler);
         handlerCollection.addHandler(htmlStaticHandler);
+//        handlerCollection.addHandler(aliasHandler);
         statisticsHandler.setHandler(handlerCollection);
 
         // Register the errorhandler with the server itself
@@ -476,6 +482,15 @@ public class JettyHttpTransport extends AbstractRegisterableTransport implements
 
     public void setJmxControl(JMXControl jmxControl) {
         this.jmxControl = jmxControl;
+    }
+
+    public void setPathAliases(Map<String, String> pathAliases) {
+        this.pathAliases = pathAliases;
+    }
+
+    @ManagedAttribute
+    public Map<String, String> getPathAliases() {
+        return pathAliases;
     }
 
     @ManagedAttribute

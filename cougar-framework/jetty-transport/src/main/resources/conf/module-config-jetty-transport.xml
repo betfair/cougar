@@ -110,6 +110,14 @@
         <property name="serverWrapper.maxFormContentSize" value="$COUGAR-JETTY{cougar.maxFormContentSize}"/>
 
         <property name="unknownCipherKeyLength" value="$COUGAR-JETTY{jetty.https.unknownCipherKeyLength}"/>
+
+        <property name="pathAliases">
+            <bean factory-bean="aliasMapFactory" factory-method="create"/>
+        </property>
+    </bean>
+
+    <bean id="aliasMapFactory" class="com.betfair.cougar.util.configuration.MapFactory">
+        <constructor-arg index="0" value="cougar.jetty.pathAlias"/>
     </bean>
 
 	<bean id="jettyEndPoints" class="com.betfair.cougar.transport.jetty.jmx.JettyEndpoints"/>
