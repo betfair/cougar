@@ -72,8 +72,9 @@ public class HttpCallBean {
 //	private IUtilityLogger logger = UtilityLoggerFactory.getLogger();
 	
 	private static final int NOTFOUND_STATUS_CODE = 404;
-	
-	public String getNameSpace() {
+    private String fullPath;
+
+    public String getNameSpace() {
 		if (nameSpaceServiceName==null || nameSpaceVersion==null) {
 			throw new RuntimeException ("serviceName and version must be set before retrieving nameSpace");
 		} else {
@@ -472,5 +473,13 @@ public class HttpCallBean {
 	public List<BatchedRequestBean> getBatchedRequests(){
 		return batchedRequests;
 	}
-	
+
+    public String getFullPath() {
+        return fullPath;
+    }
+
+    // allows overriding of the full request path (for aliases etc)
+    public void setFullPath(String fullPath) {
+        this.fullPath = fullPath;
+    }
 }

@@ -35,13 +35,24 @@ import java.io.ByteArrayInputStream;
  * Ensure that when a Cougar container is running a service that has all its components in the OK state, the heathcheck summary operation returns OK status
  */
 public class RestHealthCheckSummaryOKTest {
+
+    private String overridePath;
+
+    // for use by subclass - for aliases
+    protected void overridePath(String path) {
+        overridePath = path;
+    }
+
     @Test
     public void v3() throws Exception {
         // Set up the Http Call Bean to make the baseline service request
         CougarManager cougarManager1 = CougarManager.getInstance();
         HttpCallBean getNewHttpCallBean1 = cougarManager1.getNewHttpCallBean();
         cougarManager1 = cougarManager1;
-        
+
+        if (overridePath != null) {
+            getNewHttpCallBean1.setFullPath(overridePath);
+        }
         getNewHttpCallBean1.setOperationName("setHealthStatusInfo");
         
         getNewHttpCallBean1.setServiceName("baseline", "cougarBaseline");

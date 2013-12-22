@@ -399,6 +399,7 @@ public class CougarHelpers {
 		String path = httpCallBean.getPath();
 		String altURL = httpCallBean.getAlternativeURL(); // Will be "" for standard URL, or "/www" for alternative URL
 		boolean batchedQuery = httpCallBean.getJSONRPC();
+        String fullPath = httpCallBean.getFullPath();
 		
 		String methodURL = "";
 		
@@ -426,9 +427,14 @@ public class CougarHelpers {
 				}
 				queryParamString = queryBuff.toString();
 			}
-			
-			methodURL = "http://" + host + ":" + port + altURL + "/" + serviceExtension + "/" + version + "/"
-						+ path + queryParamString;
+
+            if (fullPath != null) {
+                methodURL = "http://" + host + ":" + port + fullPath + queryParamString;
+            }
+            else {
+                methodURL = "http://" + host + ":" + port + altURL + "/" + serviceExtension + "/" + version + "/"
+                            + path + queryParamString;
+            }
 		}
 
 //        if (logger.isDebugEnabled()) {
