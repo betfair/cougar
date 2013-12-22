@@ -69,4 +69,10 @@
         </constructor-arg>
     </bean>
 
+    <!-- add a path alias to the jetty transport -->
+    <bean parent="cougar.transport.HttpPathAliasIntroducer">
+        <constructor-arg index="1" value="/webping"/>
+        <constructor-arg index="2" value="/www/healthcheck/v3/summary"/>
+    </bean>
+
 </beans>

@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * Allows simple mapping of one path to another
+ * Allows simple mapping of one path to another. Used in place of the default JettyHandler.
  */
 public class AliasHandler extends JettyHandler {
 

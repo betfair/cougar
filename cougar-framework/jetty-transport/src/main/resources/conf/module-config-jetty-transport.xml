@@ -111,13 +111,13 @@
 
         <property name="unknownCipherKeyLength" value="$COUGAR-JETTY{jetty.https.unknownCipherKeyLength}"/>
 
-        <property name="pathAliases">
-            <bean factory-bean="aliasMapFactory" factory-method="create"/>
-        </property>
+        <property name="pathAliases" ref="pathAliasMap"/>
     </bean>
 
-    <bean id="aliasMapFactory" class="com.betfair.cougar.util.configuration.MapFactory">
-        <constructor-arg index="0" value="cougar.jetty.pathAlias"/>
+    <util:map id="pathAliasMap" key-type="java.lang.String" value-type="java.lang.String" scope="singleton"/>
+
+    <bean id="pathAliasMapEntryIntroducer" class="com.betfair.cougar.util.configuration.MapEntryIntroducer" abstract="true">
+        <constructor-arg index="0" ref="pathAliasMap"/>
     </bean>
 
 	<bean id="jettyEndPoints" class="com.betfair.cougar.transport.jetty.jmx.JettyEndpoints"/>
@@ -232,6 +232,7 @@
     <alias name="notFoundCommandProcessor" alias="cougar.transport.ServiceNotFoundCommandProcessor"/>
     <alias name="commandProcessorFactory" alias="cougar.transport.CommandProcessorFactory"/>
     <alias name="httpCommandValidatorRegistry" alias="cougar.transport.HttpCommandValidatorRegistry"/>
+    <alias name="pathAliasMapEntryIntroducer" alias="cougar.transport.HttpPathAliasIntroducer"/>
 
 	<bean class="org.springframework.jmx.export.MBeanExporter" >
 		<property name="server" ref="mbeanServer"/>
