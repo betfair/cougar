@@ -47,7 +47,12 @@ fi
 
 git clone -b gh-pages https://$USER_PASS@github.com/$REPO.git gh-pages
 git clone -b $VERSION https://$USER_PASS@github.com/$REPO.git source
+git clone -b $VERSION https://$USER_PASS@github.com/$REPO.git source-test
 git clone -b $VERSION https://$USER_PASS@github.com/$REPO-documentation.git doco-source
+
+cd $TMP_DIR/source-test
+bundle exec jekyll build
+cd $TMP_DIR
 
 if [ $VERSION == "master" ]; then
   echo "Need to parse pom.xml"
