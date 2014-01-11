@@ -61,9 +61,11 @@ h5. Preamble
 ```
 
 This is essentially the header of the IDL containing information about the service. Below each significant XPath is explained
+
 <table>
 <tr>
-<th>XPath </th><th>Description </th></tr>
+<th>XPath </th><th>Description </th>
+</tr>
 <tr>
 <td> /interface/@name </td>
 <td> The name of the service, this should match exactly with the file name without file extension (e.g. filename: FooBar.xml
