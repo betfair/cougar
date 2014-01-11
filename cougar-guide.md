@@ -14,7 +14,7 @@ Oh, you wanted more detail than the front page? Well, in that case read on, afte
 Core Cougar
 -----------
 
-At it's core, Cougar provides an execution venue within which executables can be run. Executables are asynchronous in nature, proving results (be those responses or faults) via a callback mechanism. In it's simplist form, an execution venue consists of a queue of outstanding execution requests, and a pool of threads which pull work from that queue.
+At it's core, Cougar provides an execution venue within which executables can be run. Executables are asynchronous in nature, proving results (be those responses or faults) via a callback mechanism. In it's simplest form, an execution venue consists of a queue of outstanding execution requests, and a pool of threads which pull work from that queue.
 
 Executables are often simple wrapper classes which map to method calls on a service interface, which is generated from an interface definition, written in Cougar's very own IDL (it looks rather like Thrift but in XML), the implementation of which is written by you (or your developers if you have some at your beck and call).
 
@@ -26,8 +26,8 @@ Execution requests are accompanied by the arguments passed in and some contextua
 
 Cougar supports 3 core paradigms of interaction:
 
-* RPC - your bog standard call an operation and get a response back.
-* Events - emission/consumption of events (typically to a JMS system - although not restricted to such).
+* RPC - your bog standard 'call an operation and get a response back'.
+* Events - emission/consumption of events (typically to/from a JMS implementation - although not restricted to such).
 * Connected Objects - replicant objects that can be mutated on a server and the state of which will be replicated to one or more clients.
 
 Transports
@@ -59,5 +59,5 @@ Alongside the main features above there are a bunch of other handy extras:
 * Our code generator, mentioned above, is provided as a Maven plugin.
 * Component health exposure is provided by a dedicated Health service interface which you may deploy alongside your own service interfaces in the same JVM. It gathers sub-component statuses via the [Tornjak](http://betfair.github.io/tornjak) framework, and exposes them in a form that can be read from a load balancer or from monitoring tooling. 
 * The Tornjak integration also provides the capability to record performance metrics which are exposed in a manner sympathetic for capture into [OpenTSDB](http://opentsdb.net).
-* Whilst the core of Cougar is asynchronous, it does provide synchronous wrappers and adapter for both service implementors and client consumers, reducing maintenance complexity when the power of async is not required.
+* Whilst the core of Cougar is asynchronous, it does provide synchronous wrappers and adapters for both service implementors and client consumers, reducing maintenance complexity when the power of async is not required.
 * Configuration simplicity in the form of a strict 4 level hierarchy, ensuring that only those items of configuration which vary by deployment environment (e.g. dev vs production) need to be changed. Cougar also supports encrypted configuration items by integration with [Jasypt](http://www.jasypt.org).
