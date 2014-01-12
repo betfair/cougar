@@ -1,4 +1,6 @@
-TODO: DISABLED
+---
+layout: default
+---
 
 Note that if you're using Java, you're likely to want to use the [```curl``` and the baseline service](Cougar_Baseline_Service_RESCRIPT_curls.html)
 rather than writing your own, which will be much faster.
@@ -253,6 +255,7 @@ that shortened forms of ISO-8601 are not supported.
 
 Since XML has no set way of rendering repeating data types, the data type name is used as a repeating value. For primitives
 the data type name is not shown as the IDL primitive name, as this is an internal nomenclature, so names are shown as follows:
+
 <table>
 <tr>
 <th>IDL Primitive Type</th><th>RESCRIPT tag</th></tr>
