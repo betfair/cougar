@@ -80,7 +80,7 @@ Interface-Extensions.xml:
       &lt;parameters>
         &lt;request>
           &lt;<a href='#parameter'>parameter</a>>
-            &lt;<a href='#'>extensions</a>>
+            &lt;<a href='#parameter-extensions'>extensions</a>>
               &lt;style/>
             &lt;/extensions>
           &lt;/parameter>
@@ -93,12 +93,12 @@ Interface-Extensions.xml:
     &lt;/operation>
     &lt;event>
       &lt;parameter>
-        &lt;<a href='#'>extensions</a>>
+        &lt;<a href='#parameter-extensions'>extensions</a>>
           &lt;style/>
         &lt;/extensions>
       &lt;/parameter>
     &lt;/event>
-  	&lt;extensions>
+  	&lt;<a href='#interface-extensions'>extensions</a>>
   		&lt;path/>
   	&lt;/extensions>
   &lt;/interface>
@@ -108,6 +108,25 @@ Interface-Extensions.xml:
 interface
 ---------
 
-
 operation
 ---------
+
+parameter
+---------
+
+response
+--------
+
+exception
+---------
+
+event
+-----
+
+dataType
+--------
+
+simpleType
+----------
+
+
