@@ -18,7 +18,7 @@ Interface.xml:
       &lt;description/>
       &lt;parameters>
         &lt;request>
-          &lt;parameter>
+          &lt;<a href='#parameter'>parameter</a>>
             &lt;description/>
             &lt;validValues>
               &lt;value>
@@ -27,19 +27,19 @@ Interface.xml:
             &lt;/validValues>
           &lt;/parameter>
         &lt;/request>
-        &lt;response>
+        &lt;<a href='#response'>response</a>>
           &lt;description/>
         &lt;/response>
         &lt;exceptions>
-          &lt;exception>
+          &lt;<a href='#exception'>exception</a>>
             &lt;description/>
           &lt;/exception>
         &lt;/exceptions>
       &lt;/parameters>
     &lt;/operation>
-    &lt;event>
+    &lt;<a href='#event'>event</a>>
       &lt;description/>
-      &lt;parameter>
+      &lt;<a href='#parameter'>parameter</a>>
         &lt;description/>
         &lt;validValues>
           &lt;value>
@@ -48,7 +48,7 @@ Interface.xml:
         &lt;/validValues>
       &lt;/parameter>
     &lt;/event>
-    &lt;dataType>
+    &lt;<a href='#dataType'>dataType</a>>
       &lt;description/>
       &lt;parameter>
         &lt;description/>
@@ -59,7 +59,7 @@ Interface.xml:
         &lt;/validValues>
       &lt;/parameter>
     &lt;/dataType>
-    &lt;simpleType>
+    &lt;<a href='#simpleType'>simpleType</a>>
       &lt;description/>
       &lt;validValues>
         &lt;value>
@@ -75,25 +75,25 @@ Interface-Extensions.xml:
 
 <pre>
 <code>
-  &lt;interface>
-    &lt;operation>
+  &lt;<a href='#interface'>interface</a>>
+    &lt;<a href='#operation'>operation</a>>
       &lt;parameters>
         &lt;request>
-          &lt;parameter>
-            &lt;extensions>
+          &lt;<a href='#parameter'>parameter</a>>
+            &lt;<a href='#'>extensions</a>>
               &lt;style/>
             &lt;/extensions>
           &lt;/parameter>
         &lt;/request>
       &lt;/parameters>
-      &lt;extensions>
+      &lt;<a href='#operation-extensions'>extensions</a>>
         &lt;path/>
         &lt;method/>
       &lt;/extensions>
     &lt;/operation>
     &lt;event>
       &lt;parameter>
-        &lt;extensions>
+        &lt;<a href='#'>extensions</a>>
           &lt;style/>
         &lt;/extensions>
       &lt;/parameter>
