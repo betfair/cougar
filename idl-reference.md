@@ -102,17 +102,20 @@ layout: default
 
 ## interface
 
-### interface-extensions
+<a name="interface-extensions"></a>
+### extensions
 
 
 ## operation
 
-### operation-extensions
+<a name="operation-extensions"></a>
+### extensions
 
 
 ## parameter
 
-### parameter-extensions
+<a name="parameter-extensions"></a>
+### extensions
 
 
 ## response

@@ -3,7 +3,7 @@ layout: default
 ---
 # Betfair Service IDL
 
-### Overview
+## Overview
 
 The Betfair Service Interface Definition Language (Betfair Service IDL or BSIDL for short) is an XML-based DSL (domain
 specific language) for describing versioned service interfaces. The DSL uses a combination of ideas taken from
@@ -15,7 +15,7 @@ interfaces and standardisation of this gives us the benefit of consistent docume
 as the ease of modification of wire formats and potential generation of serialisation/deserialisation code.
 
 
-### Benefits
+## Benefits
 
 * Generated artifacts created in a consistent way across Betfair meaning that users of these artifacts are familiar with
 conventions used.
@@ -28,7 +28,7 @@ format (no more editing word documents).
 * Enables the use of a consistent domain model throughout technology
 * Creates a focal point for tooling and NFR support
 
-### Types
+## Types
 
 The base types supported by the IDL are as follows:
 
@@ -46,9 +46,9 @@ The base types supported by the IDL are as follows:
 
 Note that generics are specified with '()' rather than '<>' as chevrons break the xml and are a pain to delimit.
 
-#### Elements
+### Elements
 
-h5. Preamble
+#### Preamble
 
 ```
 <?xml version="1.0" encoding="ISO-8859-1"?>
@@ -96,7 +96,7 @@ address  </td>
 </tr>
 </table>
 
-h5. Operations
+#### Operations
 
 ```xml
 <operation name="someMethod" since="0.1.0">
@@ -159,12 +159,12 @@ h5. Operations
 </table>
 
 
-h5. Parameters
+#### Parameters
 
 Parameters are an instantiation of a base type with a name, a nullability constraint, and a description. They can also
 have valid values assigned to them.
 
-h6. Valid Values
+##### Valid Values
 
 Valid Values elements indicate the total set of available values which can be used for the named parameter, and which
 should ultimately be validated in the interface implementation. An example is shown below
@@ -185,7 +185,7 @@ should ultimately be validated in the interface implementation. An example is sh
 
 So this is a string parameter called 'type' which can have the value AVAILABLE_TO_BET or AVAILABLE_TO_WITHDRAW
 
-h5. Simple types
+#### Simple types
 
 These act as aliases for the base types supported by the IDL.
 
@@ -193,7 +193,7 @@ These act as aliases for the base types supported by the IDL.
 <simpleType name="someType" type="i64"/>
 ```
 
-h5. Data Types
+#### Data Types
 
 ```xml
 <dataType name="Example">
@@ -207,7 +207,7 @@ h5. Data Types
 </dataType>
 ```
 
-h5. Events
+#### Events
 
 ```xml
 <event name="SomeChange" since="1.1.0">
@@ -221,7 +221,7 @@ h5. Events
 </event>
 ```
 
-h5. Exceptions
+#### Exceptions
 
 ```xml
 <exceptionType name="SomeException">
@@ -236,12 +236,12 @@ h5. Exceptions
 </exceptionType>
 ```
 
-h5. Enumerations
+#### Enumerations
 
 BSIDL deliberately does not support enumerations as they make interfaces unnecessarily brittle on the possible values of
 that enumerations, adding, removing or changing a value requires a re-release of the interface. Contraints on the values of a particular parameter should be enforced in the code and noted in the documentation.
 
-h5. Validation rules
+#### Validation rules
 
 More info required (regexps + size restrictions).
 
