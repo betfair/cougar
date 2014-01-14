@@ -1,14 +1,9 @@
 ---
 layout: default
 ---
-IDL Reference
-=============
+# IDL Reference
 
-IN PROGRESS.
-
-Similar to maven pom reference
-
-Interface.xml:
+<code>&lt;Interface&gt;.xml</code>:
 
 <pre>
 <code>
@@ -71,7 +66,7 @@ Interface.xml:
 </code>
 </pre>
 
-Interface-Extensions.xml:
+<code>&lt;Interface-Extensions&gt;.xml</code>:
 
 <pre>
 <code>
@@ -105,28 +100,33 @@ Interface-Extensions.xml:
 </code>
 </pre>
 
-interface
----------
+## interface
 
-operation
----------
+### interface-extensions
 
-parameter
----------
 
-response
---------
+## operation
 
-exception
----------
+### operation-extensions
 
-event
------
 
-dataType
---------
+## parameter
 
-simpleType
-----------
+### parameter-extensions
+
+
+## response
+
+
+## exception
+
+
+## event
+
+
+## dataType
+
+## simpleType
+
 
 
