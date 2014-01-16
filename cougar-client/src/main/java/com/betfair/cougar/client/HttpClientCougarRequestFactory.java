@@ -39,7 +39,11 @@ public class HttpClientCougarRequestFactory extends CougarRequestFactory<HttpUri
 
     @Override
     protected void addHeaders(HttpUriRequest httpRequest, List<Header> headers) {
-        httpRequest.setHeaders(headers.toArray(new Header[headers.size()]));
+        for (Header header : headers) {
+            if (header.getValue() != null) {
+                httpRequest.addHeader(header);
+            }
+        }
     }
 
     @Override
