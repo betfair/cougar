@@ -54,6 +54,9 @@ Main IDD (Interface.xml):
 <pre>
 <code>
   &lt;<a href='#interface'>interface</a>>
+    &lt;<a href='#authors'>authors</a>>
+      &lt;author/>
+    &lt;/authors>
     &lt;description/>
     &lt;<a href='#operation'>operation</a>>
       &lt;description/>
@@ -159,9 +162,34 @@ IDD Extensions (Interface-Extensions.xml):
 
 ### &lt;interface>
 
+The ```interface``` element describes the top-level attributes of service interface defined by this IDD.
+
+```
+<?xml version="1.0" encoding="utf-8"?>
+<interface name="Test" owner="Joe Bloggs" version="0.1" date="01/01/1970">
+	<authors>
+		<author name="Joe Bloggs" email="joe@bloggs.com"/>
+	</authors>
+	<description>This is here to provide an example of all features in order for tests to be made</description>
+</interface>
+```
+
+The attributes are explained in more detail:
+ * _name_: The name of the service, this should match exactly with the file name without file extension (e.g. filename: FooBar.xml corresponds to name: FooBar).
+ * _owner_: The person who should be contacted with any queries regarding this service interface, in many cases one of the authors but this isn't necessary.
+ * _version_: The version of the interface - please see [versioning](versioning.html).
+ * _date_: The date that the interface version was frozen - in development service interface can use the now() function that will insert the current date time - the date should be formatted as an [[ISO 8601 date|http://en.wikipedia.org/wiki/ISO_8601]] in UTC.
+
+The ```description``` element provides a description of the interface (usually in English).
+
 <a name="interface-extensions"></a>
 #### Supported extensions
 
+**TODO**
+
+#### &lt;authors>
+
+The ```authors``` element must contain one or more ```author``` elements which give a name and email address for each author.
 
 ### &lt;operation>
 
