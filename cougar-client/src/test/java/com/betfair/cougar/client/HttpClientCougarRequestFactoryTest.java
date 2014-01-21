@@ -23,9 +23,11 @@ import com.betfair.cougar.marshalling.api.databinding.Marshaller;
 import com.betfair.cougar.util.RequestUUIDImpl;
 import com.betfair.cougar.util.UUIDGeneratorImpl;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.Header;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.message.BasicHeader;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -33,7 +35,9 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -107,12 +111,27 @@ public class HttpClientCougarRequestFactoryTest {
         assertEquals(5, httpExchange.getAllHeaders().length);
         assertEquals(contentType + "; charset=utf-8",
                 ((HttpPost) httpExchange).getEntity().getContentType().getValue());
-        assertEquals("some post data", IOUtils.toString(((HttpPost)httpExchange).getEntity().getContent()));
+        assertEquals("some post data", IOUtils.toString(((HttpPost) httpExchange).getEntity().getContent()));
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void shouldNotCreateUnknownMethod() {
         factory.create(uri, "TRACE", mockMessage, mockMarshaller, contentType, mockContext, mockTimeConstraints);
+    }
+
+    @Test
+    public void shouldAddNewHeadersWithoutDeleteTheExistingHeaders() {
+
+        HttpUriRequest request = new HttpGet();
+        request.setHeader("X-UUID", "1111-111-111-111");
+
+        List<Header> headers = new ArrayList<>(1);
+        headers.add(new BasicHeader("NEW-HEADER", "value"));
+        factory.addHeaders(request, headers);
+
+        assertEquals(2, request.getAllHeaders().length);
+        assertEquals("1111-111-111-111", request.getFirstHeader("X-UUID").getValue());
+        assertEquals("value", request.getFirstHeader("NEW-HEADER").getValue());
     }
 }
 
