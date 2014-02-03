@@ -32,7 +32,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
 
 /**
- * Ensure that when a Cougar container is running a service that has all its components in the OK state, the heathcheck summary operation returns OK status
+ * Checks that the healthcheck works when accessed on an aliased path.
  */
 public class AliasedHealthCheckSummaryOKTest extends RestHealthCheckSummaryOKTest {
 

@@ -43,6 +43,9 @@ public class EnumUtils {
 
     public static <T extends Enum<T>> T readEnum(Class<T> cls, String name, boolean hardFail) throws IllegalArgumentException, NullPointerException {
         try {
+            if (MISS_VALUE.equals(name)) {
+                throw new EnumDerialisationException("It is invalid to pass in an enum with (special) value: "+MISS_VALUE);
+            }
             return Enum.valueOf(cls, name);
         }
         catch (IllegalArgumentException iae) {

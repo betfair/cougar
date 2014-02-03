@@ -24,7 +24,6 @@ import com.betfair.testing.utils.cougar.helpers.CougarHelpers;
 import com.betfair.testing.utils.cougar.manager.AccessLogRequirement;
 import com.betfair.testing.utils.cougar.manager.CougarManager;
 import com.betfair.testing.utils.cougar.manager.RequestLogRequirement;
-
 import org.testng.annotations.Test;
 
 import java.sql.Timestamp;
@@ -34,13 +33,12 @@ import java.util.Map;
 /**
  * Ensure that Cougar returns the correct fault when a  RPC request with Enum param  is made with incorrect data type parameter
  */
-public class RPCENUMParamIncorrectDataTypeTest {
+public class RPCENUMParamUnrecognizedValueTest {
     @Test(groups = {"json-rpc", "enums"})
     public void doTest() throws Exception {
         // Create the HttpCallBean
         CougarManager cougarManager1 = CougarManager.getInstance();
         HttpCallBean httpCallBeanBaseline = cougarManager1.getNewHttpCallBean();
-        CougarManager cougarManagerBaseline = cougarManager1;
         // Get the cougar logging attribute for getting log entries later
         // Point the created HttpCallBean at the correct service
         httpCallBeanBaseline.setServiceName("baseline", "cougarBaseline");
@@ -62,15 +60,15 @@ public class RPCENUMParamIncorrectDataTypeTest {
         mapArray3[0].put("id","\"Call with correct params\"");
         mapArray3[1] = new HashMap();
         mapArray3[1].put("method","enumOperation");
-        mapArray3[1].put("params","[true, \"FooQuery\",{\"bodyParameter\":\"FooBody\"}]");
+        mapArray3[1].put("params","[\"UNRECOGNIZED_VALUE\", \"FooQuery\",{\"bodyParameter\":\"FooBody\"}]");
         mapArray3[1].put("id","\"Incorrect Header param\"");
         mapArray3[2] = new HashMap();
         mapArray3[2].put("method","enumOperation");
-        mapArray3[2].put("params","[\"FooHeader\", true,{\"bodyParameter\":\"FooBody\"}]");
+        mapArray3[2].put("params","[\"FooHeader\", \"UNRECOGNIZED_VALUE\",{\"bodyParameter\":\"FooBody\"}]");
         mapArray3[2].put("id","\"Incorrect Query param\"");
         mapArray3[3] = new HashMap();
         mapArray3[3].put("method","enumOperation");
-        mapArray3[3].put("params","[\"FooHeader\", \"FooQuery\",{\"bodyParameter\":true}]");
+        mapArray3[3].put("params","[\"FooHeader\", \"FooQuery\",{\"bodyParameter\":\"UNRECOGNIZED_VALUE\"}]");
         mapArray3[3].put("id","\"Incorrect Body param\"");
         callBean.setBatchedRequests(mapArray3);
         // Get current time for getting log entries later
@@ -84,9 +82,9 @@ public class RPCENUMParamIncorrectDataTypeTest {
         CougarHelpers cougarHelpers5 = new CougarHelpers();
         Map<String, Object> map6 = cougarHelpers5.convertBatchedResponseToMap(actualResponseJSON);
         AssertionUtils.multiAssertEquals("{\"id\":\"Call with correct params\",\"result\":{\"headerParameter\":\"FooHeader\",\"queryParameter\":\"FooQuery\",\"bodyParameter\":\"FooBody\"},\"jsonrpc\":\"2.0\"}", map6.get("responseCall with correct params"));
-        AssertionUtils.multiAssertEquals("{\"id\":\"Incorrect Header param\",\"error\":{\"message\":\"DSC-0018\",\"code\":-32602},\"jsonrpc\":\"2.0\"}", map6.get("responseIncorrect Header param"));
-        AssertionUtils.multiAssertEquals("{\"id\":\"Incorrect Query param\",\"error\":{\"message\":\"DSC-0018\",\"code\":-32602},\"jsonrpc\":\"2.0\"}", map6.get("responseIncorrect Query param"));
-        AssertionUtils.multiAssertEquals("{\"id\":\"Incorrect Body param\",\"error\":{\"message\":\"DSC-0018\",\"code\":-32602},\"jsonrpc\":\"2.0\"}", map6.get("responseIncorrect Body param"));
+        AssertionUtils.multiAssertEquals("{\"id\":\"Incorrect Header param\",\"error\":{\"message\":\"DSC-0008\",\"code\":-32602},\"jsonrpc\":\"2.0\"}", map6.get("responseIncorrect Header param"));
+        AssertionUtils.multiAssertEquals("{\"id\":\"Incorrect Query param\",\"error\":{\"message\":\"DSC-0008\",\"code\":-32602},\"jsonrpc\":\"2.0\"}", map6.get("responseIncorrect Query param"));
+        AssertionUtils.multiAssertEquals("{\"id\":\"Incorrect Body param\",\"error\":{\"message\":\"DSC-0008\",\"code\":-32602},\"jsonrpc\":\"2.0\"}", map6.get("responseIncorrect Body param"));
         AssertionUtils.multiAssertEquals(200, map6.get("httpStatusCode"));
         AssertionUtils.multiAssertEquals("OK", map6.get("httpStatusText"));
         // Pause the test to allow the logs to be filled

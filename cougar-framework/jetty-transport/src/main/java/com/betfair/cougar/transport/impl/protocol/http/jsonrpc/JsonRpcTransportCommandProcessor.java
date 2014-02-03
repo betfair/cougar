@@ -35,6 +35,7 @@ import com.betfair.cougar.core.api.ServiceBindingDescriptor;
 import com.betfair.cougar.core.api.ServiceVersion;
 import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.exception.*;
+import com.betfair.cougar.core.api.transcription.EnumDerialisationException;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
@@ -184,8 +185,12 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
                                     JsonNode paramValue = rpc.getParams().isArray() ? rpc.getParams().get(i) : rpc.getParams().get(paramDefs[i].getName());
                                     JavaType javaType = paramDefs[i].getJavaType();
                                     args[i] = mapper.convertValue(paramValue, javaType);
+                                    // complex types are handled by the mapper, but for some reason, direct enums are not
+                                    if (javaType.isEnumType() && args[i] != null && ((Enum)args[i]).name().equals("UNRECOGNIZED_VALUE")) {
+                                        throw new IllegalArgumentException(new Exception(new EnumDerialisationException("UNRECOGNIZED_VALUE is not allowed as an input")));
+                                    }
                                 }
-                                commands.add(new ExecutionCommand() {
+                                commands.add(new ExecutionCommand() {//2nd: index 0, 3rd: index 1, 4th: index 2
                                     @Override
                                     public void onResult(ExecutionResult executionResult) {
                                         JsonRpcResponse response = buildExecutionResultResponse(rpc, executionResult);
@@ -209,7 +214,12 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
                                     }
                                 });
                             } catch (Exception e) {
-                                responses.add(JsonRpcErrorResponse.buildErrorResponse(rpc, new JsonRpcError(INVALID_PARAMS, ServerFaultCode.MandatoryNotDefined.getDetail(), null)));
+                                if (e instanceof IllegalArgumentException && e.getCause()!=null && e.getCause().getCause()!=null && e.getCause().getCause() instanceof EnumDerialisationException) {
+                                    responses.add(JsonRpcErrorResponse.buildErrorResponse(rpc, new JsonRpcError(INVALID_PARAMS, ServerFaultCode.JSONDeserialisationParseFailure.getDetail(), null)));
+                                }
+                                else {
+                                    responses.add(JsonRpcErrorResponse.buildErrorResponse(rpc, new JsonRpcError(INVALID_PARAMS, ServerFaultCode.MandatoryNotDefined.getDetail(), null)));
+                                }
                                 writeResponseIfComplete(http, context, isBatch, requests, responses, bytesRead);
                             }
                         } else {

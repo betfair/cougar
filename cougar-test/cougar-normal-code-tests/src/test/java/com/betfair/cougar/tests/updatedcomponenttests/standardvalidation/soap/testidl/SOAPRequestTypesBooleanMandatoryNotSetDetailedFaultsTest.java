@@ -43,7 +43,7 @@ public class SOAPRequestTypesBooleanMandatoryNotSetDetailedFaultsTest {
         CougarHelpers helpers = new CougarHelpers();
         try {
             CougarManager cougarManager = CougarManager.getInstance();
-            helpers.setJMXMBeanAttributeValue("com.betfair.cougar.transport:type=soapCommandProcessor", "SchemaValidationEnabled", schemaValidationEnabled);
+            helpers.setSOAPSchemaValidationEnabled(schemaValidationEnabled);
             // Create the SOAP request as an XML Document (with a missing mandatory boolean parameter)
             XMLHelpers xMLHelpers1 = new XMLHelpers();
             Document createAsDocument2 = xMLHelpers1.getXMLObjectFromString("<BoolOperationRequest><headerParam>true</headerParam><message><bodyParameter>true</bodyParameter></message></BoolOperationRequest>");
@@ -89,7 +89,7 @@ public class SOAPRequestTypesBooleanMandatoryNotSetDetailedFaultsTest {
             // Reset the Detailed Faults attribute for other tests
             cougarManager3.setCougarFaultControllerJMXMBeanAttrbiute("DetailedFaults", "false");
         } finally {
-            helpers.setJMXMBeanAttributeValue("com.betfair.cougar.transport:type=soapCommandProcessor", "SchemaValidationEnabled", true);
+            helpers.setSOAPSchemaValidationEnabled(true);
         }
     }
 

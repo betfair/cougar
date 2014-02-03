@@ -899,6 +899,10 @@ public class CougarHelpers {
 		} 
 	}
 
+    public void setSOAPSchemaValidationEnabled(boolean validationEnabled) {
+        setJMXMBeanAttributeValue("com.betfair.cougar.transport:type=soapCommandProcessor", "SchemaValidationEnabled", validationEnabled);
+    }
+
 	private Object getJMXMBeanAttributeValue(String mBeanName, String attributeName) {
 
 		try {

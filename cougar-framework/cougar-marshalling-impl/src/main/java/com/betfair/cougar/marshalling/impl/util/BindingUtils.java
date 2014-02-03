@@ -19,6 +19,7 @@ package com.betfair.cougar.marshalling.impl.util;
 import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 import com.betfair.cougar.core.api.exception.CougarValidationException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
+import com.betfair.cougar.core.api.transcription.EnumDerialisationException;
 import com.betfair.cougar.core.api.transcription.EnumUtils;
 import com.betfair.cougar.util.dates.DateTimeUtility;
 
@@ -115,7 +116,7 @@ public final class BindingUtils {
 		        	throw newValidationException(name, value, clazz, null);
 		        }
         	} catch (RuntimeException ex) {
-        		if (ex instanceof CougarValidationException) {
+        		if (ex instanceof CougarValidationException || ex instanceof EnumDerialisationException) {
         			throw ex;
         		} else {
         			throw newValidationException(name, value, clazz, ex);

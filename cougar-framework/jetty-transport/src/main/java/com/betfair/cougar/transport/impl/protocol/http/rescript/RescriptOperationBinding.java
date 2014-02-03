@@ -22,6 +22,7 @@ import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 import com.betfair.cougar.core.api.exception.CougarValidationException;
 import com.betfair.cougar.core.api.exception.PanicInTheCougar;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
+import com.betfair.cougar.core.api.transcription.EnumDerialisationException;
 import com.betfair.cougar.core.api.transcription.EnumUtils;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
@@ -104,32 +105,46 @@ public class RescriptOperationBinding {
                 headersWithNullValues.add(header.toLowerCase());
             }
         }
-        for (int i = 0; i < args.length; ++i) {
-            RescriptParamBindingDescriptor descriptor = paramBindings[i];
-            Parameter param = operationDefinition.getParameters()[i];
-            switch (descriptor.getSource()) {
-                case HEADER :
-                    String key = descriptor.getName();
-                    args[i] = resolveArgument(headersWithNullValues.contains(key.toLowerCase()) ? "" : request.getHeader(key), param, descriptor);
-                    break;
-                case QUERY :
-                    args[i] = resolveArgument(request.getParameter(descriptor.getName()), param, descriptor);
-                    break;
-                case BODY :
-                    if (body != null) {
-                        args[i] = body.getValue(descriptor.getName());
-                        // non-null enums get stored as their raw string value so need converting to the true enum value
-                        if (param.getParameterType().getType() == ParameterType.Type.ENUM) {
-                            if (args[i] != null) {
-                                args[i] = EnumUtils.readEnum(param.getParameterType().getImplementationClass(), (String) args[i]);
+        try {
+            for (int i = 0; i < args.length; ++i) {
+                RescriptParamBindingDescriptor descriptor = paramBindings[i];
+                Parameter param = operationDefinition.getParameters()[i];
+                switch (descriptor.getSource()) {
+                    case HEADER :
+                        String key = descriptor.getName();
+                        args[i] = resolveArgument(headersWithNullValues.contains(key.toLowerCase()) ? "" : request.getHeader(key), param, descriptor);
+                        break;
+                    case QUERY :
+                        args[i] = resolveArgument(request.getParameter(descriptor.getName()), param, descriptor);
+                        break;
+                    case BODY :
+                        if (body != null) {
+                            args[i] = body.getValue(descriptor.getName());
+                            // non-null enums get stored as their raw string value so need converting to the true enum value
+                            if (param.getParameterType().getType() == ParameterType.Type.ENUM) {
+                                if (args[i] != null) {
+                                    args[i] = EnumUtils.readEnum(param.getParameterType().getImplementationClass(), (String) args[i]);
+                                }
                             }
                         }
-                    }
-                	break;
-                default :
-                    throw new PanicInTheCougar("Unsupported argument annotation "+ descriptor.getSource());
+                        break;
+                    default :
+                        throw new PanicInTheCougar("Unsupported argument annotation "+ descriptor.getSource());
+                }
+                //request.trace("Deserialised argument %d from %s to value %s", i, param.getSource(), args[i]);
             }
-            //request.trace("Deserialised argument %d from %s to value %s", i, param.getSource(), args[i]);
+        }
+        catch (EnumDerialisationException ede) {
+            // todo: this feels hacky, although maybe this is ok if moved to a utility
+            if (mediaType.getSubtype().equals("json")) {
+                throw new CougarValidationException(ServerFaultCode.JSONDeserialisationParseFailure, ede.getMessage(), ede.getCause());
+            }
+            else if (mediaType.getSubtype().equals("xml")) {
+                throw new CougarValidationException(ServerFaultCode.XMLDeserialisationFailure, ede.getMessage(), ede.getCause());
+            }
+            else {
+                throw new CougarValidationException(ServerFaultCode.ClassConversionFailure, ede.getMessage(), ede.getCause());
+            }
         }
         return args;
     }

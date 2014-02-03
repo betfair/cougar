@@ -40,12 +40,10 @@ public class SOAPContainerValidMessageInvalidServiceTest {
     public void doTest(boolean schemaValidationEnabled) throws Exception {
         CougarHelpers helpers = new CougarHelpers();
         try {
-            CougarManager cougarManager = CougarManager.getInstance();
-            helpers.setJMXMBeanAttributeValue("com.betfair.cougar.transport:type=soapCommandProcessor", "SchemaValidationEnabled", schemaValidationEnabled);
+            helpers.setSOAPSchemaValidationEnabled(schemaValidationEnabled);
             // Create the HttpCallBean
             CougarManager cougarManager1 = CougarManager.getInstance();
             HttpCallBean httpCallBeanBaseline = cougarManager1.getNewHttpCallBean();
-            CougarManager cougarManagerBaseline = cougarManager1;
             // Get the cougar logging attribute for getting log entries later
             // Point the created HttpCallBean at the correct service
             httpCallBeanBaseline.setServiceName("baseline", "cougarBaseline");
@@ -80,7 +78,7 @@ public class SOAPContainerValidMessageInvalidServiceTest {
             CougarManager cougarManager9 = CougarManager.getInstance();
             cougarManager9.verifyAccessLogEntriesAfterDate(getTimeAsTimeStamp9, new AccessLogRequirement("87.248.113.14", "/InvalidBaselineServiceService/v2", "NotFound"));
         } finally {
-            helpers.setJMXMBeanAttributeValue("com.betfair.cougar.transport:type=soapCommandProcessor", "SchemaValidationEnabled", true);
+            helpers.setSOAPSchemaValidationEnabled(true);
         }
     }
 

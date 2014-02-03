@@ -25,4 +25,8 @@ public class EnumDerialisationException extends CougarFrameworkException {
     public EnumDerialisationException(IllegalArgumentException t) {
         super(t.getMessage(), t);
     }
+
+    public EnumDerialisationException(String s) {
+        super(s);
+    }
 }

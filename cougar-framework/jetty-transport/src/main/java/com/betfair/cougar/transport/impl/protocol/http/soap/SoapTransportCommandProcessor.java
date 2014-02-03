@@ -302,6 +302,8 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
             for (int i = 0; i < params.length; i++) {
                 args[i] = readArg(in.readObject(params[i]), params[i]);
             }
+        } catch (EnumDerialisationException ce) {
+            throw new CougarValidationException(ServerFaultCode.SOAPDeserialisationFailure,ce.getMessage(),ce.getCause());
         } catch (CougarException ce) {
             throw ce;
         } catch (Exception e) {

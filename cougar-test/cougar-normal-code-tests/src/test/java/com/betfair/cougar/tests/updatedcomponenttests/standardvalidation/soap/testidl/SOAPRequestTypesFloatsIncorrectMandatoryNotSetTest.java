@@ -42,7 +42,7 @@ public class SOAPRequestTypesFloatsIncorrectMandatoryNotSetTest {
         CougarHelpers helpers = new CougarHelpers();
         try {
             CougarManager cougarManager = CougarManager.getInstance();
-            helpers.setJMXMBeanAttributeValue("com.betfair.cougar.transport:type=soapCommandProcessor", "SchemaValidationEnabled", schemaValidationEnabled);
+            helpers.setSOAPSchemaValidationEnabled(schemaValidationEnabled);
 
             // Create the HttpCallBean
             HttpCallBean httpCallBeanBaseline = cougarManager.getNewHttpCallBean();
@@ -91,7 +91,7 @@ public class SOAPRequestTypesFloatsIncorrectMandatoryNotSetTest {
             cougarManager11.verifyAccessLogEntriesAfterDate(getTimeAsTimeStamp9, new AccessLogRequirement("87.248.113.14", "/BaselineService/v2", "BadRequest"));
 
         } finally {
-            helpers.setJMXMBeanAttributeValue("com.betfair.cougar.transport:type=soapCommandProcessor", "SchemaValidationEnabled", true);
+            helpers.setSOAPSchemaValidationEnabled(true);
         }
     }
 

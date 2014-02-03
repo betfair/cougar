@@ -40,7 +40,7 @@ public class SOAPNoTestParamsValidTest {
         CougarHelpers helpers = new CougarHelpers();
         try {
             CougarManager cougarManager = CougarManager.getInstance();
-            helpers.setJMXMBeanAttributeValue("com.betfair.cougar.transport:type=soapCommandProcessor", "SchemaValidationEnabled", schemaValidationEnabled);
+            helpers.setSOAPSchemaValidationEnabled(schemaValidationEnabled);
             // Create the SOAP request as an XML Document
             XMLHelpers xMLHelpers1 = new XMLHelpers();
             Document createAsDocument1 = xMLHelpers1.getXMLObjectFromString("<TestNoParamsRequest/>");
@@ -71,7 +71,7 @@ public class SOAPNoTestParamsValidTest {
             AssertionUtils.multiAssertEquals(convertResponseToSOAP11.get("SOAP"), response5.getResponseObject());
             // todo: Check the log entries are as expected
         } finally {
-            helpers.setJMXMBeanAttributeValue("com.betfair.cougar.transport:type=soapCommandProcessor", "SchemaValidationEnabled", true);
+            helpers.setSOAPSchemaValidationEnabled(true);
         }
     }
 

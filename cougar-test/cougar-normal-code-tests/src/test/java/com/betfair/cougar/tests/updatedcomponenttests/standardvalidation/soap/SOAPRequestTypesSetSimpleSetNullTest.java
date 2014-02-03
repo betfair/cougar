@@ -41,7 +41,7 @@ public class SOAPRequestTypesSetSimpleSetNullTest {
         CougarHelpers helpers = new CougarHelpers();
         try {
             CougarManager cougarManager = CougarManager.getInstance();
-            helpers.setJMXMBeanAttributeValue("com.betfair.cougar.transport:type=soapCommandProcessor", "SchemaValidationEnabled", schemaValidationEnabled);
+            helpers.setSOAPSchemaValidationEnabled(schemaValidationEnabled);
             // Create the SOAP request as an XML Document (with a null map parameter)
             XMLHelpers xMLHelpers1 = new XMLHelpers();
             Document createAsDocument1 = xMLHelpers1.getXMLObjectFromString("<SimpleSetOperationRequest><message></message></SimpleSetOperationRequest>");
@@ -81,7 +81,7 @@ public class SOAPRequestTypesSetSimpleSetNullTest {
             CougarManager cougarManager10 = CougarManager.getInstance();
             cougarManager10.verifyAccessLogEntriesAfterDate(getTimeAsTimeStamp8, new AccessLogRequirement("87.248.113.14", "/BaselineService/v2", "BadRequest"));
         } finally {
-            helpers.setJMXMBeanAttributeValue("com.betfair.cougar.transport:type=soapCommandProcessor", "SchemaValidationEnabled", true);
+            helpers.setSOAPSchemaValidationEnabled(true);
         }
     }
 

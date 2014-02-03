@@ -41,7 +41,7 @@ public class SOAPMissingMandatoryMapOfComplexTest {
         CougarHelpers helpers = new CougarHelpers();
         try {
             CougarManager cougarManager = CougarManager.getInstance();
-            helpers.setJMXMBeanAttributeValue("com.betfair.cougar.transport:type=soapCommandProcessor", "SchemaValidationEnabled", schemaValidationEnabled);
+            helpers.setSOAPSchemaValidationEnabled(schemaValidationEnabled);
             // Create the SOAP request as an XML Document (with a complex map parameter with complex entry missing mandatory fields)
             XMLHelpers xMLHelpers1 = new XMLHelpers();
             Document createAsDocument1 = xMLHelpers1.getXMLObjectFromString("<MapOfComplexOperationRequest><inputMap><entry key=\"aaa\"><ComplexObject/></entry></inputMap></MapOfComplexOperationRequest>");
@@ -74,7 +74,7 @@ public class SOAPMissingMandatoryMapOfComplexTest {
 
             cougarManager5.verifyAccessLogEntriesAfterDate(getTimeAsTimeStamp10, new AccessLogRequirement("87.248.113.14", "/BaselineService/v2", "BadRequest"));
         } finally {
-            helpers.setJMXMBeanAttributeValue("com.betfair.cougar.transport:type=soapCommandProcessor", "SchemaValidationEnabled", true);
+            helpers.setSOAPSchemaValidationEnabled(true);
         }
     }
 

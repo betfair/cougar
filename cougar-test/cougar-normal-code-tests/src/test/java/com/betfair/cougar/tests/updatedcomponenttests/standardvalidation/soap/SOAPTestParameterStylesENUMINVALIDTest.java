@@ -42,7 +42,7 @@ public class SOAPTestParameterStylesENUMINVALIDTest {
         CougarHelpers helpers = new CougarHelpers();
         try {
             CougarManager cougarManager = CougarManager.getInstance();
-            helpers.setJMXMBeanAttributeValue("com.betfair.cougar.transport:type=soapCommandProcessor", "SchemaValidationEnabled", schemaValidationEnabled);
+            helpers.setSOAPSchemaValidationEnabled(schemaValidationEnabled);
             // Create the HttpCallBean
             CougarManager cougarManager1 = CougarManager.getInstance();
             HttpCallBean httpCallBeanBaseline = cougarManager1.getNewHttpCallBean();
@@ -88,7 +88,7 @@ public class SOAPTestParameterStylesENUMINVALIDTest {
             CougarManager cougarManager9 = CougarManager.getInstance();
             cougarManager9.verifyAccessLogEntriesAfterDate(getTimeAsTimeStamp9, new AccessLogRequirement("87.248.113.14", "/BaselineService/v2", "BadRequest"));
         } finally {
-            helpers.setJMXMBeanAttributeValue("com.betfair.cougar.transport:type=soapCommandProcessor", "SchemaValidationEnabled", true);
+            helpers.setSOAPSchemaValidationEnabled(true);
         }
     }
 

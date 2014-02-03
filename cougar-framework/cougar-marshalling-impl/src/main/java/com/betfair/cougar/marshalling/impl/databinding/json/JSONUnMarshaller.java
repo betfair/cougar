@@ -25,6 +25,7 @@ import java.util.*;
 
 import com.betfair.cougar.api.fault.FaultCode;
 import com.betfair.cougar.core.api.client.EnumWrapper;
+import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.fault.CougarFault;
 import com.betfair.cougar.core.api.fault.FaultDetail;
 import com.betfair.cougar.core.api.transcription.ParameterType;
@@ -59,6 +60,9 @@ public class JSONUnMarshaller implements UnMarshaller, FaultUnMarshaller {
 			Reader reader = new BufferedReader(new InputStreamReader(inputStream,encoding));
 			return objectMapper.readValue(reader, clazz);
 		} catch (JsonProcessingException e) {
+//            if (e.getCause() instanceof CougarException) {
+//                throw (CougarException) e.getCause();
+//            }
 			throw new CougarValidationException(ServerFaultCode.JSONDeserialisationParseFailure, e);
 		} catch (IOException e) {
 			throw new CougarServiceException(ServerFaultCode.JSONDeserialisationParseFailure, "Failed to unmarshall object", e);
