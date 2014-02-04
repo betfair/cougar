@@ -169,6 +169,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
 		rescriptCommandProcessor = new RescriptTransportCommandProcessor(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID","X-RequestTimeout",requestTimeResolver);
 		init(rescriptCommandProcessor);
 		ctn = mock(ContentTypeNormaliser.class);
+		when(ctn.getNormalisedRequestMediaType(any(HttpServletRequest.class))).thenReturn(MediaType.APPLICATION_XML_TYPE);
 		when(ctn.getNormalisedResponseMediaType(any(HttpServletRequest.class))).thenReturn(MediaType.APPLICATION_XML_TYPE);
 		when(ctn.getNormalisedEncoding(any(HttpServletRequest.class))).thenReturn("utf-8");
 		rescriptCommandProcessor.setContentTypeNormaliser(ctn);
