@@ -199,7 +199,7 @@ public class RescriptOperationBindingTest extends TestCase {
         assertEquals(null, resolvedArgs[0]);
     }
 
-    @Test(expected = EnumDerialisationException.class)
+    @Test(expected = CougarValidationException.class)
     public void testResolveUnrecognizedOptionalBodyEnumWithHardFailure() {
         Boolean originalHardFailureValue = EnumUtils.getHardFailureForThisThread();
         EnumUtils.setHardFailureForThisThread(true);
