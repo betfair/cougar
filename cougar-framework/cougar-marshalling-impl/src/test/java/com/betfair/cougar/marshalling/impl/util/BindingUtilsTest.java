@@ -40,8 +40,8 @@ public class BindingUtilsTest extends CougarTestCase {
 		try {
 			assertEquals(TestEnum.SUNDAY, BindingUtils.convertToSimpleType(TestEnum.class, null, "foo", "sunday", false, true));
 			fail();
-		} catch (CougarValidationException e) {
-			assertException(e, "foo", "sunday", EnumDerialisationException.class);
+		} catch (EnumDerialisationException e) {
+			assertException(e, null, "sunday", IllegalArgumentException.class);
 		}
 	}
 
@@ -231,9 +231,11 @@ public class BindingUtilsTest extends CougarTestCase {
     }
     
     
-    private void assertException (CougarValidationException e, String name, String value, Class expectedCause) {
+    private void assertException (Exception e, String name, String value, Class expectedCause) {
         assertTrue(e.getMessage().indexOf(value)>-1);
-        assertTrue(e.getMessage().indexOf(name)>-1);
+        if (name != null) {
+            assertTrue(e.getMessage().indexOf(name)>-1);
+        }
         if (expectedCause != null) {
         	assertEquals(expectedCause, e.getCause().getClass());
         }
