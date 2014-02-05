@@ -64,10 +64,12 @@ public class RestIDLHeaderParamListOfSimpleTypeEnumInvalidEntryTest {
         cougarManagerBaseline.makeRestCougarHTTPCalls(httpCallBeanBaseline);
         // Create the expected response as an XML document (Fault)
         XMLHelpers xMLHelpers5 = new XMLHelpers();
-        Document xmlDocument = xMLHelpers5.getXMLObjectFromString("<fault><faultcode>Client</faultcode><faultstring>DSC-0009</faultstring><detail/></fault>");
+        Document xmlDocument = xMLHelpers5.getXMLObjectFromString("<fault><faultcode>Client</faultcode><faultstring>DSC-0007</faultstring><detail/></fault>");
+        Document jsonDocument = xMLHelpers5.getXMLObjectFromString("<fault><faultcode>Client</faultcode><faultstring>DSC-0008</faultstring><detail/></fault>");
         // Convert the expected response to JSON for comparison with actual responses
         JSONHelpers jSONHelpers6 = new JSONHelpers();
-        JSONObject jsonResponse = jSONHelpers6.convertXMLDocumentToJSONObjectRemoveRootElement(xmlDocument);
+        JSONObject jsonResponseXmlRequest = jSONHelpers6.convertXMLDocumentToJSONObjectRemoveRootElement(xmlDocument);
+        JSONObject jsonResponseJsonRequest = jSONHelpers6.convertXMLDocumentToJSONObjectRemoveRootElement(jsonDocument);
         // Check the 4 responses are as expected (Bad Request)
         HttpResponseBean response7 = httpCallBeanBaseline.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTXMLXML);
         AssertionUtils.multiAssertEquals(xmlDocument, response7.getResponseObject());
@@ -75,17 +77,17 @@ public class RestIDLHeaderParamListOfSimpleTypeEnumInvalidEntryTest {
         AssertionUtils.multiAssertEquals("Bad Request", response7.getHttpStatusText());
         
         HttpResponseBean response8 = httpCallBeanBaseline.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTJSONJSON);
-        AssertionUtils.multiAssertEquals(jsonResponse, response8.getResponseObject());
+        AssertionUtils.multiAssertEquals(jsonResponseJsonRequest, response8.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response8.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response8.getHttpStatusText());
         
         HttpResponseBean response9 = httpCallBeanBaseline.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTXMLJSON);
-        AssertionUtils.multiAssertEquals(jsonResponse, response9.getResponseObject());
+        AssertionUtils.multiAssertEquals(jsonResponseXmlRequest, response9.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response9.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response9.getHttpStatusText());
         
         HttpResponseBean response10 = httpCallBeanBaseline.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTJSONXML);
-        AssertionUtils.multiAssertEquals(xmlDocument, response10.getResponseObject());
+        AssertionUtils.multiAssertEquals(jsonDocument, response10.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response10.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response10.getHttpStatusText());
         // Check the log entries are as expected
