@@ -136,7 +136,10 @@ public class RescriptOperationBinding {
         }
         catch (EnumDerialisationException ede) {
             // todo: this feels hacky, although maybe this is ok if moved to a utility
-            if (mediaType.getSubtype().equals("json")) {
+            if (mediaType == null || mediaType.getSubtype() == null) {
+                throw new CougarValidationException(ServerFaultCode.ClassConversionFailure, ede.getMessage(), ede.getCause());
+            }
+            else if (mediaType.getSubtype().equals("json")) {
                 throw new CougarValidationException(ServerFaultCode.JSONDeserialisationParseFailure, ede.getMessage(), ede.getCause());
             }
             else if (mediaType.getSubtype().equals("xml")) {
