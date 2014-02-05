@@ -81,8 +81,8 @@ public class RestIDLHeaderParamENUMnullTest {
         Document createAsDocumentXml = xMLHelpers6.getXMLObjectFromString("<fault><faultcode>Client</faultcode><faultstring>DSC-0007</faultstring><detail/></fault>");
         Document createAsDocumentJson = xMLHelpers6.getXMLObjectFromString("<fault><faultcode>Client</faultcode><faultstring>DSC-0008</faultstring><detail/></fault>");
         // Convert the expected response to REST types for comparison with actual responses
-        Map<CougarMessageProtocolRequestTypeEnum, Object> convertResponseToRestTypesXml = cougarManager2.convertResponseToRestTypes(createAsDocument13, getNewHttpCallBean2);
-        Map<CougarMessageProtocolRequestTypeEnum, Object> convertResponseToRestTypesJson = cougarManager2.convertResponseToRestTypes(createAsDocument13, getNewHttpCallBean2);
+        Map<CougarMessageProtocolRequestTypeEnum, Object> convertResponseToRestTypesXml = cougarManager2.convertResponseToRestTypes(createAsDocumentXml, getNewHttpCallBean2);
+        Map<CougarMessageProtocolRequestTypeEnum, Object> convertResponseToRestTypesJson = cougarManager2.convertResponseToRestTypes(createAsDocumentJson, getNewHttpCallBean2);
         // Check the 4 responses are as expected (Bad Request)
         HttpResponseBean response7 = getNewHttpCallBean2.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTXMLXML);
         AssertionUtils.multiAssertEquals(convertResponseToRestTypesXml.get(CougarMessageProtocolRequestTypeEnum.RESTXML), response7.getResponseObject());
