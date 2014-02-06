@@ -21,7 +21,7 @@
 
 	<bean class="com.betfair.cougar.util.configuration.PropertyConfigurer">
         <constructor-arg index="0" ref="cougar.core.EncryptorRegistry"/>
-	    <property name="defaultConfig" value="conf/baseline-client-app-defaults.properties"/>
+	    <property name="defaultConfig" value="classpath:conf/baseline-client-app-defaults.properties"/>
 	    <property name="configOverride" value="overrides.properties"/>
 	    <property name="placeholderPrefix" value="$APPLICATION{"/>
 	</bean>
