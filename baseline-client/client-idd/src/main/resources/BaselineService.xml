@@ -1607,6 +1607,21 @@
             </exceptions>
 		</parameters>
 	</operation>
+
+    <operation name="callUnknownOperation" since="2.0">
+        <description>Invokes an non-existing call using a cougar-client and doesn't handle the exception</description>
+        <parameters>
+            <request/>
+            <response type="void">
+                <description>ignored</description>
+            </response>
+            <exceptions>
+                <exception type="SimpleException">
+                    <description>If the operation fails for any reason</description>
+                </exception>
+            </exceptions>
+        </parameters>
+    </operation>
 	
     <operation name="simpleEventPublication" since="2.0.0">
         <description>Bridging call between a request based transport and an event based transport.  This parameter will be published to an event destination</description>

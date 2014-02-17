@@ -361,20 +361,6 @@ public class BaseExecutionVenue implements ExecutionVenue {
         }
     }
 
-
-
-    public Executable getExecutable(final OperationKey key) {
-        final DefinedExecutable de = registry.get(key);
-
-        if (de != null) {
-            if (de.exec instanceof InterceptingExecutableWrapper) {
-                return ((InterceptingExecutableWrapper) de.exec).getWrappedExecutable();
-            }
-            return de.exec;
-        }
-        return null;
-    }
-
     // for testing
     DefinedExecutable getDefinedExecutable(final OperationKey key) {
         return registry.get(key);

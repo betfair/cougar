@@ -16,8 +16,8 @@
 
 package com.betfair.cougar.client.socket;
 
+import com.betfair.cougar.core.api.exception.CougarClientException;
 import com.betfair.cougar.core.api.exception.CougarFrameworkException;
-import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.impl.transports.TransportRegistryImpl;
 import com.betfair.cougar.netutil.nio.CougarProtocol;
@@ -114,7 +114,7 @@ public class ExecutionVenueNioClientTest extends AbstractClientTest {
         timeoutClient.start().get(100, TimeUnit.SECONDS);
 
 
-        ClientTestExecutionObserver timeoutObserver = new ClientTestExecutionObserver(new CougarServiceException(ServerFaultCode.Timeout, "Exception occurred in Client: Read timed out: tcp://"+InetAddress.getByName("localhost").getCanonicalHostName()+":"+server.getBoundPort()));
+        ClientTestExecutionObserver timeoutObserver = new ClientTestExecutionObserver(new CougarClientException(ServerFaultCode.Timeout, "Exception occurred in Client: Read timed out: tcp://"+InetAddress.getByName("localhost").getCanonicalHostName()+":"+server.getBoundPort()));
 
         performRequestAsync(timeoutClient, timeoutObserver, new Object[]{true, ServerClientFactory.COMMAND_SLEEP_60S, "60s sleep"});
         assertNotNull(timeoutObserver.getExecutionResultFuture().get(2000, TimeUnit.MILLISECONDS));

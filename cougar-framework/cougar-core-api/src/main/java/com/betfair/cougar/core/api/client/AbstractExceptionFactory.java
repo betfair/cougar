@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package com.betfair.cougar.core.api.exception;
+package com.betfair.cougar.core.api.client;
 
 import com.betfair.cougar.api.ResponseCode;
+import com.betfair.cougar.core.api.exception.CougarClientException;
+import com.betfair.cougar.core.api.exception.ServerFaultCode;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +29,7 @@ import java.util.Map;
  * Will be extended by a generated Interface implementation.  The extending class will
  * register one (or more) ExceptionInstantiators, which are stored in a map backed by
  * the BSIDL defined Prefix attribute of the exception type stanza.
+ * todo: this should move into client package
  */
 public abstract class AbstractExceptionFactory implements ExceptionFactory {
 
@@ -48,7 +51,7 @@ public abstract class AbstractExceptionFactory implements ExceptionFactory {
             @Override
             public Exception createException(ResponseCode responseCode, String prefix, String reason, Map<String,String> exceptionParams) {
                 ServerFaultCode sfc = ServerFaultCode.getByDetailCode(prefix);
-                return new CougarServiceException(sfc, reason);
+                return new CougarClientException(sfc, reason);
             }
         });
     }

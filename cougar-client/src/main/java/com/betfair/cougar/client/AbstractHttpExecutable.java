@@ -23,6 +23,7 @@ import com.betfair.cougar.client.exception.ExceptionTransformer;
 import com.betfair.cougar.client.query.QueryStringGeneratorFactory;
 import com.betfair.cougar.core.api.OperationBindingDescriptor;
 import com.betfair.cougar.core.api.client.AbstractClientTransport;
+import com.betfair.cougar.core.api.client.ExceptionFactory;
 import com.betfair.cougar.core.api.client.TransportMetrics;
 import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.exception.*;
@@ -30,10 +31,8 @@ import com.betfair.cougar.core.api.transcription.EnumDerialisationException;
 import com.betfair.cougar.core.api.transcription.EnumUtils;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.marshalling.api.databinding.DataBindingFactory;
-import com.betfair.cougar.transport.api.RequestTimeResolver;
 import com.betfair.cougar.transport.api.protocol.http.HttpServiceBindingDescriptor;
 import com.betfair.cougar.transport.api.protocol.http.rescript.RescriptOperationBindingDescriptor;
-import com.betfair.cougar.util.configuration.PropertyConfigurer;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
@@ -51,7 +50,6 @@ import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.GZIPInputStream;
 
@@ -213,7 +211,7 @@ public abstract class AbstractHttpExecutable<HR> extends AbstractClientTransport
                 descriptorMap.get(definition.getOperationKey().getLocalKey());
         try {
             if (response.getEntity() == null) {
-                exception = new CougarServiceException(ServerFaultCode.RemoteCougarCommunicationFailure,
+                exception = new CougarClientException(ServerFaultCode.RemoteCougarCommunicationFailure,
                         "No response returned by server");
             } else {
                 inputStream = response.getEntity();
@@ -232,32 +230,36 @@ public abstract class AbstractHttpExecutable<HR> extends AbstractClientTransport
                             result = dataBindingFactory.getUnMarshaller().unmarshall(inputStream,
                                     definition.getReturnType(), UNMARSHALL_ENCODING);
                         } catch (Exception e2) {
-                            throw betterException(response, e2);
+                            throw clientException(response, e2);
                         }
                     }
                 } else if (response.getResponseStatus() == HttpStatus.SC_NOT_FOUND) {
                     // IN this case, we know there will be no exception body, so just stick on a new Exception
-                    exception = new CougarServiceException(ServerFaultCode.NoSuchService,
+                    exception = new CougarClientException(ServerFaultCode.NoSuchService,
                             "The server did not recognise the URL.");
                 } else {
                     try {
                         exception = exceptionTransformer.convert(inputStream, exceptionFactory,
                                 response.getResponseStatus());
                     } catch (Exception e2) {
-                        throw betterException(response, e2);
+                        throw clientException(response, e2);
                     }
                 }
             }
         } catch (final Exception e) {
             if (e instanceof CougarServiceException) {
+                CougarServiceException cse = (CougarServiceException) e;
+                exception = new CougarClientException(cse.getServerFaultCode(), cse.getMessage(), cse.getCause());
+            }
+            else if (e instanceof CougarClientException) {
                 exception = e;
             }
             else if (e instanceof EnumDerialisationException) {
-                exception = new CougarServiceException(ServerFaultCode.JSONDeserialisationParseFailure,
+                exception = new CougarClientException(ServerFaultCode.JSONDeserialisationFailure,
                         "Exception occurred in Client: " + e.getMessage(), e);
             }
             else {
-                exception = new CougarServiceException(ServerFaultCode.RemoteCougarCommunicationFailure,
+                exception = new CougarClientException(ServerFaultCode.RemoteCougarCommunicationFailure,
                         "Exception occurred in Client: " + e.getMessage(), e);
             }
         } finally {
@@ -272,6 +274,23 @@ public abstract class AbstractHttpExecutable<HR> extends AbstractClientTransport
         // end request callback
     }
 
+    private CougarClientException clientException(CougarHttpResponse response, Exception e) {
+        if (e instanceof CougarClientException) {
+            return (CougarClientException)e;
+        }
+        if (e instanceof CougarException) {
+            return new CougarClientException(((CougarException)e).getServerFaultCode(),e.getMessage(), !isDefinitelyCougarResponse(response));
+        }
+        ServerFaultCode faultCode = ServerFaultCode.RemoteCougarCommunicationFailure;
+        String message = "Unknown error communicating with remote Cougar service";
+        switch (response.getResponseStatus()) {
+            case HttpStatus.SC_NOT_FOUND:
+                faultCode = ServerFaultCode.NoSuchOperation;
+                message = "Service not found";
+        }
+        return new CougarClientException(faultCode, message, e, !isDefinitelyCougarResponse(response));
+    }
+
     protected void processException(ExecutionObserver obs, Throwable t, String url) {
         ServerFaultCode faultCode = ServerFaultCode.RemoteCougarCommunicationFailure;
         if (t instanceof SocketTimeoutException) {
@@ -281,7 +300,7 @@ public abstract class AbstractHttpExecutable<HR> extends AbstractClientTransport
     }
 
     protected void processException(ExecutionObserver obs, Throwable t, String url, ServerFaultCode faultCode) {
-        Exception exception = new CougarServiceException(faultCode,
+        Exception exception = new CougarClientException(faultCode,
                 "Exception occurred in Client: " + t.getMessage()+": "+url, t);
         obs.onResult(new ClientExecutionResult(exception, 0));
     }
@@ -293,23 +312,6 @@ public abstract class AbstractHttpExecutable<HR> extends AbstractClientTransport
     protected abstract void sendRequest(HR request, ExecutionObserver obs,
                                         OperationDefinition operationDefinition);
 
-    /**
-     * If an exception occurs while trying to interpret the presumed Cougar response
-     * it is possible that the responding server is not in fact Cougar.
-     *
-     * This method attempts to detect that Cougar was the responding server and will wrap
-     * the provided exception into the more appropriate CougarNotIdentifiedException if it fails to do so.
-     *
-     * @param response a response
-     * @param exception an exception
-     * @return Exception Either the provided exception or a CougarNotIdentifiedException wrapping it
-     */
-    private Exception betterException(CougarHttpResponse response, Exception exception) {
-        if (isCougarResponse(response)) {
-            return  exception;
-        }
-        return new CougarNotIdentifiedException(exception);
-    }
 
     /**
      * has the responding server identified itself as Cougar
@@ -322,15 +324,7 @@ public abstract class AbstractHttpExecutable<HR> extends AbstractClientTransport
      * @param response http response
      * @return boolean has the responding server identified itself as Cougar
      */
-    private boolean isCougarResponse(CougarHttpResponse response) {
-        boolean isInCompatibilityMode = Boolean.valueOf(PropertyConfigurer.getAllLoadedProperties()
-                .get("cougar.client.querystring.13.compatabilitymode"));
-        // If the client is being run in compatibility mode with a 1.3 Service, don't swallow the exception
-        // in an incorrect "Not a cougar service" error
-        if (isInCompatibilityMode) {
-            return true;
-        }
-
+    private boolean isDefinitelyCougarResponse(CougarHttpResponse response) {
         String ident = response.getServerIdentity();
         if (ident != null && ident.contains("Cougar 2")) {
             return true;

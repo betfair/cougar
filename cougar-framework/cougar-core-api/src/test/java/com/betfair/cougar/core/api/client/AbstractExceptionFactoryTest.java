@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package com.betfair.cougar.core.api.exception;
+package com.betfair.cougar.core.api.client;
 
 import com.betfair.cougar.api.ResponseCode;
 import com.betfair.cougar.api.fault.CougarApplicationException;
+import com.betfair.cougar.core.api.client.AbstractExceptionFactory;
+import com.betfair.cougar.core.api.exception.CougarException;
+import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.logging.CougarLoggingUtils;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -28,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 
 /**

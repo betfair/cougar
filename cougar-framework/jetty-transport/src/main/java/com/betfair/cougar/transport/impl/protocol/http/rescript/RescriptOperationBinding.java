@@ -140,7 +140,7 @@ public class RescriptOperationBinding {
                 throw new CougarValidationException(ServerFaultCode.ClassConversionFailure, ede.getMessage(), ede.getCause());
             }
             else if (mediaType.getSubtype().equals("json")) {
-                throw new CougarValidationException(ServerFaultCode.JSONDeserialisationParseFailure, ede.getMessage(), ede.getCause());
+                throw new CougarValidationException(ServerFaultCode.JSONDeserialisationFailure, ede.getMessage(), ede.getCause());
             }
             else if (mediaType.getSubtype().equals("xml")) {
                 throw new CougarValidationException(ServerFaultCode.XMLDeserialisationFailure, ede.getMessage(), ede.getCause());

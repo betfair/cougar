@@ -35,22 +35,39 @@
                 <version>${project.version}</version>
                 <executions>
                     <execution>
+                        <id>baseline</id>
                         <goals>
                             <goal>process</goal>
                         </goals>
+                        <configuration>
+                            <services>
+                                <service>
+                                    <serviceName>BaselineService</serviceName>
+                                </service>
+                            </services>
+                            <iddAsResource>true</iddAsResource>
+                            <!-- run as both a client and a server -->
+                            <client>true</client>
+                            <server>true</server>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>non</id>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <configuration>
+                            <services>
+                                <service>
+                                    <serviceName>NonService</serviceName>
+                                </service>
+                            </services>
+                            <iddAsResource>true</iddAsResource>
+                            <!-- client only -->
+                            <client>true</client>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <services>
-                        <service>
-                            <serviceName>BaselineService</serviceName>
-                        </service>
-                    </services>
-                    <iddAsResource>true</iddAsResource>
-                    <!-- run as both a client and a server -->
-                    <client>true</client>
-                    <server>true</server>
-                </configuration>
             </plugin>
         </plugins>
         <resources>

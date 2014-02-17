@@ -17,7 +17,7 @@
 package com.betfair.cougar.client.exception;
 
 import com.betfair.cougar.api.ResponseCode;
-import com.betfair.cougar.core.api.exception.ExceptionFactory;
+import com.betfair.cougar.core.api.client.ExceptionFactory;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.fault.CougarFault;
 import com.betfair.cougar.marshalling.api.databinding.FaultUnMarshaller;

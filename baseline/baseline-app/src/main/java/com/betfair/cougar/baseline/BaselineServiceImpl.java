@@ -152,6 +152,7 @@ import com.betfair.cougar.core.impl.security.SSLAwareTokenResolver;
 import com.betfair.cougar.logging.CougarLogger;
 import com.betfair.cougar.logging.CougarLoggingUtils;
 import com.betfair.cougar.util.configuration.PropertyConfigurer;
+import com.betfair.nonservice.v3.NonSyncClient;
 import com.betfair.tornjak.kpi.aop.KPITimedEvent;
 import com.betfair.platform.virtualheap.HListComplex;
 import com.betfair.platform.virtualheap.Heap;
@@ -203,6 +204,7 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
     private BaselineClient baselineAsyncClient;
     private BaselineSyncClient inProcessSyncClient;
     private BaselineSyncClient socketSyncClient;
+    private NonSyncClient nonExistentServiceClient;
 
 	private MonitorRegistry monitorRegistry;
 
@@ -241,6 +243,10 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
 
     public void setInProcessSyncClient(BaselineSyncClient inProcessSyncClient) {
         this.inProcessSyncClient = inProcessSyncClient;
+    }
+
+    public void setNonExistentServiceClient(NonSyncClient nonExistentServiceClient) {
+        this.nonExistentServiceClient = nonExistentServiceClient;
     }
 
     public void setSocketSyncClient(BaselineSyncClient socketSyncClient) {
@@ -1568,6 +1574,17 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
     public EnumHandling3WrappedValueEnum enumHandling3(RequestContext ctx, EnumHandling3BodyParameterEnum bodyParameter, Boolean returnUnknown, TimeConstraints timeConstraints) throws SimpleException {
         ctx.setRequestLogExtension(new BaselineLogExtension(null, null, null));
         return returnUnknown ? EnumHandling3WrappedValueEnum.ServerOnly : EnumHandling3WrappedValueEnum.ClientServer;
+    }
+
+    @Override
+    public void callUnknownOperation(RequestContext ctx, TimeConstraints timeConstraints) throws SimpleException {
+        try {
+            nonExistentServiceClient.someOperation(ctx);
+        }
+        // this won't hit as this call will return a not found..
+        catch (com.betfair.nonservice.v3.exception.SimpleException e) {
+            throw new SimpleException(SimpleExceptionErrorCodeEnum.valueOf(e.getErrorCode().name()),e.getReason());
+        }
     }
 
     @Override

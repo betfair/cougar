@@ -25,7 +25,7 @@ import com.betfair.cougar.core.api.ServiceDefinition;
 import com.betfair.cougar.core.api.ev.ExecutionVenue;
 import com.betfair.cougar.core.api.ev.RegisterableClientExecutableResolver;
 import com.betfair.cougar.core.api.exception.CougarFrameworkException;
-import com.betfair.cougar.core.api.exception.ExceptionFactory;
+import com.betfair.cougar.core.api.client.ExceptionFactory;
 import com.betfair.cougar.core.impl.CougarIntroductionService;
 import com.betfair.cougar.core.impl.ev.ClientServiceRegistration;
 import com.betfair.cougar.transport.api.protocol.http.HttpServiceBindingDescriptor;

@@ -16,17 +16,27 @@
 
 package com.betfair.cougar.core.api.exception;
 
-import com.betfair.cougar.api.ResponseCode;
-import com.betfair.cougar.api.fault.CougarApplicationException;
-import com.betfair.cougar.core.api.exception.CougarException;
+import java.util.logging.Level;
 
-import java.util.List;
 
-/**
- * Interface describes a class who can instantiate an exception on either
- * the CougarApplicationException or CougarException hierarchy
- */
-public interface ExceptionFactory {
+@SuppressWarnings("serial")
+public class CougarMarshallingException extends CougarException {
+	private static final Level LOG_LEVEL = Level.FINE;
 
-    Exception parseException(ResponseCode responseCode, String prefix, String reason, List<String[]> params);
+	public CougarMarshallingException(ServerFaultCode fault) {
+		super(LOG_LEVEL, fault);
+	}
+
+	public CougarMarshallingException(ServerFaultCode fault, Throwable t) {
+		super(LOG_LEVEL, fault, t);
+	}
+
+	public CougarMarshallingException(ServerFaultCode fault, String message) {
+		super(LOG_LEVEL, fault, message);
+	}
+
+    public CougarMarshallingException(ServerFaultCode fault, String message, Throwable t) {
+		super(LOG_LEVEL, fault, message,t);
+	}
+	
 }

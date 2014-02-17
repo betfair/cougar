@@ -64,7 +64,7 @@ public class ActiveMQSubscriptionEventListener  {
             for (WeakReference<ExecutionObserver> ref : executionObservers) {
                 ExecutionObserver obs = ref.get();
                 if (obs != null) {
-                    obs.onResult(new ExecutionResult(new CougarServiceException(ServerFaultCode.JMSTransportCommunicationFailure, "Connection to Sonic has been lost")));
+                    obs.onResult(new ExecutionResult(new CougarServiceException(ServerFaultCode.JMSTransportCommunicationFailure, "Connection to ActiveMQ has been lost")));
                 }
             }
             executionObservers = new HashSet<WeakReference<ExecutionObserver>>();

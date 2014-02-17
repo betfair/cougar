@@ -18,25 +18,18 @@ package com.betfair.cougar.client;
 
 import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.ExecutionContextImpl;
-import com.betfair.cougar.api.ResponseCode;
 import com.betfair.cougar.api.export.Protocol;
-import com.betfair.cougar.api.fault.FaultCode;
 import com.betfair.cougar.api.geolocation.GeoLocationDetails;
 import com.betfair.cougar.api.security.IdentityResolver;
 import com.betfair.cougar.api.security.IdentityChain;
 import com.betfair.cougar.api.security.IdentityToken;
 import com.betfair.cougar.api.security.IdentityTokenResolver;
-import com.betfair.cougar.client.exception.ExceptionTransformerDelegate;
 import com.betfair.cougar.client.exception.HTTPErrorToCougarExceptionTransformer;
 import com.betfair.cougar.client.query.QueryStringGenerator;
 import com.betfair.cougar.client.query.QueryStringGeneratorFactory;
 import com.betfair.cougar.core.api.ServiceDefinition;
 import com.betfair.cougar.core.api.ServiceVersion;
 import com.betfair.cougar.core.api.ev.*;
-import com.betfair.cougar.core.api.exception.CompatabilityServiceException;
-import com.betfair.cougar.core.api.exception.ExceptionFactory;
-import com.betfair.cougar.core.api.exception.ServerFaultCode;
-import com.betfair.cougar.core.api.fault.Fault;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
@@ -68,7 +61,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
@@ -477,46 +469,6 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
         actual = executable.extractPortFromAddress();
         assertEquals(25000, actual);
     }
-
-    @Test
-    // Check that when running in compatability mode, a not found exception isn't swallowed in a
-    // "Not a Cougar 2 Service" exception
-    public void testNotFoundHandlingFromOneThreeService() throws IOException, InterruptedException {
-        String notFoundString = "The server did not recognise the URL";
-        PassFailExecutionObserver observer = runCompatibilityModeExceptionHandlingTest(notFoundString, HttpServletResponse.SC_NOT_FOUND);
-
-        ExecutionResult result = observer.getResult();
-        assertEquals(ExecutionResult.ResultType.Fault, observer.getResult().getResultType());
-        assertEquals(notFoundString + ".", result.getFault().getMessage());
-        assertEquals(ServerFaultCode.NoSuchService, result.getFault().getServerFaultCode());
-        assertEquals(ResponseCode.NotFound, result.getFault().getResponseCode());
-    }
-
-    @Test
-    // Check that when running in compatability mode, a standard cougar exception isn't swallowed in a
-    // "Not a Cougar 2 Service" exception
-    public void testExceptionHandlingFromOneThreeService() throws IOException, InterruptedException {
-        String exceptionString = "Exception occurred in Client: Compatability Mode exception received " +
-                "(Cougar 2 client of Cougar 1.3 service) :  ";
-        String exceptionMessage = "Exception returned from a Cougar 1.3";
-
-        final ExceptionTransformerDelegate exceptionTransformer = mock(ExceptionTransformerDelegate.class);
-        when(exceptionTransformer.convert(any(InputStream.class), any(ExceptionFactory.class), anyInt()))
-                .thenThrow(new CompatabilityServiceException(new Fault(FaultCode.Server, "DSC-0029", exceptionMessage)));
-        client.setExceptionTransformer(exceptionTransformer);
-
-        PassFailExecutionObserver observer = runCompatibilityModeExceptionHandlingTest(exceptionString, HttpServletResponse.SC_BAD_REQUEST);
-
-        ExecutionResult result = observer.getResult();
-        assertEquals(ExecutionResult.ResultType.Fault, observer.getResult().getResultType());
-        assertEquals(exceptionString + exceptionMessage, result.getFault().getMessage());
-        assertEquals(ServerFaultCode.RemoteCougarCommunicationFailure, result.getFault().getServerFaultCode());
-        assertEquals(ResponseCode.ServiceUnavailable, result.getFault().getResponseCode());
-    }
-
-
-    protected abstract PassFailExecutionObserver runCompatibilityModeExceptionHandlingTest(String exceptionString,
-                                                                      int scBadRequest) throws IOException, InterruptedException;
 
     protected ExecutionContext createEC(final String remoteIp, final String customerIp, boolean trace) {
         ExecutionContextImpl eci = new ExecutionContextImpl();

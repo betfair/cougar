@@ -20,7 +20,7 @@ import com.betfair.baseline.v2.BaselineSyncClient;
 import com.betfair.baseline.v2.enumerations.ClientServerEnum;
 import com.betfair.baseline.v2.enumerations.EnumHandlingParam2Enum;
 import com.betfair.baseline.v2.to.EnumHandling;
-import com.betfair.cougar.core.api.exception.CougarServiceException;
+import com.betfair.cougar.core.api.exception.CougarClientException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.tests.clienttests.ClientTestsHelper;
 import com.betfair.cougar.tests.clienttests.CougarClientWrapper;
@@ -31,7 +31,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.assertTrue;
 import static org.testng.AssertJUnit.fail;
 
 /**
@@ -106,14 +105,14 @@ public class ClientEnumInComplexTypeHandlingModesTest {
             client.enumHandling(cougarClientWrapper.getCtx(), req, true);
             fail("Expected an exception here");
         }
-        catch (CougarServiceException cfe) {
+        catch (CougarClientException cfe) {
             ServerFaultCode expected;
             switch (tt.getUnderlyingTransport()) {
                 case HTTP:
-                    expected = ServerFaultCode.JSONDeserialisationParseFailure;
+                    expected = ServerFaultCode.JSONDeserialisationFailure;
                     break;
                 case Socket:
-                    expected = ServerFaultCode.BinDeserialisationParseFailure;
+                    expected = ServerFaultCode.BinDeserialisationFailure;
                     break;
                 default:
                     throw new IllegalStateException("Unrecognised transport "+tt.getUnderlyingTransport());
@@ -152,11 +151,11 @@ public class ClientEnumInComplexTypeHandlingModesTest {
         try {
             client.enumHandling(cougarClientWrapper.getCtx(), req, false);
         }
-        catch (CougarServiceException cfe) {
+        catch (CougarClientException cfe) {
             ServerFaultCode expected;
             switch (tt.getUnderlyingTransport()) {
                 case HTTP:
-                    expected = ServerFaultCode.JSONDeserialisationParseFailure;
+                    expected = ServerFaultCode.JSONDeserialisationFailure;
                     break;
                 case Socket:
                     expected = ServerFaultCode.ClassConversionFailure;
@@ -180,11 +179,11 @@ public class ClientEnumInComplexTypeHandlingModesTest {
         try {
             client.enumHandling(cougarClientWrapper.getCtx(), req, false);
         }
-        catch (CougarServiceException cfe) {
+        catch (CougarClientException cfe) {
             ServerFaultCode expected;
             switch (tt.getUnderlyingTransport()) {
                 case HTTP:
-                    expected = ServerFaultCode.JSONDeserialisationParseFailure;
+                    expected = ServerFaultCode.JSONDeserialisationFailure;
                     break;
                 case Socket:
                     expected = ServerFaultCode.ClassConversionFailure;

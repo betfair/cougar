@@ -19,7 +19,7 @@ package com.betfair.cougar.client.socket;
 import com.betfair.cougar.core.api.ev.ExecutionObserver;
 import com.betfair.cougar.core.api.ev.ExecutionResult;
 import com.betfair.cougar.core.api.ev.Subscription;
-import com.betfair.cougar.core.api.exception.CougarServiceException;
+import com.betfair.cougar.core.api.exception.CougarClientException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.impl.ev.ConnectedResponseImpl;
 import com.betfair.cougar.logging.CougarLogger;
@@ -150,7 +150,7 @@ public class ClientConnectedObjectManager {
             newHeapSubscription = (NewHeapSubscription) in.getResult();
         } catch (Exception e) {
             logger.log(Level.WARNING, "Error unpacking subscription result", e);
-            observer.onResult(new ExecutionResult(new CougarServiceException(ServerFaultCode.FrameworkError, "Error unpacking subscription result", e)));
+            observer.onResult(new ExecutionResult(new CougarClientException(ServerFaultCode.FrameworkError, "Error unpacking subscription result", e)));
             return;
         }
         nioLogger.log(NioLogger.LoggingLevel.TRANSPORT, currentSession, "Received a subscription response for heapId %s with subscriptionId %s", newHeapSubscription.getHeapId(), newHeapSubscription.getSubscriptionId());
@@ -184,7 +184,7 @@ public class ClientConnectedObjectManager {
         if (heapState == null) {
             nioLogger.log(NioLogger.LoggingLevel.TRANSPORT, currentSession, "Couldn't find heap definition, heapId = %s", newHeapSubscription.getHeapId());
             logger.log(Level.WARNING, "Can't find the heap for this subscription result. Heap id = " + newHeapSubscription.getHeapId());
-            observer.onResult(new ExecutionResult(new CougarServiceException(ServerFaultCode.FrameworkError, "Can't find the heap for this subscription result. Heap id = " + newHeapSubscription.getHeapId())));
+            observer.onResult(new ExecutionResult(new CougarClientException(ServerFaultCode.FrameworkError, "Can't find the heap for this subscription result. Heap id = " + newHeapSubscription.getHeapId())));
         } else {
             if (preExistingHeap && heapState.haveSeenInitialUpdate()) {
                 Subscription sub = heapState.addSubscription(this, currentSession, newHeapSubscription.getHeapId(), newHeapSubscription.getSubscriptionId());
@@ -194,7 +194,7 @@ public class ClientConnectedObjectManager {
                     // null sub means we already had a subscription with that id, something's not in a good state in the server, so kill this connection as we don't know what's going on
                     nioLogger.log(NioLogger.LoggingLevel.TRANSPORT, currentSession, "Duplicate subscription returned by the server, id = %s - closing session", newHeapSubscription.getSubscriptionId());
                     logger.log(Level.WARNING, "Duplicate subscription returned by the server, id = " + newHeapSubscription.getSubscriptionId() + " - closing session");
-                    observer.onResult(new ExecutionResult(new CougarServiceException(ServerFaultCode.FrameworkError, "Duplicate subscription returned by the server, id = " + newHeapSubscription.getSubscriptionId())));
+                    observer.onResult(new ExecutionResult(new CougarClientException(ServerFaultCode.FrameworkError, "Duplicate subscription returned by the server, id = " + newHeapSubscription.getSubscriptionId())));
                     currentSession.close();
                 }
             } else {
@@ -233,7 +233,7 @@ public class ClientConnectedObjectManager {
                                     terminateSubscriptions(currentSession, newHeapSubscription.getHeapId(), Subscription.CloseReason.INTERNAL_ERROR);
                                 }
                                 logger.log(Level.WARNING, "Didn't get initial population message for heap id = " + newHeapSubscription.getHeapId());
-                                observer.onResult(new ExecutionResult(new CougarServiceException(ServerFaultCode.FrameworkError, "Didn't get initial population message for heap id = " + newHeapSubscription.getHeapId())));
+                                observer.onResult(new ExecutionResult(new CougarClientException(ServerFaultCode.FrameworkError, "Didn't get initial population message for heap id = " + newHeapSubscription.getHeapId())));
                             }
                         }
                     }

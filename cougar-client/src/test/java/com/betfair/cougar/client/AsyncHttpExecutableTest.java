@@ -22,12 +22,11 @@ import com.betfair.cougar.core.api.ev.ExecutionResult;
 import com.betfair.cougar.core.api.ev.ExecutionVenue;
 import com.betfair.cougar.core.api.ev.OperationKey;
 import com.betfair.cougar.core.api.ev.TimeConstraints;
-import com.betfair.cougar.core.api.exception.CougarServiceException;
-import com.betfair.cougar.core.api.exception.ExceptionFactory;
+import com.betfair.cougar.core.api.exception.CougarClientException;
+import com.betfair.cougar.core.api.client.ExceptionFactory;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.transport.api.protocol.http.HttpServiceBindingDescriptor;
-import com.betfair.cougar.util.configuration.PropertyConfigurer;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpDestination;
 import org.eclipse.jetty.client.api.Connection;
@@ -130,27 +129,6 @@ public class AsyncHttpExecutableTest extends AbstractHttpExecutableTest<Request>
         // mocks after
         fireResponse((CapturingRequest)request, httpCode, response, responseSize, observer, !ioException);
     }
-    @Override
-    protected PassFailExecutionObserver runCompatibilityModeExceptionHandlingTest(String exceptionString, int errorCode) throws IOException, InterruptedException {
-        PropertyConfigurer.getAllLoadedProperties().put("cougar.client.querystring.13.compatabilitymode", "true");
-
-        generateEV(tsd, null);
-
-        final ExecutionContext ec = createEC(null, null, false);
-        final OperationKey key = TestServiceDefinition.TEST_GET;
-        final PassFailExecutionObserver observer = new PassFailExecutionObserver(false, true);
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                client.execute(ec, key, new Object[] {TEST_TEXT }, observer, ev, DefaultTimeConstraints.NO_CONSTRAINTS);
-            }
-        }).start();
-
-        fireResponse(mockRequest, errorCode, null, 18, observer, true);
-
-        return observer;
-    }
 
     @Override
     protected int getEVPostSuccessWithMandatoryBodyAndQueryParameterPresent_ResultSize() {
@@ -163,7 +141,7 @@ public class AsyncHttpExecutableTest extends AbstractHttpExecutableTest<Request>
         generateEV(tsd, null);
 
         when(mockedHttpErrorTransformer.convert(any(InputStream.class),  any(ExceptionFactory.class),
-                anyInt())).thenReturn(new CougarServiceException(ServerFaultCode.RemoteCougarCommunicationFailure, "bang"));
+                anyInt())).thenReturn(new CougarClientException(ServerFaultCode.RemoteCougarCommunicationFailure, "bang"));
 
         final PassFailExecutionObserver observer = new PassFailExecutionObserver(true, false);
         new Thread(new Runnable() {
@@ -187,7 +165,7 @@ public class AsyncHttpExecutableTest extends AbstractHttpExecutableTest<Request>
         generateEV(tsd, null);
 
         when(mockedHttpErrorTransformer.convert(any(InputStream.class),  any(ExceptionFactory.class),
-                anyInt())).thenReturn(new CougarServiceException(ServerFaultCode.RemoteCougarCommunicationFailure, "bang"));
+                anyInt())).thenReturn(new CougarClientException(ServerFaultCode.RemoteCougarCommunicationFailure, "bang"));
 
         final PassFailExecutionObserver observer = new PassFailExecutionObserver(false, true);
         new Thread(new Runnable() {

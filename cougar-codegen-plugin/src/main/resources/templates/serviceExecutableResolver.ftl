@@ -29,6 +29,7 @@ import com.betfair.cougar.core.api.ev.ExecutionObserver;
 import com.betfair.cougar.core.api.ev.ExecutionVenue;
 import com.betfair.cougar.core.api.ev.OperationKey;
 import com.betfair.cougar.core.api.ev.TimeConstraints;
+import com.betfair.cougar.core.impl.ev.ServiceExceptionHandlingObserver;
 
 import java.util.*;
 
@@ -53,6 +54,7 @@ public class ${service}ServiceExecutableResolver implements ExecutableResolver {
 					public void execute(ExecutionContext ctx, OperationKey key,
 							Object[] args, ExecutionObserver observer,
 							ExecutionVenue executionVenue, TimeConstraints timeConstraints) {
+                    ServiceExceptionHandlingObserver exceptionHandlingObserver = new ServiceExceptionHandlingObserver(observer);
 		  			service.${method}((RequestContext)ctx<@compress single_line=true>
 		  			<#assign argPos = 0>
 		        	<#list operation.parameters.request.parameter as parameter>
@@ -72,7 +74,7 @@ public class ${service}ServiceExecutableResolver implements ExecutableResolver {
 					    , (${javaType})args[${argPos}]
 				  		<#assign argPos = argPos + 1>
 			        </#list>
-			    	, observer, timeConstraints);
+			    	, exceptionHandlingObserver, timeConstraints);
 				    </@compress>
 				    
 				}

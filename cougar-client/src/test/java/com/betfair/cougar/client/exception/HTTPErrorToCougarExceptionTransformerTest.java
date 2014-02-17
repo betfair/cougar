@@ -17,8 +17,8 @@
 package com.betfair.cougar.client.exception;
 
 import com.betfair.cougar.api.ResponseCode;
-import com.betfair.cougar.core.api.exception.CougarServiceException;
-import com.betfair.cougar.core.api.exception.ExceptionFactory;
+import com.betfair.cougar.core.api.exception.CougarClientException;
+import com.betfair.cougar.core.api.client.ExceptionFactory;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.fault.CougarFault;
 import com.betfair.cougar.core.api.fault.FaultDetail;
@@ -63,7 +63,7 @@ public class HTTPErrorToCougarExceptionTransformerTest {
         when(faultUnMarshaller.unMarshallFault(any(InputStream.class), anyString())).thenReturn(mockCougarFault);
         when(exceptionFactory.parseException(
                 any(ResponseCode.class), anyString(), anyString(), any(List.class))).thenReturn(
-                new CougarServiceException(ServerFaultCode.FrameworkError, "bang"));
+                new CougarClientException(ServerFaultCode.FrameworkError, "bang"));
 
         HTTPErrorToCougarExceptionTransformer tx = new HTTPErrorToCougarExceptionTransformer(faultUnMarshaller);
 

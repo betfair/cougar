@@ -17,7 +17,9 @@
 package com.betfair.cougar.core.api.ev;
 
 import com.betfair.cougar.api.fault.CougarApplicationException;
+import com.betfair.cougar.core.api.exception.CougarClientException;
 import com.betfair.cougar.core.api.exception.CougarException;
+import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 

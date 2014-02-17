@@ -1731,6 +1731,13 @@
         </extensions>
 	</operation>
 
+    <operation name="callUnknownOperation" since="2.0">
+        <extensions>
+            <path>/callUnknownOperation</path>
+            <method>GET</method>
+        </extensions>
+    </operation>
+
     <operation name="simpleEventPublication" since="1.0.0">
         <description>Bridging call between a request based transport and an event based transport.  This parameter will be published to an event destination</description>
         <parameters>

@@ -24,7 +24,7 @@ package ${package}.${majorVersion}.exception;
 import ${package}.${majorVersion}.enumerations.*;
 
 import com.betfair.cougar.api.ResponseCode;
-import com.betfair.cougar.core.api.exception.AbstractExceptionFactory;
+import com.betfair.cougar.core.api.client.AbstractExceptionFactory;
 
 import java.util.Map;
 

@@ -20,9 +20,8 @@ import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.client.socket.jmx.ClientSocketTransportInfo;
 import com.betfair.cougar.client.socket.resolver.NetworkAddressResolver;
 import com.betfair.cougar.core.api.client.AbstractClientTransport;
-import com.betfair.cougar.core.api.client.TransportMetrics;
 import com.betfair.cougar.core.api.ev.*;
-import com.betfair.cougar.core.api.exception.CougarServiceException;
+import com.betfair.cougar.core.api.exception.CougarClientException;
 import com.betfair.cougar.core.api.exception.CougarValidationException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.transcription.Parameter;
@@ -57,7 +56,6 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.FutureTask;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 
 import static com.betfair.cougar.netutil.nio.NioLogger.LoggingLevel.*;
@@ -285,7 +283,7 @@ public class ExecutionVenueNioClient extends AbstractClientTransport implements 
                     LOG.log(Level.FINE,
                             "Operation: " + def.getOperationKey() + " with parameters: " + Arrays.toString(args));
                 }
-                observer.onResult(new ExecutionResult(new CougarServiceException(ServerFaultCode.FrameworkError,
+                observer.onResult(new ExecutionResult(new CougarClientException(ServerFaultCode.FrameworkError,
                         "This Client is not connected to a server so this call cannot be completed!")));
             } else {
                 try {
@@ -339,7 +337,7 @@ public class ExecutionVenueNioClient extends AbstractClientTransport implements 
                                     response.recreate(observer, def.getReturnType(), message.getPayload().length);
                                 }
                             } catch (Exception e) {
-                                observer.onResult(new ExecutionResult(new CougarServiceException(ServerFaultCode.BinDeserialisationParseFailure, "Unable to deserialise response, closing session", e)));
+                                observer.onResult(new ExecutionResult(new CougarClientException(ServerFaultCode.BinDeserialisationFailure, "Unable to deserialise response, closing session", e)));
                                 if (session.isConnected()) {
                                     logger.log(NioLogger.LoggingLevel.SESSION, session, "Error occurred whilst trying to deserialise response, closing session");
                                     // it is possible that we never get here
@@ -350,16 +348,16 @@ public class ExecutionVenueNioClient extends AbstractClientTransport implements 
 
                         @Override
                         public void timedOut() {
-                            observer.onResult(new ExecutionResult(new CougarServiceException(ServerFaultCode.Timeout, "Exception occurred in Client: Read timed out: "+NioUtils.getRemoteAddressUrl(session))));
+                            observer.onResult(new ExecutionResult(new CougarClientException(ServerFaultCode.Timeout, "Exception occurred in Client: Read timed out: "+NioUtils.getRemoteAddressUrl(session))));
                         }
 
                         @Override
                         public void sessionClosed() {
-                            observer.onResult(new ExecutionResult(new CougarServiceException(ServerFaultCode.RemoteCougarCommunicationFailure, "Connectivity to remote server lost!")));
+                            observer.onResult(new ExecutionResult(new CougarClientException(ServerFaultCode.RemoteCougarCommunicationFailure, "Connectivity to remote server lost!")));
                         }
                     });
                 } catch (Throwable e) {
-                    observer.onResult(new ExecutionResult(new CougarServiceException(ServerFaultCode.FrameworkError,
+                    observer.onResult(new ExecutionResult(new CougarClientException(ServerFaultCode.FrameworkError,
                             "An exception occurred with remote method call", e)));
                 }
             }

@@ -21,7 +21,7 @@ import com.betfair.cougar.api.security.IdentityTokenResolver;
 import com.betfair.cougar.client.api.GeoLocationSerializer;
 import com.betfair.cougar.client.exception.ExceptionTransformer;
 import com.betfair.cougar.client.query.QueryStringGeneratorFactory;
-import com.betfair.cougar.core.api.exception.ExceptionFactory;
+import com.betfair.cougar.core.api.client.ExceptionFactory;
 import com.betfair.cougar.marshalling.api.databinding.DataBindingFactory;
 import com.betfair.cougar.transport.api.protocol.http.HttpServiceBindingDescriptor;
 import org.apache.http.client.HttpRequestRetryHandler;

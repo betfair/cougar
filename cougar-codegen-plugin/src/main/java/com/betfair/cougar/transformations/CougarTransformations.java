@@ -85,7 +85,7 @@ public class CougarTransformations implements Transformations{
                 new Transformation("events/event.ftl", "/interface/event", "${package}/${majorVersion}/events", "${name}.java", true, false, OutputDomain.Client_and_Server),
                 new Transformation("events/jmsServiceBindingDescriptor.ftl", "/interface", "${package}/${majorVersion}/events", "${name}JMSServiceBindingDescriptor.java", true, false, OutputDomain.Client_and_Server),
                 new Transformation("exception.ftl", "/interface/exceptionType", "${package}/${majorVersion}/exception", "${name}.java",false, false, OutputDomain.Client_and_Server),
-                new Transformation("exceptionFactory.ftl", "/interface", "${package}/${majorVersion}/exception", "${name}ExceptionFactory.java",false, false, OutputDomain.Client_and_Server),
+                new Transformation("exceptionFactory.ftl", "/interface", "${package}/${majorVersion}/exception", "${name}ExceptionFactory.java",false, false, OutputDomain.Client),
                 new Transformation("enum.ftl", "//parameter/validValues", "${package}/${majorVersion}/enumerations", "${name}Enum.java",true, true, OutputDomain.Client_and_Server),
                 new Transformation("wrappedValueEnum.ftl", "//simpleResponse/validValues", "${package}/${majorVersion}/enumerations", "${name}WrappedValueEnum.java",true, false, OutputDomain.Client_and_Server),
                 new Transformation("wrappedValueEnum.ftl", "//response/validValues", "${package}/${majorVersion}/enumerations", "${name}WrappedValueEnum.java",true, false, OutputDomain.Client_and_Server),

@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.betfair.cougar.core.api.exception.CougarClientException;
 import org.testng.annotations.Test;
 
 import com.betfair.baseline.v2.BaselineSyncClient;
@@ -40,7 +41,6 @@ import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.RequestUUID;
 import com.betfair.cougar.api.geolocation.GeoLocationDetails;
 import com.betfair.cougar.api.security.IdentityChain;
-import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.util.RequestUUIDImpl;
 
 public abstract class TestSuite {
@@ -132,7 +132,7 @@ public abstract class TestSuite {
 			SimpleResponse response = baselineClient.testSimpleGet(ec);
 			fail("expected cougar service exception");
 		}
-		catch (CougarServiceException e) {
+		catch (CougarClientException e) {
 			assertEquals("DSC-0018", e.getFault().getErrorCode());
 		}
 	}
@@ -151,7 +151,7 @@ public abstract class TestSuite {
 			SimpleResponse response = baselineClient.testComplexMutator(ec, co);
 			fail("expected cougar service exception");
 		}
-		catch (CougarServiceException e) {
+		catch (CougarClientException e) {
 			assertEquals("DSC-0018", e.getFault().getErrorCode());
 		}
 	}
@@ -180,7 +180,7 @@ public abstract class TestSuite {
 			baselineClient.testParameterStylesQA(ec, TestParameterStylesQAHeaderParamEnum.Baz, "foo", new Date(0));
 			fail("expected cougar service exception");
 		}
-		catch (CougarServiceException e) {
+		catch (CougarClientException e) {
 			assertEquals(getExpectedValidValueRemovedErrorCode(), e.getFault().getErrorCode());
 		}
 	}

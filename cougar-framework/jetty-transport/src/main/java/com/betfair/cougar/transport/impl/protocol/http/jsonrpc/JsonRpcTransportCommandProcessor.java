@@ -215,7 +215,7 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
                                 });
                             } catch (Exception e) {
                                 if (e instanceof IllegalArgumentException && e.getCause()!=null && e.getCause().getCause()!=null && e.getCause().getCause() instanceof EnumDerialisationException) {
-                                    responses.add(JsonRpcErrorResponse.buildErrorResponse(rpc, new JsonRpcError(INVALID_PARAMS, ServerFaultCode.JSONDeserialisationParseFailure.getDetail(), null)));
+                                    responses.add(JsonRpcErrorResponse.buildErrorResponse(rpc, new JsonRpcError(INVALID_PARAMS, ServerFaultCode.JSONDeserialisationFailure.getDetail(), null)));
                                 }
                                 else {
                                     responses.add(JsonRpcErrorResponse.buildErrorResponse(rpc, new JsonRpcError(INVALID_PARAMS, ServerFaultCode.MandatoryNotDefined.getDetail(), null)));
@@ -231,7 +231,7 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
             } catch (Exception ex) {
                 //This happens when there was a problem reading
                 //deal with case where every request was bad
-                writeErrorResponse(http, context, new CougarValidationException(ServerFaultCode.JSONDeserialisationParseFailure, ex));
+                writeErrorResponse(http, context, new CougarValidationException(ServerFaultCode.JSONDeserialisationFailure, ex));
                 commands.clear();
             }
 
@@ -247,7 +247,7 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
 				}
 			};
 		} catch (Exception e) {
-			throw new CougarServiceException(ServerFaultCode.JSONDeserialisationParseFailure, "Unable to resolve requests for json-rpc", e);
+			throw new CougarServiceException(ServerFaultCode.JSONDeserialisationFailure, "Unable to resolve requests for json-rpc", e);
 		} finally {
 			try {
                 if (iStream != null) {
@@ -455,7 +455,7 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
                 break;
 
             case ContentTypeNotValid:
-            case JSONDeserialisationParseFailure:
+            case JSONDeserialisationFailure:
                 jsonErrorCode = PARSE_ERROR;
                 break;
 

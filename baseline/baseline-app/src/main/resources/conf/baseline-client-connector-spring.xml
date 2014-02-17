@@ -80,4 +80,31 @@
     <bean name="socketAsyncClient" class="com.betfair.baseline.v2.BaselineClientImpl" parent="cougar.client.AbstractClient">
         <constructor-arg value="SOCKET-CLI"/>
     </bean>
+
+
+    <bean class="com.betfair.cougar.core.impl.ev.ClientServiceRegistration">
+        <property name="resolver">
+            <bean class="com.betfair.nonservice.v3.NonClientExecutableResolver" init-method="init">
+                <property name="defaultOperationTransport">
+                    <bean parent="cougar.client.AbstractRescriptTransport">
+                        <constructor-arg>
+                            <bean class="com.betfair.nonservice.v3.rescript.NonRescriptServiceBindingDescriptor"/>
+                        </constructor-arg>
+                        <property name="remoteAddress" value="$BASELINE{cougar.client.rescript.remoteaddress}"/>
+                        <property name="exceptionFactory">
+                            <bean class="com.betfair.nonservice.v3.exception.NonExceptionFactory"/>
+                        </property>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+        <property name="serviceDefinition">
+            <bean class="com.betfair.nonservice.v3.NonServiceDefinition"/>
+        </property>
+        <property name="namespace" value="NON-CLI"/>
+    </bean>
+    <bean name="nonServiceSyncClient"
+          class="com.betfair.nonservice.v3.NonSyncClientImpl" parent="cougar.client.AbstractSyncClient">
+        <constructor-arg value="NON-CLI"/>
+    </bean>
 </beans>

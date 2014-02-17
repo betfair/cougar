@@ -16,9 +16,8 @@
 
 package com.betfair.cougar.client.exception;
 
-import com.betfair.cougar.core.api.exception.ExceptionFactory;
+import com.betfair.cougar.core.api.client.ExceptionFactory;
 import com.betfair.cougar.marshalling.api.databinding.DataBindingFactory;
-import com.betfair.cougar.marshalling.api.databinding.FaultUnMarshaller;
 
 import java.io.InputStream;
 

@@ -28,6 +28,7 @@ import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.RequestContext;
 import com.betfair.cougar.api.fault.CougarApplicationException;
 import com.betfair.cougar.core.api.exception.CougarException;
+import com.betfair.cougar.core.api.exception.CougarClientException;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.ev.Executable;
@@ -37,6 +38,7 @@ import com.betfair.cougar.core.api.ev.ExecutionResult;
 import com.betfair.cougar.core.api.ev.ExecutionVenue;
 import com.betfair.cougar.core.api.ev.OperationKey;
 import com.betfair.cougar.core.api.ev.TimeConstraints;
+import com.betfair.cougar.core.impl.ev.ServiceExceptionHandlingObserver;
 
 import java.util.*;
 
@@ -88,19 +90,21 @@ public class ${service}SyncServiceExecutableResolver implements ExecutableResolv
                         Object[] args, ExecutionObserver observer,
                         ExecutionVenue executionVenue, TimeConstraints timeConstraints) {
 
+                ServiceExceptionHandlingObserver exceptionHandlingObserver = new ServiceExceptionHandlingObserver(observer);
+
                 try {
                     <#if returnType!="void">
                     ${returnType} result = ${call}
                     observer.onResult(new ExecutionResult(result));
                     <#else>
                     ${call}
-                    observer.onResult(new ExecutionResult());
+                    exceptionHandlingObserver.onResult(new ExecutionResult());
                     </#if>
                 } catch (CougarException ce) {
-                    observer.onResult(new ExecutionResult(ce));
+                    exceptionHandlingObserver.onResult(new ExecutionResult(ce));
                 <#list operation.parameters.exceptions.exception as exception>
                 } catch (${exception.@type} ex) {
-                    observer.onResult(new ExecutionResult((CougarApplicationException)ex));
+                    exceptionHandlingObserver.onResult(new ExecutionResult((CougarApplicationException)ex));
                 </#list>
                 };
             }

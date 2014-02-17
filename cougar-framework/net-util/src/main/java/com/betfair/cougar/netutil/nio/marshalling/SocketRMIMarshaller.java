@@ -29,9 +29,9 @@ import com.betfair.cougar.core.api.ev.ExecutionObserver;
 import com.betfair.cougar.core.api.ev.ExecutionResult;
 import com.betfair.cougar.core.api.ev.OperationKey;
 import com.betfair.cougar.core.api.ev.TimeConstraints;
+import com.betfair.cougar.core.api.exception.CougarClientException;
 import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarFrameworkException;
-import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.fault.FaultDetail;
 import com.betfair.cougar.core.api.transcription.EnumUtils;
@@ -215,20 +215,20 @@ public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller 
 				if (faultDetail != null) {
 	                if (faultDetail.getCause() != null) {
 	                    if (faultDetail.getCause() instanceof CougarApplicationException) {
-	                        return new InvocationResponseImpl(null, new CougarServiceException(code, faultDetail.getDetailMessage(), (CougarApplicationException)faultDetail.getCause()));
+	                        return new InvocationResponseImpl(null, new CougarClientException(code, faultDetail.getDetailMessage(), (CougarApplicationException)faultDetail.getCause()));
 	                    } else {
-	                        return new InvocationResponseImpl(null, new CougarServiceException(code, faultDetail.getDetailMessage(), faultDetail.getCause()));
+	                        return new InvocationResponseImpl(null, new CougarClientException(code, faultDetail.getDetailMessage(), faultDetail.getCause()));
 	                    }
 	                }
 	                else {
                         FaultCode faultCode = code == ServerFaultCode.ServiceCheckedException ? FaultCode.Server : code.getResponseCode().getFaultCode();
-	                    return new InvocationResponseImpl(null, new CougarServiceException(code, faultCode + " fault received from remote server: "+code,
-                                new CougarServiceException(code, faultDetail.getDetailMessage())
+	                    return new InvocationResponseImpl(null, new CougarClientException(code, faultCode + " fault received from remote server: "+code,
+                                new CougarClientException(code, faultDetail.getDetailMessage())
                         ));
 	                }
 				}
 	            else {
-				    return new InvocationResponseImpl(null, new CougarServiceException(code, "No detailed message available"));
+				    return new InvocationResponseImpl(null, new CougarClientException(code, "No detailed message available"));
 	            }
 			}
 		}

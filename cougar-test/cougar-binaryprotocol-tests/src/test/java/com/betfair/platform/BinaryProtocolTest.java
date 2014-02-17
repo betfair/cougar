@@ -33,6 +33,7 @@ import com.betfair.baseline.v2.to.NonMandatoryParamsRequest;
 import com.betfair.baseline.v2.to.SimpleResponse;
 import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.client.socket.ExecutionVenueNioClient;
+import com.betfair.cougar.core.api.exception.CougarClientException;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.CougarValidationException;
 import com.betfair.cougar.core.impl.CougarSpringCtxFactoryImpl;
@@ -126,7 +127,7 @@ public class BinaryProtocolTest
 		catch (SimpleException e) {
 			Assert.fail();
 		}
-		catch (CougarServiceException e) {
+		catch (CougarClientException e) {
 			//not connected
 		}
 		
@@ -295,7 +296,7 @@ public class BinaryProtocolTest
 			Assert.fail("unexpected exception",e);
 		} catch (WotsitException e) {
 			Assert.fail("unexpected exception",e);
-		} catch (CougarServiceException e) {
+		} catch (CougarClientException e) {
 			//all good
 		}
 	}

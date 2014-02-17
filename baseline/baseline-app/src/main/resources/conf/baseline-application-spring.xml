@@ -57,6 +57,7 @@
         <property name="baselineAsyncClient" ref="directAsyncClient"/>
         <property name="inProcessSyncClient" ref="directSyncClient"/>
         <property name="socketSyncClient" ref="socketSyncClient"/>
+        <property name="nonExistentServiceClient" ref="nonServiceSyncClient"/>
         <property name="loggingControl" ref="cougar.core.LoggingControl"/>
 	</bean>
     <!-- Generate the service beans -->

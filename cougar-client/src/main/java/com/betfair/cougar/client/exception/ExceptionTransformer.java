@@ -16,7 +16,7 @@
 
 package com.betfair.cougar.client.exception;
 
-import com.betfair.cougar.core.api.exception.ExceptionFactory;
+import com.betfair.cougar.core.api.client.ExceptionFactory;
 
 import java.io.InputStream;
 

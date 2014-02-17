@@ -29,7 +29,7 @@ import com.betfair.cougar.core.api.ServiceVersion;
 import com.betfair.cougar.api.fault.CougarApplicationException;
 import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.exception.CougarException;
-import com.betfair.cougar.core.api.exception.CougarServiceException;
+import com.betfair.cougar.core.api.exception.CougarClientException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 
@@ -199,8 +199,7 @@ public class  ${service}SyncClientImpl implements ${service}SyncClient {<#t>
                    timeConstraints);
 
         if (!observer.await(timeConstraints)) {
-            // todo: we should really make this a client exception
-            throw new CougarServiceException(ServerFaultCode.Timeout, "Operation ${operation.operationName} timed out!");
+            throw new CougarClientException(ServerFaultCode.Timeout, "Operation ${operation.operationName} timed out!");
         }
 
         final ExecutionResult er = observer.getExecutionResult();
@@ -243,7 +242,7 @@ public class  ${service}SyncClientImpl implements ${service}SyncClient {<#t>
                         throw new IllegalArgumentException("An unanticipated exception was received of class [" + className + "]");
                     }
                     <#else>
-                    throw new CougarServiceException(ServerFaultCode.ServiceCheckedException, "Unknown checked exception received", cex);
+                    throw new CougarClientException(ServerFaultCode.ServiceCheckedException, "Unknown checked exception received", cex);
                     </#if>
                 } else {
                   throw cex;

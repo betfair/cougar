@@ -132,7 +132,7 @@ public final class BindingUtils {
 		final StringBuilder msg = new StringBuilder("Unable to convert '");
 		msg.append(value).append("' to ").append(clazz.getName()).append(" for parameter: " + name);
 		
-		return new CougarValidationException(ServerFaultCode.ClassConversionFailure, msg.toString(), originalException);		
+		return new CougarValidationException(ServerFaultCode.ClassConversionFailure, msg.toString(), originalException);
 	}
 
    

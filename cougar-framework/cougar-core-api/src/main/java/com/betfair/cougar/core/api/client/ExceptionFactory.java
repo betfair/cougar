@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
-package com.betfair.cougar.core.api.exception;
+package com.betfair.cougar.core.api.client;
 
-public class CougarNotIdentifiedException extends CougarServiceException{
+import com.betfair.cougar.api.ResponseCode;
+import com.betfair.cougar.api.fault.CougarApplicationException;
+import com.betfair.cougar.core.api.exception.CougarException;
 
-    public CougarNotIdentifiedException(Exception dae) {
-        super(ServerFaultCode.RemoteCougarCommunicationFailure, "Server is NOT identified as being a Cougar 2 Server", dae);
-    }
+import java.util.List;
+
+/**
+ * Interface describes a class who can instantiate an exception on either
+ * the CougarApplicationException or CougarException hierarchy
+ */
+public interface ExceptionFactory {
+
+    Exception parseException(ResponseCode responseCode, String prefix, String reason, List<String[]> params);
 }

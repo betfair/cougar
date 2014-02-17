@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~ Copyright 2013, The Sporting Exchange Limited
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<interface name="Non"
+           version="3.0"
+           namespace="com.betfair.nonservice"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:noNamespaceSchemaLocation="http://www.betfair.com/BSIDL/4.0.xsd"
+           xmlns:xi="http://www.w3.org/2001/XInclude">
+    <description>The Non-Existent Service</description>
+
+    <operation name="someOperation" since="3.0">
+        <description>Some operation which will never be implemented in a service</description>
+        <parameters>
+            <request/>
+            <response type="void">
+                <description>ignored</description>
+            </response>
+            <exceptions>
+                <exception type="SimpleException">
+                    <description>because we have to</description>
+                </exception>
+            </exceptions>
+        </parameters>
+        <extensions>
+            <path>/someOperation</path>
+            <method>GET</method>
+        </extensions>
+    </operation>
+
+    <dataType name="BecauseWeHaveTo">
+        <description></description>
+        <parameter name="something" type="string" mandatory="true">
+            <description></description>
+        </parameter>
+    </dataType>
+
+    <exceptionType name="SimpleException" prefix="SEX">
+        <parameter name="errorCode" type="string">
+            <description>the unique code for this error</description>
+            <validValues>
+                <value id="1" name="GENERIC">
+                    <description>Generic Error</description>
+                </value>
+            </validValues>
+        </parameter>
+        <parameter name="reason" type="string">
+            <description>A human readable description of this error</description>
+        </parameter>
+    </exceptionType>
+
+
+</interface>

@@ -24,13 +24,12 @@ import com.betfair.cougar.core.api.ev.ExecutionResult;
 import com.betfair.cougar.core.api.ev.ExecutionVenue;
 import com.betfair.cougar.core.api.ev.OperationKey;
 import com.betfair.cougar.core.api.ev.TimeConstraints;
-import com.betfair.cougar.core.api.exception.CougarServiceException;
-import com.betfair.cougar.core.api.exception.ExceptionFactory;
+import com.betfair.cougar.core.api.exception.CougarClientException;
+import com.betfair.cougar.core.api.client.ExceptionFactory;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.marshalling.api.databinding.Marshaller;
 import com.betfair.cougar.transport.api.protocol.http.HttpServiceBindingDescriptor;
-import com.betfair.cougar.util.configuration.PropertyConfigurer;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -127,33 +126,6 @@ public class HttpClientExecutableTest extends AbstractHttpExecutableTest<HttpUri
         client.execute(ec, key, params, observer, ev, timeConstraints);
     }
 
-    // Method containing common mocking code for tests checking exception handling in compatability mode
-    protected PassFailExecutionObserver runCompatibilityModeExceptionHandlingTest(String exceptionString, int errorCode) throws IOException{
-        PropertyConfigurer.getAllLoadedProperties().put("cougar.client.querystring.13.compatabilitymode", "true");
-
-        HttpResponse response = mock(HttpResponse.class);
-        final HttpEntity entity = mock(HttpEntity.class);
-        final InputStream content = mock(InputStream.class);
-        final StatusLine statusLine = new BasicStatusLine(HttpVersion.HTTP_1_1,errorCode,exceptionString);
-
-        when(entity.getContent()).thenReturn(content);
-        when(content.available()).thenReturn(0); // Replicate behaviour of Cougar 1.3 service
-        when(response.getEntity()).thenReturn(entity);
-        when(response.getStatusLine()).thenReturn(statusLine);
-
-        when(mockMethodFactory.create(anyString(), anyString(), any(Message.class), any(Marshaller.class), anyString(), any(ExecutionContext.class), any(TimeConstraints.class))).thenReturn(mockGetMethod);
-        when(mockHttpClient.execute(any(HttpUriRequest.class))).thenReturn(response);
-
-        generateEV(tsd, null);
-        ExecutionContext ec = createEC(null, null, false);
-        OperationKey key = TestServiceDefinition.TEST_GET;
-        PassFailExecutionObserver observer = new PassFailExecutionObserver(false, true);
-
-        client.execute(ec, key, new Object[]{TEST_TEXT}, observer, ev, DefaultTimeConstraints.NO_CONSTRAINTS);
-
-        return observer;
-    }
-
     @Override
     protected int getEVPostSuccessWithMandatoryBodyAndQueryParameterPresent_ResultSize() {
         return 23;
@@ -185,7 +157,7 @@ public class HttpClientExecutableTest extends AbstractHttpExecutableTest<HttpUri
         final BasicHttpResponse httpResponse = new BasicHttpResponse(new BasicStatusLine(HttpVersion.HTTP_1_1, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ""));
         when(mockHttpClient.execute(any(HttpUriRequest.class))).thenReturn(httpResponse);
         when(mockMethodFactory.create(anyString(), anyString(), any(Message.class), any(Marshaller.class), anyString(), any(ExecutionContext.class), any(TimeConstraints.class))).thenReturn(mockMethod);
-        when(mockedHttpErrorTransformer.convert(any(InputStream.class), any(ExceptionFactory.class), anyInt())).thenReturn(new CougarServiceException(ServerFaultCode.RemoteCougarCommunicationFailure, "bang"));
+        when(mockedHttpErrorTransformer.convert(any(InputStream.class), any(ExceptionFactory.class), anyInt())).thenReturn(new CougarClientException(ServerFaultCode.RemoteCougarCommunicationFailure, "bang"));
 
         HttpParams mockParams = mock(HttpParams.class);
         when(mockMethod.getParams()).thenReturn(mockParams);
@@ -214,7 +186,7 @@ public class HttpClientExecutableTest extends AbstractHttpExecutableTest<HttpUri
 
         when(mockHttpClient.execute(any(HttpUriRequest.class))).thenReturn(httpResponse);
         when(mockMethodFactory.create(anyString(), anyString(), any(Message.class), any(Marshaller.class), anyString(), any(ExecutionContext.class), any(TimeConstraints.class))).thenReturn(mockMethod);
-        when(mockedHttpErrorTransformer.convert(any(InputStream.class),  any(ExceptionFactory.class), anyInt())).thenReturn(new CougarServiceException(ServerFaultCode.RemoteCougarCommunicationFailure, "bang"));
+        when(mockedHttpErrorTransformer.convert(any(InputStream.class),  any(ExceptionFactory.class), anyInt())).thenReturn(new CougarClientException(ServerFaultCode.RemoteCougarCommunicationFailure, "bang"));
 
         HttpParams mockParams = mock(HttpParams.class);
         when(mockMethod.getParams()).thenReturn(mockParams);
