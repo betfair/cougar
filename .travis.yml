@@ -9,7 +9,7 @@ notifications:
     on_success: always
     on_failure: always
 before_install:
-  - "gem install --version 0.8.9 faraday"
+   - "gem install --version 0.8.9 faraday"
    - "gem install travis-artifacts"
 install: "echo 'No install command here!'"
 script: "mvn install -Pintegration-test -B"
