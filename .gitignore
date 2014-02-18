@@ -1,6 +1,7 @@
 # Intellij project files
 .idea
 *.iml
+*.ipr
 
 # Log files
 *.log
