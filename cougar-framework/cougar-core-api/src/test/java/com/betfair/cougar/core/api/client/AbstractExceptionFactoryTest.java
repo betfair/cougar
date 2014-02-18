@@ -19,6 +19,7 @@ package com.betfair.cougar.core.api.client;
 import com.betfair.cougar.api.ResponseCode;
 import com.betfair.cougar.api.fault.CougarApplicationException;
 import com.betfair.cougar.core.api.client.AbstractExceptionFactory;
+import com.betfair.cougar.core.api.exception.CougarClientException;
 import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.logging.CougarLoggingUtils;
@@ -78,7 +79,7 @@ public class AbstractExceptionFactoryTest {
         String reason = "too weak";
         CougarException ce = (CougarException)cut.parseException(ResponseCode.Forbidden, exceptionCode, reason, null);
         assertNotNull(ce);
-        assertTrue(ce instanceof CougarServiceException);
+        assertTrue(ce instanceof CougarClientException);
         assertEquals(exceptionCode, ce.getServerFaultCode().getDetail());
         assertEquals(reason, ce.getMessage());
     }
