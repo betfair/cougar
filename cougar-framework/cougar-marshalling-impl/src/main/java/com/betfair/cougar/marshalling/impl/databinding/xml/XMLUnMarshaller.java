@@ -71,7 +71,7 @@ public class XMLUnMarshaller implements UnMarshaller, FaultUnMarshaller {
         final HashMap<String,Object> faultMap = (HashMap<String,Object>) unmarshall(inputStream, HashMap.class, encoding);
 
         final String faultString = (String)faultMap.get("faultstring");
-        final FaultCode faultCode = FaultCode.valueOf((String)faultMap.get("faultcode"));
+        final FaultCode faultCode = FaultCode.valueOf((String) faultMap.get("faultcode"));
 
 
         final HashMap<String, Object> detailMap = (HashMap<String, Object>)faultMap.get("detail");

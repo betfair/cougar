@@ -21,16 +21,16 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 public class Fault implements CougarFault {
-	
-	
+
+
 	private final FaultCode faultCode;
 	private final String errorCode;
 	private final FaultDetail faultDetail;
-	
+
 	public Fault(FaultCode faultCode, final String errorCode, String detail, final Throwable exception) {
 		this.errorCode = errorCode;
 		this.faultCode = faultCode;
-		
+
 		if (detail != null || exception != null) {
 			faultDetail = new FaultDetail(detail, exception);
 		}
@@ -46,7 +46,7 @@ public class Fault implements CougarFault {
 	public Fault(FaultCode faultCode, String errorCode) {
 		this(faultCode, errorCode, null, null);
 	}
-	
+
 	public Fault(FaultCode faultCode) {
 		this(faultCode, null);
 	}
@@ -63,7 +63,7 @@ public class Fault implements CougarFault {
 	public FaultCode getFaultCode() {
 		return faultCode;
 	}
-	@Override	
+	@Override
 	public FaultDetail getDetail() {
 		return faultDetail;
 	}

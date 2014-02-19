@@ -60,10 +60,8 @@ import com.betfair.cougar.transport.api.protocol.http.HttpCommand;
 import com.betfair.cougar.transport.api.protocol.http.jsonrpc.JsonRpcOperationBindingDescriptor;
 import com.betfair.cougar.transport.impl.AbstractCommandProcessor;
 import com.betfair.cougar.transport.impl.CommandValidatorRegistry;
-import com.betfair.cougar.transport.impl.protocol.http.AbstractHttpCommandProcessorTest;
 import com.betfair.cougar.transport.impl.protocol.http.ContentTypeNormaliser;
 import com.betfair.cougar.transport.impl.protocol.http.DefaultGeoLocationDeserializer;
-import com.betfair.cougar.transport.impl.protocol.http.DontCareRequestTimeResolver;
 import com.betfair.cougar.util.RequestUUIDImpl;
 import com.betfair.cougar.util.UUIDGeneratorImpl;
 import com.betfair.cougar.util.geolocation.GeoIPLocator;
@@ -1079,12 +1077,12 @@ public class JsonRpcTransportCommandProcessorTest  {
         return map;
     }
 
-    
+
     public void testBatchedWithFailures() {
         // todo: empty test?
         ContentTypeNormaliser ctn = mock(ContentTypeNormaliser.class);
 
-        
+
     }
 
 

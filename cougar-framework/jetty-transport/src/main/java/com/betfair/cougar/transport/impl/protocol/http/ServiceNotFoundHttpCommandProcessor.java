@@ -85,12 +85,12 @@ public class ServiceNotFoundHttpCommandProcessor extends AbstractHttpCommandProc
 
 	@Override
 	public void bind(ServiceBindingDescriptor operation) {
-		
+
 	}
 
 	@Override
 	public void onCougarStart() {
-		
+
 	}
 
 }

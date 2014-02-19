@@ -37,7 +37,7 @@ public class ContentTypeNormaliserImplTest {
 
 	private ContentTypeNormaliserImpl ctn;
 	private HttpServletRequest request;
-	
+
 	@Before
 	public void init() {
 		ctn = new ContentTypeNormaliserImpl();
@@ -57,7 +57,7 @@ public class ContentTypeNormaliserImplTest {
 		ctn.addValidEncodings(validEncodings);
 		request = mock(HttpServletRequest.class);
 	}
-	
+
 	@Test
 	public void testGetNormalisedEncoding() {
 		when(request.getCharacterEncoding()).thenReturn("utf-8");
@@ -65,14 +65,14 @@ public class ContentTypeNormaliserImplTest {
 		assertNotNull(encoding);
 		assertEquals("utf-8", encoding);
 	}
-	
+
 	@Test
 	public void testGetNormalisedEncoding_Null() {
 		String encoding = ctn.getNormalisedEncoding(request);
 		assertNotNull(encoding);
 		assertEquals("utf-8", encoding);
 	}
-	
+
 	@Test
 	public void testGetNormalisedEncoding_Invalid() {
 		when(request.getCharacterEncoding()).thenReturn("utf-16");
@@ -94,7 +94,7 @@ public class ContentTypeNormaliserImplTest {
 		assertEquals("utf-8", encoding);
 
 	}
-	
+
 	@Test
 	public void testGetNormalisedRequestMediaType() {
 		when(request.getMethod()).thenReturn("POST");
@@ -103,7 +103,7 @@ public class ContentTypeNormaliserImplTest {
 		assertNotNull(mediaType);
 		assertEquals(MediaType.APPLICATION_XML_TYPE, mediaType);
 	}
-	
+
 	@Test
 	public void testGetNormalisedRequestMediaType_Invalid() {
 		when(request.getMethod()).thenReturn("POST");
@@ -116,7 +116,7 @@ public class ContentTypeNormaliserImplTest {
 			assertEquals(ResponseCode.UnsupportedMediaType, cve.getResponseCode());
 		}
 	}
-	
+
 	@Test
 	public void testGetNormalisedRequestMediaType_ParseFailure() {
 		when(request.getMethod()).thenReturn("POST");
@@ -129,7 +129,7 @@ public class ContentTypeNormaliserImplTest {
 			assertEquals(ResponseCode.UnsupportedMediaType, cve.getResponseCode());
 		}
 	}
-	
+
 	@Test
 	public void testGetNormalisedRequestMediaType_Wildcard() {
 		when(request.getMethod()).thenReturn("POST");
@@ -142,7 +142,7 @@ public class ContentTypeNormaliserImplTest {
 			assertEquals(ResponseCode.UnsupportedMediaType, cve.getResponseCode());
 		}
 	}
-	
+
 	@Test
 	public void testGetNormalisedResponseMediaType_Default() {
 		when(request.getParameter(MessageConstants.FORMAT_PARAMETER)).thenReturn(null);
@@ -167,7 +167,7 @@ public class ContentTypeNormaliserImplTest {
 		assertNotNull(mediaType);
 		assertEquals(MediaType.APPLICATION_XML_TYPE, mediaType);
 	}
-	
+
 	@Test
 	public void testGetNormalisedResponseMediaType_QueryParseFailure() {
 		when(request.getParameter(MessageConstants.FORMAT_PARAMETER)).thenReturn("soxml");
@@ -179,7 +179,7 @@ public class ContentTypeNormaliserImplTest {
 			assertEquals(ResponseCode.UnsupportedMediaType, cve.getResponseCode());
 		}
 	}
-	
+
 	@Test
 	public void testGetNormalisedResponseMediaType_Header() {
 		when(request.getHeader(MessageConstants.ACCEPT_HEADER)).thenReturn("application/xml");
@@ -187,7 +187,7 @@ public class ContentTypeNormaliserImplTest {
 		assertNotNull(mediaType);
 		assertEquals(MediaType.APPLICATION_XML_TYPE, mediaType);
 	}
-	
+
 	@Test
 	public void testGetNormalisedResponseMediaType_HeaderNotAcceptable() {
 		when(request.getHeader(MessageConstants.ACCEPT_HEADER)).thenReturn("application/text");
@@ -199,7 +199,7 @@ public class ContentTypeNormaliserImplTest {
 			assertEquals(ResponseCode.MediaTypeNotAcceptable, cve.getResponseCode());
 		}
 	}
-	
+
 	@Test
 	public void testGetNormalisedResponseMediaType_HeaderParseFailure() {
 		when(request.getHeader(MessageConstants.ACCEPT_HEADER)).thenReturn("soxml");
@@ -211,7 +211,7 @@ public class ContentTypeNormaliserImplTest {
 			assertEquals(ResponseCode.UnsupportedMediaType, cve.getResponseCode());
 		}
 	}
-	
+
 	@Test
 	public void testGetNormalisedResponseMediaType_WildcardSuccess() {
 		when(request.getHeader(MessageConstants.ACCEPT_HEADER)).thenReturn("application/*");
@@ -219,7 +219,7 @@ public class ContentTypeNormaliserImplTest {
 		assertNotNull(mediaType);
 		assertEquals(MediaType.APPLICATION_XML_TYPE, mediaType);
 	}
-	
+
 	@Test
 	public void testGetNormalisedResponseMediaType_WildcardResponseType() {
 		when(request.getHeader(MessageConstants.ACCEPT_HEADER)).thenReturn("text/*");

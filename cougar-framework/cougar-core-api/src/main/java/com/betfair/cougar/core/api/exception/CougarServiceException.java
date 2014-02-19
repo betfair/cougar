@@ -24,7 +24,7 @@ import com.betfair.cougar.core.api.fault.Fault;
 
 public class CougarServiceException extends CougarException {
 	private CougarApplicationException dae;
-	
+
 	public CougarServiceException(ServerFaultCode fault, String message) {
 		super(Level.FINE, fault, message);
 	}
@@ -37,7 +37,7 @@ public class CougarServiceException extends CougarException {
 	public CougarServiceException(ServerFaultCode fault, String message, Throwable t) {
 		super(Level.FINE, fault, message, t);
 	}
-	
+
 	@Override
 	public Fault getFault() {
 		Fault fault = null;
@@ -48,7 +48,7 @@ public class CougarServiceException extends CougarException {
     	}
     	return fault;
 	}
-	
+
 	@Override
 	public ResponseCode getResponseCode() {
     	if (dae != null) {

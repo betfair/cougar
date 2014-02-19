@@ -1,6 +1,5 @@
 package com.betfair.cougar.core.impl.ev;
 
-import com.betfair.cougar.api.fault.CougarApplicationException;
 import com.betfair.cougar.core.api.ev.ExecutionObserver;
 import com.betfair.cougar.core.api.ev.ExecutionResult;
 import com.betfair.cougar.core.api.exception.CougarClientException;

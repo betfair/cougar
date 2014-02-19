@@ -17,7 +17,6 @@
 package com.betfair.cougar.core.api.exception;
 
 import com.betfair.cougar.core.api.fault.CougarFault;
-import com.betfair.cougar.core.api.fault.Fault;
 
 import java.util.logging.Level;
 

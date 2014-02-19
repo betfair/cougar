@@ -27,7 +27,7 @@ public class CougarValidationException extends CougarException {
 	public CougarValidationException(ServerFaultCode fault) {
 		super(LOG_LEVEL, fault);
 	}
-	
+
 	public CougarValidationException(ServerFaultCode fault, Throwable t) {
 		super(LOG_LEVEL, fault, t);
 	}
@@ -39,5 +39,5 @@ public class CougarValidationException extends CougarException {
     public CougarValidationException(ServerFaultCode fault, String message,Throwable t) {
 		super(LOG_LEVEL, fault, message,t);
 	}
-	
+
 }

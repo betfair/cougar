@@ -28,20 +28,20 @@ import com.betfair.cougar.transport.api.protocol.http.rescript.RescriptParamBind
  *
  */
 public class MessageBuilder {
-	public Message build(Object[] args, 
+	public Message build(Object[] args,
 			Parameter[] parameters,
 			RescriptOperationBindingDescriptor operationBinding) {
 
 		int argIndex = 0;
 
 		Message message = new Message();
-		
+
 		for (Parameter param : parameters) {
 			String parameterName = param.getName();
-			
+
 			RescriptParamBindingDescriptor paramDescriptor = operationBinding.getHttpParamBindingDescriptor(parameterName);
-			ParamSource parameterSource = paramDescriptor.getSource(); 
-			
+			ParamSource parameterSource = paramDescriptor.getSource();
+
 			Object currentArgument = null;
 			if (argIndex < args.length) {
 				currentArgument = args[argIndex++];

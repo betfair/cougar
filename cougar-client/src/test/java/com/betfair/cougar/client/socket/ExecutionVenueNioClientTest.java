@@ -91,13 +91,13 @@ public class ExecutionVenueNioClientTest extends AbstractClientTest {
         performRequestAsync(noFaultObserver, new Object[] { true, ServerClientFactory.COMMAND_SLEEP_60S, "60s sleep" } );
 
         performRequest(invocationObserver, new Object[] { true, ServerClientFactory.COMMAND_ECHO_ARG2, ECHO_STRING } );
-        
+
         invocationObserver.assertResult();
         noFaultObserver.assertResult();
 
         // still there after second request
         performRequest(invocationObserver, new Object[] { true, ServerClientFactory.COMMAND_ECHO_ARG2, ECHO_STRING } );
-        
+
         invocationObserver.assertResult();
         noFaultObserver.assertResult();
 

@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.ExecutionContextWithTokens;
@@ -36,14 +35,11 @@ import com.betfair.cougar.api.security.IdentityToken;
 import com.betfair.cougar.api.security.InvalidCredentialsException;
 import com.betfair.cougar.core.api.ServiceVersion;
 import com.betfair.cougar.core.api.ev.*;
-import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
-import com.betfair.cougar.core.api.logging.EventLogger;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
-import com.betfair.cougar.core.impl.logging.RequestLogEvent;
 import com.betfair.cougar.logging.CougarLoggingUtils;
 import com.betfair.cougar.util.RequestUUIDImpl;
 import com.betfair.cougar.util.UUIDGeneratorImpl;
@@ -102,7 +98,7 @@ public class BaseExecutionVenueTest {
         }
     };
 
-	/** 
+	/**
 	 * PRE-PROCESSORS
 	 */
 	private ExecutionPreProcessor exceptionThrowingPreProcessor = new ExecutionPreProcessor() {
@@ -159,7 +155,7 @@ public class BaseExecutionVenueTest {
 	/**
 	 * POST-PROCESSORS
 	 */
-	
+
 	private ExecutionPostProcessor exceptionThrowingPostProcessor = new ExecutionPostProcessor() {
 		@Override
 		public InterceptorResult invoke(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionResult result) {
@@ -207,7 +203,7 @@ public class BaseExecutionVenueTest {
 	/**
 	 * EXECUTION-OBSERVERS
 	 */
-	
+
 	private ExecutionObserver failOnResultExecutionObserver = new ExecutionObserver() {
 		public void onResult(ExecutionResult result) {
             switch (result.getResultType()) {
@@ -252,7 +248,7 @@ public class BaseExecutionVenueTest {
         }
     };
 
-	
+
 	private Executable failingExecutable = new Executable() {
 		@Override
 		public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, ExecutionVenue executionVenue, TimeConstraints timeConstraints) {
@@ -304,7 +300,7 @@ public class BaseExecutionVenueTest {
             }
         };
     }
-	
+
 	private BaseExecutionVenue bev;
 	private List<ExecutionPreProcessor> preProcessorList;
 	private List<ExecutionPostProcessor> postProcessorList;
@@ -315,7 +311,7 @@ public class BaseExecutionVenueTest {
 	private ExecutionTimingRecorder mockTimingRecorder;
 	private Executable mockExecutable;
 	private RequestUUID uuid = new RequestUUIDImpl();
-	
+
 	@Before
 	public void setup() {
         bev = new BaseExecutionVenue();
@@ -340,7 +336,7 @@ public class BaseExecutionVenueTest {
 		bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
 		bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver, DefaultTimeConstraints.NO_CONSTRAINTS);
 	}
-	
+
 	@Test
 	public void testOnExceptionCalledWhenPreProcessorFails() {
 		preProcessorList.add(exceptionThrowingPreProcessor);
@@ -354,7 +350,7 @@ public class BaseExecutionVenueTest {
         bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
         bev.execute(mockExecutionContext, mockOperationKey, args, cougarApplicationExceptionResultExecutionObserver,DefaultTimeConstraints.NO_CONSTRAINTS);
     }
-	
+
 	@Test
 	public void testOnResultCalledWhenPreProcessorPasses() {
 		preProcessorList.add(continuePreProcessor);
@@ -432,7 +428,7 @@ public class BaseExecutionVenueTest {
         verify(preQueueProcessor, times(1)).invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class));
         verify(preExecuteProcessor, times(1)).invoke(any(ExecutionContext.class), any(OperationKey.class), any(Object[].class));
     }
-	
+
 	@Test
 	public void testFailingPostProcessorCallsOnExceptionWhenExecutableCompletesOK() {
 		postProcessorList.add(exceptionThrowingPostProcessor);
@@ -453,27 +449,27 @@ public class BaseExecutionVenueTest {
 		bev.registerOperation(null, mockOperationDef, mockExecutable, mockTimingRecorder, 0);
 		bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver,DefaultTimeConstraints.NO_CONSTRAINTS);
 	}
-	
+
 	@Test
 	public void testPostProcessorForcesOnResultWhenExcecutableFails() {
 		postProcessorList.add(forceOnResultPostProcessor);
 		bev.registerOperation(null, mockOperationDef, failingExecutable, mockTimingRecorder, 0);
 		bev.execute(mockExecutionContext, mockOperationKey, args, failOnExceptionExecutionObserver,DefaultTimeConstraints.NO_CONSTRAINTS);
 	}
-	
+
 	@Test
 	public void testPostProcessorForcesOnExceptionWhenExcecutableFails() {
 		postProcessorList.add(forceOnExceptionMockPostProcessor);
 		bev.registerOperation(null, mockOperationDef, failingExecutable, mockTimingRecorder, 0);
 		bev.execute(mockExecutionContext, mockOperationKey, args, failOnResultExecutionObserver,DefaultTimeConstraints.NO_CONSTRAINTS);
 	}
-	
+
 	@Test
 	public void testNoOperation() {
 		ExecutionObserver observer = mock(ExecutionObserver.class);
-		
+
 		bev.execute(mockExecutionContext, mockOperationKey, args, observer, DefaultTimeConstraints.NO_CONSTRAINTS);
-		
+
 		ArgumentCaptor<ExecutionResult> executionResultArgumentCaptor = ArgumentCaptor.forClass(ExecutionResult.class);
 		verify(observer).onResult(executionResultArgumentCaptor.capture());
 

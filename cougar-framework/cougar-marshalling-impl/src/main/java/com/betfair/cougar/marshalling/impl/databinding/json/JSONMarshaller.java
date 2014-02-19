@@ -21,18 +21,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
 
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
 import com.betfair.cougar.marshalling.api.databinding.FaultMarshaller;
 import com.betfair.cougar.marshalling.api.databinding.Marshaller;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 import com.betfair.cougar.core.api.fault.CougarFault;
 import com.betfair.cougar.core.api.fault.FaultController;
 import com.betfair.cougar.core.api.fault.FaultDetail;
@@ -67,7 +63,7 @@ public class JSONMarshaller implements Marshaller, FaultMarshaller {
 		faultMap.put("faultcode", fault.getFaultCode().name());
 		faultMap.put("faultstring", fault.getErrorCode());
 		faultMap.put("detail", detailMap);
-		
+
 		FaultDetail detail = fault.getDetail();
     	if (FaultController.getInstance().isDetailedFaults()) {
     		detailMap.put("trace", detail.getStackTrace());
@@ -80,11 +76,11 @@ public class JSONMarshaller implements Marshaller, FaultMarshaller {
         	detailMap.put(detail.getFaultName(), paramMap);
         	for (String[] msg: faultMessages) {
     	        paramMap.put(msg[0], msg[1]);
-        	}	        	
+        	}
         }
 
         marshall(outputStream, faultMap, encoding);
 	}
-	
-	
+
+
 }

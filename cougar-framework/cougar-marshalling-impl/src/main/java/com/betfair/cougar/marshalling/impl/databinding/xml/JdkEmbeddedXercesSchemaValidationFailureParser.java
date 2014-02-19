@@ -25,13 +25,13 @@ public class JdkEmbeddedXercesSchemaValidationFailureParser implements SchemaVal
     public JdkEmbeddedXercesSchemaValidationFailureParser() {
         schemaResourceBundle = PropertyResourceBundle.getBundle("com.sun.org.apache.xerces.internal.impl.msg.XMLSchemaMessages", Locale.getDefault());
         faultCodesSoap = new HashMap<>();
-        faultCodesSoap.put("cvc-elt.3.1",ServerFaultCode.MandatoryNotDefined);
-        faultCodesSoap.put("cvc-complex-type.2.4.b",ServerFaultCode.MandatoryNotDefined);
-        faultCodesSoap.put("cvc-datatype-valid.1.2.1",ServerFaultCode.SOAPDeserialisationFailure); // todo: would be nice to have a specific error message for this
+        faultCodesSoap.put("cvc-elt.3.1", ServerFaultCode.MandatoryNotDefined);
+        faultCodesSoap.put("cvc-complex-type.2.4.b", ServerFaultCode.MandatoryNotDefined);
+        faultCodesSoap.put("cvc-datatype-valid.1.2.1", ServerFaultCode.SOAPDeserialisationFailure); // todo: would be nice to have a specific error message for this
         faultCodesRescript = new HashMap<>();
-        faultCodesRescript.put("cvc-elt.3.1",ServerFaultCode.MandatoryNotDefined);
-        faultCodesRescript.put("cvc-complex-type.2.4.b",ServerFaultCode.MandatoryNotDefined);
-        faultCodesRescript.put("cvc-datatype-valid.1.2.1",ServerFaultCode.XMLDeserialisationFailure); // todo: would be nice to have a specific error message for this
+        faultCodesRescript.put("cvc-elt.3.1", ServerFaultCode.MandatoryNotDefined);
+        faultCodesRescript.put("cvc-complex-type.2.4.b", ServerFaultCode.MandatoryNotDefined);
+        faultCodesRescript.put("cvc-datatype-valid.1.2.1", ServerFaultCode.XMLDeserialisationFailure); // todo: would be nice to have a specific error message for this
     }
 
     @Override

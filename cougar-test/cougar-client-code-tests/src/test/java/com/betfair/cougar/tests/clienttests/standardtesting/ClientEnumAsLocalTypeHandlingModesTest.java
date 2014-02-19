@@ -138,7 +138,7 @@ public class ClientEnumAsLocalTypeHandlingModesTest {
     public Object[][] clients() {
         return ClientTestsHelper.clientsToTest();
     }
-    
+
     private String toString(Exception e) {
         StringWriter sw = new StringWriter();
         e.printStackTrace(new PrintWriter(sw));

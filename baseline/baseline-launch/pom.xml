@@ -191,6 +191,11 @@
                             <key>jetty.request.timeoutInSeconds</key>
                             <value>1800</value> <!-- 30m -->
                         </systemProperty>
+                        <!-- allows us to work when a machine roaming - only useful in dev/test -->
+                        <systemProperty>
+                            <key>cougar.addressUtils.allowLoopBackIfNoOthers</key>
+                            <value>true</value>
+                        </systemProperty>
                         <!--<systemProperty>-->
                         <!--<key>javax.net.debug</key>-->
                         <!--<value>ssl</value>-->

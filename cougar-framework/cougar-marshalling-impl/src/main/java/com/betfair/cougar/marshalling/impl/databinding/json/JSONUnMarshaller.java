@@ -25,8 +25,10 @@ import java.util.*;
 
 import com.betfair.cougar.api.fault.FaultCode;
 import com.betfair.cougar.core.api.client.EnumWrapper;
+import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.fault.CougarFault;
 import com.betfair.cougar.core.api.fault.FaultDetail;
+import com.betfair.cougar.core.api.transcription.EnumDerialisationException;
 import com.betfair.cougar.core.api.transcription.ParameterType;
 import com.betfair.cougar.marshalling.api.databinding.FaultUnMarshaller;
 import org.codehaus.jackson.JsonProcessingException;
@@ -34,7 +36,6 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.CougarValidationException;
-import com.betfair.cougar.core.api.exception.ServerFaultCode;
 
 import com.betfair.cougar.marshalling.api.databinding.UnMarshaller;
 import org.codehaus.jackson.map.type.TypeFactory;
@@ -43,7 +44,7 @@ import org.codehaus.jackson.type.JavaType;
 public class JSONUnMarshaller implements UnMarshaller, FaultUnMarshaller {
 
 	private final ObjectMapper objectMapper;
-	
+
 	public JSONUnMarshaller(ObjectMapper objectMapper) {
 		this.objectMapper = objectMapper;
 	}
@@ -80,6 +81,8 @@ public class JSONUnMarshaller implements UnMarshaller, FaultUnMarshaller {
             else {
                 return objectMapper.readValue(reader, buildJavaType(parameterType));
             }
+        } catch (EnumDerialisationException e) {
+            throw new CougarServiceException(ServerFaultCode.JSONDeserialisationFailure, "Failed to unmarshall enum", e);
         } catch (JsonProcessingException e) {
             throw new CougarServiceException(ServerFaultCode.JSONDeserialisationFailure, "Failed to unmarshall object", e);
         } catch (IOException e) {
@@ -116,7 +119,7 @@ public class JSONUnMarshaller implements UnMarshaller, FaultUnMarshaller {
         final HashMap<String,Object> faultMap = (HashMap<String,Object>) unmarshall(inputStream, HashMap.class, encoding);
 
         final String faultString = (String)faultMap.get("faultstring");
-        final FaultCode faultCode = FaultCode.valueOf((String)faultMap.get("faultcode"));
+        final FaultCode faultCode = FaultCode.valueOf((String) faultMap.get("faultcode"));
 
 
         final HashMap<String, Object> detailMap = (HashMap<String, Object>)faultMap.get("detail");

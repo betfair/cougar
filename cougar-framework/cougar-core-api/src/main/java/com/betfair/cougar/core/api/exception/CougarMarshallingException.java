@@ -38,5 +38,5 @@ public class CougarMarshallingException extends CougarException {
     public CougarMarshallingException(ServerFaultCode fault, String message, Throwable t) {
 		super(LOG_LEVEL, fault, message,t);
 	}
-	
+
 }

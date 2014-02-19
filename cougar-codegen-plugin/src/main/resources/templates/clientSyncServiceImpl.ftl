@@ -30,6 +30,7 @@ import com.betfair.cougar.api.fault.CougarApplicationException;
 import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarClientException;
+import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 
@@ -122,7 +123,7 @@ public class  ${service}SyncClientImpl implements ${service}SyncClient {<#t>
 
  /**
   * ${operation.description?trim}.  Calls ${operation.operationName} allowing you to specify a timeout
-  * @param ctx the context of the request.  
+  * @param ctx the context of the request.
     <#list operation.params as p><#t>
   * <@compress single_line=true>@param ${p.paramName} ${p.description}
      <#if p.isMandatory?? && (p.isMandatory)>
@@ -244,6 +245,9 @@ public class  ${service}SyncClientImpl implements ${service}SyncClient {<#t>
                     <#else>
                     throw new CougarClientException(ServerFaultCode.ServiceCheckedException, "Unknown checked exception received", cex);
                     </#if>
+                } else if (cex instanceof CougarFrameworkException) {
+                    CougarFrameworkException cfe = (CougarFrameworkException) cex;
+                    throw new CougarClientException(cfe.getServerFaultCode(), cfe.getMessage(), cfe.getCause());
                 } else {
                   throw cex;
                 }
@@ -271,7 +275,7 @@ public class  ${service}SyncClientImpl implements ${service}SyncClient {<#t>
          </#list>
              )
          <#if operation.exceptions?size!=0>
-            throws 
+            throws
              <#list operation.exceptions as e>${e}<#if e_has_next>, </#if></#list>
          </#if>
          { </@compress>

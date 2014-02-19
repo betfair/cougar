@@ -229,7 +229,8 @@ public abstract class AbstractHttpExecutable<HR> extends AbstractClientTransport
                         try {
                             result = dataBindingFactory.getUnMarshaller().unmarshall(inputStream,
                                     definition.getReturnType(), UNMARSHALL_ENCODING);
-                        } catch (Exception e2) {
+                        }
+                        catch (Exception e2) {
                             throw clientException(response, e2);
                         }
                     }
@@ -279,28 +280,28 @@ public abstract class AbstractHttpExecutable<HR> extends AbstractClientTransport
             return (CougarClientException)e;
         }
         if (e instanceof CougarException) {
-            return new CougarClientException(((CougarException)e).getServerFaultCode(),e.getMessage(), !isDefinitelyCougarResponse(response));
+            return new CougarClientException(((CougarException)e).getServerFaultCode(),e.getMessage(),e, !isDefinitelyCougarResponse(response));
         }
-        ServerFaultCode faultCode = ServerFaultCode.RemoteCougarCommunicationFailure;
+        ServerFaultCode serverFaultCode = ServerFaultCode.RemoteCougarCommunicationFailure;
         String message = "Unknown error communicating with remote Cougar service";
         switch (response.getResponseStatus()) {
             case HttpStatus.SC_NOT_FOUND:
-                faultCode = ServerFaultCode.NoSuchOperation;
+                serverFaultCode = ServerFaultCode.NoSuchOperation;
                 message = "Service not found";
         }
-        return new CougarClientException(faultCode, message, e, !isDefinitelyCougarResponse(response));
+        return new CougarClientException(serverFaultCode, message, e, !isDefinitelyCougarResponse(response));
     }
 
     protected void processException(ExecutionObserver obs, Throwable t, String url) {
-        ServerFaultCode faultCode = ServerFaultCode.RemoteCougarCommunicationFailure;
+        ServerFaultCode serverFaultCode = ServerFaultCode.RemoteCougarCommunicationFailure;
         if (t instanceof SocketTimeoutException) {
-            faultCode = ServerFaultCode.Timeout;
+            serverFaultCode = ServerFaultCode.Timeout;
         }
-        processException(obs, t, url, faultCode);
+        processException(obs, t, url, serverFaultCode);
     }
 
-    protected void processException(ExecutionObserver obs, Throwable t, String url, ServerFaultCode faultCode) {
-        Exception exception = new CougarClientException(faultCode,
+    protected void processException(ExecutionObserver obs, Throwable t, String url, ServerFaultCode serverFaultCode) {
+        Exception exception = new CougarClientException(serverFaultCode,
                 "Exception occurred in Client: " + t.getMessage()+": "+url, t);
         obs.onResult(new ClientExecutionResult(exception, 0));
     }

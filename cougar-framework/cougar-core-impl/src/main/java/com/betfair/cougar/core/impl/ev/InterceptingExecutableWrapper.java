@@ -17,19 +17,15 @@
 package com.betfair.cougar.core.impl.ev;
 
 import com.betfair.cougar.api.ExecutionContext;
-import com.betfair.cougar.api.fault.CougarApplicationException;
 import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 
 public class InterceptingExecutableWrapper implements ExecutableWrapper {
 
@@ -44,7 +40,7 @@ public class InterceptingExecutableWrapper implements ExecutableWrapper {
 		this.preExecutionInterceptorList = preExecutionInterceptorList;
 		this.postExecutionInterceptorList = postExecutionInterceptorList;
 	}
-	
+
 	@Override
 	public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, final ExecutionObserver observer, final ExecutionVenue executionVenue, final TimeConstraints timeConstraints) {
 

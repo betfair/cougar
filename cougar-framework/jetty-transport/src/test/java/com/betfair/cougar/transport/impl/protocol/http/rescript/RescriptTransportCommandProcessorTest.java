@@ -20,8 +20,6 @@ import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.ResponseCode;
 import com.betfair.cougar.api.export.Protocol;
 import com.betfair.cougar.api.fault.FaultCode;
-import com.betfair.cougar.api.security.Identity;
-import com.betfair.cougar.api.security.IdentityResolver;
 import com.betfair.cougar.api.security.IdentityToken;
 import com.betfair.cougar.api.security.InvalidCredentialsException;
 import com.betfair.cougar.core.api.OperationBindingDescriptor;
@@ -38,10 +36,7 @@ import com.betfair.cougar.core.api.exception.PanicInTheCougar;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.fault.CougarFault;
 import com.betfair.cougar.core.api.fault.Fault;
-import com.betfair.cougar.core.api.security.IdentityResolverFactory;
 import com.betfair.cougar.core.api.transcription.Parameter;
-import com.betfair.cougar.core.impl.security.IdentityChainImpl;
-import com.betfair.cougar.logging.CougarLoggingUtils;
 import com.betfair.cougar.marshalling.api.databinding.DataBindingFactory;
 import com.betfair.cougar.marshalling.api.databinding.FaultMarshaller;
 import com.betfair.cougar.marshalling.api.databinding.Marshaller;
@@ -62,7 +57,6 @@ import com.betfair.cougar.transport.api.protocol.http.rescript.RescriptResponse;
 import com.betfair.cougar.transport.impl.protocol.http.AbstractHttpCommandProcessorTest;
 import com.betfair.cougar.transport.impl.protocol.http.ContentTypeNormaliser;
 import com.betfair.cougar.transport.impl.protocol.http.DefaultGeoLocationDeserializer;
-import com.betfair.cougar.transport.impl.protocol.http.DontCareRequestTimeResolver;
 import com.betfair.cougar.util.RequestUUIDImpl;
 import com.betfair.cougar.util.UUIDGeneratorImpl;
 import org.junit.Before;
@@ -73,7 +67,6 @@ import org.mockito.ArgumentMatcher;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
-import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
@@ -91,7 +84,6 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.*;
 
@@ -102,7 +94,7 @@ import static org.mockito.Mockito.*;
 public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandProcessorTest {
 
 	private OperationBindingDescriptor[] operationBindings;
-	
+
 	private ServiceBindingDescriptor serviceBinding = new HttpServiceBindingDescriptor() {
 
         private ServiceVersion serviceVersion = new ServiceVersion("v1.2");
@@ -131,7 +123,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
             return serviceVersion;
         }
     };
-	
+
 	private RescriptTransportCommandProcessor rescriptCommandProcessor;
 	private Marshaller marshaller;
 	private UnMarshaller unmarshaller;
@@ -158,14 +150,14 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
 		invalidOpParamBindings.add(new RescriptParamBindingDescriptor("InvalidOpFirstParam", ParamSource.QUERY));
         List<RescriptParamBindingDescriptor> voidReturnOpParamBindings = new ArrayList<RescriptParamBindingDescriptor>();
         voidReturnOpParamBindings.add(new RescriptParamBindingDescriptor("VoidReturnOpFirstParam", ParamSource.QUERY));
-		
+
 		operationBindings = new OperationBindingDescriptor[] {
 				new RescriptOperationBindingDescriptor(firstOpKey, "/FirstTestOp", "GET", firstOpParamBindings, TestResponse.class),
 				new RescriptOperationBindingDescriptor(mapOpKey, "/MapOp", "POST", mapOpParamBindings, TestResponse.class, TestBody.class),
 				new RescriptOperationBindingDescriptor(listOpKey, "/ListOp", "GET", listOpParamBindings, TestResponse.class, TestBody.class),
 				new RescriptOperationBindingDescriptor(invalidOpKey, "/InvalidOp", "GET", invalidOpParamBindings, TestResponse.class),
                 new RescriptOperationBindingDescriptor(voidReturnOpKey, "/VoidReturnOp", "GET", voidReturnOpParamBindings, null)};
-		
+
 		rescriptCommandProcessor = new RescriptTransportCommandProcessor(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID","X-RequestTimeout",requestTimeResolver);
 		init(rescriptCommandProcessor);
 		ctn = mock(ContentTypeNormaliser.class);
@@ -176,7 +168,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
 
         credentialResolver = mock(RescriptIdentityTokenResolver.class);
         when(credentialResolver.resolve(any(HttpServletRequest.class), any(X509Certificate[].class))).thenReturn(new ArrayList<IdentityToken>());
-        
+
         rescriptCommandProcessor.setValidatorRegistry(validatorRegistry);
 
         command = new TestHttpCommand(credentialResolver, Protocol.RESCRIPT);
@@ -195,11 +187,11 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
 		contentTypes.add(MediaType.APPLICATION_XML);
 		dbm.setContentTypes(contentTypes);
 		DataBindingManager.getInstance().addBindingMap(dbm);
-		
+
 		rescriptCommandProcessor.bind(serviceBinding);
 		rescriptCommandProcessor.onCougarStart();
 	}
-	
+
 	/**
 	 * Basic test with string parameters
 	 * @throws Exception
@@ -215,7 +207,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
 		// Resolve the input command
 		rescriptCommandProcessor.process(command);
 		assertEquals(1, ev.getInvokedCount());
-		
+
 		// Assert that we resolved the expected arguments
 		Object[] args = ev.getArgs();
 		assertNotNull(args);
@@ -282,7 +274,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
         when(request.getScheme()).thenReturn("http");
 
 		// Resolve the input command
-		rescriptCommandProcessor.process(command);	
+		rescriptCommandProcessor.process(command);
 		assertEquals(CommandStatus.Complete, command.getStatus());
 		verify(response).setContentType(MediaType.APPLICATION_XML);
 		verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -292,7 +284,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
         inorder.verify(logger).logAccess(eq(command), any(ExecutionContext.class), anyLong(), anyLong(),
                                             any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
 	}
-	
+
 	@Test
 	public void testProcess_InvalidContentType() throws Exception {
 		// Set up the input
@@ -309,7 +301,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
 		when(ctn.getNormalisedResponseMediaType(any(HttpServletRequest.class))).thenThrow(
 				new CougarValidationException(ServerFaultCode.AcceptTypeNotValid, ""));
 		ev.getObserver().onResult(new ExecutionResult("something"));
-		
+
 		//Verify we get the correct response status
 		assertEquals(CommandStatus.Complete, command.getStatus());
 		verify(response).setContentType(MediaType.APPLICATION_XML);
@@ -359,7 +351,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
     }
 
 
-	@Test(expected=PanicInTheCougar.class) 
+	@Test(expected=PanicInTheCougar.class)
     public void testBindOperation() {
         //Ensure that we don't have more than one operation bound with the same uri path
 
@@ -539,10 +531,10 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
 			}
 		};
 	}
-	
+
 	public static class TestResponse implements RescriptResponse {
 		private Object result;
-		
+
 		@Override
 		public Object getResult() {
 			return result;
@@ -553,20 +545,20 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
 			this.result = result;
 		}
 	}
-	
+
 	public static class TestBody implements RescriptBody {
 
 		private HashMap<String, Object> map = new  HashMap<String, Object>();
-		
+
 		@Override
 		public Object getValue(String name) {
 			return map.get(name);
 		}
-		
+
 		public void put(String name, Object value) {
 			map.put(name, value);
 		}
-		
+
 	}
 
 }

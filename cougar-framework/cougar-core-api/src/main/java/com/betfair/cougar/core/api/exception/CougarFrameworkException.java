@@ -30,11 +30,19 @@ public class CougarFrameworkException extends CougarException {
 	public CougarFrameworkException(String cause) {
 		super(LOG_LEVEL, ServerFaultCode.FrameworkError, cause);
 	}
-	
+
 	public CougarFrameworkException(String cause, Throwable t) {
-		super(LOG_LEVEL, ServerFaultCode.FrameworkError, cause, t);
+		this(ServerFaultCode.FrameworkError, cause, t);
+	}
+
+	public CougarFrameworkException(ServerFaultCode faultCode, String cause) {
+		super(LOG_LEVEL, faultCode, cause);
+	}
+
+	public CougarFrameworkException(ServerFaultCode faultCode, String cause, Throwable t) {
+		super(LOG_LEVEL, faultCode, cause, t);
 	}
 
 
-	
+
 }

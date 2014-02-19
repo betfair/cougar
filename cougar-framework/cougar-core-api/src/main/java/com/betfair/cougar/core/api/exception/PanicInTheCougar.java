@@ -39,6 +39,6 @@ public class PanicInTheCougar extends CougarException {
 	public PanicInTheCougar(Exception e) {
 		super(LOG_LEVEL, ServerFaultCode.StartupError, e);
 	}
-	
+
 
 }

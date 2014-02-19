@@ -56,7 +56,7 @@ public class ServiceExecutableResolver extends CompoundExecutableResolverImpl {
 	public void setEventLogger(EventLogger eventLogger) {
 		this.eventLogger = eventLogger;
 	}
-	
+
 	@Override
 	public Executable resolveExecutable(OperationKey operationKey, ExecutionVenue ev) {
         if (!(ev instanceof ServiceRegisterableExecutionVenue)) {
@@ -74,12 +74,12 @@ public class ServiceExecutableResolver extends CompoundExecutableResolverImpl {
 	private class RequestContextExecutable implements ExecutableWrapper {
 		private final Executable executable;
 		private final ServiceLogManager manager;
-	
+
 		public RequestContextExecutable(Executable executable, ServiceLogManager manager) {
 			this.executable = executable;
 			this.manager = manager;
 		}
-	
+
         @Override
         public void execute(final ExecutionContext ctx,
                             final OperationKey key,
@@ -112,7 +112,7 @@ public class ServiceExecutableResolver extends CompoundExecutableResolverImpl {
     }
 
 	private class ExecutionContextAdapter implements RequestContext, ExecutionObserver {
-		
+
 		private final ExecutionObserver observer;
 		private final OperationKey key;
 		private final ExecutionContext original;
@@ -255,7 +255,7 @@ public class ServiceExecutableResolver extends CompoundExecutableResolverImpl {
 		public IdentityChain getIdentity() {
 			return original.getIdentity();
 		}
-        
+
         public String toString() {
             StringBuilder sb = new StringBuilder("ExecutionContextAdaptor:");
 

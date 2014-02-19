@@ -53,7 +53,7 @@ public class CougarClientException extends CougarException {
         }
         this.confirmedAsCougar = confirmedAsCougar;
 	}
-	
+
 	@Override
 	public Fault getFault() {
 		Fault fault = null;
@@ -64,7 +64,7 @@ public class CougarClientException extends CougarException {
     	}
     	return fault;
 	}
-	
+
 	@Override
 	public ResponseCode getResponseCode() {
     	if (dae != null) {

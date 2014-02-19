@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.betfair.cougar.CougarUtilTestCase;
 import com.betfair.cougar.api.RequestContext;
 import com.betfair.cougar.api.Result;
 import com.betfair.cougar.api.fault.FaultCode;
@@ -56,7 +55,7 @@ public class MockUtilsTest {
 		}
 
 	}
-	
+
 	private void checkResult(MyResult result) {
 		assertTrue(result.byteVar.intValue() > 0);
 		assertTrue(result.shortVar.intValue() > 0);
@@ -73,7 +72,7 @@ public class MockUtilsTest {
 	public void testMockBadField() {
 		String foo = MockUtils.generateMockResponse(String.class, mock(RequestContext.class));
 		assertEquals("String-1", foo);
-	}	
+	}
 	public static class MyResult implements Result {
 		Byte byteVar;
 		Short shortVar;
@@ -114,7 +113,7 @@ public class MockUtilsTest {
 		}
 		public void setEnumVal(FaultCode enumVal) {
 			this.enumVal = enumVal;
-		}		
+		}
 	}
 
 	public static class MyResultWithCollections implements Result {
@@ -122,7 +121,7 @@ public class MockUtilsTest {
 		List<MyResult> list;
 		Set<String> set;
 		Map<String, MyResult> map;
-		
+
 		public void setSet(Set<String> set) {
 			this.set = set;
 		}

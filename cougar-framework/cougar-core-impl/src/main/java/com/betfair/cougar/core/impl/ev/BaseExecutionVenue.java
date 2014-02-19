@@ -21,6 +21,7 @@ import com.betfair.cougar.api.ExecutionContextWithTokens;
 import com.betfair.cougar.api.security.*;
 import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.exception.CougarException;
+import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
@@ -284,7 +285,7 @@ public class BaseExecutionVenue implements ExecutionVenue {
 
         public void expire() {
             if (onResultCalled.compareAndSet(false, true)) {
-                observer.onResult(new ExecutionResult(new CougarServiceException(ServerFaultCode.Timeout, "Executable did not complete in time")));
+                observer.onResult(new ExecutionResult(new CougarFrameworkException(ServerFaultCode.Timeout, "Executable did not complete in time")));
             }
         }
     }

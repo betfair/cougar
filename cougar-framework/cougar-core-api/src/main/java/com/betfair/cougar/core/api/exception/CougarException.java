@@ -23,18 +23,18 @@ import com.betfair.cougar.core.api.fault.Fault;
 import com.betfair.cougar.logging.CougarLoggingUtils;
 
 /**
- * An Exception that automatically logs itself   
+ * An Exception that automatically logs itself
  */
 @SuppressWarnings("serial")
 public abstract class CougarException extends RuntimeException {
 	private final ServerFaultCode serverFault;
-	
+
 	CougarException(Level level, ServerFaultCode serverFault) {
 		super();
 		this.serverFault = serverFault;
 		logMe(serverFault, level);
 	}
-	
+
 	CougarException(Level level, ServerFaultCode serverFault, Throwable e) {
 		super(e);
 		this.serverFault = serverFault;
@@ -54,28 +54,28 @@ public abstract class CougarException extends RuntimeException {
 	}
 
 	private void logMe(ServerFaultCode serverFault, Level level) {
-		// If it's an internal error, then we should always log. 
+		// If it's an internal error, then we should always log.
 		// A client fault is only logged if we're on debug logging.
 		if (ResponseCode.InternalError == serverFault.getResponseCode()) {
 			level = Level.WARNING;
 		}
 		CougarLoggingUtils.getLogger(getClass()).log(level, "Exception thrown: ", this);
 	}
-	
+
 	public Fault getFault() {
 		return new Fault(getResponseCode().getFaultCode(), serverFault.getDetail(), getMessage(), getCause());
 	}
-	
+
 	public ResponseCode getResponseCode() {
 		return serverFault.getResponseCode();
 	}
-	
+
 	// Prevent defined services overriding the exception message
 	@Override
 	public final String getMessage() {
 		return super.getMessage();
 	}
-	
+
 	public ServerFaultCode getServerFaultCode() {
 		return serverFault;
 	}

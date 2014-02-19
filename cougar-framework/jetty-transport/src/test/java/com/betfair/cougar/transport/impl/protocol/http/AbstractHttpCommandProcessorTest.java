@@ -79,14 +79,14 @@ public class AbstractHttpCommandProcessorTest {
 			false) };
 	protected static final ParameterType firstOpReturn = ParameterType.create(String.class,
 			null);
-	
+
 	protected static final OperationKey mapOpKey = new OperationKey(
 			new ServiceVersion(2, 1), "HTTPTest", "MapTestOp");
 	protected static final Parameter[] mapOpParams = new Parameter[] { new Parameter(
 			"MapOpFirstParam", ParameterType.create(HashMap.class, new Class[] {Integer.class, Double.class}),
 			false) };
 	protected static final ParameterType mapOpReturn = ParameterType.create(HashMap.class, new Class[] {Integer.class, Double.class});
-	
+
 	protected static final OperationKey listOpKey = new OperationKey(
 			new ServiceVersion(2, 1), "HTTPTest", "ListTestOp");
 	protected static final Parameter[] listOpParams = new Parameter[] { new Parameter(
@@ -136,7 +136,7 @@ public class AbstractHttpCommandProcessorTest {
 
         logger = mock(RequestLogger.class);
 		geoIPLocator = mock(GeoIPLocator.class);
-		
+
 		request = mock(HttpServletRequest.class);
         when(request.getContextPath()).thenReturn(SERVICE_PATH);
         when(request.getHeaderNames()).thenReturn(RescriptOperationBindingTest.enumerator(new ArrayList<String>().iterator()));
@@ -453,7 +453,7 @@ public class AbstractHttpCommandProcessorTest {
         commandProcessor.process(command);
         assertTrue(commandProcessor.errorCalled());
 	}
-	
+
 	protected void init(AbstractHttpCommandProcessor commandProcessor) throws Exception {
 		commandProcessor.setExecutor(new Executor() {
             @Override
@@ -466,15 +466,15 @@ public class AbstractHttpCommandProcessorTest {
         commandProcessor.setValidatorRegistry(validatorRegistry);
         commandProcessor.setHardFailEnumDeserialisation(true);
 	}
-	
+
 	protected class TestEV implements ExecutionVenue {
-		
+
 		private ExecutionObserver observer;
 		private Object[] args;
 		private OperationKey key;
 		private HashMap<OperationKey, OperationDefinition> map = new HashMap<OperationKey, OperationDefinition>();
 		private int invokedCount = 0;
-		
+
 		public Object[] getArgs() {
 			return args;
 		}
@@ -486,7 +486,7 @@ public class AbstractHttpCommandProcessorTest {
 		public ExecutionObserver getObserver() {
 			return observer;
 		}
-		
+
 		public int getInvokedCount() {
 			return invokedCount;
 		}
@@ -534,9 +534,9 @@ public class AbstractHttpCommandProcessorTest {
 		public void setPreProcessors(
 				List<ExecutionPreProcessor> preProcessorList) {
 		}
-		
+
 	}
-	
+
 	protected class TestServletInputStream extends ServletInputStream {
 
 		private String input;
@@ -638,7 +638,7 @@ public class AbstractHttpCommandProcessorTest {
             this.pathInfo = pathInfo;
         }
     };
-	
+
 	protected class TestApplicationException extends CougarApplicationException {
 
 		public TestApplicationException(ResponseCode code, String message) {
@@ -654,7 +654,7 @@ public class AbstractHttpCommandProcessorTest {
 		public String getApplicationFaultNamespace() {
 			return null;
 		}
-		
+
 	}
 
     private class LocalCommandProcessor extends AbstractHttpCommandProcessor {

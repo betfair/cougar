@@ -29,9 +29,9 @@ import com.betfair.cougar.logging.CougarLogger;
 import com.betfair.cougar.logging.CougarLoggingUtils;
 
 public class PostProcessingInterceptorWrapper implements ExecutionObserver {
-	
+
 	private static final InterceptorResult CONTINUE = new InterceptorResult(InterceptorState.CONTINUE);
-	
+
 	private final static CougarLogger logger = CougarLoggingUtils.getLogger(PostProcessingInterceptorWrapper.class);
 	private ExecutionObserver observer;
 	private List<ExecutionPostProcessor> postProcessors;
@@ -39,12 +39,12 @@ public class PostProcessingInterceptorWrapper implements ExecutionObserver {
 	private OperationKey key;
 	private Object[] args;
 
-	public PostProcessingInterceptorWrapper(	ExecutionObserver observer, 
-									List<ExecutionPostProcessor> postProcessors, 
-									final ExecutionContext ctx, 
-									final OperationKey key, 
+	public PostProcessingInterceptorWrapper(	ExecutionObserver observer,
+									List<ExecutionPostProcessor> postProcessors,
+									final ExecutionContext ctx,
+									final OperationKey key,
 									final Object [] args) {//NOSONAR
-		
+
 		this.observer = observer;
 		this.postProcessors = postProcessors;
 		this.ctx = ctx;
@@ -64,7 +64,7 @@ public class PostProcessingInterceptorWrapper implements ExecutionObserver {
             observer.onResult(executionResult);
         }
     }
-	
+
 	private void forceOnException(InterceptorResult result) {
         Object interceptorResult = result.getResult();
         ExecutionResult executionResult;
@@ -85,11 +85,11 @@ public class PostProcessingInterceptorWrapper implements ExecutionObserver {
 		}
 		observer.onResult(executionResult);
 	}
-	
+
 	private InterceptorResult invokePostProcessors(ExecutionResult executionResult) {
-		
+
 		InterceptorResult result = CONTINUE;
-		
+
 		for (ExecutionPostProcessor postProcessor : postProcessors) {
 			try {
 				result = postProcessor.invoke(ctx, key, args, executionResult);
@@ -103,7 +103,7 @@ public class PostProcessingInterceptorWrapper implements ExecutionObserver {
 				if (result.getState().shouldAbortInterceptorChain()) {
 					break;
 				}
-				
+
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, "Post Processor " + postProcessor.getName() + " has failed.");
 				logger.log(e);
@@ -111,7 +111,7 @@ public class PostProcessingInterceptorWrapper implements ExecutionObserver {
 				break;
 			}
 		}
-		
+
 		return result;
 	}
 }

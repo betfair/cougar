@@ -19,6 +19,9 @@ package com.betfair.cougar.core.api.exception;
 import com.betfair.cougar.api.ResponseCode;
 import com.betfair.cougar.api.security.CredentialFaultCode;
 
+// todo: would love to rename this to FaultCode (and FaultCode to FaultOrigin), but that would break hessian enum serialisation.
+//       we really need to takeover hessian enum serialisation to allow us to change internal structures
+//       in fact we really need to stop entrusting our internals to hessian
 public enum ServerFaultCode {
 	StartupError(ResponseCode.InternalError, 1),
 	FrameworkError(ResponseCode.InternalError, 2),
@@ -75,11 +78,11 @@ public enum ServerFaultCode {
         toString = name() + "(" + errorString + ")";
         this.cfc = cfc;
 	}
-	
+
 	public String getDetail() {
 		return errorString;
 	}
-	
+
 	public ResponseCode getResponseCode() {
 		return errorCode;
 	}

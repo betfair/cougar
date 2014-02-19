@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.betfair.cougar.core.api.exception.CougarValidationException;
-import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.transcription.Parameter;
 
 /**
@@ -29,14 +28,14 @@ import com.betfair.cougar.core.api.transcription.Parameter;
  * <li>parameter supplied by the client that are not expected by the server are ignored</li>
  * <li>optional parameters expected by the server but not supplied by the client will have a value of <b>null</b>
  * <li>mandatory parameters expected by the server by not supplied by the client will generate an error
- *  
+ *
  */
 public class ArgumentMatcher {
 
 
 
 	/**
-	 * 
+	 *
 	 * @param expectedArgs - arguments the server is expecting, as defined in the idd
 	 * @param availableArgNames - names of arguments supplied by the client
 	 * @param availableArgValues - values of arguments supplied by the client

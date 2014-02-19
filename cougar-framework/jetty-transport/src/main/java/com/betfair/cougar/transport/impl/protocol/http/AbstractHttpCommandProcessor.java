@@ -24,10 +24,7 @@ import com.betfair.cougar.core.api.CougarStartingGate;
 import com.betfair.cougar.core.api.GateListener;
 import com.betfair.cougar.core.api.ServiceBindingDescriptor;
 import com.betfair.cougar.core.api.ev.TimeConstraints;
-import com.betfair.cougar.core.api.exception.CougarException;
-import com.betfair.cougar.core.api.exception.CougarFrameworkException;
-import com.betfair.cougar.core.api.exception.CougarServiceException;
-import com.betfair.cougar.core.api.exception.PanicInTheCougar;
+import com.betfair.cougar.core.api.exception.*;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.logging.CougarLogger;
@@ -61,7 +58,7 @@ import java.util.regex.Pattern;
  * Provides common functionality for Http CommandProcessors, mainly around
  * resolving the ExecutionContext from an HttpCommand, and registration as a
  * GateListener.
- * 
+ *
  */
 public abstract class AbstractHttpCommandProcessor extends
 		AbstractCommandProcessor<HttpCommand> implements HttpCommandProcessor,
@@ -145,7 +142,7 @@ public abstract class AbstractHttpCommandProcessor extends
 	/**
 	 * By setting the starting gate property this CommandProcessor will register
 	 * itself with the CougarStartingGate
-	 * 
+	 *
 	 * @param startingGate
 	 *            the starting gate for the application
 	 */
@@ -216,7 +213,7 @@ public abstract class AbstractHttpCommandProcessor extends
 
 	/**
 	 * Returns all the ServiceBindindDescriptors registered via the bind method.
-	 * 
+	 *
 	 * @return
 	 */
 	protected Iterable<ServiceBindingDescriptor> getServiceBindingDescriptors() {

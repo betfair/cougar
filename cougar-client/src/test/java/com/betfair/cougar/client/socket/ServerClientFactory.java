@@ -30,6 +30,7 @@ import com.betfair.cougar.core.api.ServiceBindingDescriptor;
 import com.betfair.cougar.core.api.ServiceVersion;
 import com.betfair.cougar.core.api.ev.ExecutionTimingRecorder;
 import com.betfair.cougar.core.api.ev.TimeConstraints;
+import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.impl.security.CommonNameCertInfoExtractor;
 import com.betfair.cougar.logging.CougarLogger;
 import com.betfair.cougar.logging.CougarLoggingUtils;
@@ -57,7 +58,6 @@ import com.betfair.cougar.core.api.ev.ExecutionVenue;
 import com.betfair.cougar.core.api.ev.OperationDefinition;
 import com.betfair.cougar.core.api.ev.OperationKey;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
-import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.security.IdentityResolverFactory;
 import com.betfair.cougar.netutil.nio.NioConfig;
 import com.betfair.cougar.netutil.nio.hessian.HessianObjectIOFactory;
@@ -81,10 +81,10 @@ public class ServerClientFactory {
 		final ExecutionVenueNioServer server = new ExecutionVenueNioServer();
 		server.setNioConfig(cfg);
 
-		
+
 	    SocketTransportCommandProcessor cmdProcessor = new SocketTransportCommandProcessor();
         cmdProcessor.setIdentityResolverFactory(new IdentityResolverFactory());
-		
+
 		Executor executor = new Executor() {
             @Override
             public void execute(Runnable command) {
@@ -93,7 +93,7 @@ public class ServerClientFactory {
             }
         };
 
-        
+
         GeoIPLocator geo = Mockito.mock(GeoIPLocator.class);
         SocketRMIMarshaller marshaller = new SocketRMIMarshaller(geo, new CommonNameCertInfoExtractor(), new DefaultSocketTimeResolver(true));
         IdentityResolverFactory identityResolverFactory = new IdentityResolverFactory();
@@ -133,7 +133,7 @@ public class ServerClientFactory {
                 	observer.onResult(new ExecutionResult(new CougarServiceException(ServerFaultCode.FrameworkError, AbstractClientTest.BANG)));
                     break;
             }
-            	
+
             }
 
             public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, final ExecutionObserver observer, Executor executor, final TimeConstraints timeConstraints) {
@@ -190,32 +190,32 @@ public class ServerClientFactory {
         sessionManager.setNioLogger(nioLogger);
         sessionManager.setMaxTimeToWaitForRequestCompletion(5000);
         server.setSessionManager(sessionManager);
-		
-		return server;		
+
+		return server;
 	}
-	
+
 	public static TlsNioConfig getDefaultConfig() {
         TlsNioConfig cfg = new TlsNioConfig();
         cfg.setNioLogger(new NioLogger("ALL"));
-		
+
 		cfg.setReuseAddress(true);
 		cfg.setTcpNoDelay(true);
-		
-		return cfg;		
+
+		return cfg;
 	}
-	
+
 	public static ExecutionVenueNioServer createServer(String host, int port, byte serverVersion) {
 		return createServer(host, port, serverVersion, getDefaultConfig());
 	}
-	
+
 	public static ExecutionVenueNioServer createServer(String host, int port, byte serverVersion, TlsNioConfig cfg) {
 		cfg.setListenAddress(host);
 		cfg.setListenPort(port);
-		
+
 		return createServer(serverVersion, cfg);
 	}
-	
-	
+
+
 	public static ExecutionVenueNioClient createClient (String connectionString, NioConfig cfg) {
         GeoIPLocator geo = Mockito.mock(GeoIPLocator.class);
         SocketRMIMarshaller marshaller = new SocketRMIMarshaller(geo, new CommonNameCertInfoExtractor(), new DefaultSocketTimeResolver());
@@ -227,14 +227,14 @@ public class ServerClientFactory {
                 new JMXReportingThreadPoolExecutor(30, 60, 0, TimeUnit.SECONDS, new SynchronousQueue<Runnable>()), new JMXReportingThreadPoolExecutor(30, 60, 0, TimeUnit.SECONDS, new SynchronousQueue<Runnable>()),
                 new DNSBasedAddressResolver());
         client.setMarshaller(marshaller);
-        
-        return client;		
+
+        return client;
 	}
-		
-	
-	public static ExecutionVenueNioClient createClient (String connectionString) {        
+
+
+	public static ExecutionVenueNioClient createClient (String connectionString) {
         return createClient(connectionString, getDefaultConfig());
-		
+
 	}
-	
+
 }

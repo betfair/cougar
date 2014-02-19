@@ -81,10 +81,10 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
 	private static final int SERVER_ERROR = -32099;
 
     private static final MediaType DEFAULT_RESPONSE_MEDIA_TYPE = MediaType.APPLICATION_JSON_TYPE;
-	
+
 	private static final JavaType BATCH_REQUEST_TYPE = TypeFactory.collectionType(ArrayList.class, JsonRpcRequest.class);
 	private static final JavaType SINGLE_REQUEST_TYPE = TypeFactory.fastSimpleType(JsonRpcRequest.class);
-	
+
 	private ObjectMapper mapper = JSONBindingFactory.createBaseObjectMapper();
 
 	private Map<String, JsonRpcOperationBinding> bindings = new HashMap<String, JsonRpcOperationBinding>();
@@ -145,7 +145,7 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
 		}
         return false;
 	}
-	
+
 	@Override
 	protected CommandResolver<HttpCommand> createCommandResolver(final HttpCommand http) {
         final ExecutionContextWithTokens context = resolveExecutionContext(http, http.getRequest(), http.getClientX509CertificateChain(), true);
@@ -156,7 +156,7 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
 		final List<JsonRpcResponse> responses = new ArrayList<JsonRpcResponse>();
 
 		JsonNode root;
-		ByteCountingInputStream iStream = null;					
+		ByteCountingInputStream iStream = null;
 		try {
 			iStream = createByteCountingInputStream(http.getRequest().getInputStream());
             try {

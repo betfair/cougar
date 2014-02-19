@@ -28,12 +28,12 @@ import com.betfair.cougar.api.fault.CougarApplicationException;
 import com.betfair.cougar.core.api.fault.CougarFault;
 
 public class CougarServiceExceptionTest{
-	
+
 	@After
 	public void tearDown(){
-		
+
 	}
-	
+
 	@Test
 	public void testGetFault() {
 		CougarServiceException dse = new CougarServiceException(ServerFaultCode.ResponseContentTypeNotValid,"message");
@@ -49,7 +49,7 @@ public class CougarServiceExceptionTest{
 		assertEquals(ResponseCode.InternalError.getFaultCode(), fault.getFaultCode());
 		assertEquals(ResponseCode.InternalError, dse.getResponseCode());
 	}
-	
+
 	private static class MockException extends CougarApplicationException {
 
 		public MockException() {

@@ -54,7 +54,7 @@ public class JettyHandler extends AbstractHandler {
     private final long MILLI=1000;
     private String protocolBindingRoot;
     private IdentityTokenResolverLookup identityTokenResolverLookup;
-	
+
 	private int timeoutInSeconds;
     private boolean suppressCommasInAccessLog;
     private static final String VERSION_HEADER = "Cougar 2 - "+CougarVersion.getVersion();
@@ -112,7 +112,7 @@ public class JettyHandler extends AbstractHandler {
 	public void setTimeoutInSeconds(int timeoutInSeconds) {
 		this.timeoutInSeconds = timeoutInSeconds;
 	}
-	
+
 	protected class JettyTransportCommand implements HttpCommand, ContinuationListener {
         private static final String CERTIFICATE_ATTRIBUTE_NAME = "javax.servlet.request.X509Certificate";
 
@@ -150,7 +150,7 @@ public class JettyHandler extends AbstractHandler {
 				continuation.suspend(response);
 				continuation.addContinuationListener(this);
 			}
-			
+
 			buildPathInfo(request);
 		}
 
@@ -168,7 +168,7 @@ public class JettyHandler extends AbstractHandler {
 		public Continuation getContinuation() {
 			return continuation;
 		}
-		
+
 		/**
 		 * @see HttpCommand
 		 */
@@ -199,7 +199,7 @@ public class JettyHandler extends AbstractHandler {
 				continuation.complete();
 			}
 		}
-		
+
 		/**
 		 * @see HttpCommand
 		 */
@@ -226,11 +226,11 @@ public class JettyHandler extends AbstractHandler {
 		@Override
 		public RequestTimer getTimer() {
 			return timer;
-		}		
+		}
 
 		/**
 		 * @see HttpCommand
-		 */		
+		 */
 		@Override
 		public String getFullPath() {
             String ret = fullPath;
@@ -245,7 +245,7 @@ public class JettyHandler extends AbstractHandler {
             }
 	        return fullPath;
         }
-		
+
 		/**
 		 * @see HttpCommand
 		 */

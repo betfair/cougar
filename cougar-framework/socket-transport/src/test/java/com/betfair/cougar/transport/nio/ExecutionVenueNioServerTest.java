@@ -137,7 +137,7 @@ public class ExecutionVenueNioServerTest {
     }
 
     public static final String THE_ITALIAN_JOB = "you were only supposed to blow the ruddy doors off";
-	
+
 	private static final OperationKey KEY = new OperationKey(new ServiceVersion("v1.0"), "UnitTestService",
 	        "myUnitTestMethod");
 
@@ -148,7 +148,7 @@ public class ExecutionVenueNioServerTest {
     private static final ParameterType RETURN_PARAM_TYPE = new ParameterType(String.class, null);
 
     private static final TimeConstraints TIME_CONSTRAINTS = DefaultTimeConstraints.NO_CONSTRAINTS;
-    
+
 	public static final OperationDefinition OPERATION_DEFINITION = new OperationDefinition() {
 		@Override
 		public OperationKey getOperationKey() {
@@ -164,7 +164,7 @@ public class ExecutionVenueNioServerTest {
 		}
 	};
 
-	
+
     private String address;
     TlsNioConfig cfg;
     private ExecutionVenueNioServer server;
@@ -190,13 +190,13 @@ public class ExecutionVenueNioServerTest {
 
     @Before
     public void startDummyEchoSocketServer() throws IOException {
-    	
+
     	ioFactory = new HessianObjectIOFactory();
-    	
+
 		cfg = new TlsNioConfig();
         final NioLogger logger = new NioLogger("ALL");
         cfg.setNioLogger(logger);
-		
+
 		cfg.setListenAddress(address);
 		cfg.setListenPort(0);
 		cfg.setReuseAddress(true);
@@ -206,7 +206,7 @@ public class ExecutionVenueNioServerTest {
 
 		server = new ExecutionVenueNioServer();
 		server.setNioConfig(cfg);
-    	
+
 
         cmdProcessor = new SocketTransportCommandProcessor();
         cmdProcessor.setIdentityResolverFactory(new IdentityResolverFactory());
@@ -295,7 +295,7 @@ public class ExecutionVenueNioServerTest {
         cmdProcessor.bind(desc);
         cmdProcessor.onCougarStart();
 
-        
+
         ExecutionVenueServerHandler handler = new ExecutionVenueServerHandler(new NioLogger("NONE"), cmdProcessor, new HessianObjectIOFactory());
         server.setServerHandler(handler);
         server.setSocketAcceptorProcessors(1);
@@ -313,8 +313,8 @@ public class ExecutionVenueNioServerTest {
     public void stopDummyEchoSocketServer() throws IOException {
         server.stop();
     }
-    
-    
+
+
 
     @Test
     public void testSocketRequest()  throws Exception {
@@ -327,8 +327,8 @@ public class ExecutionVenueNioServerTest {
         assertTrue(response.isSuccess());
         assertEquals(expectedResult, response.getResult());
     }
-    
-    
+
+
     @Test
     public void testSocketRequestThrowingException() throws IOException {
         InvocationResponse response = makeSocketRequest(2, false, "");
@@ -348,7 +348,7 @@ public class ExecutionVenueNioServerTest {
 
         //Read the message type
         ProtocolMessageType pm = ProtocolMessageType.getMessageByMessageType(dis.readByte());
-        
+
         switch (pm) {
             case  CONNECT:
                 int len = dis.readInt();
@@ -377,7 +377,7 @@ public class ExecutionVenueNioServerTest {
     private void writeMessageToOutputStream(Object message, OutputStream stream, byte communicationVersion) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream s = new DataOutputStream(baos);
-        
+
         if (message instanceof RequestMessage) {
             RequestMessage messageBody = (RequestMessage) message;
             s.writeInt(messageBody.getPayload().length + 9);
@@ -400,7 +400,7 @@ public class ExecutionVenueNioServerTest {
         s.flush();
         stream.write(baos.toByteArray());
         stream.flush();
-        
+
     }
 
     @Test
@@ -455,8 +455,8 @@ public class ExecutionVenueNioServerTest {
 		return marshaller.readInvocationResponse(RETURN_PARAM_TYPE, dis);
     }
 
-    
-    
+
+
     public InvocationRequest createRequest(final Object[] args) {
         return new InvocationRequest() {
             @Override
@@ -554,5 +554,5 @@ public class ExecutionVenueNioServerTest {
                 return TIME_CONSTRAINTS;
             }
         };
-    }    
+    }
 }

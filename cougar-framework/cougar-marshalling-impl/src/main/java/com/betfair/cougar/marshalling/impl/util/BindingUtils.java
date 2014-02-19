@@ -36,7 +36,7 @@ public final class BindingUtils {
 
 	private static final Pattern csv = Pattern.compile(",");
 
-	
+
 	public static Object convertToSimpleType(Class<?> clazz, Class<?> genericClass, String name, String value, boolean unescapeStrings, boolean hardFailEnums) throws IllegalArgumentException {
         Object result = null;
         if (value != null) {
@@ -44,7 +44,7 @@ public final class BindingUtils {
 	        	if (clazz == String.class) {
 		            try {
 		            	if (unescapeStrings) {
-		            		result = URLDecoder.decode(value, "UTF-8"); 
+		            		result = URLDecoder.decode(value, "UTF-8");
 		            	} else {
 		            		result = value;
 		            	}
@@ -109,10 +109,10 @@ public final class BindingUtils {
 		            if (collection.size() > 0) {
 		            	result = collection ;
 		            }
-		         
-		        } else if(clazz == java.util.Date.class) { 
+
+		        } else if(clazz == java.util.Date.class) {
 						result = DateTimeUtility.parse(value);
-		        } else {		        
+		        } else {
 		        	throw newValidationException(name, value, clazz, null);
 		        }
         	} catch (RuntimeException ex) {
@@ -122,21 +122,21 @@ public final class BindingUtils {
         			throw newValidationException(name, value, clazz, ex);
         		}
         	}
-        	
+
         }
         return result;
     }
-	
-	
+
+
 	private final static CougarValidationException newValidationException(String name, String value, Class clazz, Exception originalException) {
 		final StringBuilder msg = new StringBuilder("Unable to convert '");
 		msg.append(value).append("' to ").append(clazz.getName()).append(" for parameter: " + name);
-		
+
 		return new CougarValidationException(ServerFaultCode.ClassConversionFailure, msg.toString(), originalException);
 	}
 
-   
-    
+
+
     private static final Object checkXMLInfinity(Class<?> clazz, String value) {
     	boolean returnFloat = Float.class.equals(clazz);
     	if (value.equals("INF")) {
@@ -153,6 +153,6 @@ public final class BindingUtils {
     		}
     	}
 		return null;
-    	
+
     }
 }

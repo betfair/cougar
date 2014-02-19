@@ -23,21 +23,21 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
 
+import com.betfair.cougar.api.fault.FaultCode;
 import org.junit.After;
 import org.junit.Test;
 
 import com.betfair.cougar.api.ResponseCode;
 import com.betfair.cougar.api.fault.CougarApplicationException;
-import com.betfair.cougar.api.fault.FaultCode;
 
 
 public class CougarExceptionTest {
 
-	
+
 	@After
 	public void tearDown(){
 	}
-	
+
 	@Test
 	public void testServiceNoThrowableConstructor() {
 		CougarServiceException dse = new CougarServiceException(ServerFaultCode.FrameworkError, "MESSAGE");
@@ -46,7 +46,7 @@ public class CougarExceptionTest {
 		dse = new CougarServiceException(ServerFaultCode.ResponseContentTypeNotValid, "Invalid");
 		checkFault(dse, FaultCode.Server, "DSC-0014", ResponseCode.InternalError, "ILLEGAL-ARGUMENT", null);
 	}
-	
+
 	@Test
 	public void testServiceApplicationExceptionConstructor() {
 		CougarApplicationException dae = new CougarApplicationException(ResponseCode.NotFound, "APP-0001") {
@@ -63,35 +63,35 @@ public class CougarExceptionTest {
 		CougarServiceException dse = new CougarServiceException(ServerFaultCode.ServiceCheckedException, "MESSAGE", dae);
 		checkFault(dse, FaultCode.Client, "APP-0001", ResponseCode.NotFound, "", dae);
 	}
-	
+
 	@Test
 	public void testServiceOtherExceptionConstructor() {
 		IllegalArgumentException iae = new IllegalArgumentException("MESSAGE");
 		CougarServiceException dse = new CougarServiceException(ServerFaultCode.ServiceRuntimeException, "MESSAGE", iae);
 		checkFault(dse, FaultCode.Server, "DSC-0005", ResponseCode.InternalError, "MESSAGE", null);
 	}
-	
+
 	@Test
 	public void testPanicInTheCougar() {
 		PanicInTheCougar pitd = new PanicInTheCougar(new IllegalArgumentException("ILLEGAL-ARGUMENT"));
 		checkFault(pitd, FaultCode.Server, "DSC-0001", ResponseCode.InternalError, "ILLEGAL-ARGUMENT", null);
-		
+
 		pitd = new PanicInTheCougar("CAUSE");
 		checkFault(pitd, FaultCode.Server, "DSC-0001", ResponseCode.InternalError, "CAUSE", null);
-		
+
 		pitd = new PanicInTheCougar("CAUSE", new IllegalArgumentException("ILLEGAL-ARGUMENT"));
 		checkFault(pitd, FaultCode.Server, "DSC-0001", ResponseCode.InternalError, "ILLEGAL-ARGUMENT", null);
 	}
-	
+
 	@Test
 	public void testFrameworkException() {
 		CougarFrameworkException dfe = new CougarFrameworkException("CAUSE");
 		checkFault(dfe, FaultCode.Server, "DSC-0002", ResponseCode.InternalError, "CAUSE", null);
-		
+
 		dfe = new CougarFrameworkException("CAUSE", new IllegalArgumentException("ILLEGAL-ARGUMENT"));
 		checkFault(dfe, FaultCode.Server, "DSC-0002", ResponseCode.InternalError, "ILLEGAL-ARGUMENT", null);
 			}
-	
+
 	@Test
 	public void testValidationException() {
 		CougarValidationException dfe = new CougarValidationException(ServerFaultCode.AcceptTypeNotValid, "CAUSE");
@@ -127,8 +127,8 @@ public class CougarExceptionTest {
         exception = new CougarServiceException(ServerFaultCode.BannedLocation, "CAUSE");
         checkFault(exception, FaultCode.Client, "DSC-0040", ResponseCode.Forbidden, "CAUSE", null);
     }
-	
-	private void checkFault(CougarException ex, FaultCode fault, String errror, ResponseCode resp, 
+
+	private void checkFault(CougarException ex, FaultCode fault, String errror, ResponseCode resp,
 		String detail, CougarApplicationException dae) {
 		assertEquals(fault, ex.getFault().getFaultCode());
 		assertEquals(errror, ex.getFault().getErrorCode());

@@ -29,7 +29,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpDestination;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.InputStreamResponseListener;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
@@ -46,16 +45,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Implementation of client executable using async implementation of HTTP ReScript protocol.
@@ -234,13 +228,13 @@ public class AsyncHttpExecutable extends AbstractHttpExecutable<Request> impleme
         request.onResponseFailure(new Response.FailureListener() {
             @Override
             public void onFailure(Response response, Throwable failure) {
-                ServerFaultCode faultCode = ServerFaultCode.RemoteCougarCommunicationFailure;
+                ServerFaultCode serverFaultCode = ServerFaultCode.RemoteCougarCommunicationFailure;
                 if (failure instanceof TimeoutException) {
                     failure = new CougarFrameworkException("Read timed out", failure);
-                    faultCode = ServerFaultCode.Timeout;
+                    serverFaultCode = ServerFaultCode.Timeout;
                 }
                 LOGGER.warn("COUGAR: HTTP communication ERROR - URL [" + url + "] time [" + elapsed(startTime) + "mS]", failure);
-                processException(obs, failure, url, faultCode);
+                processException(obs, failure, url, serverFaultCode);
             }
         }).onRequestFailure(new Request.FailureListener() {
             @Override

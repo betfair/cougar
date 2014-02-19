@@ -28,24 +28,24 @@ public enum ResponseCode implements Result {
 	Unauthorised(FaultCode.Client),
 	Forbidden(FaultCode.Client),
 	NotFound(FaultCode.Client),
-	UnsupportedMediaType(FaultCode.Client), 
-	MediaTypeNotAcceptable(FaultCode.Client), 
+	UnsupportedMediaType(FaultCode.Client),
+	MediaTypeNotAcceptable(FaultCode.Client),
 	BadRequest(FaultCode.Client),
     CantWriteToSocket(FaultCode.Client),
 	Ok(null);
-	
+
 	private final FaultCode faultCode;
 
 	ResponseCode(FaultCode faultCode) {
 		this.faultCode = faultCode;
 	}
-	
+
 	public FaultCode getFaultCode() {
 		return faultCode;
 	}
-	
+
 	public boolean isSuccess() {
 		return faultCode == null;
 	}
-	
+
 }

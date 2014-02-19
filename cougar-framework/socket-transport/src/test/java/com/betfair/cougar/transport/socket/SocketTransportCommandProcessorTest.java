@@ -47,7 +47,6 @@ import com.betfair.cougar.transport.api.ExecutionCommand;
 import com.betfair.cougar.transport.api.protocol.CougarObjectInput;
 import com.betfair.cougar.transport.api.protocol.CougarObjectOutput;
 import com.betfair.cougar.netutil.nio.hessian.HessianObjectIOFactory;
-import com.betfair.cougar.transport.api.protocol.http.HttpCommand;
 import com.betfair.cougar.transport.api.protocol.socket.InvocationResponse;
 import com.betfair.cougar.transport.api.protocol.socket.SocketOperationBindingDescriptor;
 import com.betfair.cougar.transport.impl.AbstractCommandProcessor;

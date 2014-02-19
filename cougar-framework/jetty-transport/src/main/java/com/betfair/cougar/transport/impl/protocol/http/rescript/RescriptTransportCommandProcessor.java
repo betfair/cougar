@@ -68,7 +68,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 
 /**
  * TransportCommandProcessor for the Rescript protocol.
- * Responsible for resolving the operation and arguments from the command, 
+ * Responsible for resolving the operation and arguments from the command,
  * and for writing the result or exception from the operation to the response.
  */
 @ManagedResource
@@ -95,7 +95,7 @@ public class RescriptTransportCommandProcessor extends AbstractTerminateableHttp
 			}
 		}
 	}
-	
+
 	public void bindOperation(ServiceBindingDescriptor serviceBindingDescriptor, OperationBindingDescriptor bindingDescriptor) {
 		OperationDefinition operationDefinition = getOperationDefinition(bindingDescriptor.getOperationKey());
 		if (operationDefinition!=null) {
@@ -110,8 +110,8 @@ public class RescriptTransportCommandProcessor extends AbstractTerminateableHttp
             }
 			bindings.put(uri, new RescriptOperationBinding(rescriptOperationBindingDescriptor, operationDefinition, hardFailEnumDeserialisation));
 		}
-	}	
-	
+	}
+
 
 
 	@Override
@@ -121,7 +121,7 @@ public class RescriptTransportCommandProcessor extends AbstractTerminateableHttp
 		final RescriptOperationBinding binding = bindings.get(uri);
 
 		return new SingleExecutionCommandResolver<HttpCommand>() {
-			
+
 			private ExecutionContextWithTokens context;
 			private ExecutionCommand executionCommand;
 
@@ -139,8 +139,8 @@ public class RescriptTransportCommandProcessor extends AbstractTerminateableHttp
 				if (binding!=null) {
 					if (executionCommand == null) {
 						executionCommand = RescriptTransportCommandProcessor.this.resolveExecutionCommand(
-								binding, 
-								command, 
+								binding,
+								command,
 								resolveExecutionContext());
 					}
 					return executionCommand;
@@ -151,7 +151,7 @@ public class RescriptTransportCommandProcessor extends AbstractTerminateableHttp
 		};
 
 	}
-	
+
 	private ExecutionCommand resolveExecutionCommand(final RescriptOperationBinding binding, final HttpCommand command, final ExecutionContextWithTokens context) {
 		final MediaType requestMediaType = getContentTypeNormaliser().getNormalisedRequestMediaType(command.getRequest());
 		final String encoding = getContentTypeNormaliser().getNormalisedEncoding(command.getRequest());
@@ -203,7 +203,7 @@ public class RescriptTransportCommandProcessor extends AbstractTerminateableHttp
 	protected void writeErrorResponse(HttpCommand command, ExecutionContextWithTokens context, CougarException error) {
 		writeErrorResponse(command, error, context, null, 0);
 	}
-	
+
 	protected final void writeErrorResponse(HttpCommand command, CougarException error,
 			ExecutionContextWithTokens context, MediaType requestMediaType, long bytesRead) {
         incrementErrorsWritten();
@@ -254,7 +254,7 @@ public class RescriptTransportCommandProcessor extends AbstractTerminateableHttp
 		final HttpServletRequest request = command.getRequest();
 		final HttpServletResponse response = command.getResponse();
         final RescriptIdentityTokenResolver tokenResolver = (RescriptIdentityTokenResolver)command.getIdentityTokenResolver();
-		if (command.getStatus() == TransportCommand.CommandStatus.InProcess) {			
+		if (command.getStatus() == TransportCommand.CommandStatus.InProcess) {
 			try {
 				if (result instanceof ResponseCode) {
 					ResponseCodeMapper.setResponseStatus(response, ((ResponseCode)result));

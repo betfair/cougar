@@ -19,7 +19,6 @@ package com.betfair.cougar.marshalling.impl.databinding.json;
 import com.betfair.cougar.api.ResponseCode;
 import com.betfair.cougar.api.fault.CougarApplicationException;
 import com.betfair.cougar.api.fault.FaultCode;
-import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.fault.Fault;
 import com.betfair.cougar.core.api.fault.FaultController;

@@ -38,7 +38,6 @@ import com.betfair.cougar.transport.api.protocol.http.soap.SoapServiceBindingDes
 import com.betfair.cougar.transport.impl.protocol.http.AbstractHttpCommandProcessorTest;
 import com.betfair.cougar.transport.impl.protocol.http.ContentTypeNormaliser;
 import com.betfair.cougar.transport.impl.protocol.http.DefaultGeoLocationDeserializer;
-import com.betfair.cougar.transport.impl.protocol.http.DontCareRequestTimeResolver;
 import junit.framework.AssertionFailedError;
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
@@ -87,7 +86,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
 	private static final String soapFaultFinish = "</soapenv:Fault>";
     private static final String nullSoapBody = "<soapenv:Body/>";
 
-	
+
 	private static final String firstOpIn = "<FirstTestOpRequest xmlns=\"http://www.betfair.com/soaptest\"><FirstOpFirstParam>hello</FirstOpFirstParam></FirstTestOpRequest>";
 	private static final String firstOpInDuplicate = "<FirstTestOpRequest xmlns=\"http://www.betfair.com/soaptest\"><FirstOpFirstParam>hello</FirstOpFirstParam><FirstOpFirstParam>goodbye</FirstOpFirstParam></FirstTestOpRequest>";
 	private static final String firstOpOut = "<FirstTestOpResponse xmlns=\"http://www.betfair.com/soaptest\"><response>goodbye</response></FirstTestOpResponse>";
@@ -114,7 +113,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
 		new SoapOperationBindingDescriptor(listOpKey, "ListOpRequest", "ListOpResponse"),
 		new SoapOperationBindingDescriptor(invalidOpKey, "InvalidOpRequest", "InvalidOpResponse"),
         new SoapOperationBindingDescriptor(voidReturnOpKey, "VoidResponseRequest", null)};
-	
+
 	private static final SoapServiceBindingDescriptor serviceBinding = new SoapServiceBindingDescriptor() {
         private ServiceVersion serviceVersion = new ServiceVersion("v1.92");
 
@@ -178,7 +177,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
 		soapCommandProcessor.onCougarStart();
         command=super.createCommand(identityTokenResolver, Protocol.SOAP);
 	}
-	
+
     /**
      * Basic test with string parameters
      * @throws Exception
@@ -417,7 +416,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         when(request.getScheme()).thenReturn("http");
 
 		// Resolve the input command
-		soapCommandProcessor.process(command);	
+		soapCommandProcessor.process(command);
 		assertEquals(CommandStatus.Complete, command.getStatus());
 		assertSoapyEquals(buildSoapMessage(null, null, invalidOpError, null), testOut.getOutput());
 		verify(response).setContentType(MediaType.TEXT_XML);
@@ -441,7 +440,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
 		// Resolve the input command
 		soapCommandProcessor.process(command);
 		assertEquals(1, ev.getInvokedCount());
-		
+
 		// Assert that we resolved the expected arguments
 		Object[] args = ev.getArgs();
 		assertNotNull(args);
@@ -485,9 +484,9 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
 		// Resolve the input command
 		soapCommandProcessor.process(command);
 		assertEquals(1, ev.getInvokedCount());
-		
+
 		DateTimeFormatter xmlFormat = ISODateTimeFormat.dateTimeParser();
-		
+
 		// Assert that we resolved the expected arguments
 		Object[] args = ev.getArgs();
 		assertNotNull(args);
@@ -502,7 +501,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
 		List<Date> response = new ArrayList<Date>();
 		response.add(xmlFormat.parseDateTime("248556211-09-30T12:12:53.297+01:00").toDate());
 		response.add(xmlFormat.parseDateTime("248556211-09-30T12:12:53.297Z").toDate());
-		
+
 		ev.getObserver().onResult(new ExecutionResult(response));
 		assertEquals(CommandStatus.Complete, command.getStatus());
 		assertSoapyEquals(buildSoapMessage(null, listOpOut, null, null), testOut.getOutput());
@@ -808,7 +807,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
 		result.append(soapEnvFinish);
 		return result.toString();
 	}
-	
+
 	private void assertSoapyEquals(String expected, String actual) throws Exception{
 		XMLStreamReader expectedParser = XMLInputFactory.newInstance()
 			.createXMLStreamReader(
@@ -831,7 +830,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
             throw new AssertionFailedError(sb.toString());
         }
 	}
-	
+
 	private void assertHeaders(SOAPHeader expectedHeader, SOAPHeader actualHeader) {
 		if (expectedHeader == null) {
 			assertNull(actualHeader);
@@ -839,7 +838,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
 			assertElement(expectedHeader, actualHeader);
 		}
 	}
-	
+
 	private void assertBody(SOAPBody expectedBody, SOAPBody actualBody) {
 		if (expectedBody == null) {
 			assertNull(actualBody);
@@ -847,7 +846,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
 			assertElement(expectedBody, actualBody);
 		}
 	}
-	
+
 	private void assertElement(OMElement expectedElement, OMElement actualElement) {
 		Iterator expectedIt = expectedElement.getChildElements();
 		Iterator actualIt = actualElement.getChildElements();
@@ -866,9 +865,9 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
 			OMElement actualChildElement = (OMElement)actualIt.next();
 			assertElement(expectedChildElement, actualChildElement);
 		}
-		assertFalse(actualIt.hasNext());		
+		assertFalse(actualIt.hasNext());
 	}
-	
+
 	private void assertAttributes(OMElement expectedElement, OMElement actualElement) {
 		Iterator expectedIt = expectedElement.getAllAttributes();
 		Iterator actualIt = actualElement.getAllAttributes();
@@ -884,9 +883,9 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
 				assertEquals(expectedAttribute.getNamespace().getNamespaceURI(), actualAttribute.getNamespace().getNamespaceURI());
 			}
 		}
-		assertFalse(actualIt.hasNext());		
+		assertFalse(actualIt.hasNext());
 	}
-	
+
 
 }
 

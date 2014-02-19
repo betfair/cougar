@@ -20,8 +20,8 @@ import com.betfair.cougar.core.api.ev.OperationDefinition;
 import com.betfair.cougar.core.api.ev.OperationKey;
 import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 import com.betfair.cougar.core.api.exception.CougarValidationException;
-import com.betfair.cougar.core.api.exception.PanicInTheCougar;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
+import com.betfair.cougar.core.api.exception.PanicInTheCougar;
 import com.betfair.cougar.core.api.transcription.EnumDerialisationException;
 import com.betfair.cougar.core.api.transcription.EnumUtils;
 import com.betfair.cougar.core.api.transcription.Parameter;
@@ -46,7 +46,7 @@ import java.util.Set;
  * This class represents the binding between a rescript operation and an operation definition
  */
 public class RescriptOperationBinding {
-		
+
     private final OperationKey operationKey;
     private final OperationDefinition operationDefinition;
     private final String method;

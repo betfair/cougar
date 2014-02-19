@@ -16,8 +16,10 @@
 
 package com.betfair.cougar.api.fault;
 
+/**
+ * Denotes who is the causer of a particular fault.
+ */
 public enum FaultCode {
 	Client,
 	Server
-	
 }
