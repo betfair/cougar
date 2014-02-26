@@ -16,7 +16,6 @@
 
 package com.betfair.cougar.netutil.nio.connected;
 
-import com.betfair.cougar.core.api.ServiceVersion;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
 import com.betfair.cougar.core.api.transcription.TranscribableParams;
@@ -64,20 +63,20 @@ public class InstallIndex extends AbstractUpdateAction {
     }
 
     @Override
-    public void transcribe(TranscriptionOutput out, Set<TranscribableParams> params) throws Exception {
-        out.writeObject(parentId, parameters[0]);
-        out.writeObject(id, parameters[1]);
-        out.writeObject(index, parameters[2]);
-        out.writeObject(type.name(), parameters[3]);
+    public void transcribe(TranscriptionOutput out, Set<TranscribableParams> params, boolean client) throws Exception {
+        out.writeObject(parentId, parameters[0], client);
+        out.writeObject(id, parameters[1], client);
+        out.writeObject(index, parameters[2], client);
+        out.writeObject(type.name(), parameters[3], client);
         // NOTE: add new fields at the end
     }
 
     @Override
-    public void transcribe(TranscriptionInput in, Set<TranscribableParams> params) throws Exception {
-        parentId = (Integer) in.readObject(parameters[0]);
-        id = (Integer) in.readObject(parameters[1]);
-        index = (Integer) in.readObject(parameters[2]);
-        type = NodeType.valueOf((String) in.readObject(parameters[3]));
+    public void transcribe(TranscriptionInput in, Set<TranscribableParams> params, boolean client) throws Exception {
+        parentId = (Integer) in.readObject(parameters[0], client);
+        id = (Integer) in.readObject(parameters[1], client);
+        index = (Integer) in.readObject(parameters[2], client);
+        type = NodeType.valueOf((String) in.readObject(parameters[3], client));
         // NOTE: add new fields at the end
     }
 

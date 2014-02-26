@@ -46,19 +46,19 @@ public class RestIDLPostBodyElementIncorrectPostBodyTagXMLTest {
         // Get the cougar logging attribute for getting log entries later
         // Point the created HttpCallBean at the correct service
         httpCallBeanBaseline.setServiceName("baseline", "cougarBaseline");
-        
+
         httpCallBeanBaseline.setVersion("v2");
         // Set up the Http Call Bean to make the request
         CougarManager cougarManager2 = CougarManager.getInstance();
         HttpCallBean getNewHttpCallBean2 = cougarManager2.getNewHttpCallBean("87.248.113.14");
         cougarManager2 = cougarManager2;
-        
+
         cougarManager2.setCougarFaultControllerJMXMBeanAttrbiute("DetailedFaults", "false");
-        
+
         getNewHttpCallBean2.setOperationName("testComplexMutator", "complex");
-        
+
         getNewHttpCallBean2.setServiceName("baseline", "cougarBaseline");
-        
+
         getNewHttpCallBean2.setVersion("v2");
         // Set the post body with an incorrect tag (ComplexObjectxxx is not a recognised object)
         getNewHttpCallBean2.setRestPostQueryObjects(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream("<ComplexObjectxxx><name>sum</name><value1>7</value1><value2>75</value2></ComplexObjectxxx>".getBytes())));
@@ -69,7 +69,7 @@ public class RestIDLPostBodyElementIncorrectPostBodyTagXMLTest {
         cougarManager2.makeRestCougarHTTPCalls(getNewHttpCallBean2);
         // Create the expected response as an XML document (Fault)
         XMLHelpers xMLHelpers4 = new XMLHelpers();
-        Document createAsDocument11 = xMLHelpers4.getXMLObjectFromString("<fault><faultcode>Client</faultcode><faultstring>DSC-0007</faultstring><detail/></fault>");
+        Document createAsDocument11 = xMLHelpers4.getXMLObjectFromString("<fault><faultcode>Client</faultcode><faultstring>DSC-0044</faultstring><detail/></fault>");
         // Convert the expected response to REST types for comparison with actual responses
         Map<CougarMessageProtocolRequestTypeEnum, Object> convertResponseToRestTypes12 = cougarManager2.convertResponseToRestTypes(createAsDocument11, getNewHttpCallBean2);
         // Check the 2 responses are as expected (Bad Request)
@@ -77,13 +77,13 @@ public class RestIDLPostBodyElementIncorrectPostBodyTagXMLTest {
         AssertionUtils.multiAssertEquals(convertResponseToRestTypes12.get(CougarMessageProtocolRequestTypeEnum.RESTXML), response5.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response5.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response5.getHttpStatusText());
-        
+
         HttpResponseBean response6 = getNewHttpCallBean2.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTXMLJSON);
         AssertionUtils.multiAssertEquals(convertResponseToRestTypes12.get(CougarMessageProtocolRequestTypeEnum.RESTJSON), response6.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response6.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response6.getHttpStatusText());
         // Check the log entries are as expected
-        
+
         CougarManager cougarManager8 = CougarManager.getInstance();
         cougarManager8.verifyAccessLogEntriesAfterDate(getTimeAsTimeStamp9, new AccessLogRequirement("87.248.113.14", "/cougarBaseline/v2/complex", "BadRequest"),new AccessLogRequirement("87.248.113.14", "/cougarBaseline/v2/complex", "BadRequest"),new AccessLogRequirement("87.248.113.14", "/cougarBaseline/v2/complex", "BadRequest"),new AccessLogRequirement("87.248.113.14", "/cougarBaseline/v2/complex", "BadRequest") );
     }

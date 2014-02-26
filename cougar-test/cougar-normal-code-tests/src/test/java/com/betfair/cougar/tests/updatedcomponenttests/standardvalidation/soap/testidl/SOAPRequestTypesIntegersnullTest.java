@@ -73,7 +73,7 @@ public class SOAPRequestTypesIntegersnullTest {
             cougarManager3.makeSoapCougarHTTPCalls(getNewHttpCallBean3);
             // Create the expected response object as an XML document (fault)
             XMLHelpers xMLHelpers5 = new XMLHelpers();
-            Document createAsDocument11 = xMLHelpers5.getXMLObjectFromString("<soapenv:Fault><faultcode>soapenv:Client</faultcode><faultstring>DSC-0006</faultstring><detail/></soapenv:Fault>");
+            Document createAsDocument11 = xMLHelpers5.getXMLObjectFromString("<soapenv:Fault><faultcode>soapenv:Client</faultcode><faultstring>DSC-0044</faultstring><detail/></soapenv:Fault>");
             // Convert the expected response to SOAP for comparison with the actual response
             Map<String, Object> convertResponseToSOAP12 = cougarManager3.convertResponseToSOAP(createAsDocument11, getNewHttpCallBean3);
             // Check the response is as expected

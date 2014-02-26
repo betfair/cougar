@@ -46,12 +46,12 @@ public class XMLMarshallerTest extends CougarTestCase {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         TestClass tc = new TestClass();
         tc.message = "foo";
-        marshaller.marshall(bos, tc, "utf-8");
+        marshaller.marshall(bos, tc, "utf-8", false);
         assertEquals("<?xml version='1.0' encoding='UTF-8'?><Test><message>foo</message></Test>", bos.toString());
 
         bos = new ByteArrayOutputStream();
         tc.setMessage("bar");
-        marshaller.marshall(bos, tc, "utf-8");
+        marshaller.marshall(bos, tc, "utf-8", false);
         assertEquals("<?xml version='1.0' encoding='UTF-8'?><Test><message>bar</message></Test>", bos.toString());
     }
 
@@ -63,7 +63,7 @@ public class XMLMarshallerTest extends CougarTestCase {
         tc.setDate(d);
 
 
-        marshaller.marshall(bos, tc, "utf-8");
+        marshaller.marshall(bos, tc, "utf-8", false);
         assertEquals("<?xml version='1.0' encoding='UTF-8'?><TestDate><date>0011-03-03T00:00:00.000Z</date></TestDate>", bos.toString());
 
 
@@ -79,7 +79,7 @@ public class XMLMarshallerTest extends CougarTestCase {
         tc.getDates().add(d2);
 
 
-        marshaller.marshall(bos, tc, "utf-8");
+        marshaller.marshall(bos, tc, "utf-8", false);
         assertEquals("<?xml version='1.0' encoding='UTF-8'?><TestDateList><dates><Date>0011-03-03T00:00:00.000Z</Date><Date>0012-03-03T00:00:00.000Z</Date></dates></TestDateList>", bos.toString());
 
 
@@ -95,7 +95,7 @@ public class XMLMarshallerTest extends CougarTestCase {
         tc.getDates().add(d2);
 
 
-        marshaller.marshall(bos, tc, "utf-8");
+        marshaller.marshall(bos, tc, "utf-8", false);
         assertEquals("<?xml version='1.0' encoding='UTF-8'?><TestDateSet><dates><Date>0012-03-03T00:00:00.000Z</Date><Date>0011-03-03T00:00:00.000Z</Date></dates></TestDateSet>", bos.toString());
 
 

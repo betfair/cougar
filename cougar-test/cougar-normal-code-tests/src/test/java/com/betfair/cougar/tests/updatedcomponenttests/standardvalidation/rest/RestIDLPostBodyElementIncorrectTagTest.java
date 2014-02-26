@@ -46,19 +46,19 @@ public class RestIDLPostBodyElementIncorrectTagTest {
         // Get the cougar logging attribute for getting log entries later
         // Point the created HttpCallBean at the correct service
         httpCallBeanBaseline.setServiceName("baseline", "cougarBaseline");
-        
+
         httpCallBeanBaseline.setVersion("v2");
         // Set up the Http Call Bean to make the request
         CougarManager cougarManager2 = CougarManager.getInstance();
         HttpCallBean getNewHttpCallBean2 = cougarManager2.getNewHttpCallBean("87.248.113.14");
         cougarManager2 = cougarManager2;
-        
+
         cougarManager2.setCougarFaultControllerJMXMBeanAttrbiute("DetailedFaults", "false");
-        
+
         getNewHttpCallBean2.setOperationName("testComplexMutator", "complex");
-        
+
         getNewHttpCallBean2.setServiceName("baseline", "cougarBaseline");
-        
+
         getNewHttpCallBean2.setVersion("v2");
         // Set the post body as an object containing an incorrect tag (unexpectedtag is not a field of ComplexObject)
         getNewHttpCallBean2.setRestPostQueryObjects(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream("<message><name>sum</name><unexpectedtag>7</unexpectedtag><value2>75</value2></message>".getBytes())));
@@ -69,7 +69,7 @@ public class RestIDLPostBodyElementIncorrectTagTest {
         cougarManager2.makeRestCougarHTTPCalls(getNewHttpCallBean2);
         // Create the expected response to XML requests as an XML document (XML Fault)
         XMLHelpers xMLHelpers4 = new XMLHelpers();
-        Document createAsDocument11 = xMLHelpers4.getXMLObjectFromString("<fault><faultcode>Client</faultcode><faultstring>DSC-0007</faultstring><detail/></fault>");
+        Document createAsDocument11 = xMLHelpers4.getXMLObjectFromString("<fault><faultcode>Client</faultcode><faultstring>DSC-0044</faultstring><detail/></fault>");
         // Create the expected response to JSON requests as an XML document (JSON Fault)
         XMLHelpers xMLHelpers5 = new XMLHelpers();
         Document createAsDocument12 = xMLHelpers5.getXMLObjectFromString("<fault><faultcode>Client</faultcode><faultstring>DSC-0018</faultstring><detail/></fault>");
@@ -84,23 +84,23 @@ public class RestIDLPostBodyElementIncorrectTagTest {
         AssertionUtils.multiAssertEquals(createAsDocument11, response8.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response8.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response8.getHttpStatusText());
-        
+
         HttpResponseBean response9 = getNewHttpCallBean2.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTJSONJSON);
         AssertionUtils.multiAssertEquals(convertXMLDocumentToJSONObjectRemoveRootElement14, response9.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response9.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response9.getHttpStatusText());
-        
+
         HttpResponseBean response10 = getNewHttpCallBean2.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTXMLJSON);
         AssertionUtils.multiAssertEquals(convertXMLDocumentToJSONObjectRemoveRootElement13, response10.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response10.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response10.getHttpStatusText());
-        
+
         HttpResponseBean response11 = getNewHttpCallBean2.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTJSONXML);
         AssertionUtils.multiAssertEquals(createAsDocument12, response11.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response11.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response11.getHttpStatusText());
         // Check the log entries are as expected
-        
+
         CougarManager cougarManager13 = CougarManager.getInstance();
         cougarManager13.verifyAccessLogEntriesAfterDate(getTimeAsTimeStamp9, new AccessLogRequirement("87.248.113.14", "/cougarBaseline/v2/complex", "BadRequest"),new AccessLogRequirement("87.248.113.14", "/cougarBaseline/v2/complex", "BadRequest"),new AccessLogRequirement("87.248.113.14", "/cougarBaseline/v2/complex", "BadRequest"),new AccessLogRequirement("87.248.113.14", "/cougarBaseline/v2/complex", "BadRequest") );
     }

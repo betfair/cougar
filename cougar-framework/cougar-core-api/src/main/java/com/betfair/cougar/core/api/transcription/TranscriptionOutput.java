@@ -18,5 +18,5 @@ package com.betfair.cougar.core.api.transcription;
 
 
 public interface TranscriptionOutput {
-	public void writeObject(Object obj, Parameter param) throws Exception;
+	public void writeObject(Object obj, Parameter param, boolean client) throws Exception;
 }

@@ -17,6 +17,7 @@
 package com.betfair.cougar.marshalling.impl.util;
 
 import com.betfair.cougar.core.api.exception.CougarFrameworkException;
+import com.betfair.cougar.core.api.exception.CougarMarshallingException;
 import com.betfair.cougar.core.api.exception.CougarValidationException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.transcription.EnumDerialisationException;
@@ -37,7 +38,7 @@ public final class BindingUtils {
 	private static final Pattern csv = Pattern.compile(",");
 
 
-	public static Object convertToSimpleType(Class<?> clazz, Class<?> genericClass, String name, String value, boolean unescapeStrings, boolean hardFailEnums) throws IllegalArgumentException {
+	public static Object convertToSimpleType(Class<?> clazz, Class<?> genericClass, String name, String value, boolean unescapeStrings, boolean hardFailEnums, String format, boolean client) throws IllegalArgumentException {
         Object result = null;
         if (value != null) {
         	try {
@@ -85,7 +86,7 @@ public final class BindingUtils {
 		        	} else if (value.equalsIgnoreCase("false")) {
 		        		result = Boolean.FALSE;
 		        	} else {
-	        			throw newValidationException(name, value, clazz, null);
+	        			throw newValidationException(name, value, clazz, null, format, client);
 		        	}
 		        } else if (clazz == Character.class) {
 		            result = value.charAt(0);
@@ -103,7 +104,7 @@ public final class BindingUtils {
 		            for (String val: csv.split(value.substring(start,end))) {
 		            	val = val.trim();
 		            	if (genericClass == String.class || val.length() > 0) {
-		            		collection.add(convertToSimpleType(genericClass, null, name + "[member]",  val.trim(), unescapeStrings, hardFailEnums));
+		            		collection.add(convertToSimpleType(genericClass, null, name + "[member]",  val.trim(), unescapeStrings, hardFailEnums, format, client));
 		            	}
 		            }
 		            if (collection.size() > 0) {
@@ -113,13 +114,13 @@ public final class BindingUtils {
 		        } else if(clazz == java.util.Date.class) {
 						result = DateTimeUtility.parse(value);
 		        } else {
-		        	throw newValidationException(name, value, clazz, null);
+		        	throw newValidationException(name, value, clazz, null, format, client);
 		        }
         	} catch (RuntimeException ex) {
-        		if (ex instanceof CougarValidationException || ex instanceof EnumDerialisationException) {
+        		if (ex instanceof CougarMarshallingException || ex instanceof EnumDerialisationException) {
         			throw ex;
         		} else {
-        			throw newValidationException(name, value, clazz, ex);
+        			throw newValidationException(name, value, clazz, ex, format, client);
         		}
         	}
 
@@ -128,11 +129,11 @@ public final class BindingUtils {
     }
 
 
-	private final static CougarValidationException newValidationException(String name, String value, Class clazz, Exception originalException) {
+	private final static CougarMarshallingException newValidationException(String name, String value, Class clazz, Exception originalException, String format, boolean client) {
 		final StringBuilder msg = new StringBuilder("Unable to convert '");
 		msg.append(value).append("' to ").append(clazz.getName()).append(" for parameter: " + name);
 
-		return new CougarValidationException(ServerFaultCode.ClassConversionFailure, msg.toString(), originalException);
+        return CougarMarshallingException.unmarshallingException(format, msg.toString(), originalException, client);
 	}
 
 

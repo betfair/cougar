@@ -30,7 +30,6 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.betfair.cougar.client.query.DefaultQueryStringGeneratorImpl;
 import com.betfair.cougar.marshalling.api.databinding.Marshaller;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,7 +50,7 @@ public class DefaultQueryStringGeneratorTest {
         Marshaller marshaller = new Marshaller() {
 
             @Override
-            public void marshall(OutputStream outputStream, Object result, String encoding) {
+            public void marshall(OutputStream outputStream, Object result, String encoding, boolean client) {
                 try {
                     outputStream.write(testMarshaller.marshall(result).getBytes());
                 } catch (IOException ex) {
@@ -69,13 +68,13 @@ public class DefaultQueryStringGeneratorTest {
 
 		queryParmMap = new LinkedHashMap<String, Object>();
 	}
-	
+
 	@Test
 	public void testNoQueryString() {
 		String result = qsg.generate(queryParmMap);
 		assertEquals("", result);
 	}
-	
+
 	@Test
 	public void testOneArgument() {
 		queryParmMap.put("name", "value");
@@ -83,7 +82,7 @@ public class DefaultQueryStringGeneratorTest {
 		String result = qsg.generate(queryParmMap);
 		assertEquals("?name=value", result);
 	}
-	
+
 	@Test
 	public void testTwoArguments() {
 		queryParmMap.put("name", "value");
@@ -114,7 +113,7 @@ public class DefaultQueryStringGeneratorTest {
 		try {
 			qsg.generate(queryParmMap);
 			fail();
-			
+
 		} catch (IllegalArgumentException e) {
 			// pass
 		}

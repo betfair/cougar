@@ -16,14 +16,11 @@
 
 package com.betfair.cougar.client.query;
 
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
 import com.betfair.cougar.marshalling.api.databinding.Marshaller;
 
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Map;
 
 /**
  * Generates an HTTP query string based on provided map of key/value pairs
@@ -40,7 +37,7 @@ public class DefaultQueryStringGeneratorImpl extends AbstractQueryStringGenerato
 	protected String parseValue(Object o) {
         try {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            marshaller.marshall(bos, o, UTF8);
+            marshaller.marshall(bos, o, UTF8, true);
             return URLEncoder.encode(new String(bos.toByteArray()).replace("\"",""), UTF8);
         } catch (UnsupportedEncodingException ignored) {
             return null; //Idiotic checked exception to the fore

@@ -16,27 +16,42 @@
 
 package com.betfair.cougar.core.api.exception;
 
+import javax.ws.rs.core.MediaType;
 import java.util.logging.Level;
 
 
 @SuppressWarnings("serial")
 public class CougarMarshallingException extends CougarException {
 	private static final Level LOG_LEVEL = Level.FINE;
+    private final String format;
 
-	public CougarMarshallingException(ServerFaultCode fault) {
-		super(LOG_LEVEL, fault);
-	}
+    private CougarMarshallingException(ServerFaultCode fault, String format, String message, Throwable t) {
+		super(LOG_LEVEL, fault, format + ": "+message,t);
+        this.format = format;
+    }
 
-	public CougarMarshallingException(ServerFaultCode fault, Throwable t) {
-		super(LOG_LEVEL, fault, t);
-	}
+    public String getFormat() {
+        return format;
+    }
 
-	public CougarMarshallingException(ServerFaultCode fault, String message) {
-		super(LOG_LEVEL, fault, message);
-	}
+    public static CougarMarshallingException marshallingException(String format, String message, Throwable t, boolean client) {
+        return new CougarMarshallingException(client ? ServerFaultCode.ClientSerialisationFailure : ServerFaultCode.ServerSerialisationFailure, format, message, t);
+    }
 
-    public CougarMarshallingException(ServerFaultCode fault, String message, Throwable t) {
-		super(LOG_LEVEL, fault, message,t);
-	}
+    public static CougarMarshallingException marshallingException(String format, Throwable t, boolean client) {
+        return marshallingException(format, "", t, client);
+    }
+
+    public static CougarMarshallingException unmarshallingException(String format, String message, Throwable t, boolean client) {
+        return new CougarMarshallingException(client ? ServerFaultCode.ClientDeserialisationFailure : ServerFaultCode.ServerDeserialisationFailure, format, message, t);
+    }
+
+    public static CougarMarshallingException unmarshallingException(String format, Throwable t, boolean client) {
+        return unmarshallingException(format, t.getMessage(), t, client);
+    }
+
+    public static CougarMarshallingException unmarshallingException(String format, String message, boolean client) {
+        return unmarshallingException(format, message, null, client);
+    }
 
 }

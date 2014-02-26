@@ -97,15 +97,15 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
 	private static final String listOpIn = "<ListOpRequest xmlns=\"http://www.betfair.com/soaptest\"><ListOpFirstParam><Date>248556211-09-30T12:12:53.297+01:00</Date><Date>248556211-09-30T12:12:53.297Z</Date></ListOpFirstParam></ListOpRequest>";
 	private static final String listOpOut = "<ListOpResponse xmlns=\"http://www.betfair.com/soaptest\"><response><Date>248556211-09-30T11:12:53.297Z</Date><Date>248556211-09-30T12:12:53.297Z</Date></response></ListOpResponse>";
 	private static final String invalidOpIn = "<InvalidOpRequest xmlns=\"http://www.betfair.com/soaptest\"><InvalidOpFirstParam>INVALID</InvalidOpFirstParam></InvalidOpRequest>";
-	private static final String invalidOpError = "<faultcode>soapenv:Client</faultcode><faultstring>DSC-0006</faultstring><detail />";
+	private static final String invalidOpError = "<faultcode>soapenv:Client</faultcode><faultstring>DSC-0044</faultstring><detail />";
     private static final String invalidCredentialsError = "<faultcode>soapenv:Client</faultcode><faultstring>DSC-0015</faultstring><detail />";
     private static final String voidResponseOpIn = "<VoidResponseRequest xmlns=\"http://www.betfair.com/soaptest\"><VoidReturnOpFirstParam>TEST1</VoidReturnOpFirstParam></VoidResponseRequest>";
     private static final String duplicateRequestParamIn = "<VoidResponseRequest xmlns=\"http://www.betfair.com/soaptest\"><VoidReturnOpFirstParam>TEST1</VoidReturnOpFirstParam><VoidReturnOpFirstParam>TEST2</VoidReturnOpFirstParam></VoidResponseRequest>";
     private static final String invalidVoidResponseOpIn = "<VoidResponseRequest xmlns=\"http://www.betfair.com/soaptest\"><VoidReturnOpFirstParam>INVALID</VoidReturnOpFirstParam></VoidResponseRequest>";
-    private static final String invalidVoidResponseOpOut = "<faultcode>soapenv:Client</faultcode><faultstring>DSC-0006</faultstring><detail />";
+    private static final String invalidVoidResponseOpOut = "<faultcode>soapenv:Client</faultcode><faultstring>DSC-0044</faultstring><detail />";
     private static final String externalEntityIn = "<!DOCTYPE foo [<!ELEMENT foo ANY ><!ENTITY xxe1 SYSTEM \"file:///etc/shadow\" >]> ";
     private static final String externalEntityInWithBody = externalEntityIn+"<VoidResponseRequest xmlns=\"http://www.betfair.com/soaptest\"><VoidReturnOpFirstParam>&foo;</VoidReturnOpFirstParam>";
-    private static final String invalidInputFault = "<faultcode>soapenv:Client</faultcode><faultstring>DSC-0006</faultstring><detail />";
+    private static final String invalidInputFault = "<faultcode>soapenv:Client</faultcode><faultstring>DSC-0044</faultstring><detail />";
 
 	private static final OperationBindingDescriptor[] operationBindings = new OperationBindingDescriptor[] {
 		new SoapOperationBindingDescriptor(firstOpKey, "FirstTestOpRequest", "FirstTestOpResponse"),

@@ -19,6 +19,7 @@ package com.betfair.cougar.core.impl.ev;
 import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.exception.CougarException;
+import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 
@@ -60,12 +61,10 @@ public class InterceptingExecutableWrapper implements ExecutableWrapper {
 
                 } catch (CougarException e) {
                     newObserver.onResult(new ExecutionResult(e));
+                    newObserver.onResult(new ExecutionResult(
+                            new CougarFrameworkException(ServerFaultCode.ServiceRuntimeException, "Exception thrown by service method", e)));
                 }
                 catch (Exception e) {
-                    newObserver.onResult(new ExecutionResult(
-                            new CougarServiceException(ServerFaultCode.ServiceRuntimeException,
-                                    "Exception thrown by service method",
-                                    e)));
                 }
             }
         };

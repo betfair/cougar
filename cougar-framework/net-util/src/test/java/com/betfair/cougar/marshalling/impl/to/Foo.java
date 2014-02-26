@@ -39,7 +39,7 @@ public class  Foo implements Result, Transcribable {
     }
 
     private String fooName;
-    
+
     public final String getFooName()  {
         if (delegate != null) {
             return delegate.getFooName();
@@ -57,12 +57,12 @@ public class  Foo implements Result, Transcribable {
             this.fooName=foo;
         }
     }
-    
 
-		    
-  	
+
+
+
     private Bar bar;
-    
+
     public final Bar getBar()  {
         if (delegate != null) {
             return delegate.getBar();
@@ -80,9 +80,9 @@ public class  Foo implements Result, Transcribable {
             this.bar=bar;
         }
     }
-   
+
     private Map<Bar, Baz> barBazMap;
-    
+
     public final Map<Bar,Baz> getBarBazMap() {
     	if (delegate != null) {
     		return delegate.getBarBazMap() ;
@@ -91,7 +91,7 @@ public class  Foo implements Result, Transcribable {
     		return barBazMap;
     	}
     }
-    
+
     public final void setBarBazMap(Map<Bar,Baz> barBazMap) {
     	if (delegate != null) {
     		delegate.setBarBazMap(barBazMap);
@@ -100,7 +100,7 @@ public class  Foo implements Result, Transcribable {
     		this.barBazMap = barBazMap;
     	}
     }
-  
+
     private byte[] primitiveArray;
     public final byte[] getPrimitiveArray() {
     	if (delegate != null) {
@@ -110,7 +110,7 @@ public class  Foo implements Result, Transcribable {
     		return primitiveArray;
     	}
     }
-    
+
     public final void setPrimitiveArray(byte[] bytes) {
     	if (delegate != null) {
     		delegate.setPrimitiveArray(bytes);
@@ -120,38 +120,38 @@ public class  Foo implements Result, Transcribable {
     	}
     }
 
-    
+
     public Foo () {}
-    
-    
+
+
 
 	private static final Parameter __fooParam = new Parameter("fooName",new ParameterType(String.class, null ),true);
-	
+
 	private static final Parameter __barParam = new Parameter("bar",new ParameterType(Bar.class, null ),false);
-	
+
 	private static final Parameter __barBazMapParam = new Parameter("barBazMap",new ParameterType(Map.class, new ParameterType[] {new ParameterType(Bar.class,null), new ParameterType(Baz.class,null)} ),false);
-	
+
 	private static final Parameter __primitiveArray = new Parameter("primitiveArray", new ParameterType(byte[].class, new ParameterType[] {new ParameterType(byte.class,null)}),false);
-    
+
     public static final Parameter[] PARAMETERS = new Parameter[] { __fooParam,  __barParam, __barBazMapParam, __primitiveArray};
 
     public Parameter[] getParameters() {
         return PARAMETERS;
     }
-    
-    
-	public void transcribe(TranscriptionOutput out, Set<TranscribableParams> params) throws Exception {
-	    out.writeObject(getFooName(), __fooParam);
-	    out.writeObject(getBar(), __barParam);
-	    out.writeObject(getBarBazMap(), __barBazMapParam);
-	    out.writeObject(getPrimitiveArray(), __primitiveArray);
+
+
+	public void transcribe(TranscriptionOutput out, Set<TranscribableParams> params, boolean client) throws Exception {
+	    out.writeObject(getFooName(), __fooParam, client);
+	    out.writeObject(getBar(), __barParam, client);
+	    out.writeObject(getBarBazMap(), __barBazMapParam, client);
+	    out.writeObject(getPrimitiveArray(), __primitiveArray, client);
 	}
-	
-	public void transcribe(TranscriptionInput in, Set<TranscribableParams> params) throws Exception {
-	    setFooName((String)in.readObject(__fooParam));
-	    setBar((Bar)in.readObject(__barParam));
-	    setBarBazMap((Map<Bar, Baz>) in.readObject(__barBazMapParam));
-	    setPrimitiveArray((byte[]) in.readObject(__primitiveArray));
+
+	public void transcribe(TranscriptionInput in, Set<TranscribableParams> params, boolean client) throws Exception {
+	    setFooName((String)in.readObject(__fooParam, client));
+	    setBar((Bar)in.readObject(__barParam, client));
+	    setBarBazMap((Map<Bar, Baz>) in.readObject(__barBazMapParam, client));
+	    setPrimitiveArray((byte[]) in.readObject(__primitiveArray, client));
 	}
 
     @Override
@@ -185,9 +185,9 @@ public class  Foo implements Result, Transcribable {
             .append(primitiveArray)
             .toHashCode();
     }
-    
 
-    
+
+
 
 }
 

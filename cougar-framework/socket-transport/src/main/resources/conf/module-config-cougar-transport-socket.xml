@@ -89,7 +89,9 @@
         <constructor-arg ref="serverHessianObjectFactory"/>
     </bean>
 
-    <bean name="serverHessianObjectFactory" class="com.betfair.cougar.netutil.nio.hessian.HessianObjectIOFactory"/>
+    <bean name="serverHessianObjectFactory" class="com.betfair.cougar.netutil.nio.hessian.HessianObjectIOFactory">
+        <constructor-arg index="0" value="true"/>
+    </bean>
 
     <bean name="serverSessionManager" class="com.betfair.cougar.transport.nio.IoSessionManager">
         <property name="maxTimeToWaitForRequestCompletion" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.maxTimeToWaitForRequestCompletion}"/>

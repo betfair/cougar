@@ -58,7 +58,7 @@ public class JMSEventMarshaller implements EventMarshaller<TextMessage> {
     public String marshallEventBody(Event event) throws CougarException {
         Marshaller marshaller = dataBindingFactory.getMarshaller();
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        marshaller.marshall(outputStream, event, characterEncoding);
+        marshaller.marshall(outputStream, event, characterEncoding, false);
         return outputStream.toString();
     }
 

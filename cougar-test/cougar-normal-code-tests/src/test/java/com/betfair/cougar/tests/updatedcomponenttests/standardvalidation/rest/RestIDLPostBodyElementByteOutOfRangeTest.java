@@ -48,25 +48,25 @@ public class RestIDLPostBodyElementByteOutOfRangeTest {
         // Get the cougar logging attribute for getting log entries later
         // Point the created HttpCallBean at the correct service
         httpCallBeanBaseline.setServiceName("baseline", "cougarBaseline");
-        
+
         httpCallBeanBaseline.setVersion("v2");
         // Set up the Http Call Bean to make the request
         CougarManager cougarManager2 = CougarManager.getInstance();
         HttpCallBean hbean = cougarManager2.getNewHttpCallBean("87.248.113.14");
         CougarManager hinstance = cougarManager2;
-        
+
         hinstance.setCougarFaultControllerJMXMBeanAttrbiute("DetailedFaults", "false");
-        
+
         hbean.setOperationName("byteOperation");
-        
+
         hbean.setServiceName("baseline", "cougarBaseline");
-        
+
         hbean.setVersion("v2");
-        
+
         Map map3 = new HashMap();
         map3.put("HeaderParam","100");
         hbean.setHeaderParams(map3);
-        
+
         Map map4 = new HashMap();
         map4.put("queryParam","100");
         hbean.setQueryParams(map4);
@@ -79,10 +79,10 @@ public class RestIDLPostBodyElementByteOutOfRangeTest {
         hinstance.makeRestCougarHTTPCalls(hbean);
         // Create the expected response to XML requests as an XML document (XML Fault)
         XMLHelpers xMLHelpers6 = new XMLHelpers();
-        Document createAsDocument13 = xMLHelpers6.getXMLObjectFromString("<fault><faultcode>Client</faultcode><faultstring>DSC-0007</faultstring><detail/></fault>");
+        Document createAsDocument13 = xMLHelpers6.getXMLObjectFromString("<fault><faultcode>Client</faultcode><faultstring>DSC-0044</faultstring><detail/></fault>");
         // Create the expected response to JSON requests as an XML document (JSON Fault)
         XMLHelpers xMLHelpers7 = new XMLHelpers();
-        Document createAsDocument14 = xMLHelpers7.getXMLObjectFromString("<fault><faultcode>Client</faultcode><faultstring>DSC-0008</faultstring><detail/></fault>");
+        Document createAsDocument14 = xMLHelpers7.getXMLObjectFromString("<fault><faultcode>Client</faultcode><faultstring>DSC-0044</faultstring><detail/></fault>");
         // Convert expected response to XML requests to JSON object
         JSONHelpers jSONHelpers8 = new JSONHelpers();
         JSONObject convertXMLDocumentToJSONObjectRemoveRootElement15 = jSONHelpers8.convertXMLDocumentToJSONObjectRemoveRootElement(createAsDocument13);
@@ -94,23 +94,23 @@ public class RestIDLPostBodyElementByteOutOfRangeTest {
         AssertionUtils.multiAssertEquals(createAsDocument13, response10.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response10.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response10.getHttpStatusText());
-        
+
         HttpResponseBean response11 = hbean.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTJSONJSON);
         AssertionUtils.multiAssertEquals(convertXMLDocumentToJSONObjectRemoveRootElement16, response11.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response11.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response11.getHttpStatusText());
-        
+
         HttpResponseBean response12 = hbean.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTXMLJSON);
         AssertionUtils.multiAssertEquals(convertXMLDocumentToJSONObjectRemoveRootElement15, response12.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response12.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response12.getHttpStatusText());
-        
+
         HttpResponseBean response13 = hbean.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTJSONXML);
         AssertionUtils.multiAssertEquals(createAsDocument14, response13.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response13.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response13.getHttpStatusText());
         // Check the log entries are as expected
-        
+
         CougarManager cougarManager15 = CougarManager.getInstance();
         cougarManager15.verifyAccessLogEntriesAfterDate(getTimeAsTimeStamp11, new AccessLogRequirement("87.248.113.14", "/cougarBaseline/v2/byteOperation", "BadRequest"),new AccessLogRequirement("87.248.113.14", "/cougarBaseline/v2/byteOperation", "BadRequest"),new AccessLogRequirement("87.248.113.14", "/cougarBaseline/v2/byteOperation", "BadRequest"),new AccessLogRequirement("87.248.113.14", "/cougarBaseline/v2/byteOperation", "BadRequest") );
     }

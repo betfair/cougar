@@ -27,35 +27,37 @@ import com.caucho.hessian.io.Serializer;
 import java.util.Set;
 
 /**
- * classes without a no parameter constructor use the CougarInternalDeserialiser - this serialiser/deserialiser requires the client and server to agree on 
+ * classes without a no parameter constructor use the CougarInternalDeserialiser - this serialiser/deserialiser requires the client and server to agree on
  * the serialisation (same number of properties in the same order)
  * </p>
  * classes with a no parameter constructor use the TranscribableSerialiser/Deserialiser which allows the client and server to vary in number and order of serialised
  * properties
  * </p>
- * classes using the TranscribableSerialiser/deserialiser are constrained in the transcription they can perform.  Namely they must advertise the params they will 
+ * classes using the TranscribableSerialiser/deserialiser are constrained in the transcription they can perform.  Namely they must advertise the params they will
  * transcribe via the getParameters method, and only those parameters in the same order may be transcribel
  * </p>
- * The Cougar class FaultDetail does not conform to the above requirements so must use the InternalSerialiser/Deserialiser 
+ * The Cougar class FaultDetail does not conform to the above requirements so must use the InternalSerialiser/Deserialiser
  */
 public class TranscribableSerialiserFactory extends AbstractSerializerFactory {
 
 
     private Set<TranscribableParams> transcriptionParams;
+    private boolean client;
 
-    public TranscribableSerialiserFactory(Set<TranscribableParams> transcriptionParams) {
+    public TranscribableSerialiserFactory(Set<TranscribableParams> transcriptionParams, boolean client) {
         this.transcriptionParams = transcriptionParams;
+        this.client = client;
     }
 
     @Override
 	public Deserializer getDeserializer(Class cls) throws HessianProtocolException {
-		
+
 		Deserializer deserializer = null;
 		if (Transcribable.class.isAssignableFrom(cls)) {
             try {
                 cls.getConstructor(null);
                 //has a no param constructor.  use the more flexible TranscribableDeserialiser
-                deserializer = new TranscribableDeserialiser(cls, transcriptionParams);
+                deserializer = new TranscribableDeserialiser(cls, transcriptionParams, client);
             }
             catch (SecurityException e) {}
             catch (NoSuchMethodException e) {}
@@ -63,20 +65,20 @@ public class TranscribableSerialiserFactory extends AbstractSerializerFactory {
 				deserializer = new TranscribableExceptionDeserialiser(cls, transcriptionParams);
 			}
 		}
-		
-			
+
+
 		return deserializer;
 	}
 
 	@Override
 	public Serializer getSerializer(Class cls) throws HessianProtocolException {
-		
+
 		Serializer serializer = null;
-		
+
 		if (Transcribable.class.isAssignableFrom(cls)) {
-			serializer = new TranscribableSerialiser(transcriptionParams);
+			serializer = new TranscribableSerialiser(transcriptionParams, client);
 		}
-		
+
 		return serializer;
 	}
 

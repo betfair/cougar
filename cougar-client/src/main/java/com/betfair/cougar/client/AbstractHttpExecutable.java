@@ -228,7 +228,7 @@ public abstract class AbstractHttpExecutable<HR> extends AbstractClientTransport
                     if (!operationBinding.voidReturnType()) {
                         try {
                             result = dataBindingFactory.getUnMarshaller().unmarshall(inputStream,
-                                    definition.getReturnType(), UNMARSHALL_ENCODING);
+                                    definition.getReturnType(), UNMARSHALL_ENCODING, true);
                         }
                         catch (Exception e2) {
                             throw clientException(response, e2);
@@ -248,16 +248,14 @@ public abstract class AbstractHttpExecutable<HR> extends AbstractClientTransport
                 }
             }
         } catch (final Exception e) {
-            if (e instanceof CougarServiceException) {
-                CougarServiceException cse = (CougarServiceException) e;
-                exception = new CougarClientException(cse.getServerFaultCode(), cse.getMessage(), cse.getCause());
-            }
-            else if (e instanceof CougarClientException) {
+            if (e instanceof CougarClientException) {
                 exception = e;
             }
             else if (e instanceof EnumDerialisationException) {
-                exception = new CougarClientException(ServerFaultCode.JSONDeserialisationFailure,
-                        "Exception occurred in Client: " + e.getMessage(), e);
+                exception = new CougarClientException(CougarMarshallingException.unmarshallingException("json","Enum failure",e,true));
+            }
+            else if (e instanceof CougarException) {
+                exception = new CougarClientException((CougarException)e);
             }
             else {
                 exception = new CougarClientException(ServerFaultCode.RemoteCougarCommunicationFailure,

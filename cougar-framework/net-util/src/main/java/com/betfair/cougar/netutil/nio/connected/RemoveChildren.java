@@ -16,15 +16,11 @@
 
 package com.betfair.cougar.netutil.nio.connected;
 
-import com.betfair.cougar.core.api.ServiceVersion;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
 import com.betfair.cougar.core.api.transcription.TranscribableParams;
 import com.betfair.cougar.core.api.transcription.TranscriptionInput;
 import com.betfair.cougar.core.api.transcription.TranscriptionOutput;
-import com.betfair.platform.virtualheap.HeapListener;
-import com.betfair.platform.virtualheap.NodeType;
-import com.betfair.platform.virtualheap.updates.*;
 
 import java.util.Set;
 
@@ -58,14 +54,14 @@ public class RemoveChildren extends AbstractUpdateAction {
     }
 
     @Override
-    public void transcribe(TranscriptionOutput out, Set<TranscribableParams> params) throws Exception {
-        out.writeObject(id, parameters[0]);
+    public void transcribe(TranscriptionOutput out, Set<TranscribableParams> params, boolean client) throws Exception {
+        out.writeObject(id, parameters[0], client);
         // NOTE: add new fields at the end
     }
 
     @Override
-    public void transcribe(TranscriptionInput in, Set<TranscribableParams> params) throws Exception {
-        id = (Integer) in.readObject(parameters[0]);
+    public void transcribe(TranscriptionInput in, Set<TranscribableParams> params, boolean client) throws Exception {
+        id = (Integer) in.readObject(parameters[0], client);
         // NOTE: add new fields at the end
     }
 

@@ -132,7 +132,13 @@ public abstract class LogTailer<T extends LogTailer.LogRequirement> implements T
             if (line.getDatetime().before(fromDate)) {
                 continue;
             }
-            if (matches(line, remainingRequirements.get(0))) {
+            // before and after..
+            if (remainingRequirements.isEmpty()) {
+                if (!expectingNoLines) {
+                    return;
+                }
+            }
+            else if (matches(line, remainingRequirements.get(0))) {
                 remainingRequirements.remove(0);
             }
             // once we run out of requirements we exit cleanly

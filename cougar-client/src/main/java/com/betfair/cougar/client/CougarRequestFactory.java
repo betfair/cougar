@@ -32,7 +32,6 @@ import org.joda.time.format.ISODateTimeFormat;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -105,7 +104,7 @@ public abstract class CougarRequestFactory<HR> {
     private String createPostEntity(final Message message, final Marshaller marshaller) {
         try {
             final ByteArrayOutputStream os = new ByteArrayOutputStream();
-            marshaller.marshall(os, message.getRequestBodyMap(), UTF8);
+            marshaller.marshall(os, message.getRequestBodyMap(), UTF8, true);
             return os.toString(UTF8);
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException(e);

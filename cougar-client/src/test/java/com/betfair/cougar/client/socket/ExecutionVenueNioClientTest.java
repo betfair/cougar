@@ -71,7 +71,7 @@ public class ExecutionVenueNioClientTest extends AbstractClientTest {
 
     @Before
     public void before() throws Exception {
-        this.objectIOFactory = new HessianObjectIOFactory();
+        this.objectIOFactory = new HessianObjectIOFactory(true);
         this.nioLogger = new NioLogger("ALL");
         super.before(serverVersion);
     }

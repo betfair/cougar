@@ -44,13 +44,13 @@ public class RestIDLHeaderParamBooleanIncorrectDataTypeAltURLTest {
         CougarManager cougarManager1 = CougarManager.getInstance();
         HttpCallBean getNewHttpCallBean2 = cougarManager1.getNewHttpCallBean("87.248.113.14");
         CougarManager cougarManager2 = cougarManager1;
-        
+
         cougarManager2.setCougarFaultControllerJMXMBeanAttrbiute("DetailedFaults", "false");
-        
+
         getNewHttpCallBean2.setOperationName("boolOperation");
-        
+
         getNewHttpCallBean2.setServiceName("baseline", "cougarBaseline");
-        
+
         getNewHttpCallBean2.setVersion("v2");
         // Set the request to use the alternative URL (With www inserted into it)
         getNewHttpCallBean2.setAlternativeURL("/www");
@@ -58,11 +58,11 @@ public class RestIDLHeaderParamBooleanIncorrectDataTypeAltURLTest {
         Map map2 = new HashMap();
         map2.put("headerParam","sometext");
         getNewHttpCallBean2.setHeaderParams(map2);
-        
+
         Map map3 = new HashMap();
         map3.put("queryParam","false");
         getNewHttpCallBean2.setQueryParams(map3);
-        
+
         getNewHttpCallBean2.setRestPostQueryObjects(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream("<message><bodyParameter>false</bodyParameter></message>".getBytes())));
         // Get current time for getting log entries later
 
@@ -71,7 +71,7 @@ public class RestIDLHeaderParamBooleanIncorrectDataTypeAltURLTest {
         cougarManager2.makeRestCougarHTTPCalls(getNewHttpCallBean2);
         // Create the expected response as an XML document (Fault)
         XMLHelpers xMLHelpers5 = new XMLHelpers();
-        Document createAsDocument13 = xMLHelpers5.getXMLObjectFromString("<fault><faultcode>Client</faultcode><faultstring>DSC-0009</faultstring><detail/></fault>");
+        Document createAsDocument13 = xMLHelpers5.getXMLObjectFromString("<fault><faultcode>Client</faultcode><faultstring>DSC-0044</faultstring><detail/></fault>");
         // Convert the expected response to REST types for comparison with actual responses
         Map<CougarMessageProtocolRequestTypeEnum, Object> convertResponseToRestTypes14 = cougarManager2.convertResponseToRestTypes(createAsDocument13, getNewHttpCallBean2);
         // Check the 4 responses are as expected (Bad Request)
@@ -79,17 +79,17 @@ public class RestIDLHeaderParamBooleanIncorrectDataTypeAltURLTest {
         AssertionUtils.multiAssertEquals(convertResponseToRestTypes14.get(CougarMessageProtocolRequestTypeEnum.RESTXML), response6.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response6.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response6.getHttpStatusText());
-        
+
         HttpResponseBean response7 = getNewHttpCallBean2.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTJSONJSON);
         AssertionUtils.multiAssertEquals(convertResponseToRestTypes14.get(CougarMessageProtocolRequestTypeEnum.RESTJSON), response7.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response7.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response7.getHttpStatusText());
-        
+
         HttpResponseBean response8 = getNewHttpCallBean2.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTXMLJSON);
         AssertionUtils.multiAssertEquals(convertResponseToRestTypes14.get(CougarMessageProtocolRequestTypeEnum.RESTJSON), response8.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response8.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response8.getHttpStatusText());
-        
+
         HttpResponseBean response9 = getNewHttpCallBean2.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTJSONXML);
         AssertionUtils.multiAssertEquals(convertResponseToRestTypes14.get(CougarMessageProtocolRequestTypeEnum.RESTXML), response9.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response9.getHttpStatusCode());

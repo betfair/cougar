@@ -45,21 +45,21 @@ public class RestOperationParsingErrorJSONTest {
         // Get the cougar logging attribute for getting log entries later
         // Point the created HttpCallBean at the correct service
         httpCallBeanBaseline.setServiceName("baseline", "cougarBaseline");
-        
+
         httpCallBeanBaseline.setVersion("v2");
         // Set up the Http Call Bean to make the request
         CougarManager cougarManager2 = CougarManager.getInstance();
         HttpCallBean getNewHttpCallBean2 = cougarManager2.getNewHttpCallBean("87.248.113.14");
         cougarManager2 = cougarManager2;
-        
+
         cougarManager2.setCougarFaultControllerJMXMBeanAttrbiute("DetailedFaults", "false");
-        
+
         getNewHttpCallBean2.setOperationName("testComplexMutator", "complex");
-        
+
         getNewHttpCallBean2.setServiceName("baseline", "cougarBaseline");
-        
+
         getNewHttpCallBean2.setVersion("v2");
-        
+
         Map map3 = new HashMap();
         map3.put("application/json",null);
         getNewHttpCallBean2.setAcceptProtocols(map3);
@@ -74,7 +74,7 @@ public class RestOperationParsingErrorJSONTest {
         cougarManager2.makeRestCougarHTTPCall(getNewHttpCallBean2, com.betfair.testing.utils.cougar.enums.CougarMessageProtocolRequestTypeEnum.RESTJSON);
         // Create the expected response as an XML document (Fault)
         XMLHelpers xMLHelpers6 = new XMLHelpers();
-        Document createAsDocument12 = xMLHelpers6.getXMLObjectFromString("<fault><detail/><faultstring>DSC-0008</faultstring><faultcode>Client</faultcode></fault>");
+        Document createAsDocument12 = xMLHelpers6.getXMLObjectFromString("<fault><detail/><faultstring>DSC-0044</faultstring><faultcode>Client</faultcode></fault>");
         // Convert the expected response to REST types for comparison with the actual response
         Map<CougarMessageProtocolRequestTypeEnum, Object> convertResponseToRestTypes13 = cougarManager2.convertResponseToRestTypes(createAsDocument12, getNewHttpCallBean2);
         // Check the response is as expected (Bad Request)
@@ -83,7 +83,7 @@ public class RestOperationParsingErrorJSONTest {
         AssertionUtils.multiAssertEquals((int) 400, response7.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response7.getHttpStatusText());
         // Check the log entries are as expected
-        
+
         CougarManager cougarManager9 = CougarManager.getInstance();
         cougarManager9.verifyAccessLogEntriesAfterDate(getTimeAsTimeStamp10, new AccessLogRequirement("87.248.113.14", "/cougarBaseline/v2/complex", "BadRequest") );
     }

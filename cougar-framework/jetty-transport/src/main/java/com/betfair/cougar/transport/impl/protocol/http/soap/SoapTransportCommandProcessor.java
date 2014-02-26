@@ -26,10 +26,7 @@ import com.betfair.cougar.core.api.ev.ExecutionResult;
 import com.betfair.cougar.core.api.ev.OperationDefinition;
 import com.betfair.cougar.core.api.ev.OperationKey;
 import com.betfair.cougar.core.api.ev.TimeConstraints;
-import com.betfair.cougar.core.api.exception.CougarException;
-import com.betfair.cougar.core.api.exception.CougarFrameworkException;
-import com.betfair.cougar.core.api.exception.CougarValidationException;
-import com.betfair.cougar.core.api.exception.ServerFaultCode;
+import com.betfair.cougar.core.api.exception.*;
 import com.betfair.cougar.core.api.fault.CougarFault;
 import com.betfair.cougar.core.api.fault.FaultController;
 import com.betfair.cougar.core.api.fault.FaultDetail;
@@ -217,21 +214,21 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
                     XMLStreamException se = (XMLStreamException) te.getException();
                     if (se.getCause() instanceof SAXParseException) {
                         SAXParseException spe = (SAXParseException) se.getCause();
-                        CougarValidationException cve = schemaValidationFailureParser.parse(spe, SchemaValidationFailureParser.XmlSource.SOAP);
-                        if (cve != null) {
-                            throw cve;
+                        CougarException ce = schemaValidationFailureParser.parse(spe, "soap", false);
+                        if (ce != null) {
+                            throw ce;
                         }
                     }
                 }
             }
-            throw new CougarValidationException(ServerFaultCode.SOAPDeserialisationFailure, e);
+            throw CougarMarshallingException.unmarshallingException("soap", e, false);
         } catch (Exception e) {
-            throw new CougarValidationException(ServerFaultCode.SOAPDeserialisationFailure, e);
+            throw CougarMarshallingException.unmarshallingException("soap", e, false);
         } finally {
             try {
                 if (in != null) in.close();
             } catch (IOException ie) {
-                throw new CougarValidationException(ServerFaultCode.SOAPDeserialisationFailure, ie);
+                throw CougarMarshallingException.unmarshallingException("soap", ie, false);
             }
         }
 
@@ -300,10 +297,10 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
         TranscriptionInput in = new XMLTranscriptionInput(requestNode);
         try {
             for (int i = 0; i < params.length; i++) {
-                args[i] = readArg(in.readObject(params[i]), params[i]);
+                args[i] = readArg(in.readObject(params[i], false), params[i]);
             }
         } catch (EnumDerialisationException ce) {
-            throw new CougarValidationException(ServerFaultCode.SOAPDeserialisationFailure,ce.getMessage(),ce.getCause());
+            throw CougarMarshallingException.unmarshallingException("soap", ce.getMessage(), ce.getCause(), false);
         } catch (CougarException ce) {
             throw ce;
         } catch (Exception e) {
@@ -341,7 +338,7 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
         try {
             return EnumUtils.readEnum(parameterType.getImplementationClass(), enumTextValue, hardFailEnumDeserialisation);
         } catch (Exception e) {
-            throw XMLTranscriptionInput.exceptionDuringDeserialisation(parameterType, paramName, e);
+            throw XMLTranscriptionInput.exceptionDuringDeserialisation(parameterType, paramName, e, false);
         }
     }
 
@@ -438,7 +435,7 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
                     .getBindingDescriptor().getResponseName(), ns);
             TranscriptionOutput out = new XMLTranscriptionOutput(resultNode, ns, factory);
             out.writeObject(result, new Parameter("response", binding.getOperationDefinition()
-                    .getReturnType(), true));
+                    .getReturnType(), true), false);
             body.addChild(resultNode);
         }
     }

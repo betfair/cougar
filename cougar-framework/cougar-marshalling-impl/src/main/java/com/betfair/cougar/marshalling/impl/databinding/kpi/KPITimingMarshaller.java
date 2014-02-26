@@ -22,14 +22,14 @@ import com.betfair.cougar.marshalling.api.databinding.Marshaller;
 import com.betfair.tornjak.kpi.KPIMonitor;
 
 /**
- * A wrapper which stores KPI statistics for a {@link FaultMarshaller}. 
+ * A wrapper which stores KPI statistics for a {@link FaultMarshaller}.
  */
 public class KPITimingMarshaller implements Marshaller {
 
     private final KPIMonitor monitor;
     private final String  kpiName;
     private final Marshaller marshaller;
-    
+
     public KPITimingMarshaller(KPIMonitor monitor, String kpiName, Marshaller marshaller) {
         this.monitor = monitor;
         this.kpiName = kpiName;
@@ -42,11 +42,11 @@ public class KPITimingMarshaller implements Marshaller {
 	}
 
     @Override
-    public void marshall(OutputStream outputStream, Object result, String encoding) {
+    public void marshall(OutputStream outputStream, Object result, String encoding, boolean client) {
         boolean success = false;
-        long start = System.currentTimeMillis();       
+        long start = System.currentTimeMillis();
         try {
-            marshaller.marshall(outputStream, result, encoding);
+            marshaller.marshall(outputStream, result, encoding, client);
             success = true;
         }
         finally {

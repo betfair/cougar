@@ -28,22 +28,22 @@ public class DataBindingManager {
 
     private static final DataBindingManager instance = new DataBindingManager();
     private final Map<String, DataBindingFactory> factories;
-    
+
     public static DataBindingManager getInstance() {
         return instance;
     }
-    
-    
+
+
     private DataBindingManager() {
-        factories = new HashMap<String, DataBindingFactory>();
+        factories = new HashMap<>();
     }
-    
+
     public void addBindingMap(DataBindingMap map) {
     	for (String contentType : map.getContentTypes()) {
 	        factories.put(contentType, map.getFactory());
     	}
     }
-    
+
     public DataBindingFactory getFactory(MediaType mediaType) {
     	return factories.get(mediaType.toString());
     }

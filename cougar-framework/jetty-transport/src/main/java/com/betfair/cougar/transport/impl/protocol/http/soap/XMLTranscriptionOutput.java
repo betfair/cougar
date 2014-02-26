@@ -64,10 +64,10 @@ public class XMLTranscriptionOutput implements TranscriptionOutput {
 	}
 
 	@Override
-	public void writeObject(Object obj, Parameter param) throws Exception {
+	public void writeObject(Object obj, Parameter param, boolean client) throws Exception {
 		if (obj != null || parameterIsNillable(param)) {
 			OMElement paramNode = factory.createOMElement(param.getName(), ns, currentNode);
-			writeObject(obj, param.getParameterType(), paramNode);
+			writeObject(obj, param.getParameterType(), paramNode, client);
 		}
 	}
 
@@ -78,7 +78,7 @@ public class XMLTranscriptionOutput implements TranscriptionOutput {
 			|| param.getParameterType().getType() == ParameterType.Type.MAP;
 	}
 
-	private void writeObject(Object obj, ParameterType paramType, OMElement node) throws Exception {
+	private void writeObject(Object obj, ParameterType paramType, OMElement node, boolean client) throws Exception {
 		if (obj == null) {
 			node.addAttribute("nil", "true", xsiNamespace);
 		} else {
@@ -93,7 +93,7 @@ public class XMLTranscriptionOutput implements TranscriptionOutput {
                 }
                 else {
                     Transcribable t = (Transcribable)obj;
-                    t.transcribe(this, TranscribableParams.getNone());
+                    t.transcribe(this, TranscribableParams.getNone(), client);
                     //ascend
                     currentNode = _copy;
                 }
@@ -105,7 +105,7 @@ public class XMLTranscriptionOutput implements TranscriptionOutput {
                     OMElement entryElement = factory.createOMElement("entry", ns, node);
                     entryElement.addAttribute("key", writeSimpleObjectString(e.getKey(), paramType.getComponentTypes()[0]), null);
                     if (e.getValue() != null) {
-                        writeObject(e.getValue(), paramType.getComponentTypes()[1], factory.createOMElement(paramType.getComponentTypes()[1].getImplementationClass().getSimpleName(), ns, entryElement));
+                        writeObject(e.getValue(), paramType.getComponentTypes()[1], factory.createOMElement(paramType.getComponentTypes()[1].getImplementationClass().getSimpleName(), ns, entryElement), client);
                     }
                 }
 				break;
@@ -116,7 +116,7 @@ public class XMLTranscriptionOutput implements TranscriptionOutput {
 					List list = (List)obj;
 					for (Object element : list) {
 						//create element node
-						writeObject(element, paramType.getComponentTypes()[0], factory.createOMElement(paramType.getComponentTypes()[0].getImplementationClass().getSimpleName(), ns, node));
+						writeObject(element, paramType.getComponentTypes()[0], factory.createOMElement(paramType.getComponentTypes()[0].getImplementationClass().getSimpleName(), ns, node), client);
 					}
 				}
 				break;
@@ -124,7 +124,7 @@ public class XMLTranscriptionOutput implements TranscriptionOutput {
 				Set set = (Set)obj;
 				for (Object element : set) {
 					//create element node
-					writeObject(element, paramType.getComponentTypes()[0], factory.createOMElement(paramType.getComponentTypes()[0].getImplementationClass().getSimpleName(), ns, node));
+					writeObject(element, paramType.getComponentTypes()[0], factory.createOMElement(paramType.getComponentTypes()[0].getImplementationClass().getSimpleName(), ns, node), client);
 				}
 				break;
 			default :

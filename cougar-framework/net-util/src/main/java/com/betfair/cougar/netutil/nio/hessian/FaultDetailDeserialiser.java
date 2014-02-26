@@ -17,13 +17,11 @@
 package com.betfair.cougar.netutil.nio.hessian;
 
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.util.Set;
 
 import com.betfair.cougar.core.api.fault.FaultDetail;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
-import com.betfair.cougar.core.api.transcription.Transcribable;
 import com.betfair.cougar.core.api.transcription.TranscribableParams;
 import com.betfair.cougar.core.api.transcription.TranscriptionInput;
 import com.caucho.hessian.io.AbstractDeserializer;
@@ -41,38 +39,38 @@ public class FaultDetailDeserialiser extends AbstractDeserializer {
 
     @Override
 	public Object readObject(final AbstractHessianInput in, Object[] fields) throws IOException {
-		
+
 		try {
-			
+
 			TranscriptionInput ti = new TranscriptionInput() {
 
 				@Override
-				public <T> T readObject(Parameter param) throws Exception {
+				public <T> T readObject(Parameter param, boolean client) throws Exception {
 					return (T) in.readObject();
 				}
 			};
 
 			int ref = in.addRef(null);
-			
+
             FaultDetail o = transcribe(ti);
             in.setRef(ref, o);
-			
+
 			return o;
-		} 
+		}
 		catch (Exception e) {
 			throw new IOException(e);
 		}
-		
+
 	}
 
     private FaultDetail transcribe(TranscriptionInput in) throws Exception {
 
-        String detailMessage = in.readObject(FaultDetail.detailMessageParam);
-        String className = (String) in.readObject(FaultDetail.faultClassNameParam);
+        String detailMessage = in.readObject(FaultDetail.detailMessageParam, true);
+        String className = (String) in.readObject(FaultDetail.faultClassNameParam, true);
         Throwable exception = null;
         if (className != null) {
             ParameterType type = new ParameterType(Class.forName(ClassnameCompatibilityMapper.toMajorOnlyPackaging(className)), null);
-            exception = (Throwable)in.readObject(new Parameter("exception", type, false));
+            exception = (Throwable)in.readObject(new Parameter("exception", type, false), true);
         }
         return new FaultDetail(detailMessage, exception);
     }

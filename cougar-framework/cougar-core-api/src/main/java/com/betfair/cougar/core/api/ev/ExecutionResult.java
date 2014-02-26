@@ -42,6 +42,8 @@ public class ExecutionResult {
     }
 
     public ExecutionResult(Object result) {
+        // todo: perhaps this shouldn't be done here, and instead should go in the service wrapper?
+        //       then we wouldn't have anything to do with service in the core ev..
         if (result instanceof CougarApplicationException) {
             this.resultType = ResultType.Fault;
             fault = new CougarServiceException(ServerFaultCode.ServiceCheckedException, "", (CougarApplicationException)result);

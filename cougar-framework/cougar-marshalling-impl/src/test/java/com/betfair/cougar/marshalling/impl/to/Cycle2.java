@@ -45,25 +45,25 @@ public class  Cycle2 implements Result, Transcribable {
     public final void setCycle1(Cycle1 cycle1)  {
     	this.cycle1=cycle1;
     }
-    
 
-		    
-    	
+
+
+
 
 	private static final Parameter __cycle1Param = new Parameter("cycle1",new ParameterType(Cycle1.class, null ),true);
-    
+
     public static final Parameter[] PARAMETERS = new Parameter[] { __cycle1Param};
 
     public Parameter[] getParameters() {
         return PARAMETERS;
     }
-    
-	public void transcribe(TranscriptionOutput out, Set<TranscribableParams> params) throws Exception {
-	    out.writeObject(getCycle1(), __cycle1Param);
+
+	public void transcribe(TranscriptionOutput out, Set<TranscribableParams> params, boolean client) throws Exception {
+	    out.writeObject(getCycle1(), __cycle1Param, client);
 	}
-	
-	public void transcribe(TranscriptionInput in, Set<TranscribableParams> params) throws Exception {
-	    setCycle1((Cycle1)in.readObject(__cycle1Param));
+
+	public void transcribe(TranscriptionInput in, Set<TranscribableParams> params, boolean client) throws Exception {
+	    setCycle1((Cycle1)in.readObject(__cycle1Param, client));
 	}
 
     @Override

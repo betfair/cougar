@@ -35,7 +35,7 @@ import com.betfair.cougar.api.security.IdentityToken;
 import com.betfair.cougar.api.security.InvalidCredentialsException;
 import com.betfair.cougar.core.api.ServiceVersion;
 import com.betfair.cougar.core.api.ev.*;
-import com.betfair.cougar.core.api.exception.CougarServiceException;
+import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
@@ -55,7 +55,7 @@ public class BaseExecutionVenueTest {
 
 	private static final InterceptorResult CONTINUE = new InterceptorResult(InterceptorState.CONTINUE, null);
 	private static final InterceptorResult FORCE_ON_RESULT = new InterceptorResult(InterceptorState.FORCE_ON_RESULT, "THIS IS A FORCED PASS");
-	private static final InterceptorResult FORCE_ON_EXCEPTION = new InterceptorResult(InterceptorState.FORCE_ON_EXCEPTION, new CougarServiceException(ServerFaultCode.SecurityException,"I EXPECT TO FAIL"));
+	private static final InterceptorResult FORCE_ON_EXCEPTION = new InterceptorResult(InterceptorState.FORCE_ON_EXCEPTION, new CougarFrameworkException(ServerFaultCode.SecurityException,"I EXPECT TO FAIL"));
 
     @BeforeClass
     public static void setupStatic() {

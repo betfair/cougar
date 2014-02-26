@@ -16,14 +16,11 @@
 
 package com.betfair.cougar.netutil.nio.connected;
 
-import com.betfair.cougar.core.api.ServiceVersion;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
 import com.betfair.cougar.core.api.transcription.TranscribableParams;
 import com.betfair.cougar.core.api.transcription.TranscriptionInput;
 import com.betfair.cougar.core.api.transcription.TranscriptionOutput;
-import com.betfair.cougar.netutil.nio.HeapDelta;
-import com.betfair.platform.virtualheap.HeapListener;
 import com.betfair.platform.virtualheap.NodeType;
 
 import java.util.Set;
@@ -59,16 +56,16 @@ public class InstallRoot extends AbstractUpdateAction {
     }
 
     @Override
-    public void transcribe(TranscriptionOutput out, Set<TranscribableParams> params) throws Exception {
-        out.writeObject(id, parameters[0]);
-        out.writeObject(type.name(), parameters[1]);
+    public void transcribe(TranscriptionOutput out, Set<TranscribableParams> params, boolean client) throws Exception {
+        out.writeObject(id, parameters[0], client);
+        out.writeObject(type.name(), parameters[1], client);
         // NOTE: add new fields at the end
     }
 
     @Override
-    public void transcribe(TranscriptionInput in, Set<TranscribableParams> params) throws Exception {
-        id = (Integer) in.readObject(parameters[0]);
-        type = NodeType.valueOf((String) in.readObject(parameters[1]));
+    public void transcribe(TranscriptionInput in, Set<TranscribableParams> params, boolean client) throws Exception {
+        id = (Integer) in.readObject(parameters[0], client);
+        type = NodeType.valueOf((String) in.readObject(parameters[1], client));
         // NOTE: add new fields at the end
     }
 

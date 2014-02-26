@@ -18,15 +18,12 @@ package com.betfair.cougar.netutil.nio.hessian;
 
 import java.io.IOException;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Pattern;
 
 import com.betfair.cougar.core.api.ServiceVersion;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.Transcribable;
 import com.betfair.cougar.core.api.transcription.TranscribableParams;
 import com.betfair.cougar.core.api.transcription.TranscriptionOutput;
-import com.betfair.cougar.netutil.nio.CougarProtocol;
 import com.caucho.hessian.io.AbstractHessianOutput;
 import com.caucho.hessian.io.Serializer;
 
@@ -39,9 +36,11 @@ import com.caucho.hessian.io.Serializer;
 public class TranscribableSerialiser implements Serializer {
 
     private Set<TranscribableParams> transcriptionParams;
+    private boolean client;
 
-    public TranscribableSerialiser(Set<TranscribableParams> transcriptionParams) {
+    public TranscribableSerialiser(Set<TranscribableParams> transcriptionParams, boolean client) {
         this.transcriptionParams = transcriptionParams;
+        this.client = client;
     }
 
     @Override
@@ -65,7 +64,7 @@ public class TranscribableSerialiser implements Serializer {
 
             // true if the object has already been defined
 			if (ref >= 0) {
-				transcribe(out,transcribable);
+				transcribe(out,transcribable, client);
 			}
 			else  {
 				Parameter[] parameters =  transcribable.getParameters();
@@ -74,24 +73,24 @@ public class TranscribableSerialiser implements Serializer {
 					out.writeString(parameters[i].getName());
 				}
 				out.writeObjectBegin(classNameToWrite);
-				transcribe(out,transcribable);
+				transcribe(out,transcribable, client);
 			}
 		}
 		catch (Exception e) {
 			throw new IOException(e);
 		}
-			
+
 
 	}
-	
-	private void transcribe(final AbstractHessianOutput out, Transcribable transcribable) throws IOException {
+
+	private void transcribe(final AbstractHessianOutput out, Transcribable transcribable, boolean client) throws IOException {
 		try {
 			transcribable.transcribe(new TranscriptionOutput() {
 				@Override
-				public void writeObject(Object obj, Parameter param) throws Exception {
+				public void writeObject(Object obj, Parameter param, boolean client) throws Exception {
 					out.writeObject(obj);
-				}}, transcriptionParams);
-		} 
+				}}, transcriptionParams, client);
+		}
 		catch (Exception e) {
 			throw new IOException(e);
 		}

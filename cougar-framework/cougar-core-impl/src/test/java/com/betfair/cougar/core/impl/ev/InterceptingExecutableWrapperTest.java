@@ -19,7 +19,7 @@ package com.betfair.cougar.core.impl.ev;
 import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.exception.CougarException;
-import com.betfair.cougar.core.api.exception.CougarServiceException;
+import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.logging.CougarLoggingUtils;
@@ -44,8 +44,8 @@ public class InterceptingExecutableWrapperTest {
     private List<ExecutionPostProcessor> postExecutionInterceptorList = new ArrayList<ExecutionPostProcessor>();
 
     private final InterceptorResult SUCCESS = new InterceptorResult(InterceptorState.CONTINUE);
-    private final InterceptorResult FAILURE_UNCHECKED = new InterceptorResult(InterceptorState.FORCE_ON_EXCEPTION, new CougarServiceException(ServerFaultCode.ServiceRuntimeException, "Broken"));
-    private final InterceptorResult FAILURE_CHECKED = new InterceptorResult(InterceptorState.FORCE_ON_EXCEPTION, new CougarServiceException(ServerFaultCode.ServiceCheckedException, "Broken"));
+    private final InterceptorResult FAILURE_UNCHECKED = new InterceptorResult(InterceptorState.FORCE_ON_EXCEPTION, new CougarFrameworkException(ServerFaultCode.ServiceRuntimeException, "Broken"));
+    private final InterceptorResult FAILURE_CHECKED = new InterceptorResult(InterceptorState.FORCE_ON_EXCEPTION, new CougarFrameworkException(ServerFaultCode.ServiceCheckedException, "Broken"));
 
     private Executable executable;
     private ExecutionContext ctx;

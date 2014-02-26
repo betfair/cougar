@@ -36,7 +36,7 @@ public class RandomException extends Throwable implements Transcribable {
     private String message;
 
     public RandomException(TranscriptionInput in, Set<TranscribableParams> transcriptionParams) throws Exception {
-        this.message = in.readObject(MESSAGE_PARAM);
+        this.message = in.readObject(MESSAGE_PARAM, true);
     }
 
     public RandomException(String message) {
@@ -48,13 +48,13 @@ public class RandomException extends Throwable implements Transcribable {
     }
 
     @Override
-    public void transcribe(TranscriptionOutput out, Set<TranscribableParams> params) throws Exception {
-        out.writeObject(message, MESSAGE_PARAM);
+    public void transcribe(TranscriptionOutput out, Set<TranscribableParams> params, boolean client) throws Exception {
+        out.writeObject(message, MESSAGE_PARAM, client);
     }
 
     @Override
-    public void transcribe(TranscriptionInput in, Set<TranscribableParams> params) throws Exception {
-        this.message = in.readObject(MESSAGE_PARAM);
+    public void transcribe(TranscriptionInput in, Set<TranscribableParams> params, boolean client) throws Exception {
+        this.message = in.readObject(MESSAGE_PARAM, client);
     }
 
     @Override

@@ -44,11 +44,11 @@ public class RestPostRequestTypesDateTimeMap60SecondsTest {
         HttpCallBean hbean = cougarManager1.getNewHttpCallBean("87.248.113.14");
         CougarManager hinstance = cougarManager1;
         cougarManager1.setCougarFaultControllerJMXMBeanAttrbiute("DetailedFaults", "false");
-        
+
         hbean.setOperationName("dateTimeMapOperation");
-        
+
         hbean.setServiceName("baseline", "cougarBaseline");
-        
+
         hbean.setVersion("v2");
         // Set the body parameter to a date list containing date objects with seconds incorrectly set to 60
         hbean.setRestPostQueryObjects(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream("<message><dateTimeMap><entry key=\"date1\"><Date>2009-12-01T00:00:60.000Z</Date></entry><entry key=\"date2\"><Date>2009-12-02T00:00:60.000Z</Date></entry></dateTimeMap></message>".getBytes())));
@@ -61,7 +61,7 @@ public class RestPostRequestTypesDateTimeMap60SecondsTest {
         hinstance.makeRestCougarHTTPCall(hbean, com.betfair.testing.utils.cougar.enums.CougarMessageProtocolRequestTypeEnum.RESTJSON, com.betfair.testing.utils.cougar.enums.CougarMessageContentTypeEnum.JSON);
         // Create the expected response as an XML document (Fault)
         XMLHelpers xMLHelpers3 = new XMLHelpers();
-        Document expectedXML = xMLHelpers3.getXMLObjectFromString("<fault><faultcode>Client</faultcode><faultstring>DSC-0008</faultstring><detail/></fault>");
+        Document expectedXML = xMLHelpers3.getXMLObjectFromString("<fault><faultcode>Client</faultcode><faultstring>DSC-0044</faultstring><detail/></fault>");
         // Convert the expected response to a JSON object for comparison with the actual response
         JSONHelpers jSONHelpers4 = new JSONHelpers();
         JSONObject expectedJSON = jSONHelpers4.convertXMLDocumentToJSONObjectRemoveRootElement(expectedXML);
@@ -70,15 +70,15 @@ public class RestPostRequestTypesDateTimeMap60SecondsTest {
         AssertionUtils.multiAssertEquals(expectedXML, response5.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response5.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response5.getHttpStatusText());
-        
+
         HttpResponseBean response6 = hbean.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTJSONJSON);
         AssertionUtils.multiAssertEquals(expectedJSON, response6.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response6.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response6.getHttpStatusText());
-        
+
         // generalHelpers.pauseTest(500L);
         // Check the log entries are as expected
-        
+
         CougarManager cougarManager9 = CougarManager.getInstance();
         cougarManager9.verifyAccessLogEntriesAfterDate(getTimeAsTimeStamp11, new AccessLogRequirement("87.248.113.14", "/cougarBaseline/v2/dateTimeMapOperation", "BadRequest"),new AccessLogRequirement("87.248.113.14", "/cougarBaseline/v2/dateTimeMapOperation", "BadRequest") );
     }

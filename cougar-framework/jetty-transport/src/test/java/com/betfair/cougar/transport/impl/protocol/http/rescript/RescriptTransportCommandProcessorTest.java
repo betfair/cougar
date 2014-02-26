@@ -221,7 +221,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
 		verify(response).setContentType(MediaType.APPLICATION_XML);
 
 		InOrder inorder = inOrder(marshaller, logger);
-		inorder.verify(marshaller).marshall(any(OutputStream.class), argThat(matchesResponse("goodbye")), eq("utf-8"));
+		inorder.verify(marshaller).marshall(any(OutputStream.class), argThat(matchesResponse("goodbye")), eq("utf-8"), eq(false));
         inorder.verify(logger).logAccess(eq(command), any(ExecutionContext.class), anyLong(), anyLong(),
                                             any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
 	}

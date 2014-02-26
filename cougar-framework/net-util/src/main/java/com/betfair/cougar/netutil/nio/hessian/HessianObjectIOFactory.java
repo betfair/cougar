@@ -33,19 +33,19 @@ public class HessianObjectIOFactory implements CougarObjectIOFactory {
 
     private Map<Byte, CougarSerializerFactory> protocolSerializerFactories;
 
-	public HessianObjectIOFactory() {
+	public HessianObjectIOFactory(boolean client) {
         protocolSerializerFactories = new HashMap<Byte, CougarSerializerFactory>();
         for (byte b = CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MIN_SUPPORTED; b<=CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED; b++) {
             Set<TranscribableParams> transcriptionParams = CougarProtocol.getTranscribableParamSet(b);
             CougarSerializerFactory csf = CougarSerializerFactory.createInstance(transcriptionParams);
             csf.setAllowNonSerializable(true);
-            csf.addFactory(new TranscribableSerialiserFactory(transcriptionParams));
+            csf.addFactory(new TranscribableSerialiserFactory(transcriptionParams, client));
             csf.addFactory(new EnumSerialiserFactory(transcriptionParams));
             csf.addFactory(new FaultDetailSerialiserFactory(transcriptionParams));
             protocolSerializerFactories.put(b, csf);
         }
 	}
-	
+
 
 	@Override
 	public CougarObjectInput newCougarObjectInput(InputStream is, byte protocolVersion) {
@@ -56,6 +56,6 @@ public class HessianObjectIOFactory implements CougarObjectIOFactory {
 	public CougarObjectOutput newCougarObjectOutput(OutputStream os, byte protocolVersion) {
         return new HessianObjectOutput(os, protocolSerializerFactories.get(protocolVersion));
 	}
-	
+
 
 }

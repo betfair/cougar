@@ -59,7 +59,7 @@ public class SOAPdateTimeInvalidResponseTest {
         CougarManager.makeSoapCougarHTTPCalls(HTTPCallBean);
         // Create a soap response structure as a Document object
         XMLHelpers xMLHelpers4 = new XMLHelpers();
-        Document responseDocument = xMLHelpers4.getXMLObjectFromString("<soapenv:Fault><faultcode>soapenv:Client</faultcode><faultstring>DSC-0006</faultstring><detail/></soapenv:Fault>");
+        Document responseDocument = xMLHelpers4.getXMLObjectFromString("<soapenv:Fault><faultcode>soapenv:Client</faultcode><faultstring>DSC-0044</faultstring><detail/></soapenv:Fault>");
         // Convert the Document to SOAP
         Map<String, Object> response5 = CougarManager.convertResponseToSOAP(responseDocument, HTTPCallBean);
         Object responseSoap = response5.get("SOAP");
@@ -98,7 +98,7 @@ public class SOAPdateTimeInvalidResponseTest {
         CougarManager.makeSoapCougarHTTPCalls(HTTPCallBean);
         // Create a soap response structure as a Document object
         XMLHelpers xMLHelpers4 = new XMLHelpers();
-        Document responseDocument = xMLHelpers4.getXMLObjectFromString("<soapenv:Fault><faultcode>soapenv:Client</faultcode><faultstring>DSC-0006</faultstring><detail/></soapenv:Fault>");
+        Document responseDocument = xMLHelpers4.getXMLObjectFromString("<soapenv:Fault><faultcode>soapenv:Client</faultcode><faultstring>DSC-0044</faultstring><detail/></soapenv:Fault>");
         // Convert the Document to SOAP
         Map<String, Object> response5 = CougarManager.convertResponseToSOAP(responseDocument, HTTPCallBean);
         Object responseSoap = response5.get("SOAP");

@@ -196,10 +196,10 @@ public class SocketRMIMarshallerTest {
     public static void suppressLogs() {
         CougarLoggingUtils.suppressAllRootLoggerOutput();
     }
-    
-    @Before 
+
+    @Before
     public void before() {
-    	ioFactory = new HessianObjectIOFactory();
+    	ioFactory = new HessianObjectIOFactory(false);
     }
 
 
@@ -426,7 +426,7 @@ public class SocketRMIMarshallerTest {
         assertEquals(response.getResult(), actualResponse.getResult());
         assertNull(actualResponse.getException());
     }
-    
+
     @Test
     /**
      * test the serialisation and deserialisation of response object where the response is created using a delegate
@@ -441,12 +441,12 @@ public class SocketRMIMarshallerTest {
         cougarObjectOutput.flush();
         InvocationResponse actualResponse = cut.readInvocationResponse(resultType,
                 ioFactory.newCougarObjectInput(new ByteArrayInputStream(outputStream.toByteArray()), protocolVersion));
-        
+
         assertTrue(actualResponse.isSuccess());
         Object responseObject = removeDelegates(response.getResult());
         assertEquals(responseObject, actualResponse.getResult());
         assertNull(actualResponse.getException());
-        
+
     }
 
     @Test
@@ -466,14 +466,14 @@ public class SocketRMIMarshallerTest {
         cougarObjectOutput.flush();
         InvocationResponse actualResponse = cut.readInvocationResponse(resultType,
                 ioFactory.newCougarObjectInput(new ByteArrayInputStream(outputStream.toByteArray()), protocolVersion));
-        
+
         assertTrue(actualResponse.isSuccess());
         assertTrue(actualResponse.getResult() == ((Cycle1)actualResponse.getResult()).getCycle2().getCycle1());
         assertNull(actualResponse.getException());
-        
+
     }
-    
-        
+
+
 
     @Test
     /**
@@ -491,12 +491,12 @@ public class SocketRMIMarshallerTest {
         cougarObjectOutput.flush();
         InvocationResponse actualResponse = cut.readInvocationResponse(resultType,
                 ioFactory.newCougarObjectInput(new ByteArrayInputStream(outputStream.toByteArray()), protocolVersion));
-        
+
         assertTrue(actualResponse.isSuccess());
         Object responseObject = removeDelegates(response.getResult());
         assertEquals(responseObject, actualResponse.getResult());
         assertNull(actualResponse.getException());
-        
+
     }
 
 	@Test
@@ -646,7 +646,7 @@ public class SocketRMIMarshallerTest {
         assertEquals(2, ctx.getIdentityTokens().size());
         assertNull(ctx.getIdentity());
     }
-    
+
     @Test
     public void testWriteArgument() throws IOException{
     	Parameter[] parameters = new Parameter[2];
@@ -659,7 +659,7 @@ public class SocketRMIMarshallerTest {
     	Object[] args = cut.readArgs(parameters, ioFactory.newCougarObjectInput(new ByteArrayInputStream(os.toByteArray()), protocolVersion));
     	assertArrayEquals(new Object[]{"abc",1},args);
     }
-    
+
 
     @Test
     public void testAdditionalInputArgs() throws IOException {
@@ -673,7 +673,7 @@ public class SocketRMIMarshallerTest {
     	parameters = new Parameter[1];
     	parameters[0] = new Parameter("string",new ParameterType(String.class,null),true);
     	Object[] args = cut.readArgs(parameters, ioFactory.newCougarObjectInput(new ByteArrayInputStream(os.toByteArray()), protocolVersion));
-    	
+
     	assertArrayEquals(new Object[]{"abc"}, args);
     }
 
@@ -690,10 +690,10 @@ public class SocketRMIMarshallerTest {
     	parameters[0] = new Parameter("string",new ParameterType(String.class,null),true);
     	parameters[1] = new Parameter("int", new ParameterType(Integer.class,null), false);
     	Object[] args = cut.readArgs(parameters, ioFactory.newCougarObjectInput(new ByteArrayInputStream(os.toByteArray()), protocolVersion));
-    	
+
     	assertArrayEquals(new Object[]{"abc",1}, args);
     }
-    
+
 
     private Identity createIdentity(String principalName, String credentialName, String credentialValue) {
         Principal principal = new PrincipalImpl(principalName);
@@ -705,7 +705,7 @@ public class SocketRMIMarshallerTest {
      * Equals methods in generated idd classes don't handle delegates
      * @param result
      * @return
-     * @throws Exception 
+     * @throws Exception
      */
     private Object removeDelegates(Object result) throws Exception {
     	if (! (result instanceof Transcribable))  {
@@ -717,7 +717,7 @@ public class SocketRMIMarshallerTest {
 		transcribable.transcribe(new TranscriptionOutput(){
 
 			@Override
-			public void writeObject(Object obj, Parameter param) throws Exception {
+			public void writeObject(Object obj, Parameter param, boolean client) throws Exception {
 				if (obj == null) {
 					objects[index[0]++] = null;
 				}
@@ -760,21 +760,21 @@ public class SocketRMIMarshallerTest {
 				else {
 					objects[index[0]++] = obj;
 				}
-				
-			}}, TranscribableParams.getAll());
-		
+
+			}}, TranscribableParams.getAll(), false);
+
 		Transcribable newObject = (Transcribable) result.getClass().newInstance();
 		index[0] = 0;
 		newObject.transcribe(new TranscriptionInput() {
 
 			@Override
-			public <T> T readObject(Parameter param) throws Exception {
+			public <T> T readObject(Parameter param, boolean client) throws Exception {
 				return (T) objects[index[0]++];
-				
-			}}, TranscribableParams.getAll());
-		
+
+			}}, TranscribableParams.getAll(), false);
+
 		return newObject;
 	}
-    
-    
+
+
 }

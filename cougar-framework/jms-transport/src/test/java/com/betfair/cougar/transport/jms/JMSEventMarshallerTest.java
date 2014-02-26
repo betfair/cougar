@@ -17,7 +17,6 @@
 package com.betfair.cougar.transport.jms;
 
 import com.betfair.cougar.core.api.ServiceVersion;
-import com.betfair.cougar.logging.CougarLoggingUtils;
 import com.betfair.cougar.marshalling.api.databinding.DataBindingFactory;
 import com.betfair.cougar.marshalling.api.databinding.Marshaller;
 import com.betfair.cougar.transport.api.protocol.events.AbstractEvent;
@@ -45,10 +44,7 @@ import java.net.UnknownHostException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
 
 /**
  * Unit test for @see JMSEventMarshaller
@@ -68,7 +64,7 @@ public class JMSEventMarshallerTest {
     private Marshaller marshaller = new Marshaller() {
 
         @Override
-        public void marshall(OutputStream outputStream, Object result, String encoding) {
+        public void marshall(OutputStream outputStream, Object result, String encoding, boolean client) {
             try {
                 outputStream.write(EXPECTED_RESULT.getBytes(encoding));
             } catch (IOException e) {

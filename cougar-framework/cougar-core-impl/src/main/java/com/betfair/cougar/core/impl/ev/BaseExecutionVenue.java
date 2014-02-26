@@ -114,9 +114,9 @@ public class BaseExecutionVenue implements ExecutionVenue {
                 catch (InvalidCredentialsException e) {
                     if (e.getCredentialFaultCode() != null) { // Check if a custom error code should be used
                         ServerFaultCode sfc = ServerFaultCode.getByCredentialFaultCode(e.getCredentialFaultCode());
-                        throw new CougarServiceException(sfc, "Credentials supplied were invalid", e);
+                        throw new CougarFrameworkException(sfc, "Credentials supplied were invalid", e);
                     }
-                    throw new CougarServiceException(ServerFaultCode.SecurityException, "Credentials supplied were invalid", e);
+                    throw new CougarFrameworkException(ServerFaultCode.SecurityException, "Credentials supplied were invalid", e);
                 }
                 // ensure the identity chain set in the context is immutable
                 contextWithTokens.setIdentityChain(new IdentityChainImpl(chain.getIdentities()));
@@ -137,7 +137,7 @@ public class BaseExecutionVenue implements ExecutionVenue {
         final DefinedExecutable de = registry.get(key);
         if (de == null) {
             logger.log(Level.FINE, "Not request logging request to URI: %s as no operation was found", key.toString());
-            observer.onResult(new ExecutionResult(new CougarServiceException(ServerFaultCode.NoSuchOperation, "Operation not found: "+key.toString())));
+            observer.onResult(new ExecutionResult(new CougarFrameworkException(ServerFaultCode.NoSuchOperation, "Operation not found: "+key.toString())));
         } else {
             long serverExpiryTime = de.maxExecutionTime == 0 ? Long.MAX_VALUE : System.currentTimeMillis() + de.maxExecutionTime;
             long clientExpiryTime = timeConstraints.getExpiryTime() == null ? Long.MAX_VALUE : timeConstraints.getExpiryTime();
@@ -161,7 +161,7 @@ public class BaseExecutionVenue implements ExecutionVenue {
                 observer.onResult(new ExecutionResult(e));
             } catch (Exception e) {
                 observer.onResult(new ExecutionResult(
-                        new CougarServiceException(ServerFaultCode.ServiceRuntimeException,
+                        new CougarFrameworkException(ServerFaultCode.ServiceRuntimeException,
                                 "Exception thrown by service method",
                                 e)));
             }

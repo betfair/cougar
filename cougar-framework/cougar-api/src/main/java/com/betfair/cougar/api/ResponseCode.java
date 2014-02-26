@@ -31,6 +31,7 @@ public enum ResponseCode implements Result {
 	UnsupportedMediaType(FaultCode.Client),
 	MediaTypeNotAcceptable(FaultCode.Client),
 	BadRequest(FaultCode.Client),
+	BadResponse(FaultCode.Server),
     CantWriteToSocket(FaultCode.Client),
 	Ok(null);
 

@@ -81,7 +81,7 @@ public class  ${dataTypeName} implements Result, Validatable, Transcribable {
         }
     </#if>
      <#if validations?? >
-        Set<javax.validation.ConstraintViolation<${dataTypeName}>> constraintViolations = validator.validate(this); 
+        Set<javax.validation.ConstraintViolation<${dataTypeName}>> constraintViolations = validator.validate(this);
         for (javax.validation.ConstraintViolation<${dataTypeName}> constraintViolation : constraintViolations) {
             String message = constraintViolation.getMessage();
             throw new IllegalArgumentException(message);
@@ -89,7 +89,7 @@ public class  ${dataTypeName} implements Result, Validatable, Transcribable {
       </#if>
         ${mandatoryChildCheck}
     }
-    
+
     public String toString() {
     	return "{"+${toString}+"}";
     }
@@ -98,12 +98,12 @@ public class  ${dataTypeName} implements Result, Validatable, Transcribable {
     public ${dataTypeName} () {
         javax.validation.ValidatorFactory factory = javax.validation.Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
-    }    
-    <#else> 
+    }
+    <#else>
     public ${dataTypeName} () {}
-    
-    </#if>   
-    
+
+    </#if>
+
 <#if mapNameArray?size!=0>
 <#list mapNameArray as map>
     <#assign mapKeyType=mapKeyTypeArray[map_index]>
@@ -111,7 +111,7 @@ public class  ${dataTypeName} implements Result, Validatable, Transcribable {
     <#assign mapName=map>
     <#assign mapIndex=map_index>
     <#include "mapAdapter.ftl">
-</#list>  
+</#list>
 </#if>
 
     <#assign params="">
@@ -122,7 +122,7 @@ public class  ${dataTypeName} implements Result, Validatable, Transcribable {
             <#assign params = params + ", ">
         </#if>
     </#list>
-    
+
     @XmlTransient
     @JsonIgnore
     public static final Parameter[] PARAMETERS = new Parameter[] { ${params} };
@@ -133,32 +133,32 @@ public class  ${dataTypeName} implements Result, Validatable, Transcribable {
         return PARAMETERS;
     }
 
-    public void transcribe(TranscriptionOutput out, Set<TranscribableParams> params) throws Exception {
+    public void transcribe(TranscriptionOutput out, Set<TranscribableParams> params, boolean client) throws Exception {
         <#list dataType.params as param>
             <#if param.isEnumType>
         if (params.contains(TranscribableParams.EnumsWrittenAsStrings)) {
-            out.writeObject(get${param.paramName?cap_first}() != null ? get${param.paramName?cap_first}().name() : null, __${param.paramName}Param);
+            out.writeObject(get${param.paramName?cap_first}() != null ? get${param.paramName?cap_first}().name() : null, __${param.paramName}Param, client);
         }
         else {
-            out.writeObject(get${param.paramName?cap_first}(), __${param.paramName}Param);
+            out.writeObject(get${param.paramName?cap_first}(), __${param.paramName}Param, client);
         }
             <#else>
-        out.writeObject(get${param.paramName?cap_first}(), __${param.paramName}Param);
+        out.writeObject(get${param.paramName?cap_first}(), __${param.paramName}Param, client);
             </#if>
         </#list>
     }
 
-    public void transcribe(TranscriptionInput in, Set<TranscribableParams> params) throws Exception {
+    public void transcribe(TranscriptionInput in, Set<TranscribableParams> params, boolean client) throws Exception {
         <#list dataType.params as param>
             <#if param.isEnumType>
         if (params.contains(TranscribableParams.EnumsWrittenAsStrings)) {
-            setRaw${param.paramName?cap_first}Value((String)in.readObject(__${param.paramName}Param));
+            setRaw${param.paramName?cap_first}Value((String)in.readObject(__${param.paramName}Param, client));
         }
         else {
-            set${param.paramName?cap_first}((<@createTypeDecl param.paramType/>)in.readObject(__${param.paramName}Param));
+            set${param.paramName?cap_first}((<@createTypeDecl param.paramType/>)in.readObject(__${param.paramName}Param, client));
         }
             <#else>
-        set${param.paramName?cap_first}((<@createTypeDecl param.paramType/>)in.readObject(__${param.paramName}Param));
+        set${param.paramName?cap_first}((<@createTypeDecl param.paramType/>)in.readObject(__${param.paramName}Param, client));
             </#if>
         </#list>
     }
@@ -250,12 +250,12 @@ public class  ${dataTypeName} implements Result, Validatable, Transcribable {
             @XmlJavaTypeAdapter(value=com.betfair.cougar.util.dates.XMLDateAdapter.class)
         </#if>
     </#if>
-    
+
      <#if .node.extensions.validations?? && (.node.extensions.validations?size > 0)>
     <#assign validations=.node.extensions.validations>
 <#list validations?word_list as validation>
     @javax.validation.constraints.${validation}
-</#list>  
+</#list>
     </#if>
     public final <@createTypeDecl paramType/> get${paramCapFirst}()  {
         if (delegate != null) {
@@ -324,12 +324,12 @@ public class  ${dataTypeName} implements Result, Validatable, Transcribable {
     </#if>
 
         <#if isMandatory>
-            <#assign mandatoryCheck = "${mandatoryCheck} || (get${paramCapFirst}() == null)"> 
+            <#assign mandatoryCheck = "${mandatoryCheck} || (get${paramCapFirst}() == null)">
         </#if>
-    <#assign mandatoryChildCheck = "${mandatoryChildCheck} 
+    <#assign mandatoryChildCheck = "${mandatoryChildCheck}
         ValidationUtils.validateMandatory(get${paramCapFirst}());">
     <#assign toString = "${toString}+\"${paramName}=\"+get${paramCapFirst}()+\",\"">
-    
+
 </#macro><#t>
 
 <#macro @element></#macro><#t>

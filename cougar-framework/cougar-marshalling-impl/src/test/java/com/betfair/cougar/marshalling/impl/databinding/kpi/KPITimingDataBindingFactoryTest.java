@@ -67,7 +67,7 @@ public class KPITimingDataBindingFactoryTest {
         Marshaller marshaller = factory.getMarshaller();
 
         // remaining
-        marshaller.marshall(null, null, null);
+        marshaller.marshall(null, null, null, false);
 
         assertSame(marshaller, factory.getMarshaller());    // same instance always
         expectMarshall();
@@ -91,7 +91,7 @@ public class KPITimingDataBindingFactoryTest {
         UnMarshaller marshaller = factory.getUnMarshaller(); // any old class
 
         // remaining
-        marshaller.unmarshall(null,(Class)null,null);
+        marshaller.unmarshall(null,(Class)null,null, false);
 
         assertSame(marshaller, factory.getUnMarshaller());    // same instance always
         expectUnMarshall();
@@ -110,7 +110,7 @@ public class KPITimingDataBindingFactoryTest {
     }
 
     private void expectMarshall() {
-        verify(mockMarshaller).marshall(null,null, null);
+        verify(mockMarshaller).marshall(null,null, null, false);
         verify(monitor).addEvent(eq("Cougar.ws.foo.marshall"), anyLong(), eq(true));
     }
 
@@ -120,7 +120,7 @@ public class KPITimingDataBindingFactoryTest {
     }
 
     private void expectUnMarshall() {
-        verify(mockUnMarshaller).unmarshall(any(InputStream.class), any(Class.class), anyString());
+        verify(mockUnMarshaller).unmarshall(any(InputStream.class), any(Class.class), anyString(), anyBoolean());
         verify(monitor).addEvent(eq("Cougar.ws.foo.unmarshall"), anyLong(), eq(true));
     }
 

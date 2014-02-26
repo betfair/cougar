@@ -224,7 +224,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
         TestResponse tr = new TestResponse();
         tr.setResult(TEST_TEXT);
         when(mockedUnMarshaller.unmarshall(any(InputStream.class),
-                any(ParameterType.class), anyString())).thenReturn(tr);
+                any(ParameterType.class), anyString(), eq(true))).thenReturn(tr);
 
 
         mockAndMakeCall(mockGetMethod, HttpServletResponse.SC_OK, response, 18, client, ec, key, new Object[]{TEST_TEXT}, observer, ev, DefaultTimeConstraints.NO_CONSTRAINTS);
@@ -291,7 +291,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
         TestResponse tr = new TestResponse();
         tr.setResult(TEST_TEXT);
         when(mockedUnMarshaller.unmarshall(any(InputStream.class),
-                any(ParameterType.class), anyString())).thenReturn(tr);
+                any(ParameterType.class), anyString(), eq(true))).thenReturn(tr);
 
         mockAndMakeCall(mockGetMethod, HttpServletResponse.SC_OK, response, 18, client, createEC(null, null, false), key, new Object[]{TEST_TEXT}, observer, ev, DefaultTimeConstraints.NO_CONSTRAINTS);
 
@@ -406,7 +406,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
         TestResponse tr = new TestResponse();
         tr.setResult(TEST_TEXT);
         when(mockedUnMarshaller.unmarshall(any(InputStream.class), any(ParameterType.class),
-                anyString())).thenReturn(tr);
+                anyString(), eq(true))).thenReturn(tr);
 
         TestResponse testResponse = new TestResponse();
         testResponse.setResult(TEST_TEXT);
@@ -437,7 +437,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
         OperationKey key = TestServiceDefinition.TEST_MIXED;
         observer = new PassFailExecutionObserver(true, false);
 
-        when(mockedUnMarshaller.unmarshall(any(InputStream.class), any(ParameterType.class), anyString()))
+        when(mockedUnMarshaller.unmarshall(any(InputStream.class), any(ParameterType.class), anyString(), eq(true)))
                 .thenReturn(testResponse);
 
         mockAndMakeCall(mockPostMethod, HttpServletResponse.SC_OK, response, 18, client, createEC(null, null, false), key, new Object[]{TEST_TEXT, TEST_TEXT}, observer, ev, DefaultTimeConstraints.NO_CONSTRAINTS);

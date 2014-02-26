@@ -18,10 +18,7 @@ package com.betfair.cougar.transport.impl.protocol.http.rescript;
 
 import com.betfair.cougar.core.api.ev.OperationDefinition;
 import com.betfair.cougar.core.api.ev.OperationKey;
-import com.betfair.cougar.core.api.exception.CougarFrameworkException;
-import com.betfair.cougar.core.api.exception.CougarValidationException;
-import com.betfair.cougar.core.api.exception.ServerFaultCode;
-import com.betfair.cougar.core.api.exception.PanicInTheCougar;
+import com.betfair.cougar.core.api.exception.*;
 import com.betfair.cougar.core.api.transcription.EnumDerialisationException;
 import com.betfair.cougar.core.api.transcription.EnumUtils;
 import com.betfair.cougar.core.api.transcription.Parameter;
@@ -86,11 +83,12 @@ public class RescriptOperationBinding {
 	public Object[] resolveArgs(HttpServletRequest request, InputStream inputStream, MediaType mediaType, String encoding) {
         Object[] args = new Object[paramBindings.length];
 
+        String format = mediaType == null || mediaType.getSubtype() == null ? "unknown" : mediaType.getSubtype();
         RescriptBody body = null;
         if (bindingDescriptor.containsBodyData()) {
             //If the request contains body data, then it must be a post request
             if (!request.getMethod().equals("POST")) {
-                throw new CougarValidationException(ServerFaultCode.RescriptDeserialisationFailure, "Bad body data");
+                throw CougarMarshallingException.unmarshallingException(format, "Bad body data", false);
             }
             body = resolveBody(inputStream, mediaType, encoding);
         }
@@ -112,10 +110,10 @@ public class RescriptOperationBinding {
                 switch (descriptor.getSource()) {
                     case HEADER :
                         String key = descriptor.getName();
-                        args[i] = resolveArgument(headersWithNullValues.contains(key.toLowerCase()) ? "" : request.getHeader(key), param, descriptor);
+                        args[i] = resolveArgument(headersWithNullValues.contains(key.toLowerCase()) ? "" : request.getHeader(key), param, descriptor, format);
                         break;
                     case QUERY :
-                        args[i] = resolveArgument(request.getParameter(descriptor.getName()), param, descriptor);
+                        args[i] = resolveArgument(request.getParameter(descriptor.getName()), param, descriptor, format);
                         break;
                     case BODY :
                         if (body != null) {
@@ -135,24 +133,12 @@ public class RescriptOperationBinding {
             }
         }
         catch (EnumDerialisationException ede) {
-            // todo: this feels hacky, although maybe this is ok if moved to a utility
-            if (mediaType == null || mediaType.getSubtype() == null) {
-                throw new CougarValidationException(ServerFaultCode.ClassConversionFailure, ede.getMessage(), ede.getCause());
-            }
-            else if (mediaType.getSubtype().equals("json")) {
-                throw new CougarValidationException(ServerFaultCode.JSONDeserialisationFailure, ede.getMessage(), ede.getCause());
-            }
-            else if (mediaType.getSubtype().equals("xml")) {
-                throw new CougarValidationException(ServerFaultCode.XMLDeserialisationFailure, ede.getMessage(), ede.getCause());
-            }
-            else {
-                throw new CougarValidationException(ServerFaultCode.ClassConversionFailure, ede.getMessage(), ede.getCause());
-            }
+            throw CougarMarshallingException.unmarshallingException(format, ede.getMessage(), ede.getCause(), false);
         }
         return args;
     }
 
-    public Object resolveArgument(String value, Parameter param, RescriptParamBindingDescriptor descriptor) {
+    public Object resolveArgument(String value, Parameter param, RescriptParamBindingDescriptor descriptor, String format) {
         if (value != null) {
             //We only support one generic type - no maps etc.
             Class<?> genericClass = null;
@@ -162,7 +148,7 @@ public class RescriptOperationBinding {
             }
             return BindingUtils.convertToSimpleType(
                     param.getParameterType().getImplementationClass(),
-                    genericClass, param.getName(),  value, false, hardFailEnums);
+                    genericClass, param.getName(),  value, false, hardFailEnums, format, false);
         }
         return null;
     }
@@ -177,7 +163,7 @@ public class RescriptOperationBinding {
             UnMarshaller unMarshaller = factory.getUnMarshaller();
             return (RescriptBody)unMarshaller.unmarshall(inputStream,
                         bindingDescriptor.getBodyClass(),
-                        encoding);
+                        encoding, false);
         }
         return null;
     }

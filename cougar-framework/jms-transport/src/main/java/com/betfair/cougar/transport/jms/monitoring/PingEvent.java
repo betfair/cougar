@@ -57,12 +57,12 @@ public class PingEvent extends AbstractEvent {
         return PARAMETERS;
     }
 
-    public void transcribe(TranscriptionOutput out, Set<TranscribableParams> params) throws Exception {
-        out.writeObject(getEmissionTime(), __emissionTimeParam);
+    public void transcribe(TranscriptionOutput out, Set<TranscribableParams> params, boolean client) throws Exception {
+        out.writeObject(getEmissionTime(), __emissionTimeParam, client);
     }
 
-    public void transcribe(TranscriptionInput in, Set<TranscribableParams> params) throws Exception {
-        setEmissionTime((Long) in.readObject(__emissionTimeParam));
+    public void transcribe(TranscriptionInput in, Set<TranscribableParams> params, boolean client) throws Exception {
+        setEmissionTime((Long) in.readObject(__emissionTimeParam, client));
     }
 
     @XmlTransient

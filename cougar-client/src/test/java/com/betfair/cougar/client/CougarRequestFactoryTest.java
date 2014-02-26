@@ -142,7 +142,7 @@ public class CougarRequestFactoryTest {
 
 
         when(mockMessage.getHeaderMap()).thenReturn(Collections.<String, Object>emptyMap());
-        doAnswer(postAnswer).when(mockMarshaller).marshall(any(ByteArrayOutputStream.class), anyObject(), anyString());
+        doAnswer(postAnswer).when(mockMarshaller).marshall(any(ByteArrayOutputStream.class), anyObject(), anyString(), eq(true));
 
         Object result = factory.create(uri, httpMethod, mockMessage, mockMarshaller, contentType, mockContext, mockTimeConstraints);
 

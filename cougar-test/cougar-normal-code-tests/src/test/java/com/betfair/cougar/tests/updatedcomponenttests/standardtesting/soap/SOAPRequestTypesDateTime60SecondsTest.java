@@ -30,7 +30,7 @@ import java.sql.Timestamp;
 import java.util.Map;
 
 /**
- * Ensure that when a SOAP request is received, Cougar correctly throws an error when 00:00:60 is entered as a time as this is invalid (should be 00:01:00) 
+ * Ensure that when a SOAP request is received, Cougar correctly throws an error when 00:00:60 is entered as a time as this is invalid (should be 00:01:00)
  */
 public class SOAPRequestTypesDateTime60SecondsTest {
     @Test
@@ -42,9 +42,9 @@ public class SOAPRequestTypesDateTime60SecondsTest {
         CougarManager cougarManager2 = CougarManager.getInstance();
         HttpCallBean getNewHttpCallBean2 = cougarManager2.getNewHttpCallBean("87.248.113.14");
         cougarManager2 = cougarManager2;
-        
+
         getNewHttpCallBean2.setServiceName("Baseline");
-        
+
         getNewHttpCallBean2.setVersion("v2");
         // Set the created SOAP request as the PostObject
         getNewHttpCallBean2.setPostObjectForRequestType(createAsDocument1, "SOAP");
@@ -55,16 +55,16 @@ public class SOAPRequestTypesDateTime60SecondsTest {
         cougarManager2.makeSoapCougarHTTPCalls(getNewHttpCallBean2);
         // Create the expected response object as an XML document (fault)
         XMLHelpers xMLHelpers4 = new XMLHelpers();
-        Document createAsDocument10 = xMLHelpers4.getXMLObjectFromString("<soapenv:Fault><faultcode>soapenv:Client</faultcode><faultstring>DSC-0006</faultstring><detail/></soapenv:Fault>");
+        Document createAsDocument10 = xMLHelpers4.getXMLObjectFromString("<soapenv:Fault><faultcode>soapenv:Client</faultcode><faultstring>DSC-0044</faultstring><detail/></soapenv:Fault>");
         // Convert the expected response to SOAP for comparison with actual response
         Map<String, Object> convertResponseToSOAP11 = cougarManager2.convertResponseToSOAP(createAsDocument10, getNewHttpCallBean2);
         // Check the response is as expected
         HttpResponseBean response5 = getNewHttpCallBean2.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.SOAP);
         AssertionUtils.multiAssertEquals(convertResponseToSOAP11.get("SOAP"), response5.getResponseObject());
-        
+
         // generalHelpers.pauseTest(3000L);
         // Check the log entries are as expected
-        
+
     }
 
 }

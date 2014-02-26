@@ -61,12 +61,12 @@ public class RestPostRequestTypesDateTime24HourTest {
             cougarManager1.makeRestCougarHTTPCalls(getNewHttpCallBean1);
             // Create the expected response as an XML document (using the date objects created earlier)
             XMLHelpers xMLHelpers4 = new XMLHelpers();
-            Document responseXMLForXMLInput = xMLHelpers4.createAsDocument(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(("<fault><faultcode>Client</faultcode><faultstring>DSC-0007</faultstring><detail/></fault>").getBytes())));
-            Document responseXMLForJSONInput = xMLHelpers4.createAsDocument(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(("<fault><faultcode>Client</faultcode><faultstring>DSC-0008</faultstring><detail/></fault>").getBytes())));
+            Document responseXMLForXMLInput = xMLHelpers4.createAsDocument(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(("<fault><faultcode>Client</faultcode><faultstring>DSC-0044</faultstring><detail/></fault>").getBytes())));
+            Document responseXMLForJSONInput = xMLHelpers4.createAsDocument(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(("<fault><faultcode>Client</faultcode><faultstring>DSC-0044</faultstring><detail/></fault>").getBytes())));
             // Create the expected response as a JSON object (using the date objects created earlier)
             JSONHelpers jSONHelpers5 = new JSONHelpers();
-            JSONObject responseJSONForJSONInput = jSONHelpers5.createAsJSONObject(new JSONObject("{\"detail\":{},\"faultcode\":\"Client\",\"faultstring\":\"DSC-0008\"}"));
-            JSONObject responseJSONForXMLInput = jSONHelpers5.createAsJSONObject(new JSONObject("{\"detail\":{},\"faultcode\":\"Client\",\"faultstring\":\"DSC-0007\"}"));
+            JSONObject responseJSONForJSONInput = jSONHelpers5.createAsJSONObject(new JSONObject("{\"detail\":{},\"faultcode\":\"Client\",\"faultstring\":\"DSC-0044\"}"));
+            JSONObject responseJSONForXMLInput = jSONHelpers5.createAsJSONObject(new JSONObject("{\"detail\":{},\"faultcode\":\"Client\",\"faultstring\":\"DSC-0044\"}"));
             // Check the 4 responses are as expected
             HttpResponseBean response6 = getNewHttpCallBean1.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTXMLXML);
             AssertionUtils.multiAssertEquals(responseXMLForXMLInput, response6.getResponseObject());

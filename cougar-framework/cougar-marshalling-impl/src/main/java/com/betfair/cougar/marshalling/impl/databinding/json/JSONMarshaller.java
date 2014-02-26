@@ -22,7 +22,7 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 
-import com.betfair.cougar.core.api.exception.CougarServiceException;
+import com.betfair.cougar.core.api.exception.CougarMarshallingException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.marshalling.api.databinding.FaultMarshaller;
 import com.betfair.cougar.marshalling.api.databinding.Marshaller;
@@ -46,20 +46,20 @@ public class JSONMarshaller implements Marshaller, FaultMarshaller {
 	}
 
 	@Override
-	public void marshall(OutputStream outputStream, Object result, String encoding) {
+	public void marshall(OutputStream outputStream, Object result, String encoding, boolean client) {
 		try {
 			objectMapper.writeValue(outputStream, result);
 		} catch (JsonProcessingException e) {
-            throw new CougarServiceException(ServerFaultCode.JSONSerialisationFailure, "Failed to marshall object of class "+result.getClass().getCanonicalName()+" to JSON", e);
+            throw CougarMarshallingException.marshallingException(getFormat(), "Failed to marshall object of class "+result.getClass().getCanonicalName()+" to JSON", e, client);
 		} catch (IOException e) {
-            throw new CougarServiceException(ServerFaultCode.OutputChannelClosedCantWrite, "Failed to write JSON object to stream", e);
+            throw CougarMarshallingException.marshallingException(getFormat(), "Failed to write JSON object to stream", e, client);
         }
 	}
 
 	@Override
 	public void marshallFault(OutputStream outputStream, CougarFault fault, String encoding) {
-		HashMap<String,Object> faultMap = new HashMap<String,Object>();
-		HashMap<String,Object> detailMap = new HashMap<String,Object>();
+		HashMap<String,Object> faultMap = new HashMap<>();
+		HashMap<String,Object> detailMap = new HashMap<>();
 		faultMap.put("faultcode", fault.getFaultCode().name());
 		faultMap.put("faultstring", fault.getErrorCode());
 		faultMap.put("detail", detailMap);
@@ -72,14 +72,14 @@ public class JSONMarshaller implements Marshaller, FaultMarshaller {
         List<String[]> faultMessages = detail.getFaultMessages();
         if (faultMessages != null) {
             detailMap.put("exceptionname", detail.getFaultName());
-        	HashMap<String,Object> paramMap = new HashMap<String,Object>();
+        	HashMap<String,Object> paramMap = new HashMap<>();
         	detailMap.put(detail.getFaultName(), paramMap);
         	for (String[] msg: faultMessages) {
     	        paramMap.put(msg[0], msg[1]);
         	}
         }
 
-        marshall(outputStream, faultMap, encoding);
+        marshall(outputStream, faultMap, encoding, false);
 	}
 
 

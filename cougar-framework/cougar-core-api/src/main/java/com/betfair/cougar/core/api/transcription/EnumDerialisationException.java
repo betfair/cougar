@@ -21,6 +21,7 @@ import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 /**
  *
  */
+// todo: would like to make this a marshalling exception, but we need to know media types and whether client or server
 public class EnumDerialisationException extends CougarFrameworkException {
     public EnumDerialisationException(IllegalArgumentException t) {
         super(t.getMessage(), t);

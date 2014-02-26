@@ -30,12 +30,12 @@ public class TerminateHeap extends AbstractUpdateAction {
     private static Parameter[] parameters = new Parameter[0];
 
     @Override
-    public void transcribe(TranscriptionOutput out, Set<TranscribableParams> params) throws Exception {
+    public void transcribe(TranscriptionOutput out, Set<TranscribableParams> params, boolean client) throws Exception {
         // NOTE: add new fields at the end
     }
 
     @Override
-    public void transcribe(TranscriptionInput in, Set<TranscribableParams> params) throws Exception {
+    public void transcribe(TranscriptionInput in, Set<TranscribableParams> params, boolean client) throws Exception {
         // NOTE: add new fields at the end
     }
 

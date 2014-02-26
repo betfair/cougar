@@ -16,13 +16,11 @@
 
 package com.betfair.cougar.netutil.nio.connected;
 
-import com.betfair.cougar.core.api.ServiceVersion;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
 import com.betfair.cougar.core.api.transcription.TranscribableParams;
 import com.betfair.cougar.core.api.transcription.TranscriptionInput;
 import com.betfair.cougar.core.api.transcription.TranscriptionOutput;
-import com.betfair.platform.virtualheap.NodeType;
 import com.betfair.platform.virtualheap.updates.Update;
 
 import java.util.Set;
@@ -63,18 +61,18 @@ public class RemoveIndex extends AbstractUpdateAction {
     }
 
     @Override
-    public void transcribe(TranscriptionOutput out, Set<TranscribableParams> params) throws Exception {
-        out.writeObject(parentId, parameters[0]);
-        out.writeObject(id, parameters[1]);
-        out.writeObject(index, parameters[2]);
+    public void transcribe(TranscriptionOutput out, Set<TranscribableParams> params, boolean client) throws Exception {
+        out.writeObject(parentId, parameters[0], client);
+        out.writeObject(id, parameters[1], client);
+        out.writeObject(index, parameters[2], client);
         // NOTE: add new fields at the end
     }
 
     @Override
-    public void transcribe(TranscriptionInput in, Set<TranscribableParams> params) throws Exception {
-        parentId = (Integer) in.readObject(parameters[0]);
-        id = (Integer) in.readObject(parameters[1]);
-        index = (Integer) in.readObject(parameters[2]);
+    public void transcribe(TranscriptionInput in, Set<TranscribableParams> params, boolean client) throws Exception {
+        parentId = (Integer) in.readObject(parameters[0], client);
+        id = (Integer) in.readObject(parameters[1], client);
+        index = (Integer) in.readObject(parameters[2], client);
         // NOTE: add new fields at the end
     }
 

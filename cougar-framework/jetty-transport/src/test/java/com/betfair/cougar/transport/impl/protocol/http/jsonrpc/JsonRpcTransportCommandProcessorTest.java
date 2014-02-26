@@ -613,8 +613,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         TestOutputStream tos = new TestOutputStream();
         when(response.getOutputStream()).thenReturn(tos);
 
-        CommandResolver<HttpCommand> resolver = commandProcessor.createCommandResolver(mockedCommand);
-
+        commandProcessor.createCommandResolver(mockedCommand);
 
         //What should happen is a total parse failure and something should be written with parse error -32700
         String written = tos.getCapturedOutputStream();

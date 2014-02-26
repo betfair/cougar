@@ -27,6 +27,10 @@ public class CougarClientException extends CougarException {
 	private CougarApplicationException dae;
     private boolean confirmedAsCougar;
 
+	public CougarClientException(CougarException ce) {
+		this(ce.getServerFaultCode(), ce.getMessage(), ce.getCause());
+	}
+
 	public CougarClientException(ServerFaultCode fault, String message) {
 		this(fault, message, true);
 	}

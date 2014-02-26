@@ -19,7 +19,6 @@ package com.betfair.cougar.netutil.nio.hessian;
 import java.io.IOException;
 import java.util.Set;
 
-import com.betfair.cougar.api.fault.CougarApplicationException;
 import com.betfair.cougar.core.api.fault.FaultDetail;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
@@ -33,7 +32,7 @@ import com.caucho.hessian.io.Serializer;
  * A serialiser for serialising transcribable classes that are internal to cougar (specifically {@link FaultDetail})
  * </p>
  * This class doesn't conform to the contraints required by the {@link TranscribableSerialiser}.  As a consequence more control over the serialisation is
- * handed to these two classes.  The downside is that any changes to the transcription of these classes will break clients 
+ * handed to these two classes.  The downside is that any changes to the transcription of these classes will break clients
  */
 public class FaultDetailSerialiser implements Serializer{
 
@@ -54,11 +53,11 @@ public class FaultDetailSerialiser implements Serializer{
         FaultDetail transcribableException = (FaultDetail) obj;
 		TranscriptionOutput to = new TranscriptionOutput() {
 			@Override
-			public void writeObject(Object obj, Parameter param) throws Exception {
+			public void writeObject(Object obj, Parameter param, boolean client) throws Exception {
 				out.writeObject(obj);
-				
+
 		}};
-		
+
 		int ref = out.writeObjectBegin(obj.getClass().getName());
 
 		try {
@@ -74,19 +73,19 @@ public class FaultDetailSerialiser implements Serializer{
 		catch (Exception e) {
 			throw new IOException(e);
 		}
-		
-		
+
+
 	}
 
     private void transcribe(TranscriptionOutput out, FaultDetail detail) throws Exception {
-        out.writeObject(detail.getDetailMessage(), FaultDetail.detailMessageParam);
+        out.writeObject(detail.getDetailMessage(), FaultDetail.detailMessageParam, false);
         if (detail.getCause() != null && detail.getCause() instanceof Transcribable) {
             Transcribable tCause = (Transcribable) detail.getCause();
-            out.writeObject(ClassnameCompatibilityMapper.toMajorMinorPackaging(tCause.getClass(), tCause.getServiceVersion()), FaultDetail.faultClassNameParam);
+            out.writeObject(ClassnameCompatibilityMapper.toMajorMinorPackaging(tCause.getClass(), tCause.getServiceVersion()), FaultDetail.faultClassNameParam, false);
             ParameterType type = new ParameterType(detail.getCause().getClass(), null);
-            out.writeObject(detail.getCause(), new Parameter("exception", type, false));
+            out.writeObject(detail.getCause(), new Parameter("exception", type, false), false);
         } else {
-            out.writeObject(null, FaultDetail.faultClassNameParam);
+            out.writeObject(null, FaultDetail.faultClassNameParam, false);
         }
     }
 

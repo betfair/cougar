@@ -183,7 +183,7 @@ public class ServerClientFactory {
 
 
         final NioLogger nioLogger = new NioLogger("ALL");
-        ExecutionVenueServerHandler handler = new ExecutionVenueServerHandler(nioLogger, cmdProcessor, new HessianObjectIOFactory());
+        ExecutionVenueServerHandler handler = new ExecutionVenueServerHandler(nioLogger, cmdProcessor, new HessianObjectIOFactory(false));
         server.setServerHandler(handler);
 
         IoSessionManager sessionManager = new IoSessionManager();
@@ -223,7 +223,7 @@ public class ServerClientFactory {
         factory.setIdentityResolver(Mockito.mock(IdentityResolver.class));
 
         NioLogger logger = new NioLogger("ALL");
-		ExecutionVenueNioClient client = new ExecutionVenueNioClient(logger,  cfg, new HessianObjectIOFactory(), new ClientConnectedObjectManager(), null, connectionString,
+		ExecutionVenueNioClient client = new ExecutionVenueNioClient(logger,  cfg, new HessianObjectIOFactory(true), new ClientConnectedObjectManager(), null, connectionString,
                 new JMXReportingThreadPoolExecutor(30, 60, 0, TimeUnit.SECONDS, new SynchronousQueue<Runnable>()), new JMXReportingThreadPoolExecutor(30, 60, 0, TimeUnit.SECONDS, new SynchronousQueue<Runnable>()),
                 new DNSBasedAddressResolver());
         client.setMarshaller(marshaller);

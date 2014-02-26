@@ -191,7 +191,7 @@ public class ExecutionVenueNioServerTest {
     @Before
     public void startDummyEchoSocketServer() throws IOException {
 
-    	ioFactory = new HessianObjectIOFactory();
+    	ioFactory = new HessianObjectIOFactory(false);
 
 		cfg = new TlsNioConfig();
         final NioLogger logger = new NioLogger("ALL");
@@ -296,7 +296,7 @@ public class ExecutionVenueNioServerTest {
         cmdProcessor.onCougarStart();
 
 
-        ExecutionVenueServerHandler handler = new ExecutionVenueServerHandler(new NioLogger("NONE"), cmdProcessor, new HessianObjectIOFactory());
+        ExecutionVenueServerHandler handler = new ExecutionVenueServerHandler(new NioLogger("NONE"), cmdProcessor, new HessianObjectIOFactory(false));
         server.setServerHandler(handler);
         server.setSocketAcceptorProcessors(1);
         server.setServerExecutor(Executors.newCachedThreadPool());

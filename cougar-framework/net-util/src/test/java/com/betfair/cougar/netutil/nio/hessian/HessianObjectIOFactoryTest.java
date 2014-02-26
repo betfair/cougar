@@ -17,7 +17,7 @@ public class HessianObjectIOFactoryTest {
 
     private static final byte PROTOCOL_VERSION = 0x01;
 
-    private HessianObjectIOFactory target = new HessianObjectIOFactory();
+    private HessianObjectIOFactory target = new HessianObjectIOFactory(true);
 
     @Test
     public void testSerializationAndDeserialization() throws Exception {

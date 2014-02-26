@@ -229,17 +229,17 @@ public class SocketTransportCommandProcessor extends AbstractCommandProcessor<So
         } catch (EnumDerialisationException ede) {
             final String message = ede.getMessage();
             logger.log(Level.FINER, message, ede);
-            throw new CougarServiceException(ServerFaultCode.BinDeserialisationFailure, message, ede);
+            throw CougarMarshallingException.unmarshallingException("binary",message,ede,false);
         } catch (CougarException ce) {
             throw ce;
         } catch (TranscriptionException e) {
             final String message = "transcription exception deserialising invocation";
             logger.log(Level.FINER, message, e);
-            throw new CougarServiceException(ServerFaultCode.ClassConversionFailure, message, e);
+            throw CougarMarshallingException.unmarshallingException("binary",message,e,false);
         } catch (Exception e) {
             final String message = "Unable to deserialise invocation";
             logger.log(Level.FINER, message, e);
-            throw new CougarServiceException(ServerFaultCode.BinDeserialisationFailure, message, e);
+            throw CougarMarshallingException.unmarshallingException("binary",message,e,false);
         }
 
     }

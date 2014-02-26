@@ -68,7 +68,7 @@ public class JMSEventUnMarshallerTest {
         Mockito.when(message.getText()).thenReturn("");
 
         ExpectedEvent e = Mockito.mock(ExpectedEvent.class);
-        Mockito.when(unMarshallerImpl.unmarshall(Matchers.any(InputStream.class), Matchers.eq(ExpectedEvent.class), Matchers.anyString())).thenReturn(e);
+        Mockito.when(unMarshallerImpl.unmarshall(Matchers.any(InputStream.class), Matchers.eq(ExpectedEvent.class), Matchers.anyString(), Matchers.eq(true))).thenReturn(e);
 
         List<Class<? extends Event>> eventBodyClasses = new ArrayList<Class<? extends Event>>();
         eventBodyClasses.add(ExpectedEvent.class);

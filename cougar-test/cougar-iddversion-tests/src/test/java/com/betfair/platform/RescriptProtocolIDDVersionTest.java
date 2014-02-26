@@ -37,8 +37,8 @@ public class RescriptProtocolIDDVersionTest extends TestSuite{
 		BaselineSyncClient baselineClient = (BaselineSyncClient) springContext.getBean("baselineClient");
 		super.setBaselineClient(baselineClient);
 	}
-	
-	
+
+
 	@AfterClass
 	public void stopCougarClient() {
 		springContext.getBeanFactory().destroySingletons();
@@ -47,10 +47,10 @@ public class RescriptProtocolIDDVersionTest extends TestSuite{
 
     @Override
     protected String getExpectedValidValueRemovedErrorCode() {
-        return "DSC-0009";
+        return "DSC-0044";
     }
 
-	
+
 	public static void main(String[] args) {
 		new RescriptProtocolIDDVersionTest().startCougarClient();
 	}

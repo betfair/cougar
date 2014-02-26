@@ -91,7 +91,7 @@ public class CougarProtocolTest {
         server.setNioConfig(cfg);
         NioLogger sessionLogger = new NioLogger("ALL");
         TransportCommandProcessor<SocketTransportCommand> processor = new SocketTransportCommandProcessor();
-        CougarObjectIOFactory objectIOFactory = new HessianObjectIOFactory();
+        CougarObjectIOFactory objectIOFactory = new HessianObjectIOFactory(false);
         ExecutionVenueServerHandler serverHandler = new ExecutionVenueServerHandler(sessionLogger, processor, objectIOFactory) {
             @Override
             public void messageReceived(IoSession session, Object message) throws Exception {

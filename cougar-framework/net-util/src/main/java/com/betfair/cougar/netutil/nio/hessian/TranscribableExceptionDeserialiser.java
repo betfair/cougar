@@ -16,9 +16,7 @@
 
 package com.betfair.cougar.netutil.nio.hessian;
 
-import com.betfair.cougar.core.api.fault.FaultDetail;
 import com.betfair.cougar.core.api.transcription.Parameter;
-import com.betfair.cougar.core.api.transcription.ParameterType;
 import com.betfair.cougar.core.api.transcription.TranscribableParams;
 import com.betfair.cougar.core.api.transcription.TranscriptionInput;
 import com.caucho.hessian.io.AbstractDeserializer;
@@ -40,13 +38,13 @@ public class TranscribableExceptionDeserialiser extends AbstractDeserializer {
 
     @Override
 	public Object readObject(final AbstractHessianInput in, Object[] fields) throws IOException {
-		
+
 		try {
-			
+
 			TranscriptionInput ti = new TranscriptionInput() {
 
 				@Override
-				public <T> T readObject(Parameter param) throws Exception {
+				public <T> T readObject(Parameter param, boolean client) throws Exception {
 					return (T) in.readObject();
 				}
 			};
@@ -57,13 +55,13 @@ public class TranscribableExceptionDeserialiser extends AbstractDeserializer {
             Object ret = constructor.newInstance(ti, transcriptionParams);
 
             in.setRef(ref, ret);
-			
+
 			return ret;
-		} 
+		}
 		catch (Exception e) {
 			throw new IOException(e);
 		}
-		
+
 	}
 
 }

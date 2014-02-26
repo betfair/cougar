@@ -68,7 +68,7 @@ public class JMSEventUnMarshaller implements EventUnMarshaller<TextMessage> {
                 throw new CougarFrameworkException("Can't find event class for event named '"+eventNameFromMessage+"'");
             }
 
-            AbstractEvent event = (AbstractEvent) dataBindingFactory.getUnMarshaller().unmarshall(is, correctClass, encodingType);
+            AbstractEvent event = (AbstractEvent) dataBindingFactory.getUnMarshaller().unmarshall(is, correctClass, encodingType, true);
 
             event.setMessageId(transportEvent.getStringProperty(JMSPropertyConstants.MESSAGE_ID_FIELD_NAME));
             event.setCougarMessageRouteString(transportEvent.getStringProperty(JMSPropertyConstants.MESSAGE_ROUTING_FIELD_NAME));

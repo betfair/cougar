@@ -16,13 +16,11 @@
 
 package com.betfair.cougar.marshalling.impl.databinding.xml;
 
-import com.betfair.cougar.core.api.exception.CougarServiceException;
+import com.betfair.cougar.core.api.exception.CougarMarshallingException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.fault.CougarFault;
 import com.betfair.cougar.core.api.fault.FaultController;
 import com.betfair.cougar.core.api.fault.FaultDetail;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
 import com.betfair.cougar.marshalling.api.databinding.FaultMarshaller;
 import com.betfair.cougar.marshalling.api.databinding.Marshaller;
 
@@ -47,8 +45,7 @@ public class XMLMarshaller implements Marshaller, FaultMarshaller {
         System.setProperty("javax.xml.stream.XMLEventFactory", "com.ctc.wstx.stax.WstxEventFactory");
     }
     private static final XMLOutputFactory factory = XMLOutputFactory.newInstance();
-    private static ConcurrentMap<String,JAXBContext> jaxbContexts = new ConcurrentHashMap<String, JAXBContext>();
-    private static final CougarLogger logger = CougarLoggingUtils.getLogger(XMLMarshaller.class);
+    private static ConcurrentMap<String,JAXBContext> jaxbContexts = new ConcurrentHashMap<>();
 
     XMLMarshaller() {
 
@@ -60,7 +57,7 @@ public class XMLMarshaller implements Marshaller, FaultMarshaller {
 	}
 
 	@Override
-	public void marshall(final OutputStream outputStream, final Object result, String encoding) {
+	public void marshall(final OutputStream outputStream, final Object result, String encoding, boolean client) {
 		XMLStreamWriter xmlWriter = null;
         try {
 			xmlWriter = factory.createXMLStreamWriter(outputStream);
@@ -72,9 +69,9 @@ public class XMLMarshaller implements Marshaller, FaultMarshaller {
             }
 			marshaller.marshal(result, xmlWriter);
         } catch (final XMLStreamException e) {
-            throw new CougarServiceException(getServerFaultCode(e), "Failed to stream object to XML", e);
+            throw CougarMarshallingException.marshallingException(getFormat(), "Failed to stream object to XML", e, client);
         } catch (final JAXBException e) {
-            throw new CougarServiceException(getServerFaultCode(e), "Failed to marshall object to XML", e);
+            throw CougarMarshallingException.marshallingException(getFormat(), "Failed to marshal object to XML", e, client);
         } finally {
         	if (xmlWriter != null) {
 				try {
@@ -84,18 +81,6 @@ public class XMLMarshaller implements Marshaller, FaultMarshaller {
         }
 
 
-	}
-	private ServerFaultCode getServerFaultCode(Throwable e) {
-        Set<Throwable> seen = new HashSet<Throwable>();
-
-        while (e != null && !seen.contains(e)) {
-            if (e instanceof IOException) {
-                return ServerFaultCode.OutputChannelClosedCantWrite;
-            }
-            seen.add(e);
-            e = e.getCause();
-        }
-        return ServerFaultCode.XMLSerialisationFailure;
 	}
 
 	@Override
@@ -115,9 +100,9 @@ public class XMLMarshaller implements Marshaller, FaultMarshaller {
 		    xmlWriter.writeEndDocument();
 
         } catch (final XMLStreamException e) {
-            throw new CougarServiceException(getServerFaultCode(e), "Failed to stream fault "+fault.getClass()+" to XML", e);
+            throw CougarMarshallingException.marshallingException(getFormat(), "Failed to stream fault "+fault.getClass()+" to XML", e, false);
         } catch (final JAXBException e) {
-            throw new CougarServiceException(getServerFaultCode(e), "Failed to marshall fault "+fault.getClass()+" to XML", e);
+            throw CougarMarshallingException.marshallingException(getFormat(), "Failed to marshal fault "+fault.getClass()+" to XML", e, false);
         }
         finally {
         	if (xmlWriter != null) {

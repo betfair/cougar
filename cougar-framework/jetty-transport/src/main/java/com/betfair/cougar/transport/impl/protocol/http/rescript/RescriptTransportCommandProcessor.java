@@ -36,11 +36,7 @@ import com.betfair.cougar.core.api.ev.ExecutionResult;
 import com.betfair.cougar.core.api.ev.OperationDefinition;
 import com.betfair.cougar.core.api.ev.OperationKey;
 import com.betfair.cougar.core.api.ev.TimeConstraints;
-import com.betfair.cougar.core.api.exception.CougarException;
-import com.betfair.cougar.core.api.exception.CougarFrameworkException;
-import com.betfair.cougar.core.api.exception.CougarValidationException;
-import com.betfair.cougar.core.api.exception.PanicInTheCougar;
-import com.betfair.cougar.core.api.exception.ServerFaultCode;
+import com.betfair.cougar.core.api.exception.*;
 import com.betfair.cougar.core.api.transcription.EnumUtils;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.logging.CougarLogger;
@@ -300,7 +296,7 @@ public class RescriptTransportCommandProcessor extends AbstractTerminateableHttp
                             if (responseMediaType.getSubtype().equals("json")) {
                                 toMarshall = responseWrapper.getResult();
                             }
-                            marshaller.marshall(out, toMarshall, encoding);
+                            marshaller.marshall(out, toMarshall, encoding, false);
                             logAccess(command,
                                     context, bytesRead,
                                     out.getCount(), requestMediaType,

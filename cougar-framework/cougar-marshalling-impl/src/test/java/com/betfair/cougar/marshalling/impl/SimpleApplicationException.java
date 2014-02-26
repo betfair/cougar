@@ -55,8 +55,8 @@ public class SimpleApplicationException extends CougarApplicationException imple
      * Constructor for reading the Exception from a TranscriptionInput source
      * @param in the TranscriptionInput to read the exception data from
      */
-    public SimpleApplicationException(TranscriptionInput in, Set<TranscribableParams> transcriptionParams) throws Exception {
-    	this((ResponseCode)in.readObject(__responseCodeParameter), ((String)in.readObject(__messageParameter)));
+    public SimpleApplicationException(TranscriptionInput in, Set<TranscribableParams> transcriptionParams, boolean client) throws Exception {
+    	this((ResponseCode)in.readObject(__responseCodeParameter, client), ((String)in.readObject(__messageParameter, client)));
         transcribeStackTrace(in);
     }
 
@@ -74,14 +74,14 @@ public class SimpleApplicationException extends CougarApplicationException imple
 
 
     @Override
-    public void transcribe(TranscriptionOutput out, Set<TranscribableParams> params) throws Exception {
-        out.writeObject(getResponseCode(), __responseCodeParameter);
-        out.writeObject(getMessage(), __messageParameter);
+    public void transcribe(TranscriptionOutput out, Set<TranscribableParams> params, boolean client) throws Exception {
+        out.writeObject(getResponseCode(), __responseCodeParameter, client);
+        out.writeObject(getMessage(), __messageParameter, client);
         transcribeStackTrace(out);
     }
 
     @Override
-    public void transcribe(TranscriptionInput in, Set<TranscribableParams> params) throws Exception {
+    public void transcribe(TranscriptionInput in, Set<TranscribableParams> params, boolean client) throws Exception {
         //Empty - transcription is done in the constructor
     }
 
@@ -93,26 +93,26 @@ public class SimpleApplicationException extends CougarApplicationException imple
 	private void transcribeStackTrace(TranscriptionOutput out) throws Exception {
 		StackTraceElement[] stackTrace = getStackTrace();
 		if (stackTrace != null) {
-			out.writeObject(stackTrace.length, __stackSizeParameter);
+			out.writeObject(stackTrace.length, __stackSizeParameter, false);
 			for (StackTraceElement element : stackTrace) {
-				out.writeObject(element.getClassName(), __stackClassNameParameter);
-				out.writeObject(element.getMethodName(), __stackMethodNameParameter);
-				out.writeObject(element.getFileName(), __stackFileNameParameter);
-				out.writeObject(element.getLineNumber(), __stackLineNumberParameter);
+				out.writeObject(element.getClassName(), __stackClassNameParameter, false);
+				out.writeObject(element.getMethodName(), __stackMethodNameParameter, false);
+				out.writeObject(element.getFileName(), __stackFileNameParameter, false);
+				out.writeObject(element.getLineNumber(), __stackLineNumberParameter, false);
 			}
-		} else out.writeObject(null, __stackSizeParameter);
+		} else out.writeObject(null, __stackSizeParameter, false);
 	}
 
 	private void transcribeStackTrace(TranscriptionInput in) throws Exception {
-		Integer size = in.readObject(__stackSizeParameter);
+		Integer size = in.readObject(__stackSizeParameter, true);
 		if (size != null) {
 			StackTraceElement[] stackTrace = new StackTraceElement[size];
 			for (int i = 0; i < stackTrace.length; i++) {
 				stackTrace[i] = new StackTraceElement(
-					(String)in.readObject( __stackClassNameParameter),
-					(String)in.readObject( __stackMethodNameParameter),
-					(String)in.readObject( __stackFileNameParameter),
-					(Integer)in.readObject(__stackLineNumberParameter));
+					(String)in.readObject( __stackClassNameParameter, true),
+					(String)in.readObject( __stackMethodNameParameter, true),
+					(String)in.readObject( __stackFileNameParameter, true),
+					(Integer)in.readObject(__stackLineNumberParameter, true));
 			}
 			setStackTrace(stackTrace);
 		}

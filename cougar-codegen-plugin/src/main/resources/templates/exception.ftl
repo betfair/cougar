@@ -48,7 +48,7 @@ import com.betfair.cougar.core.api.transcription.EnumUtils;
 @SuppressWarnings("all")
 public class  ${service} extends CougarApplicationException implements Transcribable {
     private static final String prefix = "${doc.@prefix}-";
-    
+
     private static final Parameter __responseCodeParameter = new Parameter("responseCode",new ParameterType(ResponseCode.class, null ),false);
     private static final Parameter __stackSizeParameter = new Parameter("stackSize",new ParameterType(Integer.class, null ),false);
     private static final Parameter __stackClassNameParameter = new Parameter("stackClass",new ParameterType(String.class, null ),false);
@@ -57,7 +57,7 @@ public class  ${service} extends CougarApplicationException implements Transcrib
     private static final Parameter __stackLineNumberParameter = new Parameter("stackLineNo",new ParameterType(Integer.class, null ),false);
 
     <#recurse doc><#t>
-    
+
     public ${service}(ResponseCode responseCode ${constructorArgs}) {
     	super(responseCode,  prefix + ${firstEnumName}.getCode());
         ${constructorParams}
@@ -88,13 +88,13 @@ public class  ${service} extends CougarApplicationException implements Transcrib
      * @param in the TranscriptionInput to read the exception data from
      */
     public ${service}(TranscriptionInput in, Set<TranscribableParams> _transcriptionParams) throws Exception {
-        this((ResponseCode)in.readObject(__responseCodeParameter)
+        this((ResponseCode)in.readObject(__responseCodeParameter, true)
     <#list exception.params as param>
         <#if param.isEnumType>
             <#assign paramCapFirst=param.paramName?cap_first><#t>
         , read${paramCapFirst}(in, _transcriptionParams)
         <#else>
-        , ((<@createTypeDecl param.paramType/>)in.readObject(__${param.paramName}Parameter))
+        , ((<@createTypeDecl param.paramType/>)in.readObject(__${param.paramName}Parameter, true))
         </#if>
     </#list>);
     transcribeStackTrace(in);
@@ -105,33 +105,33 @@ public class  ${service} extends CougarApplicationException implements Transcrib
             <#assign paramCapFirst=param.paramName?cap_first><#t>
     private static String read${paramCapFirst}(TranscriptionInput in, Set<TranscribableParams> _transcriptionParams) throws Exception {
         if (_transcriptionParams.contains(TranscribableParams.EnumsWrittenAsStrings)) {
-            return (String) in.readObject(__${param.paramName}Parameter);
+            return (String) in.readObject(__${param.paramName}Parameter, true);
         }
         else {
-            <@createTypeDecl param.paramType/> ${param.paramName} = (<@createTypeDecl param.paramType/>) in.readObject(__${param.paramName}Parameter);
+            <@createTypeDecl param.paramType/> ${param.paramName} = (<@createTypeDecl param.paramType/>) in.readObject(__${param.paramName}Parameter, true);
             return ${param.paramName} != null ? ${param.paramName}.name() : null;
         }
     }
         </#if>
     </#list>
-    
+
     /**
      * Constructor with the cause of the exception (exception chaining)
-     * @param  cause the cause 
+     * @param  cause the cause
      * @see Throwable#getCause()
      */
     public ${service}(Throwable cause, ResponseCode responseCode ${constructorArgs}) {
         super(responseCode,  prefix + ${firstEnumName}.getCode(), cause);
         ${constructorParams}
     }
-    
+
     @Override
 	public List<String[]> getApplicationFaultMessages() {
 		List<String[]> appFaults = new ArrayList<String[]>();
 		${appFaultMessages}
 		return appFaults;
 	}
-	
+
     @Override
 	public String getApplicationFaultNamespace() {
 		return "${namespace}";
@@ -142,24 +142,24 @@ public class  ${service} extends CougarApplicationException implements Transcrib
         return PARAMETERS;
     }
 
-    public void transcribe(TranscriptionOutput out, Set<TranscribableParams> _transcriptionParams) throws Exception {
-		out.writeObject(getResponseCode(), __responseCodeParameter);
+    public void transcribe(TranscriptionOutput out, Set<TranscribableParams> _transcriptionParams, boolean client) throws Exception {
+		out.writeObject(getResponseCode(), __responseCodeParameter, client);
 	    <#list exception.params as param>
             <#if param.isEnumType>
         if (_transcriptionParams.contains(TranscribableParams.EnumsWrittenAsStrings)) {
-            out.writeObject(get${param.paramName?cap_first}() != null ? get${param.paramName?cap_first}().name() : null, __${param.paramName}Parameter);
+            out.writeObject(get${param.paramName?cap_first}() != null ? get${param.paramName?cap_first}().name() : null, __${param.paramName}Parameter, client);
         }
         else {
-            out.writeObject(get${param.paramName?cap_first}(), __${param.paramName}Parameter);
+            out.writeObject(get${param.paramName?cap_first}(), __${param.paramName}Parameter, client);
         }
             <#else>
-        out.writeObject(get${param.paramName?cap_first}(), __${param.paramName}Parameter);
+        out.writeObject(get${param.paramName?cap_first}(), __${param.paramName}Parameter, client);
             </#if>
 	    </#list>
 	    transcribeStackTrace(out);
 	}
 
-    public void transcribe(TranscriptionInput in, Set<TranscribableParams> params) throws Exception {
+    public void transcribe(TranscriptionInput in, Set<TranscribableParams> params, boolean client) throws Exception {
 //Empty - transcription is done in the constructor
     }
 
@@ -169,30 +169,30 @@ public class  ${service} extends CougarApplicationException implements Transcrib
     public ServiceVersion getServiceVersion() {
         return SERVICE_VERSION;
     }
-	
+
 	private void transcribeStackTrace(TranscriptionOutput out) throws Exception {
 		StackTraceElement[] stackTrace = getStackTrace();
 		if (stackTrace != null) {
-			out.writeObject(stackTrace.length, __stackSizeParameter);
+			out.writeObject(stackTrace.length, __stackSizeParameter, false);
 			for (StackTraceElement element : stackTrace) {
-				out.writeObject(element.getClassName(), __stackClassNameParameter);
-				out.writeObject(element.getMethodName(), __stackMethodNameParameter);			
-				out.writeObject(element.getFileName(), __stackFileNameParameter);
-				out.writeObject(element.getLineNumber(), __stackLineNumberParameter);
+				out.writeObject(element.getClassName(), __stackClassNameParameter, false);
+				out.writeObject(element.getMethodName(), __stackMethodNameParameter, false);
+				out.writeObject(element.getFileName(), __stackFileNameParameter, false);
+				out.writeObject(element.getLineNumber(), __stackLineNumberParameter, false);
 			}
-		} else out.writeObject(null, __stackSizeParameter);
+		} else out.writeObject(null, __stackSizeParameter, false);
 	}
 
 	private void transcribeStackTrace(TranscriptionInput in) throws Exception {
-		Integer size = in.readObject(__stackSizeParameter);
+		Integer size = in.readObject(__stackSizeParameter, true);
 		if (size != null) {
 			StackTraceElement[] stackTrace = new StackTraceElement[size];
 			for (int i = 0; i < stackTrace.length; i++) {
 				stackTrace[i] = new StackTraceElement(
-					(String)in.readObject( __stackClassNameParameter),
-					(String)in.readObject( __stackMethodNameParameter),
-					(String)in.readObject( __stackFileNameParameter),
-					(Integer)in.readObject(__stackLineNumberParameter));
+					(String)in.readObject( __stackClassNameParameter, true),
+					(String)in.readObject( __stackMethodNameParameter, true),
+					(String)in.readObject( __stackFileNameParameter, true),
+					(Integer)in.readObject(__stackLineNumberParameter, true));
 			}
 			setStackTrace(stackTrace);
 		}
@@ -214,7 +214,7 @@ public class  ${service} extends CougarApplicationException implements Transcrib
     <#assign isEnumType=.node.validValues[0]??><#t>
     <#if isEnumType>
     	<#assign javaType = "${service}${paramCapFirst}Enum"><#t>
-    <#else> 
+    <#else>
     	<#assign javaType = translateTypes(paramType)><#t>
     </#if>
     <#assign constructorArgs = "${constructorArgs}, ${javaType} ${param}">
@@ -229,7 +229,7 @@ public class  ${service} extends CougarApplicationException implements Transcrib
         <#assign constructorArgsNoTypesEnumsAsStrings = "${constructorArgsNoTypesEnumsAsStrings}, ${param}">
         <#assign constructorParamsEnumsAsStrings = "${constructorParamsEnumsAsStrings} set${paramCapFirst}(${param});">
     </#if>
-    <#assign appFaultMessages = "${appFaultMessages} appFaults.add(new String[] {\"${param}\", String.valueOf(${param})});"> 
+    <#assign appFaultMessages = "${appFaultMessages} appFaults.add(new String[] {\"${param}\", String.valueOf(${param})});">
 	<#if !firstEnumName??>
     	<#assign firstEnumName = "${param}">
     </#if><#t>

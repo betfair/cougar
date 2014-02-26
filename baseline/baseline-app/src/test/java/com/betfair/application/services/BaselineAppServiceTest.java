@@ -69,8 +69,8 @@ public class BaselineAppServiceTest extends XMLTestCase implements BaselineClien
             throw new RuntimeException("Failed to initialise tester", e);
         }
     }
-    
-	
+
+
     private HttpCallable identityChainCall = new HttpCallable("IDENTITY_CHAIN", REST_BASE
 			+ IDENT_CHAIN_PATH, SOAP_ENDPOINT, HttpStatus.SC_OK,
 			new HttpBodyBuilder(IDENT_CHAIN_SOAP));
@@ -638,7 +638,7 @@ public class BaselineAppServiceTest extends XMLTestCase implements BaselineClien
         // check result is OK
         assertTrue("Error returned: "+result, result.contains("error"));
         assertTrue("Error returned: "+result, result.contains("-32700"));
-        assertTrue("Error returned: "+result, result.contains("DSC-0008"));
+        assertTrue("Error returned: "+result, result.contains("DSC-0044"));
     }
 
     @Test
@@ -763,11 +763,11 @@ public class BaselineAppServiceTest extends XMLTestCase implements BaselineClien
 	private String makeRequest(HttpCallable call, String contentType)throws Exception {
 		return makeRequest(call, new Object[] { 10 }, 1, contentType, null, null);
 	}
-		
+
 	private String makeRequest(HttpCallable call, Object[] paramValues, String contentType) throws Exception {
 		return makeRequest(call, paramValues, 1, contentType, null, null);
 	}
-	
+
 	private String makeRequest(HttpCallable call, int size, String contentType) throws Exception {
 		return makeRequest(call, new Object[] { 10 }, size, contentType, null, null);
 	}

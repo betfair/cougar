@@ -25,6 +25,7 @@ import java.util.*;
 
 import com.betfair.cougar.api.fault.FaultCode;
 import com.betfair.cougar.core.api.client.EnumWrapper;
+import com.betfair.cougar.core.api.exception.CougarMarshallingException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.fault.CougarFault;
 import com.betfair.cougar.core.api.fault.FaultDetail;
@@ -34,7 +35,6 @@ import com.betfair.cougar.marshalling.api.databinding.FaultUnMarshaller;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.CougarValidationException;
 
 import com.betfair.cougar.marshalling.api.databinding.UnMarshaller;
@@ -55,7 +55,7 @@ public class JSONUnMarshaller implements UnMarshaller, FaultUnMarshaller {
 	}
 
 	@Override
-	public Object unmarshall(InputStream inputStream, Class<?> clazz, String encoding) {
+	public Object unmarshall(InputStream inputStream, Class<?> clazz, String encoding, boolean client) {
 		try {
 			Reader reader = new BufferedReader(new InputStreamReader(inputStream,encoding));
 			return objectMapper.readValue(reader, clazz);
@@ -63,30 +63,31 @@ public class JSONUnMarshaller implements UnMarshaller, FaultUnMarshaller {
 //            if (e.getCause() instanceof CougarException) {
 //                throw (CougarException) e.getCause();
 //            }
-			throw new CougarValidationException(ServerFaultCode.JSONDeserialisationFailure, e);
+            throw CougarMarshallingException.unmarshallingException(getFormat(), e, client);
 		} catch (IOException e) {
-			throw new CougarServiceException(ServerFaultCode.JSONDeserialisationFailure, "Failed to unmarshall object", e);
+            throw CougarMarshallingException.unmarshallingException(getFormat(), "Failed to unmarshall object", e, client);
 		}
 	}
 
     private static final ParameterType STRING_PARAM_TYPE = new ParameterType(String.class, null);
 
-    public Object unmarshall(InputStream inputStream, ParameterType parameterType, String encoding) {
+    public Object unmarshall(InputStream inputStream, ParameterType parameterType, String encoding, boolean client) {
         try {
             Reader reader = new BufferedReader(new InputStreamReader(inputStream,encoding));
             if (parameterType.getImplementationClass().equals(EnumWrapper.class)) {
                 String value = objectMapper.readValue(reader, buildJavaType(STRING_PARAM_TYPE));
+                //noinspection unchecked
                 return new EnumWrapper(parameterType.getComponentTypes()[0].getImplementationClass(), value);
             }
             else {
                 return objectMapper.readValue(reader, buildJavaType(parameterType));
             }
         } catch (EnumDerialisationException e) {
-            throw new CougarServiceException(ServerFaultCode.JSONDeserialisationFailure, "Failed to unmarshall enum", e);
+            throw CougarMarshallingException.unmarshallingException(getFormat(), "Failed to unmarshall enum", e, client);
         } catch (JsonProcessingException e) {
-            throw new CougarServiceException(ServerFaultCode.JSONDeserialisationFailure, "Failed to unmarshall object", e);
+            throw CougarMarshallingException.unmarshallingException(getFormat(), "Failed to unmarshall object", e, client);
         } catch (IOException e) {
-            throw new CougarServiceException(ServerFaultCode.JSONDeserialisationFailure, "Failed to unmarshall object", e);
+            throw CougarMarshallingException.unmarshallingException(getFormat(), "Failed to unmarshall object", e, client);
         }
 
     }
@@ -116,22 +117,25 @@ public class JSONUnMarshaller implements UnMarshaller, FaultUnMarshaller {
 
     @Override
     public CougarFault unMarshallFault(InputStream inputStream, String encoding) {
-        final HashMap<String,Object> faultMap = (HashMap<String,Object>) unmarshall(inputStream, HashMap.class, encoding);
+        //noinspection unchecked
+        final HashMap<String,Object> faultMap = (HashMap<String,Object>) unmarshall(inputStream, HashMap.class, encoding, true);
 
         final String faultString = (String)faultMap.get("faultstring");
         final FaultCode faultCode = FaultCode.valueOf((String) faultMap.get("faultcode"));
 
 
+        //noinspection unchecked
         final HashMap<String, Object> detailMap = (HashMap<String, Object>)faultMap.get("detail");
         String exceptionName = (String)detailMap.get("exceptionname");
 
         List<String[]> faultParams = Collections.emptyList();
         if (exceptionName != null) {
-            faultParams = new ArrayList<String[]>();
+            faultParams = new ArrayList<>();
+            //noinspection unchecked
             Map<String, Object> paramMap = (Map<String, Object>) detailMap.get(exceptionName);
 
             for(Map.Entry e:paramMap.entrySet()){
-                String[] nvpair=new String[] { (String)e.getKey(), (String)e.getValue().toString() };
+                String[] nvpair=new String[] { (String)e.getKey(), e.getValue().toString() };
                 faultParams.add(nvpair);
             }
         }

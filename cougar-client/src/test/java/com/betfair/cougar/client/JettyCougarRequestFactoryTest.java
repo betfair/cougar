@@ -22,7 +22,6 @@ import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.marshalling.api.databinding.Marshaller;
 import com.betfair.cougar.util.RequestUUIDImpl;
 import com.betfair.cougar.util.UUIDGeneratorImpl;
-import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -77,7 +76,7 @@ public class JettyCougarRequestFactoryTest {
         when(mockMessage.getHeaderMap()).thenReturn(Collections.<String, Object>emptyMap());
         when(mockMessage.getRequestBodyMap()).thenReturn(Collections.<String, Object>singletonMap("key", "value"));
         doAnswer(postAnswer).when(mockMarshaller).marshall(any(ByteArrayOutputStream.class), anyObject(),
-                anyString());
+                anyString(), eq(true));
         RequestUUIDImpl.setGenerator(new UUIDGeneratorImpl());
     }
 

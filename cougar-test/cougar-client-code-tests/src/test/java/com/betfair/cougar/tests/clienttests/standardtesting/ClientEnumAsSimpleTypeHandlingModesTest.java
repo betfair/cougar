@@ -20,6 +20,7 @@ import com.betfair.baseline.v2.BaselineSyncClient;
 import com.betfair.baseline.v2.enumerations.ClientServerEnum;
 import com.betfair.cougar.core.api.client.EnumWrapper;
 import com.betfair.cougar.core.api.exception.CougarClientException;
+import com.betfair.cougar.core.api.exception.CougarMarshallingException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.tests.clienttests.ClientTestsHelper;
 import com.betfair.cougar.tests.clienttests.CougarClientWrapper;
@@ -82,18 +83,7 @@ public class ClientEnumAsSimpleTypeHandlingModesTest {
             fail("Expected an exception here");
         }
         catch (CougarClientException cfe) {
-            ServerFaultCode expected;
-            switch (tt.getUnderlyingTransport()) {
-                case HTTP:
-                    expected = ServerFaultCode.JSONDeserialisationFailure;
-                    break;
-                case Socket:
-                    expected = ServerFaultCode.BinDeserialisationFailure;
-                    break;
-                default:
-                    throw new IllegalStateException("Unrecognised transport "+tt.getUnderlyingTransport());
-            }
-            assertEquals(toString(cfe), expected, cfe.getServerFaultCode());
+            assertEquals(toString(cfe), ServerFaultCode.ClientDeserialisationFailure, cfe.getServerFaultCode());
         }
     }
 
@@ -118,18 +108,7 @@ public class ClientEnumAsSimpleTypeHandlingModesTest {
             client.enumHandling2(cougarClientWrapper.getCtx(), ClientServerEnum.ClientOnly, false);
         }
         catch (CougarClientException cfe) {
-            ServerFaultCode expected;
-            switch (tt.getUnderlyingTransport()) {
-                case HTTP:
-                    expected = ServerFaultCode.JSONDeserialisationFailure;
-                    break;
-                case Socket:
-                    expected = ServerFaultCode.BinDeserialisationFailure;
-                    break;
-                default:
-                    throw new IllegalStateException("Unrecognised transport "+tt.getUnderlyingTransport());
-            }
-            assertEquals(toString(cfe), expected, cfe.getServerFaultCode());
+            assertEquals(toString(cfe), ServerFaultCode.ServerDeserialisationFailure, cfe.getServerFaultCode());
         }
     }
 

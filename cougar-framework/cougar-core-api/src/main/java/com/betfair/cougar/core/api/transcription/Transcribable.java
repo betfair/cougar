@@ -23,8 +23,8 @@ import java.util.Set;
 
 public interface Transcribable {
 
-	public void transcribe(TranscriptionOutput out, Set<TranscribableParams> params) throws Exception;
-	public void transcribe(TranscriptionInput in, Set<TranscribableParams> params) throws Exception;
+	public void transcribe(TranscriptionOutput out, Set<TranscribableParams> params, boolean client) throws Exception;
+	public void transcribe(TranscriptionInput in, Set<TranscribableParams> params, boolean client) throws Exception;
 
     public Parameter[] getParameters();
 

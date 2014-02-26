@@ -47,7 +47,7 @@ public class RestIDLHeaderParamByteIncorrectDataTypeTest {
         // Get the cougar logging attribute for getting log entries later
         // Point the created HttpCallBean at the correct service
         httpCallBeanBaseline.setServiceName("baseline", "cougarBaseline");
-        
+
         httpCallBeanBaseline.setVersion("v2");
         // Set up the Http Call Bean to make the request
         CougarManager cougarManager2 = CougarManager.getInstance();
@@ -78,7 +78,7 @@ public class RestIDLHeaderParamByteIncorrectDataTypeTest {
             hinstance.makeRestCougarHTTPCalls(hbean);
             // Create the expected response as an XML document (Fault)
             XMLHelpers xMLHelpers6 = new XMLHelpers();
-            Document createAsDocument13 = xMLHelpers6.getXMLObjectFromString("<fault><faultcode>Client</faultcode><faultstring>DSC-0009</faultstring><detail/></fault>");
+            Document createAsDocument13 = xMLHelpers6.getXMLObjectFromString("<fault><faultcode>Client</faultcode><faultstring>DSC-0044</faultstring><detail/></fault>");
             // Convert the expected response to REST types for comparison with actual responses
             Map<CougarMessageProtocolRequestTypeEnum, Object> convertResponseToRestTypes14 = hinstance.convertResponseToRestTypes(createAsDocument13, hbean);
             // Check the 4 responses are as expected (Bad Request)

@@ -16,7 +16,6 @@
 
 package com.betfair.cougar.netutil.nio;
 
-import com.betfair.cougar.core.api.ServiceVersion;
 import com.betfair.cougar.core.api.transcription.*;
 import com.betfair.platform.virtualheap.HeapListener;
 import com.betfair.cougar.netutil.nio.connected.*;
@@ -51,18 +50,18 @@ public class HeapDelta extends AbstractHeapTranscribable {
     }
 
     @Override
-    public void transcribe(TranscriptionOutput out, Set<TranscribableParams> params) throws Exception {
-        out.writeObject(heapId, parameters[0]);
-        out.writeObject(updateId, parameters[1]);
-        out.writeObject(updates, parameters[2]);
+    public void transcribe(TranscriptionOutput out, Set<TranscribableParams> params, boolean client) throws Exception {
+        out.writeObject(heapId, parameters[0], client);
+        out.writeObject(updateId, parameters[1], client);
+        out.writeObject(updates, parameters[2], client);
         // NOTE: add new fields at the end
     }
 
     @Override
-    public void transcribe(TranscriptionInput in, Set<TranscribableParams> params) throws Exception {
-        heapId = (Long) in.readObject(parameters[0]);
-        updateId = (Long) in.readObject(parameters[1]);
-        updates = (List<Update>) in.readObject(parameters[2]);
+    public void transcribe(TranscriptionInput in, Set<TranscribableParams> params, boolean client) throws Exception {
+        heapId = (Long) in.readObject(parameters[0], client);
+        updateId = (Long) in.readObject(parameters[1], client);
+        updates = (List<Update>) in.readObject(parameters[2], client);
         // NOTE: add new fields at the end
     }
 

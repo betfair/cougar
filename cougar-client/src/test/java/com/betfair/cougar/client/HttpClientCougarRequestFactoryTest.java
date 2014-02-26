@@ -85,7 +85,7 @@ public class HttpClientCougarRequestFactoryTest {
         when(mockMessage.getHeaderMap()).thenReturn(Collections.<String, Object>emptyMap());
         when(mockMessage.getRequestBodyMap()).thenReturn(Collections.<String, Object>singletonMap("key", "value"));
         doAnswer(postAnswer).when(mockMarshaller).marshall(any(ByteArrayOutputStream.class), anyObject(),
-                anyString());
+                anyString(), eq(true));
         RequestUUIDImpl.setGenerator(new UUIDGeneratorImpl());
     }
 

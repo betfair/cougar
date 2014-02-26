@@ -21,11 +21,11 @@ import com.betfair.cougar.core.api.transcription.ParameterType;
 import java.io.InputStream;
 
 public interface UnMarshaller {
-	
-	public Object unmarshall(InputStream inputStream, Class<?> clazz, String encoding);
 
-    public Object unmarshall(InputStream inputStream, ParameterType parameterType, String encoding);
-	
+	public Object unmarshall(InputStream inputStream, Class<?> clazz, String encoding, boolean client);
+
+    public Object unmarshall(InputStream inputStream, ParameterType parameterType, String encoding, boolean client);
+
 	public String getFormat();
-	
+
 }

@@ -46,19 +46,19 @@ public class RestIDLPostBodyElementMapJSONKeyNotPassedTest {
         // Get the cougar logging attribute for getting log entries later
         // Point the created HttpCallBean at the correct service
         httpCallBeanBaseline.setServiceName("baseline", "cougarBaseline");
-        
+
         httpCallBeanBaseline.setVersion("v2");
         // Set up the Http Call Bean to make the request
         CougarManager cougarManager2 = CougarManager.getInstance();
         HttpCallBean getNewHttpCallBean2 = cougarManager2.getNewHttpCallBean("87.248.113.14");
         cougarManager2 = cougarManager2;
-        
+
         cougarManager2.setCougarFaultControllerJMXMBeanAttrbiute("DetailedFaults", "false");
-        
+
         getNewHttpCallBean2.setOperationName("simpleMapOperation");
-        
+
         getNewHttpCallBean2.setServiceName("baseline", "cougarBaseline");
-        
+
         getNewHttpCallBean2.setVersion("v2");
         // Set the body parameter to a map that contains a value with no corresponding key
         Map map3 = new HashMap();
@@ -73,7 +73,7 @@ public class RestIDLPostBodyElementMapJSONKeyNotPassedTest {
         cougarManager2.makeRestCougarHTTPCall(getNewHttpCallBean2, com.betfair.testing.utils.cougar.enums.CougarMessageProtocolRequestTypeEnum.RESTJSON, com.betfair.testing.utils.cougar.enums.CougarMessageContentTypeEnum.JSON);
         // Create the expected response as an XML document (Fault)
         XMLHelpers xMLHelpers5 = new XMLHelpers();
-        Document createAsDocument12 = xMLHelpers5.getXMLObjectFromString("<fault><faultcode>Client</faultcode><faultstring>DSC-0008</faultstring><detail/></fault>");
+        Document createAsDocument12 = xMLHelpers5.getXMLObjectFromString("<fault><faultcode>Client</faultcode><faultstring>DSC-0044</faultstring><detail/></fault>");
         // Convert expected response to a JSON object for comparison with JSON actual response
         JSONHelpers jSONHelpers6 = new JSONHelpers();
         JSONObject convertXMLDocumentToJSONObjectRemoveRootElement13 = jSONHelpers6.convertXMLDocumentToJSONObjectRemoveRootElement(createAsDocument12);
@@ -82,15 +82,15 @@ public class RestIDLPostBodyElementMapJSONKeyNotPassedTest {
         AssertionUtils.multiAssertEquals(createAsDocument12, response7.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response7.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response7.getHttpStatusText());
-        
+
         HttpResponseBean response8 = getNewHttpCallBean2.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTJSONJSON);
         AssertionUtils.multiAssertEquals(convertXMLDocumentToJSONObjectRemoveRootElement13, response8.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response8.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response8.getHttpStatusText());
-        
+
         // generalHelpers.pauseTest(500L);
         // Check the log entries are as expected
-        
+
         CougarManager cougarManager11 = CougarManager.getInstance();
         cougarManager11.verifyAccessLogEntriesAfterDate(getTimeAsTimeStamp9, new AccessLogRequirement("87.248.113.14", "/cougarBaseline/v2/simpleMapOperation", "BadRequest"),new AccessLogRequirement("87.248.113.14", "/cougarBaseline/v2/simpleMapOperation", "BadRequest") );
     }

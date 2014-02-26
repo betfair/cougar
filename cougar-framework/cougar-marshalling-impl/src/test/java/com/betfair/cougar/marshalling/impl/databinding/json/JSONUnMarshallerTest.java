@@ -17,6 +17,7 @@
 package com.betfair.cougar.marshalling.impl.databinding.json;
 
 import com.betfair.cougar.api.ResponseCode;
+import com.betfair.cougar.core.api.exception.CougarMarshallingException;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.CougarValidationException;
 import com.betfair.cougar.core.api.fault.CougarFault;
@@ -54,14 +55,14 @@ public class JSONUnMarshallerTest extends CougarTestCase {
     public void testUnMarshal() {
         JSONUnMarshaller unMarshaller = new JSONUnMarshaller(new ObjectMapper());
 
-        TestClass test = (TestClass)unMarshaller.unmarshall(new ByteArrayInputStream("{\"message\":\"foo\"}".getBytes()), TestClass.class, UTF8);
+        TestClass test = (TestClass)unMarshaller.unmarshall(new ByteArrayInputStream("{\"message\":\"foo\"}".getBytes()), TestClass.class, UTF8, false);
         assertEquals("foo", test.getMessage());
     }
 
     public void testUnMarshalExtraField() {
         JSONUnMarshaller unMarshaller = new JSONUnMarshaller(new ObjectMapper());
 
-        TestClass test = (TestClass)unMarshaller.unmarshall(new ByteArrayInputStream("{\"message\":\"foo\", \"xtra\":\"bar\"}".getBytes()), TestClass.class, UTF8);
+        TestClass test = (TestClass)unMarshaller.unmarshall(new ByteArrayInputStream("{\"message\":\"foo\", \"xtra\":\"bar\"}".getBytes()), TestClass.class, UTF8, false);
         assertEquals("foo", test.getMessage());
     }
 
@@ -69,9 +70,9 @@ public class JSONUnMarshallerTest extends CougarTestCase {
         JSONUnMarshaller unMarshaller = new JSONUnMarshaller(new ObjectMapper());
 
         try {
-            unMarshaller.unmarshall(new ByteArrayInputStream("{\"message\":\"foo\"".getBytes()), TestClass.class, UTF8);
+            unMarshaller.unmarshall(new ByteArrayInputStream("{\"message\":\"foo\"".getBytes()), TestClass.class, UTF8, false);
             fail();
-        } catch (CougarValidationException dve) {
+        } catch (CougarMarshallingException dve) {
             assertEquals(ResponseCode.BadRequest, dve.getResponseCode());
         }
     }
@@ -89,7 +90,7 @@ public class JSONUnMarshallerTest extends CougarTestCase {
         TestDateClass test = (TestDateClass)unMarshaller.unmarshall(
                 new ByteArrayInputStream("{\"date\":\"2011-03-07T11:02:01.095Z\"}".getBytes()),
                 TestDateClass.class,
-                UTF8);
+                UTF8, false);
 
         Date date = DateTimeUtility.parse("2011-03-07T11:02:01.095Z");
         assertEquals("Mon Mar 07 11:02:01 UTC 2011", test.getDate().toString());
@@ -106,7 +107,7 @@ public class JSONUnMarshallerTest extends CougarTestCase {
                TestDateClass test = (TestDateClass)unMarshaller.unmarshall(
                 new ByteArrayInputStream(("{\"date\":\""+in+"\"}").getBytes()),
                 TestDateClass.class,
-                UTF8);
+                UTF8, false);
 
         Date date=DateTimeUtility.parse(out);
 
@@ -135,13 +136,13 @@ public class JSONUnMarshallerTest extends CougarTestCase {
         ParameterType pt = ParameterType.create(List.class, new Class[] { String.class });
 
         JSONUnMarshaller unMarshaller = new JSONUnMarshaller(new ObjectMapper());
-        List<String> actual = (List<String>)unMarshaller.unmarshall(new ByteArrayInputStream(sb.toString().getBytes()), pt, UTF8);
+        List<String> actual = (List<String>)unMarshaller.unmarshall(new ByteArrayInputStream(sb.toString().getBytes()), pt, UTF8, false);
 
         assertEqualsArray(strings, actual.toArray());
     }
 
     public void testMapMarshallingByJavaType() {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
 
         //Cricket world cup was on - teams rated
         map.put("India", "Very good");
@@ -167,7 +168,7 @@ public class JSONUnMarshallerTest extends CougarTestCase {
         ParameterType pt = ParameterType.create(Map.class, new Class[] { String.class, String.class });
 
         JSONUnMarshaller unMarshaller = new JSONUnMarshaller(new ObjectMapper());
-        Map<String,String> actual = (Map<String,String>)unMarshaller.unmarshall(new ByteArrayInputStream(sb.toString().getBytes()), pt, UTF8);
+        Map<String,String> actual = (Map<String,String>)unMarshaller.unmarshall(new ByteArrayInputStream(sb.toString().getBytes()), pt, UTF8, false);
 
         assertEqualsArray(map.keySet().toArray(), actual.keySet().toArray());
         assertEqualsArray(map.values().toArray(), actual.values().toArray());
@@ -179,7 +180,7 @@ public class JSONUnMarshallerTest extends CougarTestCase {
         TestDateClass test = (TestDateClass)unMarshaller.unmarshall(
         new ByteArrayInputStream(("{\"date\":\""+in+"\"}").getBytes()),
         pt,
-        UTF8);
+        UTF8, false);
 
         Date date=DateTimeUtility.parse(out);
 
@@ -196,9 +197,9 @@ public class JSONUnMarshallerTest extends CougarTestCase {
                 public int read() throws IOException {
                     throw ex;
                 }
-            }, TEST_CLASS_PARAMETER_TYPE, UTF8);
+            }, TEST_CLASS_PARAMETER_TYPE, UTF8, false);
             fail();
-        } catch (CougarServiceException dse) {
+        } catch (CougarMarshallingException dse) {
             assertEquals(ex, dse.getCause());
         }
 
@@ -214,9 +215,9 @@ public class JSONUnMarshallerTest extends CougarTestCase {
                 public int read() throws IOException {
                     throw ex;
                 }
-            }, TestClass.class, UTF8);
+            }, TestClass.class, UTF8, false);
             fail();
-        } catch (CougarServiceException dse) {
+        } catch (CougarMarshallingException dse) {
             assertEquals(ex, dse.getCause());
         }
     }

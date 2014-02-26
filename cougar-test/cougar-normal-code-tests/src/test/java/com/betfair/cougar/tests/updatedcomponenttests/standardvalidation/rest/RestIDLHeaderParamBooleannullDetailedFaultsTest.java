@@ -48,7 +48,7 @@ public class RestIDLHeaderParamBooleannullDetailedFaultsTest {
         // Get the cougar logging attribute for getting log entries later
         // Point the created HttpCallBean at the correct service
         httpCallBeanBaseline.setServiceName("baseline", "cougarBaseline");
-        
+
         httpCallBeanBaseline.setVersion("v2");
         // Set up the Http Call Bean to make the request
         CougarManager cougarManager2 = CougarManager.getInstance();
@@ -56,21 +56,21 @@ public class RestIDLHeaderParamBooleannullDetailedFaultsTest {
         cougarManager2 = cougarManager2;
         // Set DefaultFaults to true so whole fault message is returned
         cougarManager2.setCougarFaultControllerJMXMBeanAttrbiute("DetailedFaults", "true");
-        
+
         getNewHttpCallBean2.setOperationName("boolOperation");
-        
+
         getNewHttpCallBean2.setServiceName("baseline", "cougarBaseline");
-        
+
         getNewHttpCallBean2.setVersion("v2");
         // Set the Boolean Header param as null
         Map map3 = new HashMap();
         map3.put("headerParam",null);
         getNewHttpCallBean2.setHeaderParams(map3);
-        
+
         Map map4 = new HashMap();
         map4.put("queryParam","false");
         getNewHttpCallBean2.setQueryParams(map4);
-        
+
         getNewHttpCallBean2.setRestPostQueryObjects(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream("<message><bodyParameter>false</bodyParameter></message>".getBytes())));
         // Get current time for getting log entries later
 
@@ -79,28 +79,30 @@ public class RestIDLHeaderParamBooleannullDetailedFaultsTest {
         cougarManager2.makeRestCougarHTTPCalls(getNewHttpCallBean2);
         // Create the expected response as an XML document (Fault)
         XMLHelpers xMLHelpers6 = new XMLHelpers();
-        Document xmlResponse = xMLHelpers6.getXMLObjectFromString("<fault><faultcode>Client</faultcode><faultstring>DSC-0009</faultstring><detail><trace/><message>Unable to convert '' to java.lang.Boolean for parameter: headerParam</message></detail></fault>");
+        Document xmlResponseToXmlRequest = xMLHelpers6.getXMLObjectFromString("<fault><faultcode>Client</faultcode><faultstring>DSC-0044</faultstring><detail><trace/><message>xml: Unable to convert '' to java.lang.Boolean for parameter: headerParam</message></detail></fault>");
+        Document xmlResponseToJsonRequest = xMLHelpers6.getXMLObjectFromString("<fault><faultcode>Client</faultcode><faultstring>DSC-0044</faultstring><detail><trace/><message>json: Unable to convert '' to java.lang.Boolean for parameter: headerParam</message></detail></fault>");
         // Create the expected response as a JSON object (Detailed Fault)
         JSONHelpers jSONHelpers7 = new JSONHelpers();
-        JSONObject jsonResponse = jSONHelpers7.createAsJSONObject(new JSONObject("{\"detail\":{\"message\":\"Unable to convert '' to java.lang.Boolean for parameter: headerParam\",\"trace\":\"\"},\"faultcode\":\"Client\",\"faultstring\":\"DSC-0009\"}}"));
+        JSONObject jsonResponseToJsonRequest = jSONHelpers7.createAsJSONObject(new JSONObject("{\"detail\":{\"message\":\"json: Unable to convert '' to java.lang.Boolean for parameter: headerParam\",\"trace\":\"\"},\"faultcode\":\"Client\",\"faultstring\":\"DSC-0044\"}}"));
+        JSONObject jsonResponseToXmlRequest = jSONHelpers7.createAsJSONObject(new JSONObject("{\"detail\":{\"message\":\"xml: Unable to convert '' to java.lang.Boolean for parameter: headerParam\",\"trace\":\"\"},\"faultcode\":\"Client\",\"faultstring\":\"DSC-0044\"}}"));
         // Check the 4 responses are as expected (Bad Request)
         HttpResponseBean response8 = getNewHttpCallBean2.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTXMLXML);
-        AssertionUtils.multiAssertEquals(xmlResponse, response8.getResponseObject());
+        AssertionUtils.multiAssertEquals(xmlResponseToXmlRequest, response8.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response8.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response8.getHttpStatusText());
-        
+
         HttpResponseBean response9 = getNewHttpCallBean2.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTJSONJSON);
-        AssertionUtils.multiAssertEquals(jsonResponse, response9.getResponseObject());
+        AssertionUtils.multiAssertEquals(jsonResponseToJsonRequest, response9.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response9.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response9.getHttpStatusText());
-        
+
         HttpResponseBean response10 = getNewHttpCallBean2.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTXMLJSON);
-        AssertionUtils.multiAssertEquals(jsonResponse, response10.getResponseObject());
+        AssertionUtils.multiAssertEquals(jsonResponseToXmlRequest, response10.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response10.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response10.getHttpStatusText());
-        
+
         HttpResponseBean response11 = getNewHttpCallBean2.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTJSONXML);
-        AssertionUtils.multiAssertEquals(xmlResponse, response11.getResponseObject());
+        AssertionUtils.multiAssertEquals(xmlResponseToJsonRequest, response11.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response11.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response11.getHttpStatusText());
         // Check the log entries are as expected

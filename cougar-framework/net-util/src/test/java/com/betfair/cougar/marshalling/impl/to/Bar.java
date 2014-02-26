@@ -38,9 +38,9 @@ public class  Bar implements Result, Transcribable {
         this.delegate = delegate;
     }
 
-    	
+
     private Double barDouble;
-    
+
     public final Double getBarDouble()  {
         if (delegate != null) {
             return delegate.getBarDouble();
@@ -58,8 +58,8 @@ public class  Bar implements Result, Transcribable {
             this.barDouble=barDouble;
         }
     }
-    
-    
+
+
     private Baz[] bazArray = null;
     public final Baz[] getBazArray() {
     	if (delegate != null) {
@@ -69,7 +69,7 @@ public class  Bar implements Result, Transcribable {
     		return bazArray;
     	}
     }
-    
+
     public final void setBazArray(Baz[] bazArray) {
     	if (delegate != null) {
     		delegate.setBazArray(bazArray);
@@ -78,9 +78,9 @@ public class  Bar implements Result, Transcribable {
     		this.bazArray = bazArray;
     	}
     }
-    
-    private List<Baz> bazList = null;        
-    
+
+    private List<Baz> bazList = null;
+
     public final List<Baz> getBazList()  {
         if (delegate != null) {
             return delegate.getBazList();
@@ -98,9 +98,9 @@ public class  Bar implements Result, Transcribable {
             this.bazList=bazs;
         }
     }
-    
-    private Set<Baz> bazSet = null;        
-    
+
+    private Set<Baz> bazSet = null;
+
     public final Set<Baz> getBazSet()  {
         if (delegate != null) {
             return delegate.getBazSet();
@@ -118,38 +118,38 @@ public class  Bar implements Result, Transcribable {
             this.bazSet=bazSet;
         }
     }
-    
-    
+
+
 
     public Bar () {}
-    
-    
+
+
 
 	private static final Parameter __barDoubleParam = new Parameter("barDouble",new ParameterType(Double.class, null ),true);
 	private static final Parameter __bazListParam = new Parameter("bazList",new ParameterType(List.class, new ParameterType[] { new ParameterType(Baz.class,null) }),true);
 	private static final Parameter __bazSetParam = new Parameter("bazSet",new ParameterType(Set.class, new ParameterType[] { new ParameterType(Baz.class,null) }),true);
 	private static final Parameter __bazArrayParam = new Parameter("bazArray",new ParameterType(Baz[].class, new ParameterType[] { new ParameterType(Baz.class,null) }),true);
 
-    
+
     public static final Parameter[] PARAMETERS = new Parameter[] { __barDoubleParam , __bazListParam, __bazSetParam, __bazArrayParam};
 
     public Parameter[] getParameters() {
         return PARAMETERS;
     }
-    
-	public void transcribe(TranscriptionOutput out, Set<TranscribableParams> params) throws Exception {
-	    out.writeObject(getBarDouble(), __barDoubleParam);
-	    out.writeObject(getBazList(), __bazListParam);
-	    out.writeObject(getBazSet(), __bazSetParam);
-	    out.writeObject(getBazArray(),__bazArrayParam);
-	    
+
+	public void transcribe(TranscriptionOutput out, Set<TranscribableParams> params, boolean client) throws Exception {
+	    out.writeObject(getBarDouble(), __barDoubleParam, client);
+	    out.writeObject(getBazList(), __bazListParam, client);
+	    out.writeObject(getBazSet(), __bazSetParam, client);
+	    out.writeObject(getBazArray(),__bazArrayParam, client);
+
 	}
-	
-	public void transcribe(TranscriptionInput in, Set<TranscribableParams> params) throws Exception {
-	    setBarDouble((Double)in.readObject(__barDoubleParam));
-	    setBazList((List<Baz>) in.readObject(__bazListParam));
-	    setBazSet((Set<Baz>) in.readObject(__bazSetParam));
-	    setBazArray((Baz[]) in.readObject(__bazArrayParam));
+
+	public void transcribe(TranscriptionInput in, Set<TranscribableParams> params, boolean client) throws Exception {
+	    setBarDouble((Double)in.readObject(__barDoubleParam, client));
+	    setBazList((List<Baz>) in.readObject(__bazListParam, client));
+	    setBazSet((Set<Baz>) in.readObject(__bazSetParam, client));
+	    setBazArray((Baz[]) in.readObject(__bazArrayParam, client));
 	}
 
     @Override

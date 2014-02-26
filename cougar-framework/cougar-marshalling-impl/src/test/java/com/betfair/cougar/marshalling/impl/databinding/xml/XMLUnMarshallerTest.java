@@ -16,7 +16,8 @@
 
 package com.betfair.cougar.marshalling.impl.databinding.xml;
 
-import com.betfair.cougar.core.api.exception.CougarValidationException;
+import com.betfair.cougar.core.api.exception.CougarMarshallingException;
+import com.betfair.cougar.core.api.exception.CougarMarshallingException;
 import com.betfair.cougar.marshalling.api.databinding.UnMarshaller;
 import com.betfair.cougar.test.CougarTestCase;
 import org.junit.Ignore;
@@ -30,10 +31,10 @@ public class XMLUnMarshallerTest extends CougarTestCase {
 
 	public void testUnmarshall() {
 		UnMarshaller unMarshaller = new XMLDataBindingFactory(new JdkEmbeddedXercesSchemaValidationFailureParser()).getUnMarshaller();
-		TestClassUnmarshall tc = (TestClassUnmarshall) unMarshaller.unmarshall(new ByteArrayInputStream("<Test><message>foo</message></Test>".getBytes()),TestClassUnmarshall.class,"UTF-8");
+		TestClassUnmarshall tc = (TestClassUnmarshall) unMarshaller.unmarshall(new ByteArrayInputStream("<Test><message>foo</message></Test>".getBytes()),TestClassUnmarshall.class,"UTF-8", false);
 		assertEquals("foo", tc.message);
 
-		tc = (TestClassUnmarshall) unMarshaller.unmarshall(new ByteArrayInputStream("<Test><message>bar</message></Test>".getBytes()),TestClassUnmarshall.class,"UTF-8");
+		tc = (TestClassUnmarshall) unMarshaller.unmarshall(new ByteArrayInputStream("<Test><message>bar</message></Test>".getBytes()),TestClassUnmarshall.class,"UTF-8", false);
 		assertEquals("bar", tc.message);
 	}
 
@@ -41,27 +42,27 @@ public class XMLUnMarshallerTest extends CougarTestCase {
     @Ignore
     public void ignoredTestUnmarshallExtraField() {
         UnMarshaller unMarshaller = new XMLDataBindingFactory(new JdkEmbeddedXercesSchemaValidationFailureParser()).getUnMarshaller();
-        TestClassUnmarshall tc = (TestClassUnmarshall) unMarshaller.unmarshall(new ByteArrayInputStream("<Test><message>foo</message><xtra>bar</xtra></Test>".getBytes()),TestClassUnmarshall.class,"UTF-8");
+        TestClassUnmarshall tc = (TestClassUnmarshall) unMarshaller.unmarshall(new ByteArrayInputStream("<Test><message>foo</message><xtra>bar</xtra></Test>".getBytes()),TestClassUnmarshall.class,"UTF-8", false);
         assertEquals("foo", tc.message);
 
-        tc = (TestClassUnmarshall) unMarshaller.unmarshall(new ByteArrayInputStream("<Test><message>bar</message><xtra>bar</xtra></Test>".getBytes()),TestClassUnmarshall.class,"UTF-8");
+        tc = (TestClassUnmarshall) unMarshaller.unmarshall(new ByteArrayInputStream("<Test><message>bar</message><xtra>bar</xtra></Test>".getBytes()),TestClassUnmarshall.class,"UTF-8", false);
         assertEquals("bar", tc.message);
     }
 
 	public void testUnmarshallWithEnum() {
 		UnMarshaller unMarshaller = new XMLDataBindingFactory(new JdkEmbeddedXercesSchemaValidationFailureParser()).getUnMarshaller();
-		TestClassUnmarshallEnum tc = (TestClassUnmarshallEnum) unMarshaller.unmarshall(new ByteArrayInputStream("<TestEnum><message>foo</message></TestEnum>".getBytes()),TestClassUnmarshallEnum.class,"UTF-8");
+		TestClassUnmarshallEnum tc = (TestClassUnmarshallEnum) unMarshaller.unmarshall(new ByteArrayInputStream("<TestEnum><message>foo</message></TestEnum>".getBytes()),TestClassUnmarshallEnum.class,"UTF-8", false);
 		assertEquals(TestUnmarshallEnum.foo, tc.message);
 
 		try {
-			unMarshaller.unmarshall(new ByteArrayInputStream("<TestEnum><message>bar</message></TestEnum>".getBytes()),TestClassUnmarshallEnum.class,"UTF-8");
-		} catch (CougarValidationException e) {
+			unMarshaller.unmarshall(new ByteArrayInputStream("<TestEnum><message>bar</message></TestEnum>".getBytes()),TestClassUnmarshallEnum.class,"UTF-8", false);
+		} catch (CougarMarshallingException e) {
 			assertTrue(e.getMessage().contains("bar"));
 		}
 		try {
-			unMarshaller.unmarshall(new ByteArrayInputStream("<TestEnum><message></message></TestEnum>".getBytes()),TestClassUnmarshallEnum.class,"UTF-8");
+			unMarshaller.unmarshall(new ByteArrayInputStream("<TestEnum><message></message></TestEnum>".getBytes()),TestClassUnmarshallEnum.class,"UTF-8", false);
 			fail();
-		} catch (CougarValidationException e) {
+		} catch (CougarMarshallingException e) {
 			assertTrue(e.getMessage().contains("foo"));
 		}
 
@@ -69,13 +70,13 @@ public class XMLUnMarshallerTest extends CougarTestCase {
 
 	public void testUnmarshallWithInt() {
 		UnMarshaller unMarshaller = new XMLDataBindingFactory(new JdkEmbeddedXercesSchemaValidationFailureParser()).getUnMarshaller();
-		TestClassUnmarshallInt tc = (TestClassUnmarshallInt) unMarshaller.unmarshall(new ByteArrayInputStream("<TestInt><message>1</message></TestInt>".getBytes()),TestClassUnmarshallInt.class,"UTF-8");
+		TestClassUnmarshallInt tc = (TestClassUnmarshallInt) unMarshaller.unmarshall(new ByteArrayInputStream("<TestInt><message>1</message></TestInt>".getBytes()),TestClassUnmarshallInt.class,"UTF-8", false);
 		assertEquals(1, tc.message);
 
 		try {
-			unMarshaller.unmarshall(new ByteArrayInputStream("<TestInt><message>bar</message></TestInt>".getBytes()),TestClassUnmarshallInt.class,"UTF-8");
+			unMarshaller.unmarshall(new ByteArrayInputStream("<TestInt><message>bar</message></TestInt>".getBytes()),TestClassUnmarshallInt.class,"UTF-8", false);
 			fail();
-		} catch (CougarValidationException e) {
+		} catch (CougarMarshallingException e) {
 			assertTrue(e.getMessage().contains("bar"));
 		}
 
@@ -84,16 +85,16 @@ public class XMLUnMarshallerTest extends CougarTestCase {
 	public void testUnmarshallBadFormat() {
 		UnMarshaller unMarshaller = new XMLDataBindingFactory(new JdkEmbeddedXercesSchemaValidationFailureParser()).getUnMarshaller();
 		try {
-			unMarshaller.unmarshall(new ByteArrayInputStream("<Test><message>foo<message></Test>".getBytes()),TestClassUnmarshall.class,"UTF-8");
+			unMarshaller.unmarshall(new ByteArrayInputStream("<Test><message>foo<message></Test>".getBytes()),TestClassUnmarshall.class,"UTF-8", false);
 			fail();
-		} catch (CougarValidationException e) {
+		} catch (CougarMarshallingException e) {
 			assertTrue(e.getMessage().contains("message"));
 
 		}
 		try {
-			unMarshaller.unmarshall(new ByteArrayInputStream("<Test><message>foo</message><fish>plaice</fish></Test>".getBytes()),TestClassUnmarshall.class,"UTF-8");
+			unMarshaller.unmarshall(new ByteArrayInputStream("<Test><message>foo</message><fish>plaice</fish></Test>".getBytes()),TestClassUnmarshall.class,"UTF-8", false);
 			fail();
-		} catch (CougarValidationException e) {
+		} catch (CougarMarshallingException e) {
 			assertTrue(e.getMessage().contains("fish"));
 		}
 

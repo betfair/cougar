@@ -20,7 +20,7 @@ import java.io.OutputStream;
 
 public interface Marshaller {
 
-	void marshall(OutputStream outputStream, Object result, String encoding);
+	void marshall(OutputStream outputStream, Object result, String encoding, boolean client);
 	public String getFormat();
 
 }

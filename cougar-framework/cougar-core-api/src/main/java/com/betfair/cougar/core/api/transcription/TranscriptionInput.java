@@ -18,5 +18,5 @@ package com.betfair.cougar.core.api.transcription;
 
 
 public interface TranscriptionInput {
-	public <T> T readObject(Parameter param) throws Exception;
+	public <T> T readObject(Parameter param, boolean client) throws Exception;
 }

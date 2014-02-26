@@ -225,7 +225,9 @@
         <property name="marshaller" ref="clientSocketMarshaller"/>
     </bean>
 
-    <bean id="objectIOFactory" class="com.betfair.cougar.netutil.nio.hessian.HessianObjectIOFactory"/>
+    <bean id="objectIOFactory" class="com.betfair.cougar.netutil.nio.hessian.HessianObjectIOFactory">
+        <constructor-arg index="0" value="true"/>
+    </bean>
 
     <bean id="clientNioConfig" class="com.betfair.cougar.netutil.nio.TlsNioConfig">
         <property name="workerTimeout" value="$COUGAR_CLIENT{cougar.client.socket.worker.timeout}"/>

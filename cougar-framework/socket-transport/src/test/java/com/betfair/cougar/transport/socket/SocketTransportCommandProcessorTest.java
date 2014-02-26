@@ -222,7 +222,7 @@ public class SocketTransportCommandProcessorTest {
             try {
                 final String success="success";
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                CougarObjectOutput dos = new HessianObjectIOFactory().newCougarObjectOutput(bos, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
+                CougarObjectOutput dos = new HessianObjectIOFactory(false).newCougarObjectOutput(bos, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
                 dos.flush();
                 //Test onResult
                 cmd.onResult(new ExecutionResult(success));
@@ -319,7 +319,7 @@ public class SocketTransportCommandProcessorTest {
 
     private CommandResolver<SocketTransportCommand> createCommandResolver(TimeConstraints toReturn) throws IOException {
         SocketTransportRPCCommand command = Mockito.mock(SocketTransportRPCCommand.class);
-        when(command.getOutput()).thenReturn(new HessianObjectIOFactory().newCougarObjectOutput(out, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED));
+        when(command.getOutput()).thenReturn(new HessianObjectIOFactory(false).newCougarObjectOutput(out, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED));
         MyIoSession session = new MyIoSession("abc");
         session.setAttribute(CougarProtocol.PROTOCOL_VERSION_ATTR_NAME, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED);
         when(command.getSession()).thenReturn(session);

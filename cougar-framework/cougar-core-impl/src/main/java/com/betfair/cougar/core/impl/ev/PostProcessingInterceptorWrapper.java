@@ -23,7 +23,7 @@ import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.fault.CougarApplicationException;
 import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.exception.CougarException;
-import com.betfair.cougar.core.api.exception.CougarServiceException;
+import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.logging.CougarLogger;
 import com.betfair.cougar.logging.CougarLoggingUtils;
@@ -69,17 +69,17 @@ public class PostProcessingInterceptorWrapper implements ExecutionObserver {
         Object interceptorResult = result.getResult();
         ExecutionResult executionResult;
 		if (interceptorResult instanceof CougarException) {
-			executionResult = new ExecutionResult((CougarException)interceptorResult);
+			executionResult = new ExecutionResult(interceptorResult);
         } else if (interceptorResult instanceof CougarApplicationException) {
-            executionResult = new ExecutionResult((CougarApplicationException)interceptorResult);
+            executionResult = new ExecutionResult(interceptorResult);
 		} else if (result.getResult() instanceof Exception) {
 			executionResult = new ExecutionResult(
-                    new CougarServiceException(ServerFaultCode.ServiceRuntimeException,
+                    new CougarFrameworkException(ServerFaultCode.ServiceRuntimeException,
                             "Interceptor forced exception", (Exception)result.getResult()));
 		} else {
 			// onException forced, but result is not an exception
             executionResult = new ExecutionResult(
-                    new CougarServiceException(ServerFaultCode.ServiceRuntimeException,
+                    new CougarFrameworkException(ServerFaultCode.ServiceRuntimeException,
                             "Interceptor forced exception, but result was not an exception - I found a " +
                                     result.getResult()));
 		}

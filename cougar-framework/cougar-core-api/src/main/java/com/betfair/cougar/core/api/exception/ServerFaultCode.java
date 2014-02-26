@@ -28,10 +28,26 @@ public enum ServerFaultCode {
 	InvocationResultIncorrect(ResponseCode.InternalError, 3),
 	ServiceCheckedException(null, 4), // Response code defined by the checked exception
 	ServiceRuntimeException(ResponseCode.InternalError, 5),
-	SOAPDeserialisationFailure(ResponseCode.BadRequest, 6),
-	XMLDeserialisationFailure(ResponseCode.BadRequest, 7),
-	JSONDeserialisationFailure(ResponseCode.BadRequest, 8),
-	ClassConversionFailure(ResponseCode.BadRequest, 9),
+    /**
+     * @deprecated Replaced by either {@link ServerFaultCode.ClientDeserialisationFailure} or
+     *             {@link ServerFaultCode.ServerDeserialisationFailure}
+     */
+	SOAPDeserialisationFailure(ResponseCode.BadRequest, 6), // not used - kept for compatibility with old client/servers
+    /**
+     * @deprecated Replaced by either {@link ServerFaultCode.ClientDeserialisationFailure} or
+     *             {@link ServerFaultCode.ServerDeserialisationFailure}
+     */
+	XMLDeserialisationFailure(ResponseCode.BadRequest, 7), // not used - kept for compatibility with old client/servers
+    /**
+     * @deprecated Replaced by either {@link ServerFaultCode.ClientDeserialisationFailure} or
+     *             {@link ServerFaultCode.ServerDeserialisationFailure}
+     */
+	JSONDeserialisationFailure(ResponseCode.BadRequest, 8), // not used - kept for compatibility with old client/servers
+    /**
+     * @deprecated Replaced by either {@link ServerFaultCode.ClientDeserialisationFailure} or
+     *             {@link ServerFaultCode.ServerDeserialisationFailure}
+     */
+	ClassConversionFailure(ResponseCode.BadRequest, 9), // not used - kept for compatibility with old client/servers
 	InvalidInputMediaType(ResponseCode.UnsupportedMediaType, 10),
 	ContentTypeNotValid(ResponseCode.UnsupportedMediaType, 11),
 	MediaTypeParseFailure(ResponseCode.UnsupportedMediaType, 12),
@@ -40,17 +56,37 @@ public enum ServerFaultCode {
 	SecurityException(ResponseCode.Forbidden, 15),
 	MandatoryNotDefined(ResponseCode.BadRequest, 18),
 	Timeout(ResponseCode.Timeout,19),
-	BinDeserialisationFailure(ResponseCode.BadRequest, 20),
+    /**
+     * @deprecated Replaced by either {@link ServerFaultCode.ClientDeserialisationFailure} or
+     *             {@link ServerFaultCode.ServerDeserialisationFailure}
+     */
+	BinDeserialisationFailure(ResponseCode.BadRequest, 20), // not used - kept for compatibility with old client/servers
 	NoSuchOperation(ResponseCode.NotFound, 21),
     SubscriptionAlreadyActiveForEvent(ResponseCode.InternalError, 22),
     NoSuchService(ResponseCode.NotFound, 23),
-    RescriptDeserialisationFailure(ResponseCode.BadRequest, 24),
+    /**
+     * @deprecated Replaced by either {@link ServerFaultCode.ClientDeserialisationFailure} or
+     *             {@link ServerFaultCode.ServerDeserialisationFailure}
+     */
+    RescriptDeserialisationFailure(ResponseCode.BadRequest, 24), // not used - kept for compatibility with old client/servers
     JMSTransportCommunicationFailure(ResponseCode.InternalError, 25),
 	RemoteCougarCommunicationFailure(ResponseCode.ServiceUnavailable, 26),
     OutputChannelClosedCantWrite(ResponseCode.CantWriteToSocket, 27),
-    XMLSerialisationFailure(ResponseCode.InternalError, 28),
-    JSONSerialisationFailure(ResponseCode.InternalError, 29),
-    SOAPSerialisationFailure(ResponseCode.InternalError, 30),
+    /**
+     * @deprecated Replaced by either {@link ServerFaultCode.ClientSerialisationFailure} or
+     *             {@link ServerFaultCode.ServerSerialisationFailure}
+     */
+    XMLSerialisationFailure(ResponseCode.InternalError, 28), // not used - kept for compatibility with old client/servers
+    /**
+     * @deprecated Replaced by either {@link ServerFaultCode.ClientSerialisationFailure} or
+     *             {@link ServerFaultCode.ServerSerialisationFailure}
+     */
+    JSONSerialisationFailure(ResponseCode.InternalError, 29), // not used - kept for compatibility with old client/servers
+    /**
+     * @deprecated Replaced by either {@link ServerFaultCode.ClientSerialisationFailure} or
+     *             {@link ServerFaultCode.ServerSerialisationFailure}
+     */
+    SOAPSerialisationFailure(ResponseCode.InternalError, 30), // not used - kept for compatibility with old client/servers
     NoRequestsFound(ResponseCode.BadRequest, 31),
     UnidentifiedCaller(ResponseCode.BadRequest, 33, CredentialFaultCode.UnidentifiedCaller),
     UnknownCaller(ResponseCode.BadRequest, 34, CredentialFaultCode.UnknownCaller),
@@ -59,7 +95,11 @@ public enum ServerFaultCode {
     SubscriptionRequired(ResponseCode.Forbidden, 37, CredentialFaultCode.SubscriptionRequired),
     OperationForbidden(ResponseCode.Forbidden, 38, CredentialFaultCode.OperationForbidden),
     NoLocationSupplied(ResponseCode.BadRequest, 39, CredentialFaultCode.NoLocationSupplied),
-    BannedLocation(ResponseCode.Forbidden, 40, CredentialFaultCode.BannedLocation);
+    BannedLocation(ResponseCode.Forbidden, 40, CredentialFaultCode.BannedLocation),
+    ClientSerialisationFailure(ResponseCode.BadRequest, 41),
+    ClientDeserialisationFailure(ResponseCode.BadResponse, 42),
+    ServerSerialisationFailure(ResponseCode.BadResponse, 43),
+    ServerDeserialisationFailure(ResponseCode.BadRequest, 44);
 
     private final ResponseCode errorCode;
     private final String errorString;

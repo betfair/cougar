@@ -22,6 +22,7 @@ import com.betfair.cougar.client.socket.resolver.NetworkAddressResolver;
 import com.betfair.cougar.core.api.client.AbstractClientTransport;
 import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.exception.CougarClientException;
+import com.betfair.cougar.core.api.exception.CougarMarshallingException;
 import com.betfair.cougar.core.api.exception.CougarValidationException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.transcription.Parameter;
@@ -337,7 +338,7 @@ public class ExecutionVenueNioClient extends AbstractClientTransport implements 
                                     response.recreate(observer, def.getReturnType(), message.getPayload().length);
                                 }
                             } catch (Exception e) {
-                                observer.onResult(new ExecutionResult(new CougarClientException(ServerFaultCode.BinDeserialisationFailure, "Unable to deserialise response, closing session", e)));
+                                observer.onResult(new ExecutionResult(new CougarClientException(CougarMarshallingException.unmarshallingException("binary", "Unable to deserialise response, closing session", e, true))));
                                 if (session.isConnected()) {
                                     logger.log(NioLogger.LoggingLevel.SESSION, session, "Error occurred whilst trying to deserialise response, closing session");
                                     // it is possible that we never get here

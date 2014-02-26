@@ -24,7 +24,6 @@ import static org.mockito.Mockito.*;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Reader;
 
 import com.betfair.cougar.marshalling.api.databinding.FaultMarshaller;
 import com.betfair.cougar.marshalling.api.databinding.Marshaller;
@@ -34,7 +33,6 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import com.betfair.cougar.core.api.fault.CougarFault;
 import com.betfair.tornjak.kpi.KPIMonitor;
@@ -80,22 +78,22 @@ public class KPITimersTest {
 
     @Test
     public void testMarshallerSuccess() {
-        doAnswer(doStuff(false)).when(baseMarshaller).marshall(os, RESULT, ENCODING);
+        doAnswer(doStuff(false)).when(baseMarshaller).marshall(os, RESULT, ENCODING, false);
 
         KPITimingMarshaller marshaller = new KPITimingMarshaller(monitor, TEST_KPI_NAME, baseMarshaller);
-        marshaller.marshall(os, RESULT, ENCODING);
+        marshaller.marshall(os, RESULT, ENCODING, false);
 
         expectKPIUpdate(TEST_KPI_NAME, true);
     }
 
     @Test
     public void testMarshallerFailure() {
-        doAnswer(doStuff(true)).when(baseMarshaller).marshall(os, RESULT, ENCODING);
+        doAnswer(doStuff(true)).when(baseMarshaller).marshall(os, RESULT, ENCODING, false);
 
         KPITimingMarshaller marshaller
             = new KPITimingMarshaller(monitor, TEST_KPI_NAME, baseMarshaller);
         try {
-            marshaller.marshall(os, RESULT, ENCODING);
+            marshaller.marshall(os, RESULT, ENCODING, false);
             fail("Should have thrown an exception");
         }
         catch (RuntimeException e) {
@@ -132,22 +130,22 @@ public class KPITimersTest {
 
     @Test
     public void testUnmarshallerSuccess() {
-        doAnswer(doStuff(false)).when(baseUnmarshaller).unmarshall(inputStream,String.class,"test");
+        doAnswer(doStuff(false)).when(baseUnmarshaller).unmarshall(inputStream,String.class,"test", true);
 
         KPITimingUnMarshaller marshaller
             = new KPITimingUnMarshaller(monitor, TEST_KPI_NAME, baseUnmarshaller);
-        marshaller.unmarshall(inputStream,String.class,"test");
+        marshaller.unmarshall(inputStream,String.class,"test", true);
         expectKPIUpdate(TEST_KPI_NAME, true);
     }
 
     @Test
     public void testUnmarshallerFailure() {
-        doAnswer(doStuff(true)).when(baseUnmarshaller).unmarshall(inputStream,String.class,"test");
+        doAnswer(doStuff(true)).when(baseUnmarshaller).unmarshall(inputStream,String.class,"test", true);
 
         KPITimingUnMarshaller marshaller
             = new KPITimingUnMarshaller(monitor, TEST_KPI_NAME, baseUnmarshaller);
         try {
-            marshaller.unmarshall(inputStream,String.class,"test");
+            marshaller.unmarshall(inputStream,String.class,"test", true);
             fail("Should have thrown an exception");
         }
         catch (RuntimeException e) {

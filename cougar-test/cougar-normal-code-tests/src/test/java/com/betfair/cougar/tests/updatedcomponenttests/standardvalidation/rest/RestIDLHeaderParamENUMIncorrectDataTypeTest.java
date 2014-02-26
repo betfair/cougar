@@ -45,25 +45,25 @@ public class RestIDLHeaderParamENUMIncorrectDataTypeTest {
         // Get the cougar logging attribute for getting log entries later
         // Point the created HttpCallBean at the correct service
         httpCallBeanBaseline.setServiceName("baseline", "cougarBaseline");
-        
+
         httpCallBeanBaseline.setVersion("v2");
         // Set up the Http Call Bean to make the request
         CougarManager cougarManager2 = CougarManager.getInstance();
         HttpCallBean getNewHttpCallBean2 = cougarManager2.getNewHttpCallBean("87.248.113.14");
         cougarManager2 = cougarManager2;
-        
+
         cougarManager2.setCougarFaultControllerJMXMBeanAttrbiute("DetailedFaults", "false");
-        
+
         getNewHttpCallBean2.setOperationName("testParameterStylesQA");
-        
+
         getNewHttpCallBean2.setServiceName("baseline", "cougarBaseline");
-        
+
         getNewHttpCallBean2.setVersion("v2");
         // Set the Enum Header param as an object of a different type
         Map map3 = new HashMap();
         map3.put("HeaderParam","NotAValidEnum");
         getNewHttpCallBean2.setHeaderParams(map3);
-        
+
         Map map4 = new HashMap();
         map4.put("queryParam","qp1");
         map4.put("dateQueryParam","2009-06-01T13:50:00.0Z");
@@ -75,7 +75,7 @@ public class RestIDLHeaderParamENUMIncorrectDataTypeTest {
         cougarManager2.makeRestCougarHTTPCalls(getNewHttpCallBean2);
         // Create the expected response as an XML document (Fault)
         XMLHelpers xMLHelpers6 = new XMLHelpers();
-        Document createAsDocument12 = xMLHelpers6.getXMLObjectFromString("<fault><faultcode>Client</faultcode><faultstring>DSC-0009</faultstring><detail/></fault>");
+        Document createAsDocument12 = xMLHelpers6.getXMLObjectFromString("<fault><faultcode>Client</faultcode><faultstring>DSC-0044</faultstring><detail/></fault>");
         // Convert the expected response to REST types for comparison with actual responses
         Map<CougarMessageProtocolRequestTypeEnum, Object> convertResponseToRestTypes13 = cougarManager2.convertResponseToRestTypes(createAsDocument12, getNewHttpCallBean2);
         // Check the 4 responses are as expected (Bad Request)
@@ -83,23 +83,23 @@ public class RestIDLHeaderParamENUMIncorrectDataTypeTest {
         AssertionUtils.multiAssertEquals(convertResponseToRestTypes13.get(CougarMessageProtocolRequestTypeEnum.RESTXML), response7.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response7.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response7.getHttpStatusText());
-        
+
         HttpResponseBean response8 = getNewHttpCallBean2.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTJSONJSON);
         AssertionUtils.multiAssertEquals(convertResponseToRestTypes13.get(CougarMessageProtocolRequestTypeEnum.RESTJSON), response8.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response8.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response8.getHttpStatusText());
-        
+
         HttpResponseBean response9 = getNewHttpCallBean2.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTXMLJSON);
         AssertionUtils.multiAssertEquals(convertResponseToRestTypes13.get(CougarMessageProtocolRequestTypeEnum.RESTJSON), response9.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response9.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response9.getHttpStatusText());
-        
+
         HttpResponseBean response10 = getNewHttpCallBean2.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTJSONXML);
         AssertionUtils.multiAssertEquals(convertResponseToRestTypes13.get(CougarMessageProtocolRequestTypeEnum.RESTXML), response10.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response10.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response10.getHttpStatusText());
         // Check the log entries are as expected
-        
+
         CougarManager cougarManager12 = CougarManager.getInstance();
         cougarManager12.verifyAccessLogEntriesAfterDate(getTimeAsTimeStamp10, new AccessLogRequirement("87.248.113.14", "/cougarBaseline/v2/testParameterStylesQA", "BadRequest"),new AccessLogRequirement("87.248.113.14", "/cougarBaseline/v2/testParameterStylesQA", "BadRequest"),new AccessLogRequirement("87.248.113.14", "/cougarBaseline/v2/testParameterStylesQA", "BadRequest"),new AccessLogRequirement("87.248.113.14", "/cougarBaseline/v2/testParameterStylesQA", "BadRequest") );
     }

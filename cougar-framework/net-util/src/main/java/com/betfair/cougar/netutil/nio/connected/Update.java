@@ -41,14 +41,14 @@ public class Update extends AbstractHeapTranscribable {
     };
 
     @Override
-    public void transcribe(TranscriptionOutput out, Set<TranscribableParams> params) throws Exception {
-        out.writeObject(actions, parameters[0]);
+    public void transcribe(TranscriptionOutput out, Set<TranscribableParams> params, boolean client) throws Exception {
+        out.writeObject(actions, parameters[0], client);
         // NOTE: add new fields at the end
     }
 
     @Override
-    public void transcribe(TranscriptionInput in, Set<TranscribableParams> params) throws Exception {
-        actions = (List<UpdateAction>) in.readObject(parameters[0]);
+    public void transcribe(TranscriptionInput in, Set<TranscribableParams> params, boolean client) throws Exception {
+        actions = (List<UpdateAction>) in.readObject(parameters[0], client);
         // NOTE: add new fields at the end
     }
 

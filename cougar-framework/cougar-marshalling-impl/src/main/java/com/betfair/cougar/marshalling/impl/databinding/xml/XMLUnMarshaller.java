@@ -28,7 +28,8 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 
 import com.betfair.cougar.api.fault.FaultCode;
-import com.betfair.cougar.core.api.exception.CougarServiceException;
+import com.betfair.cougar.core.api.exception.CougarException;
+import com.betfair.cougar.core.api.exception.CougarMarshallingException;
 import com.betfair.cougar.core.api.exception.CougarValidationException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.fault.CougarFault;
@@ -59,7 +60,7 @@ public class XMLUnMarshaller implements UnMarshaller, FaultUnMarshaller {
 	}
 
     @Override
-    public Object unmarshall(InputStream inputStream, ParameterType parameterType, String encoding) {
+    public Object unmarshall(InputStream inputStream, ParameterType parameterType, String encoding, boolean client) {
         //It would be possible to change the way this marshaller works
         //entirely to use the XMLTranscription approach - could be done -
         //see SoapTransportCommandProcessor
@@ -68,18 +69,21 @@ public class XMLUnMarshaller implements UnMarshaller, FaultUnMarshaller {
 
     @Override
     public CougarFault unMarshallFault(InputStream inputStream, String encoding) {
-        final HashMap<String,Object> faultMap = (HashMap<String,Object>) unmarshall(inputStream, HashMap.class, encoding);
+        //noinspection unchecked
+        final HashMap<String,Object> faultMap = (HashMap<String,Object>) unmarshall(inputStream, HashMap.class, encoding, true);
 
         final String faultString = (String)faultMap.get("faultstring");
         final FaultCode faultCode = FaultCode.valueOf((String) faultMap.get("faultcode"));
 
 
+        //noinspection unchecked
         final HashMap<String, Object> detailMap = (HashMap<String, Object>)faultMap.get("detail");
         String exceptionName = (String)detailMap.get("exceptionname");
 
         List<String[]> faultParams = Collections.emptyList();
         if (exceptionName != null) {
             faultParams = new ArrayList<>();
+            //noinspection unchecked
             Map<String, Object> paramMap = (Map<String, Object>) detailMap.get(exceptionName);
 
             for(Map.Entry e:paramMap.entrySet()){
@@ -110,7 +114,7 @@ public class XMLUnMarshaller implements UnMarshaller, FaultUnMarshaller {
     }
 
     @Override
-	public Object unmarshall(InputStream inputStream, Class<?> clazz, String encoding) {
+	public Object unmarshall(InputStream inputStream, Class<?> clazz, String encoding, boolean client) {
 		try {
             XMLInputFactory factory = XMLInputFactory.newInstance();
             factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
@@ -131,7 +135,7 @@ public class XMLUnMarshaller implements UnMarshaller, FaultUnMarshaller {
 	        setSchema(jc, u);
 	        Object obj = u.unmarshal(reader);
 	        if (!clazz.isAssignableFrom(obj.getClass())) {
-	            throw new CougarValidationException(ServerFaultCode.ClassConversionFailure, "Deserialised object was not of class "+clazz.getName());
+	            throw CougarMarshallingException.unmarshallingException("xml", "Deserialised object was not of class "+clazz.getName(),false);
 	        }
 	        validate(validationHandler);
 	        return obj;
@@ -140,18 +144,18 @@ public class XMLUnMarshaller implements UnMarshaller, FaultUnMarshaller {
             if(linkedException!=null) {
                 logger.log(Level.FINE, linkedException.getMessage());
                 if (linkedException instanceof SAXParseException) {
-                    CougarValidationException cve = schemaValidationFailureParser.parse((SAXParseException)linkedException, SchemaValidationFailureParser.XmlSource.RESCRIPT);
-                    if (cve != null) {
-                        throw cve;
+                    CougarException ce = schemaValidationFailureParser.parse((SAXParseException)linkedException, getFormat(), client);
+                    if (ce != null) {
+                        throw ce;
                     }
                 }
-                throw new CougarValidationException(ServerFaultCode.XMLDeserialisationFailure, linkedException);//NOSONAR
+                throw CougarMarshallingException.unmarshallingException("xml",linkedException,client);
             }
-            throw new CougarValidationException(ServerFaultCode.XMLDeserialisationFailure, e);
-        } catch (CougarValidationException e) {
+            throw CougarMarshallingException.unmarshallingException("xml",e,client);
+        } catch (CougarMarshallingException e) {
             throw e;
 		} catch (Exception e) {
-			throw new CougarServiceException(ServerFaultCode.XMLDeserialisationFailure, "Unable to deserialise REST/XML request", e);
+			throw CougarMarshallingException.unmarshallingException(getFormat(), "Unable to deserialise REST/XML request", e, client);
         }
 	}
 

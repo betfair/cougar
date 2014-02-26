@@ -67,10 +67,10 @@ public class RestPostRequestTypesDateTimeMapJSON24HoursTest {
             hinstance.makeRestCougarHTTPCall(hbean, com.betfair.testing.utils.cougar.enums.CougarMessageProtocolRequestTypeEnum.RESTJSON, com.betfair.testing.utils.cougar.enums.CougarMessageContentTypeEnum.JSON);
             // Create the expected response as an XML document (using the date object created earlier)
             XMLHelpers xMLHelpers6 = new XMLHelpers();
-            Document expectedResponseXML = xMLHelpers6.createAsDocument(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(("<fault><faultcode>Client</faultcode><faultstring>DSC-0008</faultstring><detail/></fault>").getBytes())));
+            Document expectedResponseXML = xMLHelpers6.createAsDocument(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(("<fault><faultcode>Client</faultcode><faultstring>DSC-0044</faultstring><detail/></fault>").getBytes())));
             // Create the expected response as a JSON object (using the date object created earlier)
             JSONHelpers jSONHelpers7 = new JSONHelpers();
-            JSONObject expectedResponseJSON = jSONHelpers7.createAsJSONObject(new JSONObject("{\"detail\":{},\"faultcode\":\"Client\",\"faultstring\":\"DSC-0008\"}"));
+            JSONObject expectedResponseJSON = jSONHelpers7.createAsJSONObject(new JSONObject("{\"detail\":{},\"faultcode\":\"Client\",\"faultstring\":\"DSC-0044\"}"));
             // Check the 2 responses are as expected
             HttpResponseBean response8 = hbean.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTJSONXML);
             AssertionUtils.multiAssertEquals(expectedResponseXML, response8.getResponseObject());

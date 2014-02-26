@@ -25,6 +25,7 @@ import java.io.InputStream;
  * Delegates the exception transformation call to the appropriate implementation
  * This class is designed to be removed when the need for cougar 1.3 dies
  */
+// todo: deleteme since cougar 1.3 no longer supported?
 public class ExceptionTransformerDelegate implements ExceptionTransformer {
     private ExceptionTransformer exceptionTransformer;
 

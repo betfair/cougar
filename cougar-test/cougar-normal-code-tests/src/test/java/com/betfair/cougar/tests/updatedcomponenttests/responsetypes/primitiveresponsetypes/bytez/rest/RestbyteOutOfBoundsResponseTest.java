@@ -45,7 +45,7 @@ public class RestbyteOutOfBoundsResponseTest {
         // Get LogManager JMX Attribute
         // Set Cougar Fault Controller attributes
         CougarManager.setCougarFaultControllerJMXMBeanAttrbiute("DetailedFaults", "false");
-        // Set operation  name 
+        // Set operation  name
         HTTPCallBean.setOperationName("ByteSimpleTypeEcho", "byteEcho");
         // Set service name to call
         HTTPCallBean.setServiceName("baseline", "cougarBaseline");
@@ -62,7 +62,7 @@ public class RestbyteOutOfBoundsResponseTest {
         CougarManager.makeRestCougarHTTPCalls(HTTPCallBean);
         // Create a REST response structure as a Document object
         XMLHelpers xMLHelpers4 = new XMLHelpers();
-        Document responseDocument = xMLHelpers4.getXMLObjectFromString("<fault><faultcode>Client</faultcode><faultstring>DSC-0009</faultstring><detail/></fault>");
+        Document responseDocument = xMLHelpers4.getXMLObjectFromString("<fault><faultcode>Client</faultcode><faultstring>DSC-0044</faultstring><detail/></fault>");
         // Convert the response document into Rest (XML and JSON) representations
         Map<CougarMessageProtocolRequestTypeEnum, Object> convertedResponses = CougarManager.convertResponseToRestTypes(responseDocument, HTTPCallBean);
         // Get the 4 results from the Rest calls and compare to the expected XML and JSON responses
@@ -70,17 +70,17 @@ public class RestbyteOutOfBoundsResponseTest {
         AssertionUtils.multiAssertEquals(convertedResponses.get(CougarMessageProtocolRequestTypeEnum.RESTXML), response5.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response5.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response5.getHttpStatusText());
-        
+
         HttpResponseBean response6 = HTTPCallBean.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTJSONJSON);
         AssertionUtils.multiAssertEquals(convertedResponses.get(CougarMessageProtocolRequestTypeEnum.RESTJSON), response6.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response6.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response6.getHttpStatusText());
-        
+
         HttpResponseBean response7 = HTTPCallBean.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTXMLJSON);
         AssertionUtils.multiAssertEquals(convertedResponses.get(CougarMessageProtocolRequestTypeEnum.RESTJSON), response7.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response7.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Bad Request", response7.getHttpStatusText());
-        
+
         HttpResponseBean response8 = HTTPCallBean.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTJSONXML);
         AssertionUtils.multiAssertEquals(convertedResponses.get(CougarMessageProtocolRequestTypeEnum.RESTXML), response8.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 400, response8.getHttpStatusCode());
