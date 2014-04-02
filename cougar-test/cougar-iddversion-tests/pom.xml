@@ -20,7 +20,7 @@
   <parent>
     <artifactId>cougar-test</artifactId>
     <groupId>com.betfair.cougar</groupId>
-    <version>3.1.0.rc1</version>
+    <version>3.1.0.rc2-SNAPSHOT</version>
   </parent>
   <artifactId>cougar-iddversion-tests</artifactId>
   <name>cougar-iddversion-tests</name>
@@ -94,7 +94,7 @@
             <plugin>
                 <groupId>com.betfair.cougar</groupId>
                 <artifactId>cougar-codegen-plugin</artifactId>
-                <version>${project.version}</version>
+                <version>3.1.1.rc1-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <goals>

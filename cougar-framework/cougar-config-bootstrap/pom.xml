@@ -21,13 +21,13 @@
     <parent>
         <groupId>com.betfair.cougar</groupId>
         <artifactId>cougar-framework</artifactId>
-        <version>3.1.0.rc1</version>
+        <version>3.1.1.rc1-SNAPSHOT</version>
     </parent>
 
     <groupId>com.betfair.cougar</groupId>
     <artifactId>cougar-config-bootstrap</artifactId>
     <name>cougar-config-bootstrap</name>
-    <version>3.1.0.rc1</version>
+    <version>3.1.0.rc2-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
