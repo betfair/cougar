@@ -20,7 +20,7 @@
   <parent>
   	<artifactId>cougar-framework</artifactId>
   	<groupId>com.betfair.cougar</groupId>
-	<version>3.1.1.rc1-SNAPSHOT</version>
+	<version>3.1.0.rc2-SNAPSHOT</version>
   </parent>
 
   <artifactId>cougar-transport-impl</artifactId>

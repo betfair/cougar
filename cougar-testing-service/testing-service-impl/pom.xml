@@ -33,7 +33,7 @@
 			<plugin>
 				<groupId>com.betfair.cougar</groupId>
 				<artifactId>cougar-codegen-plugin</artifactId>
-				<version>3.1.1.rc1-SNAPSHOT</version>
+				<version>3.1.0.rc2-SNAPSHOT</version>
 				<executions>
 					<execution>
 						<goals>
