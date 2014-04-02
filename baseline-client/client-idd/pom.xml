@@ -20,7 +20,7 @@
     <parent>
         <groupId>com.betfair.cougar</groupId>
         <artifactId>baseline-client</artifactId>
-        <version>3.1.0.rc2-SNAPSHOT</version>
+        <version>3.1.0.rc2</version>
     </parent>
 
     <artifactId>client-idd</artifactId>
@@ -32,7 +32,7 @@
             <plugin>
                 <groupId>com.betfair.cougar</groupId>
                 <artifactId>cougar-codegen-plugin</artifactId>
-                <version>3.1.0.rc2-SNAPSHOT</version>
+                <version>3.1.0.rc2</version>
                 <executions>
                     <execution>
                         <goals>

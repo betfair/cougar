@@ -20,11 +20,11 @@
     <parent>
         <artifactId>cougar-framework</artifactId>
         <groupId>com.betfair.cougar</groupId>
-        <version>3.1.0.rc2-SNAPSHOT</version>
+        <version>3.1.0.rc2</version>
     </parent>
 
     <artifactId>cougar-marshalling-impl</artifactId>
-  <version>3.1.0.rc2-SNAPSHOT</version>
+  <version>3.1.0.rc2</version>
     <packaging>jar</packaging>
     <name>cougar-marshalling-impl</name>
 

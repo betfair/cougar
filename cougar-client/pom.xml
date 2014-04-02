@@ -20,11 +20,11 @@
     <parent>
         <groupId>com.betfair.cougar</groupId>
         <artifactId>cougar-master-pom</artifactId>
-        <version>3.1.0.rc2-SNAPSHOT</version>
+        <version>3.1.0.rc2</version>
     </parent>
 
     <artifactId>cougar-client</artifactId>
-  <version>3.1.0.rc2-SNAPSHOT</version>
+  <version>3.1.0.rc2</version>
     <packaging>jar</packaging>
 
     <name>cougar-client</name>

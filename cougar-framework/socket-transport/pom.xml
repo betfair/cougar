@@ -20,11 +20,11 @@
   <parent>
     <artifactId>cougar-framework</artifactId>
     <groupId>com.betfair.cougar</groupId>
-    <version>3.1.0.rc2-SNAPSHOT</version>
+    <version>3.1.0.rc2</version>
   </parent>
 
   <artifactId>socket-transport</artifactId>
-  <version>3.1.0.rc2-SNAPSHOT</version>
+  <version>3.1.0.rc2</version>
   <packaging>jar</packaging>
   <name>socket-transport</name>
   <description>Cougar Server side socket transport. Not to be used by standalone clients.</description>
