@@ -21,13 +21,13 @@
     <parent>
         <groupId>com.betfair.cougar</groupId>
         <artifactId>cougar-framework</artifactId>
-        <version>3.1.0.rc4</version>
+        <version>3.1.0.rc5-SNAPSHOT</version>
     </parent>
 
     <groupId>com.betfair.cougar</groupId>
     <artifactId>jms-transport</artifactId>
     <name>jms-transport</name>
-    <version>3.1.0.rc4</version>
+    <version>3.1.0.rc5-SNAPSHOT</version>
 
     <dependencies>
         <dependency>

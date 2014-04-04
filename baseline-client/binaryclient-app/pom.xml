@@ -21,7 +21,7 @@
   <parent>
     <artifactId>baseline-client</artifactId>
     <groupId>com.betfair.cougar</groupId>
-    <version>3.1.0.rc4</version>
+    <version>3.1.0.rc5-SNAPSHOT</version>
   </parent>
   
   <artifactId>binaryclient-app</artifactId>
