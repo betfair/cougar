@@ -28,7 +28,7 @@
     <groupId>com.betfair.cougar</groupId>
     <artifactId>cougar-master-pom</artifactId>
     <name>cougar-master-pom</name>
-    <version>3.1.0.rc3</version>
+    <version>3.1.0.rc4-SNAPSHOT</version>
     <packaging>pom</packaging>
     <inceptionYear>2009</inceptionYear>
     

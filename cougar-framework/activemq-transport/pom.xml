@@ -20,11 +20,11 @@
   <parent>
     <artifactId>cougar-framework</artifactId>
     <groupId>com.betfair.cougar</groupId>
-    <version>3.1.0.rc3</version>
+    <version>3.1.0.rc4-SNAPSHOT</version>
   </parent>
 
   <artifactId>activemq-transport</artifactId>
-  <version>3.1.0.rc3</version>
+  <version>3.1.0.rc4-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>activemq-transport</name>
 
