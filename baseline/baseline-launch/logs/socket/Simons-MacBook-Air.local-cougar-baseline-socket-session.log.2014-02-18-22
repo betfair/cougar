@@ -1,9 +1,0 @@
-22:23:30.940: SocketAcceptorIoProcessor-0.0 0000001: CougarProtocolCodecFilter: Created session at 1392762210930 from /127.0.0.1:52722
-22:23:30.940: SocketConnectorIoProcessor-0.0 0000002: CougarProtocolCodecFilter: Created session at 1392762210930 from /127.0.0.1:9003
-22:23:30.945: SocketAcceptorIoProcessor-0.0 0000001: ExecutionVenueServerHandler: Session opened
-22:23:30.959: SocketAcceptorIoProcessor-0.0 0000001: ExecutionVenueServerHandler: Session closed
-22:23:30.960: Client-SocketReconnector-1 0000002: Handshake failed for localhost/127.0.0.1:9003
-22:23:30.960: SocketAcceptorIoProcessor-0.0 0000001: Session closed, terminating live subscriptions
-22:23:35.960: SocketAcceptorIoProcessor-0.0 0000003: CougarProtocolCodecFilter: Created session at 1392762215960 from /127.0.0.1:52778
-22:23:35.961: SocketConnectorIoProcessor-0.1 0000004: CougarProtocolCodecFilter: Created session at 1392762215960 from localhost/127.0.0.1:9003
-22:23:35.961: SocketAcceptorIoProcessor-0.0 0000003: ExecutionVenueServerHandler: Session opened

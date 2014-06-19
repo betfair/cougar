@@ -1,5 +1,0 @@
-08:54:20.403: SocketAcceptorIoProcessor-0.0 0000073: ExecutionVenueServerHandler: Session closed
-08:54:20.404: SocketAcceptorIoProcessor-0.0 0000073: Session closed, terminating live subscriptions
-08:54:20.405: SocketAcceptorIoProcessor-0.0 0000181: CougarProtocolCodecFilter: Created session at 1392972860404 from /127.0.0.1:49646
-08:54:20.405: SocketConnectorIoProcessor-0.3 0000182: CougarProtocolCodecFilter: Created session at 1392972860404 from localhost/127.0.0.1:9003
-08:54:20.406: SocketAcceptorIoProcessor-0.0 0000181: ExecutionVenueServerHandler: Session opened
