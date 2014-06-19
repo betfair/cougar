@@ -25,8 +25,8 @@ import com.betfair.cougar.core.api.ServiceRegistrar;
 import com.betfair.cougar.core.api.ServiceVersion;
 import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.security.IdentityResolverFactory;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.util.configuration.PropertyConfigurer;
 import com.betfair.tornjak.kpi.KPIMonitor;
 import com.betfair.tornjak.monitor.MonitorRegistry;
@@ -39,8 +39,8 @@ import org.springframework.context.event.ContextRefreshedEvent;
  *
  */
 public class ServiceRegisterableExecutionVenue extends BaseExecutionVenue implements ApplicationListener, ServiceRegistrar {
-	
-	private final static CougarLogger logger = CougarLoggingUtils.getLogger(ServiceRegisterableExecutionVenue.class);
+
+	private final static Logger LOGGER = LoggerFactory.getLogger(ServiceRegisterableExecutionVenue.class);
 
 	private Map<String, Map<ServiceDefinition, Service>> serviceImplementationMap = new HashMap<String, Map<ServiceDefinition, Service>>();
     private Map<ServiceKey, String> serviceStatNames = new HashMap<>();
@@ -72,8 +72,8 @@ public class ServiceRegisterableExecutionVenue extends BaseExecutionVenue implem
             OperationKey namespacedOperationKey = namespace == null ? op.getOperationKey() : new OperationKey(op.getOperationKey(), namespace);
             String timeoutPropertyName = "timeout."+namespacedOperationKey;
             String timeoutValue = PropertyConfigurer.getAllLoadedProperties().get(timeoutPropertyName);
-            if (logger.isLoggable(Level.INFO) && timeoutValue != null) {
-                logger.log(Level.INFO, "Setting timeout for "+namespacedOperationKey+" to "+timeoutValue+"ms");
+            if (LOGGER.isInfoEnabled() && timeoutValue != null) {
+                LOGGER.info("Setting timeout for "+namespacedOperationKey+" to "+timeoutValue+"ms");
             }
             registerOperation(
                 namespace,
@@ -101,13 +101,13 @@ public class ServiceRegisterableExecutionVenue extends BaseExecutionVenue implem
         getImplementationMapForNamespace(namespace).put(serviceDefinition, implementation);
         registerServiceDefinition(namespace, serviceDefinition, resolver);
 
-        logger.log(Level.INFO, "Initialising %s Service version %s",
+        LOGGER.info("Initialising %s Service version %s",
                 serviceDefinition.getServiceName(),
                 serviceDefinition.getServiceVersion().toString());
 
         implementation.init(getContainerContext(getServiceLogManager(namespace, serviceDefinition)));
 
-        logger.log(Level.INFO, "Initialisation complete");
+        LOGGER.info("Initialisation complete");
     }
 
     protected Map<String, Map<ServiceDefinition, Service>> getServiceImplementationMap() {
@@ -152,7 +152,7 @@ public class ServiceRegisterableExecutionVenue extends BaseExecutionVenue implem
 
 	private void dumpProperties() {
 		final Map<String,String> props = PropertyConfigurer.getAllLoadedProperties();
-		logger.log(Level.INFO, "Properties loaded from config files and system property overrides");
+		LOGGER.info("Properties loaded from config files and system property overrides");
 		int longest = 0;
 		for (Map.Entry<String,String> me : props.entrySet()) {
 			longest = Math.max(longest, me.getKey().length());
@@ -163,13 +163,13 @@ public class ServiceRegisterableExecutionVenue extends BaseExecutionVenue implem
             if (me.getKey().toLowerCase().contains("password")) {
             	value = "*****";
             }
-            logger.log(Level.INFO, "  %-"+longest+"s = %s%s", 
+            LOGGER.info("  %-"+longest+"s = %s%s",
                             me.getKey(),
                             value,
                             (sysOverride == null ? "" : " [OVERRIDDEN]"));
         }
 	}
-	
+
     private ContainerContext getContainerContext(final ServiceLogManager logManager) {
     	return new ContainerContext() {
 
@@ -211,7 +211,7 @@ public class ServiceRegisterableExecutionVenue extends BaseExecutionVenue implem
             }
         };
     }
-	
+
 	private ServiceInfo makeServiceInfo(String namespace, ServiceDefinition serviceDefinition, Service implementation) {
 		List<String> operations = new ArrayList<>();
 		for (OperationDefinition operationDefinition : serviceDefinition.getOperationDefinitions()) {
@@ -219,7 +219,7 @@ public class ServiceRegisterableExecutionVenue extends BaseExecutionVenue implem
 		}
 		return new ServiceInfo(namespace,
                 implementation,
-				serviceDefinition.getServiceName(), 
+				serviceDefinition.getServiceName(),
 				serviceDefinition.getServiceVersion().toString(),
                 operations);
 	}

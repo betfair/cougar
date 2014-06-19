@@ -35,14 +35,14 @@ import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.fault.CougarFault;
 import com.betfair.cougar.core.api.fault.FaultDetail;
 import com.betfair.cougar.core.api.transcription.ParameterType;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.marshalling.api.databinding.FaultUnMarshaller;
 import com.betfair.cougar.marshalling.api.databinding.UnMarshaller;
 import org.xml.sax.SAXParseException;
 
 public class XMLUnMarshaller implements UnMarshaller, FaultUnMarshaller {
-	private final static CougarLogger logger = CougarLoggingUtils.getLogger(XMLUnMarshaller.class);
+	private final static Logger LOGGER = LoggerFactory.getLogger(XMLUnMarshaller.class);
 
     // todo: make schema validation configurable for rescript/xml (already done for soap)
     private static final ConcurrentMap<Class<?>,JAXBContext> jaxbContexts = new ConcurrentHashMap<>();
@@ -142,7 +142,7 @@ public class XMLUnMarshaller implements UnMarshaller, FaultUnMarshaller {
 		} catch (UnmarshalException e) {
             Throwable linkedException = e.getLinkedException();
             if(linkedException!=null) {
-                logger.log(Level.FINE, linkedException.getMessage());
+                LOGGER.debug(linkedException.getMessage());
                 if (linkedException instanceof SAXParseException) {
                     CougarException ce = schemaValidationFailureParser.parse((SAXParseException)linkedException, getFormat(), client);
                     if (ce != null) {

@@ -23,8 +23,8 @@ import com.betfair.cougar.core.api.transcription.ParameterType;
 import com.betfair.cougar.core.api.transcription.Transcribable;
 import com.betfair.cougar.core.api.transcription.TranscribableParams;
 import com.betfair.cougar.core.api.transcription.TranscriptionInput;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.util.dates.DateTimeUtility;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.util.base64.Base64Utils;
@@ -45,7 +45,7 @@ import java.util.logging.Level;
 @SuppressWarnings("unchecked")
 public class XMLTranscriptionInput implements TranscriptionInput {
 
-    private static final CougarLogger logger = CougarLoggingUtils.getLogger(XMLTranscriptionInput.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(XMLTranscriptionInput.class);
 
     private static final QName keyAttName = new QName("key");
 
@@ -101,7 +101,7 @@ public class XMLTranscriptionInput implements TranscriptionInput {
                         return Base64Utils.decode(node.getText());
                     } catch (Exception e) {
                         String message = "Unable to parse " + node.getText() + " as type " + paramType;
-                        logger.log(Level.FINER, message, e);
+                        LOGGER.debug(message, e);
                         throw CougarMarshallingException.unmarshallingException("soap",message,e,client);
                     }
                 } else {
@@ -164,7 +164,7 @@ public class XMLTranscriptionInput implements TranscriptionInput {
         logBuffer.append(paramName);
         String message = logBuffer.toString();
 
-        logger.log(Level.FINER, message , e);
+        LOGGER.debug(message , e);
         throw CougarMarshallingException.unmarshallingException("xml", message, e, client);
 
     }

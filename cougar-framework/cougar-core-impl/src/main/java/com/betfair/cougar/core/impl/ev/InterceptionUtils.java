@@ -28,8 +28,10 @@ import com.betfair.cougar.core.api.ev.OperationKey;
 import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +43,7 @@ import java.util.logging.Level;
 public class InterceptionUtils {
 
     private static final InterceptorResult CONTINUE = new InterceptorResult(InterceptorState.CONTINUE);
-    private final static CougarLogger logger = CougarLoggingUtils.getLogger(InterceptingExecutableWrapper.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(InterceptingExecutableWrapper.class);
 
     public static void execute(List<ExecutionPreProcessor> preExecutionInterceptorList, List<ExecutionPreProcessor> unexecutedPreExecutionInterceptorList, ExecutionRequirement phase, Runnable executionBody, ExecutionContext ctx, OperationKey key, Object[] args,
                         ExecutionObserver observer) {
@@ -97,8 +99,7 @@ public class InterceptionUtils {
                         throw new IllegalStateException(pre.getName() +" did not return a valid InterceptorResult");
                     }
                 } catch (Exception e) {
-                    logger.log(Level.SEVERE, "Pre Processor " + pre.getName() + " has failed.");
-                    logger.log(e);
+                    LOGGER.error("Pre Processor " + pre.getName() + " has failed.", e);
                     result = new InterceptorResult(InterceptorState.FORCE_ON_EXCEPTION, e);
                     break;
                 }

@@ -16,12 +16,13 @@
 
 package com.betfair.platform;
 
+import com.betfair.cougar.logging.CougarLoggingUtils;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
 import com.betfair.baseline.v2.BaselineSyncClient;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.LoggerFactory;
 
 public class RescriptProtocolIDDVersionTest extends TestSuite{
 

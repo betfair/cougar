@@ -23,8 +23,8 @@ import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.ServiceBindingDescriptor;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.transport.api.CommandResolver;
 import com.betfair.cougar.transport.api.RequestTimeResolver;
 import com.betfair.cougar.transport.api.TransportCommand.CommandStatus;
@@ -47,7 +47,7 @@ import java.util.logging.Level;
 public class ServiceNotFoundHttpCommandProcessor extends AbstractHttpCommandProcessor {
     public static final String FILE_NOT_FOUND_PAGE = "/errorpages/404.html";
 
-    private static final CougarLogger logger = CougarLoggingUtils.getLogger(ServiceNotFoundHttpCommandProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceNotFoundHttpCommandProcessor.class);
 
 
 	public ServiceNotFoundHttpCommandProcessor(GeoIPLocator geoIPLocator,
@@ -76,7 +76,7 @@ public class ServiceNotFoundHttpCommandProcessor extends AbstractHttpCommandProc
                 int bytesWritten = ServletResponseFileStreamer.getInstance().stream404ToResponse(command.getResponse());
                 logAccess(command, resolveContextForErrorHandling(context, command), 0, bytesWritten, null, null, ResponseCode.NotFound);
             } catch (IOException ex) {
-                logger.log(Level.SEVERE, "Unable to write error response", ex);
+                LOGGER.error("Unable to write error response", ex);
             } finally {
                 command.onComplete();
             }

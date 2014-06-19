@@ -39,8 +39,8 @@ import com.betfair.cougar.core.api.transcription.EnumDerialisationException;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.transport.api.CommandResolver;
 import com.betfair.cougar.core.api.transcription.EnumUtils;
 import com.betfair.cougar.transport.api.RequestTimeResolver;
@@ -71,7 +71,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 
 @ManagedResource
 public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcessor {
-    private static CougarLogger logger = CougarLoggingUtils.getLogger(JsonRpcTransportCommandProcessor.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(JsonRpcTransportCommandProcessor.class);
 
 	private static final int PARSE_ERROR = -32700;
 	private static final int INVALID_REQUEST = -32600;
@@ -351,7 +351,7 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
                     closeStream(out);
                 }
             } else {
-                logger.log(Level.FINE, "Skipping error handling for a request where the output channel/socket has been prematurely closed");
+                LOGGER.debug("Skipping error handling for a request where the output channel/socket has been prematurely closed");
             }
             logAccess(command,
                     resolveContextForErrorHandling(context, command), -1,

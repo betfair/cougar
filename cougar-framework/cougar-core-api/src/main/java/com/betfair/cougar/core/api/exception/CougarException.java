@@ -20,7 +20,8 @@ import java.util.logging.Level;
 
 import com.betfair.cougar.api.ResponseCode;
 import com.betfair.cougar.core.api.fault.Fault;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An Exception that automatically logs itself
@@ -59,7 +60,17 @@ public abstract class CougarException extends RuntimeException {
 		if (ResponseCode.InternalError == serverFault.getResponseCode()) {
 			level = Level.WARNING;
 		}
-		CougarLoggingUtils.getLogger(getClass()).log(level, "Exception thrown: ", this);
+        // todo: should perhaps cache these?
+        Logger logger = LoggerFactory.getLogger(getClass());
+        if (level.equals(Level.SEVERE)) {
+            logger.error("Exception thrown", this);
+        }
+        else if (level.equals(Level.WARNING)) {
+            logger.warn("Exception thrown", this);
+        }
+        else {
+            logger.debug("Exception thrown", this);
+        }
 	}
 
 	public Fault getFault() {

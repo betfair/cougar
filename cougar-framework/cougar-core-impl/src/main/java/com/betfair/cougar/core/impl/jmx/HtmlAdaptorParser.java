@@ -17,8 +17,8 @@
 package com.betfair.cougar.core.impl.jmx;
 
 import com.betfair.cougar.core.api.jmx.JMXHttpParser;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.sun.jdmk.comm.HtmlParser;
 import org.apache.commons.lang.StringEscapeUtils;
 
@@ -29,7 +29,7 @@ import java.util.*;
 import java.util.logging.Level;
 
 public class HtmlAdaptorParser implements HtmlParser, DynamicMBean {
-    private static final CougarLogger logger = CougarLoggingUtils.getLogger(HtmlAdaptorParser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(HtmlAdaptorParser.class);
     private static final String ADMIN_QUERY = "/administration/";
 
     private List<JMXHttpParser> parsers = new ArrayList<JMXHttpParser>();
@@ -50,9 +50,9 @@ public class HtmlAdaptorParser implements HtmlParser, DynamicMBean {
     @Override
     public String parseRequest(String request) {
         try {
-            logger.log(Level.FINE, "Parsing JMX/HTTP request %s", request);
+            LOGGER.debug("Parsing JMX/HTTP request %s", request);
             if(!isValid(request)) {
-                logger.log(Level.WARNING, "XSS attempt detected for request: "+request);
+                LOGGER.warn("XSS attempt detected for request: "+request);
                 return "<h1>Illegal request</h1>";
             }
 
@@ -77,7 +77,7 @@ public class HtmlAdaptorParser implements HtmlParser, DynamicMBean {
                     String objectName = params.get("on");
                     String attributeName = params.get("an");
                     String separator = "~";
-                    String time = params.get("t"); 
+                    String time = params.get("t");
                     StringBuilder buf = new StringBuilder();
                     if (time != null) {
                         buf.append("Time");
@@ -91,7 +91,7 @@ public class HtmlAdaptorParser implements HtmlParser, DynamicMBean {
                             buf.append("System Properties");
                             Properties p = System.getProperties();
                             for (Map.Entry me: p.entrySet()) {
-                                if (attributeName == null 
+                                if (attributeName == null
                                         ||"ALL".equals(attributeName)
                                         || attributeName.equals(me.getKey())) {
                                     buf.append(separator);
@@ -106,17 +106,17 @@ public class HtmlAdaptorParser implements HtmlParser, DynamicMBean {
                     }
                     return buf.toString();
                 }
-                
+
                 // Loop through the available JmxHttpParsers to see if one matches
                 for (JMXHttpParser p: parsers) {
                     if (adminPage.equals(p.getPath())) {
                         return p.process(params);
-                    }   
+                    }
                 }
             }
             return null;
         } catch (Exception e) {
-            logger.log(Level.FINE, "Unable to retrieve Bean information", e);
+            LOGGER.debug("Unable to retrieve Bean information", e);
             return null;
         }
 
@@ -175,7 +175,7 @@ public class HtmlAdaptorParser implements HtmlParser, DynamicMBean {
             } else {
                 p.put(decodePercent(e).trim(), "true");
             }
-            
+
         }
     }
 
@@ -245,7 +245,7 @@ public class HtmlAdaptorParser implements HtmlParser, DynamicMBean {
                 appendMBean(mbs, on, attrName, separator, buf);
             }
         } catch (Exception e) {
-            logger.log(Level.FINE, "Unable to retrieve Bean information for bean "+son, e);
+            LOGGER.debug("Unable to retrieve Bean information for bean "+son, e);
 
         }
     }
@@ -261,7 +261,7 @@ public class HtmlAdaptorParser implements HtmlParser, DynamicMBean {
             		.append(result)
             		.append(separator);
         } catch (Exception e) {
-        	logger.log(Level.FINE, "Unable to run operation %s on bean %s ", operation, separator);
+        	LOGGER.debug("Unable to run operation %s on bean %s ", operation, separator);
 
         }
     }
@@ -282,7 +282,7 @@ public class HtmlAdaptorParser implements HtmlParser, DynamicMBean {
                 }
             }
         } catch (Exception e) {
-            logger.log(Level.FINE, "Unable to retrieve Bean information for bean "+on, e);
+            LOGGER.debug("Unable to retrieve Bean information for bean "+on, e);
             return;
         }
         buf.append(local);

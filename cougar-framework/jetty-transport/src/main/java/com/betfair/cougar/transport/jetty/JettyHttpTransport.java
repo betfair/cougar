@@ -21,8 +21,8 @@ import com.betfair.cougar.core.api.*;
 import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 import com.betfair.cougar.core.api.exception.PanicInTheCougar;
 import com.betfair.cougar.core.api.transports.AbstractRegisterableTransport;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.transport.api.RequestLogger;
 import com.betfair.cougar.transport.api.TransportCommandProcessorFactory;
 import com.betfair.cougar.transport.api.protocol.ProtocolBinding;
@@ -51,7 +51,7 @@ import java.util.logging.Level;
 
 @ManagedResource
 public class JettyHttpTransport extends AbstractRegisterableTransport implements GateListener {
-    private static final CougarLogger logger = CougarLoggingUtils.getLogger(JettyHttpTransport.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JettyHttpTransport.class);
 
     private JMXControl jmxControl;
 
@@ -97,7 +97,7 @@ public class JettyHttpTransport extends AbstractRegisterableTransport implements
     private RequestLogger requestLogger;
 
     private JettyEndpoints jettyEndPoints;
-    
+
     private boolean gzipEnabled;
     private int gzipMinSize;
     private int gzipBufferSize;
@@ -128,7 +128,7 @@ public class JettyHttpTransport extends AbstractRegisterableTransport implements
         try {
             server.start();
         } catch (Exception ex) {
-            logger.log(Level.SEVERE, "Failed to startup jetty", ex);
+            LOGGER.error("Failed to startup jetty", ex);
             throw new PanicInTheCougar(ex);
         }
     }
@@ -161,11 +161,11 @@ public class JettyHttpTransport extends AbstractRegisterableTransport implements
 
             @Override
             public void run() {
-                logger.log(Level.INFO, "Gracefully shutting down Jetty Server");
+                LOGGER.info("Gracefully shutting down Jetty Server");
                 try {
                     JettyHttpTransport.this.stop();
                 } catch (Exception e) {
-                    logger.log(Level.WARNING, "Failed to shutdown jetty", e);
+                    LOGGER.warn("Failed to shutdown jetty", e);
                 }
             }
         });
@@ -266,7 +266,7 @@ public class JettyHttpTransport extends AbstractRegisterableTransport implements
         }
 
         if (serviceProtocol == Protocol.JSON_RPC && jsonRpcContextAlreadyBound(jettyContextRoot)) {
-            logger.log(Level.INFO, "Not binding Jetty Handler for protocol: JSON-RPC on context root [" +
+            LOGGER.info("Not binding Jetty Handler for protocol: JSON-RPC on context root [" +
                     jettyContextRoot + "] - context already bound");
         } else {
             StringBuilder sb = new StringBuilder("Adding a new Jetty Handler on url [").append(jettyContextRoot).append("] ");
@@ -280,7 +280,7 @@ public class JettyHttpTransport extends AbstractRegisterableTransport implements
                 sb.append("] ");
             }
             sb.append("on protocol " + serviceProtocol);
-            logger.log(Level.INFO, sb.toString());
+            LOGGER.info(sb.toString());
 
             JettyHandler.IdentityTokenResolverLookup identityTokenResolverLookup = null;
 
@@ -552,36 +552,36 @@ public class JettyHttpTransport extends AbstractRegisterableTransport implements
     public boolean isGzipEnabled() {
     	return gzipEnabled;
     }
-    
+
     public void setGzipEnabled(boolean gzipEnabled) {
     	this.gzipEnabled = gzipEnabled;
     }
-    
+
     @ManagedAttribute
     public String getExcludedAgents() {
     	return gzipExcludedAgents;
     }
-    
+
     public void setGzipExcludedAgents(String excludedAgents) {
     	if (excludedAgents != null && !excludedAgents.isEmpty()) {
     		this.gzipExcludedAgents = excludedAgents;
     	}
     }
-    
-    @ManagedAttribute 
+
+    @ManagedAttribute
     public int getGzipBufferSize() {
     	return gzipBufferSize;
     }
-    
+
     public void setGzipBufferSize(int bufferSize) {
     	this.gzipBufferSize = bufferSize;
     }
-    
+
     @ManagedAttribute
     public int getGzipMinSize() {
     	return gzipMinSize;
     }
-    
+
     public void setGzipMinSize(int minSize) {
     	this.gzipMinSize = minSize;
     }

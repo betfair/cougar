@@ -31,7 +31,7 @@ import com.betfair.cougar.core.api.exception.PanicInTheCougar;
 import com.betfair.cougar.core.impl.logging.CougarLog4JBootstrap;
 import com.betfair.cougar.core.impl.logging.LogBootstrap;
 import com.betfair.cougar.core.impl.logging.NullLogBootstrap;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.util.configuration.PropertyLoader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -79,7 +79,7 @@ public class CougarSpringCtxFactoryImpl implements CougarSpringCtxFactory {
                context=new ClassPathXmlApplicationContext(configs.toArray(new String[configs.size()]), parentCtx);
             }
         } catch (Exception e) {
-            CougarLoggingUtils.getLogger(CougarSpringCtxFactoryImpl.class).log(e);
+            LoggerFactory.getLogger(CougarSpringCtxFactoryImpl.class).error("",e);
             throw new PanicInTheCougar(e);
         }
         return context;

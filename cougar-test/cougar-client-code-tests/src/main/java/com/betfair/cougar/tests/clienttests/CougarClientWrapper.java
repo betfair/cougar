@@ -34,6 +34,7 @@ import com.betfair.cougar.core.impl.CougarSpringCtxFactoryImpl;
 import com.betfair.cougar.core.impl.logging.AbstractLoggingControl;
 import com.betfair.cougar.core.impl.security.IdentityChainImpl;
 import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.net.InetAddress;
@@ -123,13 +124,13 @@ public class CougarClientWrapper {
     }
 
     private CougarClientWrapper(){
-		
+
 	}
 
     /**
      * Start a cougar client instance using the given transport (if one isn't already running)
      * Change the transport the running client is using if necessary
-     * 
+     *
      * @param transportType
      * @throws Exception
      */
@@ -219,41 +220,41 @@ public class CougarClientWrapper {
 		} catch (InvalidCredentialsException e) {
 			e.printStackTrace();
 			return null;
-		}		
+		}
     }
-	
+
     public BaselineSyncClient getClient() {
 		return client;
 	}
 
-	
+
 	public ExecutionContext getCtx() {
 		return ctx;
 	}
-	
+
 	/**
-	 * Wrapper method for the interceptorCheckedException baseline operation. Will call the operation requesting either a pre or post exception, catch the response exception and return the exception message  
+	 * Wrapper method for the interceptorCheckedException baseline operation. Will call the operation requesting either a pre or post exception, catch the response exception and return the exception message
 	 * @param preOrPost
      * @return String
 	 *
 	 */
 	public String callInterceptorExceptionOperation(PreOrPostInterceptorException preOrPost){
-		
+
 		try {
 			getClient().interceptorCheckedExceptionOperation(getCtx(), preOrPost);
-		} 
+		}
 		catch (SimpleException se) {
 			return se.getReason();
 		}
-		
+
 		return "No exception was thrown";
 	}
-	
-	
+
+
 	public static final class CougarClientExecutionContext extends ExecutionContextImpl{
-		
+
 		private GeoLocationDetails geoLocationDetails = null;
-		
+
 	    @Override
 	    public GeoLocationDetails getLocation() {
 	        if (geoLocationDetails == null) {

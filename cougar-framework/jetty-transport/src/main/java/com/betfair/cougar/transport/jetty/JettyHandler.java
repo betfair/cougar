@@ -35,8 +35,8 @@ import com.betfair.cougar.core.api.ServiceVersion;
 import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarValidationException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.transport.api.TransportCommandProcessor;
 import com.betfair.cougar.transport.api.protocol.http.HttpCommand;
 import com.betfair.cougar.transport.api.protocol.http.ResponseCodeMapper;
@@ -49,7 +49,7 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 
 public class JettyHandler extends AbstractHandler {
 
-	private final static CougarLogger logger = CougarLoggingUtils.getLogger(JettyHandler.class);
+	private final static Logger LOGGER = LoggerFactory.getLogger(JettyHandler.class);
 	private final TransportCommandProcessor<HttpCommand> commandProcessor;
     private final long MILLI=1000;
     private String protocolBindingRoot;
@@ -91,17 +91,17 @@ public class JettyHandler extends AbstractHandler {
 			JettyTransportCommand command = new JettyTransportCommand(request, response, itr);
 
 			if (!command.getContinuation().isExpired()) {
-				logger.log(Level.FINE, "Message Received at Jetty Handler for path %s", target);
+				LOGGER.debug("Message Received at Jetty Handler for path %s", target);
 				commandProcessor.process(command);
 			} else {
-				logger.log(Level.FINE, "Message Timeout at Jetty Handler for path %s", target);
+				LOGGER.debug("Message Timeout at Jetty Handler for path %s", target);
 				response.sendError(HttpServletResponse.SC_GATEWAY_TIMEOUT);
 			}
 		} catch (CougarException ce) {
-			logger.log(Level.WARNING, "Cougar Exception thrown processing request", ce);
+			LOGGER.warn("Cougar Exception thrown processing request", ce);
 			response.sendError(ResponseCodeMapper.getHttpResponseCode(ce.getResponseCode()));
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Unexpected Exception thrown processing request", e);
+			LOGGER.error("Unexpected Exception thrown processing request", e);
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		} finally {
 			// The request has been handled, whether or not the handling was a suspension.

@@ -21,8 +21,9 @@ import com.betfair.cougar.api.LoggableEvent;
 import com.betfair.cougar.api.ResponseCode;
 import com.betfair.cougar.api.geolocation.GeoLocationDetails;
 import com.betfair.cougar.core.api.exception.CougarFrameworkException;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.ILoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.logging.EventLogDefinition;
 import com.betfair.cougar.logging.EventLoggingRegistry;
 import com.betfair.cougar.logging.records.EventLogRecord;
@@ -42,16 +43,24 @@ import java.util.logging.Level;
 
 @ManagedResource
 public class HttpRequestLogger implements RequestLogger {
-    private static final CougarLogger logger = CougarLoggingUtils.getLogger(HttpRequestLogger.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequestLogger.class);
 
     private boolean loggingEnabled;
     private EventLoggingRegistry registry;
     private AtomicLong httpRequests = new AtomicLong();
     private List<String> headersToLog = new ArrayList<String>();
 
+    private static ILoggerFactory loggerFactory = LoggerFactory.getILoggerFactory();
+
     public HttpRequestLogger(EventLoggingRegistry registry, boolean loggingEnabled) {
         this.registry = registry;
         this.loggingEnabled = loggingEnabled;
+    }
+
+    public static ILoggerFactory setLoggerFactory(ILoggerFactory loggerFactory) {
+        ILoggerFactory ret = loggerFactory;
+        HttpRequestLogger.loggerFactory = loggerFactory;
+        return ret;
     }
 
     @ManagedAttribute
@@ -129,7 +138,7 @@ public class HttpRequestLogger implements RequestLogger {
             EventLogRecord eventLogRecord = new EventLogRecord(le, null);
             EventLogDefinition invokableLogger = registry.getInvokableLogger(eventLogRecord.getLoggerName());
             if (invokableLogger != null) {
-                CougarLoggingUtils.getLogger(invokableLogger.getLogName()).log(eventLogRecord);
+                loggerFactory.getLogger(invokableLogger.getLogName()).info(eventLogRecord.getMessage());
             } else {
                 throw new CougarFrameworkException("Logger "+eventLogRecord.getLoggerName()+" is not an event logger");
             }
@@ -158,7 +167,7 @@ public class HttpRequestLogger implements RequestLogger {
             String trimmed = header.trim();
             if (!headersToLog.contains(trimmed)) {
                 headersToLog.add(trimmed);
-                logger.log(Level.INFO, "Added loggable field '"+trimmed+"' to http access log");
+                LOGGER.info("Added loggable field '"+trimmed+"' to http access log");
             }
         }
         return headersToLog.toString();
@@ -170,7 +179,7 @@ public class HttpRequestLogger implements RequestLogger {
             String trimmed = header.trim();
             if (headersToLog.contains(trimmed)) {
                 headersToLog.remove(trimmed);
-                logger.log(Level.INFO, "Removed loggable field '"+trimmed+"' from http access log");
+                LOGGER.info("Removed loggable field '"+trimmed+"' from http access log");
             }
         }
         return headersToLog.toString();

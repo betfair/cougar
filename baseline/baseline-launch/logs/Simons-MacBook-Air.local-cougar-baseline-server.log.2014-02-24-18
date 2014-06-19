@@ -1,0 +1,15 @@
+2014-02-24 18:00:11.659: com.betfair.cougar.client.socket.ExecutionVenueNioClient INFO - session is closing 1393255808686
+2014-02-24 18:00:11.721: com.betfair.cougar.client.socket.IoSessionFactory INFO - Connected to localhost/127.0.0.1:9003
+2014-02-24 18:00:11.750: com.betfair.cougar.netutil.nio.RequestResponseManagerImpl INFO - Notified 0 outstanding requests for session 0000233
+2014-02-24 18:10:44.503: com.betfair.cougar.client.socket.ExecutionVenueNioClient INFO - session is closing 1393264811669
+2014-02-24 18:10:44.506: com.betfair.cougar.netutil.nio.RequestResponseManagerImpl INFO - Notified 0 outstanding requests for session 0000236
+2014-02-24 18:10:44.510: com.betfair.cougar.client.socket.IoSessionFactory INFO - Connected to localhost/127.0.0.1:9003
+2014-02-24 18:15:40.672: com.betfair.cougar.client.socket.ExecutionVenueNioClient INFO - session is closing 1393265444507
+2014-02-24 18:15:40.675: com.betfair.cougar.netutil.nio.RequestResponseManagerImpl INFO - Notified 0 outstanding requests for session 0000238
+2014-02-24 18:15:40.678: com.betfair.cougar.client.socket.IoSessionFactory INFO - Connected to localhost/127.0.0.1:9003
+2014-02-24 18:44:26.232: com.betfair.cougar.client.socket.ExecutionVenueNioClient INFO - session is closing 1393265740676
+2014-02-24 18:44:26.235: com.betfair.cougar.netutil.nio.RequestResponseManagerImpl INFO - Notified 0 outstanding requests for session 0000240
+2014-02-24 18:44:26.239: com.betfair.cougar.client.socket.IoSessionFactory INFO - Connected to localhost/127.0.0.1:9003
+2014-02-24 18:46:13.868: com.betfair.cougar.client.socket.ExecutionVenueNioClient INFO - session is closing 1393267466236
+2014-02-24 18:46:13.877: com.betfair.cougar.netutil.nio.RequestResponseManagerImpl INFO - Notified 0 outstanding requests for session 0000242
+2014-02-24 18:46:13.880: com.betfair.cougar.client.socket.IoSessionFactory INFO - Connected to localhost/127.0.0.1:9003

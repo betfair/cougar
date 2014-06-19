@@ -21,6 +21,8 @@ import java.util.logging.Level;
 
 import com.betfair.cougar.core.api.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -30,8 +32,8 @@ import com.betfair.cougar.core.api.exception.PanicInTheCougar;
 import com.betfair.cougar.util.jmx.Exportable;
 import com.betfair.cougar.util.jmx.ExportableRegistration;
 import com.betfair.cougar.util.jmx.JMXControl;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.tornjak.monitor.Status;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
@@ -45,8 +47,8 @@ import org.springframework.jmx.export.annotation.ManagedResource;
  */
 @ManagedResource
 public class ContainerAwareExecutionVenue extends ServiceRegisterableExecutionVenue implements CougarStartingGate, ExportableRegistration {
-	
-	private final static CougarLogger logger = CougarLoggingUtils.getLogger(ContainerAwareExecutionVenue.class);
+
+	private final static Logger LOGGER = LoggerFactory.getLogger(ContainerAwareExecutionVenue.class);
 
     private List<GateListener> startingListeners = new ArrayList<GateListener>();
     private List<Exportable> exportables = new ArrayList<Exportable>();
@@ -65,7 +67,7 @@ public class ContainerAwareExecutionVenue extends ServiceRegisterableExecutionVe
 	 * <li>The JMXControl will be retrieved from the application context and all registered Exportable implementations will be exported</li>
 	 * <li>All registered StartingGateListeners will be notified that the starting gate is open</li>
 	 * <li>A status check will be made on every registered service, with the status logged</li>
-	 * </list> 
+	 * </list>
 	 */
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
@@ -75,7 +77,7 @@ public class ContainerAwareExecutionVenue extends ServiceRegisterableExecutionVe
                 final ApplicationContext ctx = ((ContextRefreshedEvent) event).getApplicationContext();
 				// Check that the JMXControl exists before registering all exportables
 				// see JMXControl javadocs for why we have to do it this way
-				JMXControl jmxControl = JMXControl.getFromContext(ctx); 
+				JMXControl jmxControl = JMXControl.getFromContext(ctx);
 				if (jmxControl == null) {
 					throw new PanicInTheCougar("jmxControl bean not found in ApplicationContext");
 				}
@@ -86,8 +88,8 @@ public class ContainerAwareExecutionVenue extends ServiceRegisterableExecutionVe
 				}
 
 				// Open the starting gate
-				notifyStartingGateListeners();			
-				
+				notifyStartingGateListeners();
+
 				Collection<ServiceAware> serviceAwareImpls = getServiceAwareImplementations(ctx);
 				if (serviceAwareImpls != null && serviceAwareImpls.size() > 0) {
 					Set<Service> services = new HashSet<Service>();
@@ -98,13 +100,17 @@ public class ContainerAwareExecutionVenue extends ServiceRegisterableExecutionVe
 					for (ServiceAware serviceAware : serviceAwareImpls) {
 						serviceAware.setServices(services);
 					}
-				}				
+				}
 
                 Status status = monitorRegistry
                         .getStatusAggregator()
                         .getStatus();
-                logger.log((status != Status.OK ? Level.WARNING : Level.INFO),
-                        "Cougar returned status %s at startup", status);
+                if (status != Status.OK) {
+                    LOGGER.warn("Cougar returned status %s at startup", status);
+                }
+                else {
+                    LOGGER.info("Cougar returned status %s at startup", status);
+                }
 			} catch (Exception e) {
 				throw new PanicInTheCougar("Failed to initialise server", e);
 			}
@@ -120,28 +126,28 @@ public class ContainerAwareExecutionVenue extends ServiceRegisterableExecutionVe
 
 	private void logSuccessfulCougarStartup() {
         // Logging facade removes the ability for custom log levels, so just INFO
-        logger.log(Level.INFO, "**** COUGAR HAS STARTED *****");
+        LOGGER.info("**** COUGAR HAS STARTED *****");
     }
 
 	@Override
 	public boolean registerStartingListener(GateListener listener) {
-		logger.log(Level.INFO, "Registering gate listener %s with priority %d", listener.getName(), listener.getPriority());
+		LOGGER.info("Registering gate listener %s with priority %d", listener.getName(), listener.getPriority());
 		return startingListeners.add(listener);
 	}
-	
+
 
 	private void notifyStartingGateListeners() {
-		
+
 		int numListeners = startingListeners.size();
 		int cnt = 0;
 		Collections.sort(startingListeners, LISTENER_COMPARATOR);
 		for (GateListener listener: startingListeners) {
-			logger.log(Level.INFO, "(%d of %d) Calling gate listener %s", ++cnt, numListeners, listener.getName());
+			LOGGER.info("(%d of %d) Calling gate listener %s", ++cnt, numListeners, listener.getName());
 			listener.onCougarStart();
 		}
-	}	
-	
-	private static Comparator<GateListener> LISTENER_COMPARATOR = 
+	}
+
+	private static Comparator<GateListener> LISTENER_COMPARATOR =
 		new Comparator<GateListener>() {
 		@Override
 		public int compare(GateListener g1, GateListener g2) {

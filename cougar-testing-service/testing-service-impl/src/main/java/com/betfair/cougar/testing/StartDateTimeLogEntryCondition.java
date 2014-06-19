@@ -16,25 +16,23 @@
 
 package com.betfair.cougar.testing;
 
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
 public class StartDateTimeLogEntryCondition extends DateTimeLogEntryCondition {
-	final static CougarLogger logger = CougarLoggingUtils
-	.getLogger(StartDateTimeLogEntryCondition.class);
 
 	public StartDateTimeLogEntryCondition(String dateTimeFormatString)
 	{
 		super(dateTimeFormatString);
 	}
-	
+
 	@Override
 	public boolean matchesEntry(String logEntry) {
 		boolean matches = false;
 		Date logDate = super.getDateFromLogEntry(logEntry);
-		if((logDate != null) && (logDate.after(super.getCheckDate()))) 
+		if((logDate != null) && (logDate.after(super.getCheckDate())))
 		{
 			matches = true;
 		}

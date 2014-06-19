@@ -1,0 +1,60 @@
+2014-02-20 21:04:09.571: com.betfair.cougar.client.socket.ExecutionVenueNioClient INFO - session is closing 1392923904666
+2014-02-20 21:04:09.575: org.apache.mina.common.support.DefaultExceptionMonitor WARN - Unexpected exception.
+java.lang.NoClassDefFoundError: com/betfair/cougar/client/socket/ExecutionVenueNioClient$7
+	at com.betfair.cougar.client.socket.ExecutionVenueNioClient.notifyConnectionLost(ExecutionVenueNioClient.java:379)
+	at com.betfair.cougar.client.socket.ExecutionVenueNioClient.access$600(ExecutionVenueNioClient.java:63)
+	at com.betfair.cougar.client.socket.ExecutionVenueNioClient$4.operationComplete(ExecutionVenueNioClient.java:254)
+	at org.apache.mina.common.support.DefaultIoFuture.notifyListener(DefaultIoFuture.java:245)
+	at org.apache.mina.common.support.DefaultIoFuture.notifyListeners(DefaultIoFuture.java:235)
+	at org.apache.mina.common.support.DefaultIoFuture.setValue(DefaultIoFuture.java:167)
+	at org.apache.mina.common.support.DefaultCloseFuture.setClosed(DefaultCloseFuture.java:55)
+	at org.apache.mina.common.support.AbstractIoFilterChain.fireSessionClosed(AbstractIoFilterChain.java:257)
+	at org.apache.mina.common.support.IoServiceListenerSupport.fireSessionDestroyed(IoServiceListenerSupport.java:224)
+	at org.apache.mina.transport.socket.nio.SocketIoProcessor.doRemove(SocketIoProcessor.java:188)
+	at org.apache.mina.transport.socket.nio.SocketIoProcessor.access$600(SocketIoProcessor.java:45)
+	at org.apache.mina.transport.socket.nio.SocketIoProcessor$Worker.run(SocketIoProcessor.java:489)
+	at org.apache.mina.util.NamePreservingRunnable.run(NamePreservingRunnable.java:51)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at java.lang.Thread.run(Thread.java:744)
+2014-02-20 21:04:09.578: com.betfair.cougar.client.socket.IoSessionFactory INFO - Connected to localhost/127.0.0.1:9003
+2014-02-20 21:08:37.874: com.betfair.cougar.client.socket.ExecutionVenueNioClient INFO - session is closing 1392930249575
+2014-02-20 21:08:37.878: org.apache.mina.common.support.DefaultExceptionMonitor WARN - Unexpected exception.
+java.lang.NoClassDefFoundError: com/betfair/cougar/client/socket/ExecutionVenueNioClient$7
+	at com.betfair.cougar.client.socket.ExecutionVenueNioClient.notifyConnectionLost(ExecutionVenueNioClient.java:379)
+	at com.betfair.cougar.client.socket.ExecutionVenueNioClient.access$600(ExecutionVenueNioClient.java:63)
+	at com.betfair.cougar.client.socket.ExecutionVenueNioClient$4.operationComplete(ExecutionVenueNioClient.java:254)
+	at org.apache.mina.common.support.DefaultIoFuture.notifyListener(DefaultIoFuture.java:245)
+	at org.apache.mina.common.support.DefaultIoFuture.notifyListeners(DefaultIoFuture.java:235)
+	at org.apache.mina.common.support.DefaultIoFuture.setValue(DefaultIoFuture.java:167)
+	at org.apache.mina.common.support.DefaultCloseFuture.setClosed(DefaultCloseFuture.java:55)
+	at org.apache.mina.common.support.AbstractIoFilterChain.fireSessionClosed(AbstractIoFilterChain.java:257)
+	at org.apache.mina.common.support.IoServiceListenerSupport.fireSessionDestroyed(IoServiceListenerSupport.java:224)
+	at org.apache.mina.transport.socket.nio.SocketIoProcessor.doRemove(SocketIoProcessor.java:188)
+	at org.apache.mina.transport.socket.nio.SocketIoProcessor.access$600(SocketIoProcessor.java:45)
+	at org.apache.mina.transport.socket.nio.SocketIoProcessor$Worker.run(SocketIoProcessor.java:489)
+	at org.apache.mina.util.NamePreservingRunnable.run(NamePreservingRunnable.java:51)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at java.lang.Thread.run(Thread.java:744)
+2014-02-20 21:08:37.886: com.betfair.cougar.client.socket.IoSessionFactory INFO - Connected to localhost/127.0.0.1:9003
+2014-02-20 21:29:39.422: com.betfair.cougar.client.socket.ExecutionVenueNioClient INFO - session is closing 1392930517884
+2014-02-20 21:29:39.655: org.apache.mina.common.support.DefaultExceptionMonitor WARN - Unexpected exception.
+java.lang.NoClassDefFoundError: com/betfair/cougar/client/socket/ExecutionVenueNioClient$7
+	at com.betfair.cougar.client.socket.ExecutionVenueNioClient.notifyConnectionLost(ExecutionVenueNioClient.java:379)
+	at com.betfair.cougar.client.socket.ExecutionVenueNioClient.access$600(ExecutionVenueNioClient.java:63)
+	at com.betfair.cougar.client.socket.ExecutionVenueNioClient$4.operationComplete(ExecutionVenueNioClient.java:254)
+	at org.apache.mina.common.support.DefaultIoFuture.notifyListener(DefaultIoFuture.java:245)
+	at org.apache.mina.common.support.DefaultIoFuture.notifyListeners(DefaultIoFuture.java:235)
+	at org.apache.mina.common.support.DefaultIoFuture.setValue(DefaultIoFuture.java:167)
+	at org.apache.mina.common.support.DefaultCloseFuture.setClosed(DefaultCloseFuture.java:55)
+	at org.apache.mina.common.support.AbstractIoFilterChain.fireSessionClosed(AbstractIoFilterChain.java:257)
+	at org.apache.mina.common.support.IoServiceListenerSupport.fireSessionDestroyed(IoServiceListenerSupport.java:224)
+	at org.apache.mina.transport.socket.nio.SocketIoProcessor.doRemove(SocketIoProcessor.java:188)
+	at org.apache.mina.transport.socket.nio.SocketIoProcessor.access$600(SocketIoProcessor.java:45)
+	at org.apache.mina.transport.socket.nio.SocketIoProcessor$Worker.run(SocketIoProcessor.java:489)
+	at org.apache.mina.util.NamePreservingRunnable.run(NamePreservingRunnable.java:51)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at java.lang.Thread.run(Thread.java:744)
+2014-02-20 21:29:39.668: com.betfair.cougar.client.socket.IoSessionFactory INFO - Connected to localhost/127.0.0.1:9003

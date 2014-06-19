@@ -32,8 +32,8 @@ import com.betfair.cougar.core.api.fault.FaultController;
 import com.betfair.cougar.core.api.fault.FaultDetail;
 import com.betfair.cougar.core.api.transcription.*;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.marshalling.impl.databinding.xml.SchemaValidationFailureParser;
 import com.betfair.cougar.transport.api.CommandResolver;
 import com.betfair.cougar.transport.api.ExecutionCommand;
@@ -93,7 +93,7 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
     private static final String SECURITY_NAMESPACE = "http://www.betfair.com/security/";
     private static final String SECURITY_CREDENTIALS = "Credentials";
 
-    private static final CougarLogger logger = CougarLoggingUtils.getLogger(SoapTransportCommandProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SoapTransportCommandProcessor.class);
 
     private Map<String, SoapOperationBinding> bindings = new HashMap<String, SoapOperationBinding>();
 
@@ -372,7 +372,7 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
                 logAccess = false; // We're coming back in here, so log the access then.
             } else {
                 // Not much to do here - it's already an error and it's failed to send
-                logger.log(Level.WARNING, "Failed to write SOAP error", e);
+                LOGGER.warn("Failed to write SOAP error", e);
             }
         } finally {
             closeStream(out);
@@ -418,7 +418,7 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
                 if (element.getLocalName().equalsIgnoreCase(SECURITY_CREDENTIALS)) {
                     return element;
                 } else {
-                    logger.log(Level.FINE, "Unexpected security header arrived: %s", element.getLocalName());
+                    LOGGER.debug("Unexpected security header arrived: %s", element.getLocalName());
                 }
             }
         }

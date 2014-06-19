@@ -16,8 +16,8 @@
 
 package com.betfair.cougar.netutil.nio;
 
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.netutil.nio.message.RequestMessage;
 import com.betfair.cougar.netutil.nio.message.ResponseMessage;
 import org.apache.mina.common.IoHandlerAdapter;
@@ -37,7 +37,7 @@ import java.util.logging.Level;
  */
 public class RequestResponseManagerImpl extends IoHandlerAdapter implements RequestResponseManager {
 
-	private static final CougarLogger LOG = CougarLoggingUtils.getLogger(RequestResponseManagerImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(RequestResponseManagerImpl.class);
 
     private final IoSession session;
     private AtomicLong correlationIdGenerator = new AtomicLong();
@@ -112,9 +112,9 @@ public class RequestResponseManagerImpl extends IoHandlerAdapter implements Requ
     @Override
     public void exceptionCaught(IoSession session, Throwable cause) {
         if (cause instanceof IOException) {
-            LOG.log(Level.FINE, "IO exception from session "+NioUtils.getSessionId(session), cause);
+            LOG.debug("IO exception from session "+NioUtils.getSessionId(session), cause);
         } else {
-            LOG.log(Level.WARNING, "Unexpected exception from session "+NioUtils.getSessionId(session), cause);
+            LOG.warn("Unexpected exception from session "+NioUtils.getSessionId(session), cause);
         }
         nioLogger.log(NioLogger.LoggingLevel.SESSION, session, "RequestResponseManager - %s received: %s - closing session", cause.getClass().getSimpleName(), cause.getMessage());
         session.close();
@@ -129,7 +129,7 @@ public class RequestResponseManagerImpl extends IoHandlerAdapter implements Requ
         for (WaitingResponseHandler handler : callbackList) {
             handler.handler.sessionClosed();
         }
-        LOG.log(Level.INFO, "Notified "+callbackList.size() +" outstanding requests for session "+NioUtils.getSessionId(session));
+        LOG.info("Notified "+callbackList.size() +" outstanding requests for session "+NioUtils.getSessionId(session));
     }
 
     private class WaitingResponseHandler {

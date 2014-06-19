@@ -37,7 +37,7 @@ import com.betfair.cougar.core.api.security.IdentityResolverFactory;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.logging.EventLoggingRegistry;
 import com.betfair.cougar.marshalling.api.socket.RemotableMethodInvocationMarshaller;
 import com.betfair.cougar.netutil.nio.CougarProtocol;
@@ -158,11 +158,6 @@ public class SocketTransportCommandProcessorTest {
     private EventLoggingRegistry eventLoggingRegistry;
 
     private ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-    @BeforeClass
-    public static void suppressLogs() {
-        CougarLoggingUtils.suppressAllRootLoggerOutput();
-    }
 
     @Before
     public void init() {

@@ -21,8 +21,8 @@ import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.ResponseCode;
 import com.betfair.cougar.api.security.IdentityTokenResolver;
 import com.betfair.cougar.core.api.RequestTimer;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.transport.api.RequestLogger;
 import com.betfair.cougar.transport.api.protocol.http.ExecutionContextFactory;
 import com.betfair.cougar.transport.api.protocol.http.GeoLocationDeserializer;
@@ -49,7 +49,7 @@ import java.util.regex.Pattern;
 @ManagedResource
 public class StaticContentServiceHandler extends ContextHandler {
 
-	private static final CougarLogger logger = CougarLoggingUtils.getLogger(StaticContentServiceHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(StaticContentServiceHandler.class);
 
     private static final String VERSION_HEADER = "Cougar 2 - "+CougarVersion.getVersion();
 
@@ -101,7 +101,7 @@ public class StaticContentServiceHandler extends ContextHandler {
 
 	@Override
 	public void doHandle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		logger.log(Level.FINE, "Static content stream handler for context path %s invoked for request path %s", getContextPath(), target);
+		LOGGER.debug("Static content stream handler for context path %s invoked for request path %s", getContextPath(), target);
 		baseRequest.setHandled(true);
         final RequestTimer timer = new RequestTimer();
         response.setHeader("Server", VERSION_HEADER);
@@ -112,13 +112,13 @@ public class StaticContentServiceHandler extends ContextHandler {
 			try {
 				InputStream rawStream = getClass().getResourceAsStream(target);
 				if (rawStream != null) {
-                    logger.log(Level.FINE, "Static content stream found for path %s", target);
+                    LOGGER.debug("Static content stream found for path %s", target);
                     bytesWritten = ServletResponseFileStreamer.getInstance().streamFileToResponse(rawStream, response,
                             HttpServletResponse.SC_OK, getContentType(contentType, target), CACHE_CONTROL_HEADER );
 					numOK.incrementAndGet();
 				}
 				else {
-					logger.log(Level.FINE, "Static content stream not found for path %s", target);
+					LOGGER.debug("Static content stream not found for path %s", target);
                     responseCode = ResponseCode.NotFound;
 					bytesWritten = ServletResponseFileStreamer.getInstance().stream404ToResponse(response);
 					num404s.incrementAndGet();
@@ -128,15 +128,15 @@ public class StaticContentServiceHandler extends ContextHandler {
                 // really exceptional and should not be reported by dumping the stack trace.
                 // Instead a summary debug level log message with some relevant info
                 ioErrorsEncountered.incrementAndGet();
-                logger.log(Level.FINEST, "Failed to marshall static data to the output channel.", e);
+                LOGGER.debug("Failed to marshall static data to the output channel.", e);
 			} catch (Exception e) {
-				logger.log(Level.SEVERE, "Unexpected Exception thrown processing WSDL request", e);
+				LOGGER.error("Unexpected Exception thrown processing WSDL request", e);
                 responseCode = ResponseCode.InternalError;
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				numErrors.incrementAndGet();
 			}
 		} else {
-			logger.log(Level.FINE, "Static content stream did not match regex for path %s", target);
+			LOGGER.debug("Static content stream did not match regex for path %s", target);
             responseCode = ResponseCode.NotFound;
             bytesWritten = ServletResponseFileStreamer.getInstance().stream404ToResponse(response);
 			num404s.incrementAndGet();

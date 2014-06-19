@@ -17,7 +17,7 @@
 package com.betfair.cougar.test;
 
 import com.betfair.cougar.core.api.RequestTimer;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.util.configuration.PropertyConfigurer;
 import junit.framework.TestCase;
 import org.junit.After;
@@ -35,32 +35,19 @@ import java.util.logging.LogRecord;
 
 public abstract class CougarTestCase extends TestCase {
 
-	private List<LogRecord> published;
-    private List<LogRecord> traced;
     private final Map<String, String> props = new TreeMap<String, String>();
 
     protected CougarTestCase() {
     	super();
     }
-    
+
 	protected CougarTestCase(String name) {
 		super(name);
 	}
 
     @Before
     public void setUp() throws Exception {
-        CougarLoggingUtils.suppressAllRootLoggerOutput();
-
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-
-        CougarLoggingUtils.setTraceLogger(null);
-        MockCapturingLogger traceLogger = (MockCapturingLogger)CougarLoggingUtils.getLogger(ConsolidatedMockLoggingFactory.TRACE_LOG_NAME);
-        traced=traceLogger.getLogRecords();
-        CougarLoggingUtils.setTraceLogger(traceLogger);
-
-        MockCapturingLogger logger = ((MockCapturingLogger) CougarLoggingUtils.getLogger(""));
-        logger.setLevel(Level.INFO);
-        published = logger.getLogRecords();
 
         props.put("property.one", "YES");
         props.put("property.two", "NO");
@@ -68,7 +55,7 @@ public abstract class CougarTestCase extends TestCase {
         Field f = PropertyConfigurer.class.getDeclaredField("allLoadedProperties");
         f.setAccessible(true);
         f.set(null, props);
-        
+
         System.setProperty("property.overridden", "OVERRIDE");
     }
 
@@ -76,26 +63,22 @@ public abstract class CougarTestCase extends TestCase {
     protected void tearDown() throws Exception {
         props.clear();
 	}
-	
-	public List<LogRecord> getMessageLog() {
-		return published;
-	}
 
     protected void assertEqualsArray(Object[] expected, Object[] actual) {
 		if (expected.length != actual.length) {
 			fail("Lengths differ - expected was "+expected.length+", actual "+actual.length);
 		}
-		
+
 		for (int i=0; i<expected.length; ++i) {
 			assertEquals(expected[i], actual[i]);
 		}
-	}    
+	}
 
     protected void assertEqualsArray(byte[] expected, byte[] actual) {
 		if (expected.length != actual.length) {
 			fail("Lengths differ - expected was "+expected.length+", actual "+actual.length);
 		}
-		
+
 		for (int i=0; i<expected.length; ++i) {
 			assertEquals(expected[i], actual[i]);
 		}

@@ -26,8 +26,8 @@ import com.betfair.cougar.core.api.ev.Subscription;
 import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 import com.betfair.cougar.core.api.logging.EventLogger;
 import com.betfair.cougar.core.impl.logging.ConnectedObjectLogEvent;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.netutil.nio.*;
 import com.betfair.cougar.netutil.nio.connected.InitialUpdate;
 import com.betfair.cougar.netutil.nio.connected.TerminateHeap;
@@ -56,7 +56,7 @@ import static com.betfair.cougar.core.api.ev.Subscription.CloseReason.*;
 @ManagedResource
 public class PooledServerConnectedObjectManager implements ServerConnectedObjectManager {
 
-    private static CougarLogger logger = CougarLoggingUtils.getLogger(PooledServerConnectedObjectManager.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(PooledServerConnectedObjectManager.class);
 
     private static final AtomicLong heapStateInstanceIdSource = new AtomicLong();
 
@@ -84,7 +84,7 @@ public class PooledServerConnectedObjectManager implements ServerConnectedObject
     private Thread shutdownHook = new Thread(new Runnable() {
         @Override
         public void run() {
-            logger.log(Level.INFO, "Terminating all push subscriptions due to application shutdown.");
+            LOGGER.info("Terminating all push subscriptions due to application shutdown.");
             terminateAllSubscriptions(NODE_SHUTDOWN);
         }
     }, "PooledServerConnectedObjectManager-ShutdownHook");
@@ -377,7 +377,7 @@ public class PooledServerConnectedObjectManager implements ServerConnectedObject
                             // if we can't tell them about it then something more serious has just happened.
                             // the client will likely find out anyway since this will likely mean a dead session
                             // we'll just log some info to the log to aid any debugging. We won't change the closure reason.
-                            logger.log(Level.INFO, "Error occurred whilst trying to inform client of subscription termination", e);
+                            LOGGER.info("Error occurred whilst trying to inform client of subscription termination", e);
                             nioLogger.log(NioLogger.LoggingLevel.SESSION, session, "Error occurred whilst trying to inform client of subscription termination, closing session");
                             // we'll request a closure of the session too to make sure everything gets cleaned up, although chances are it's already closed
                             session.close();
@@ -487,7 +487,7 @@ public class PooledServerConnectedObjectManager implements ServerConnectedObject
                     for (IoSession session : sessions) {
                         terminateSubscriptions(session, state, heapUri, reason);
                     }
-                    logger.log(Level.SEVERE, "Terminating heap state '%s'", heapUri);
+                    LOGGER.error("Terminating heap state '%s'", heapUri);
                     state.terminate();
                     state.removeListener();
                 }
@@ -518,7 +518,7 @@ public class PooledServerConnectedObjectManager implements ServerConnectedObject
                         lock.lock();
                         try {
                             if (heapState.isTerminated()) {
-                                logger.log(Level.SEVERE, "heapState.isTerminated()");
+                                LOGGER.error("heapState.isTerminated()");
                                 continue;
                             }
                             // cleanly dequeue everything waiting in the queue
@@ -621,7 +621,7 @@ public class PooledServerConnectedObjectManager implements ServerConnectedObject
                                 }
                             }
                         } catch (Exception e) {
-                            logger.log(Level.SEVERE, "error sending updates", e);
+                            LOGGER.error("error sending updates", e);
                             terminateSubscriptions(uri, INTERNAL_ERROR);
                         } finally {
                             lock.unlock();
@@ -631,9 +631,9 @@ public class PooledServerConnectedObjectManager implements ServerConnectedObject
                     }
                 }
             } catch (Exception e) {
-                logger.log(Level.SEVERE, "thread died", e);
+                LOGGER.error("thread died", e);
             } catch (Error e) {
-                logger.log(Level.SEVERE, "thread died", e);
+                LOGGER.error("thread died", e);
                 throw e;
             }
         }
@@ -854,7 +854,7 @@ public class PooledServerConnectedObjectManager implements ServerConnectedObject
         public void logSubscriptionEnd(String subscriptionId, LogExtension extension, Subscription.CloseReason reason) {
             if (reason == null) {
                 String message = "Close reason not provided for subscription " + subscriptionId + " to heap " + heap.getUri() + " defaulting to INTERNAL_ERROR";
-                logger.log(Level.WARNING, message, new IllegalStateException()); // so we can trace the source later..
+                LOGGER.warn(message, new IllegalStateException()); // so we can trace the source later..
                 reason = INTERNAL_ERROR;
             }
             log(subscriptionId, heap.getUri(), reason.name(), extension);
@@ -882,7 +882,7 @@ public class PooledServerConnectedObjectManager implements ServerConnectedObject
                     try {
                         sub.subscription.close(reason);
                     } catch (Exception e) {
-                        logger.log(Level.WARNING, "Error trying to close subscription");
+                        LOGGER.warn("Error trying to close subscription");
                     }
                 }
             }
@@ -904,7 +904,7 @@ public class PooledServerConnectedObjectManager implements ServerConnectedObject
                     sub.subscription.close(reason);
                 }
             } catch (Exception e) {
-                logger.log(Level.WARNING, "Error trying to close subscription");
+                LOGGER.warn("Error trying to close subscription");
             }
         }
 

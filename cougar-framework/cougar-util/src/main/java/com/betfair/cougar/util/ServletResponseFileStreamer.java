@@ -16,8 +16,8 @@
 
 package com.betfair.cougar.util;
 
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
@@ -30,7 +30,7 @@ import java.util.logging.Level;
 /**
  */
 public class ServletResponseFileStreamer {
-    private static final CougarLogger logger = CougarLoggingUtils.getLogger(ServletResponseFileStreamer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServletResponseFileStreamer.class);
 
     public static final String FILE_NOT_FOUND_PAGE = "/errorpages/404.html";
 
@@ -58,9 +58,9 @@ public class ServletResponseFileStreamer {
                     for (String[] headerPair : headers) {
                         if (headerPair.length >= 2) {
                             response.addHeader(headerPair[0], headerPair[1]);
-                            logger.log(Level.FINE,  "Adding the following http header value [%s, %s]", headerPair[0], headerPair[1]);
+                            LOGGER.debug( "Adding the following http header value [%s, %s]", headerPair[0], headerPair[1]);
                         } else {
-                            logger.log(Level.WARNING, "Unable to add header as " + Arrays.toString(headerPair) + " is not of the correct size/count");
+                            LOGGER.warn("Unable to add header as " + Arrays.toString(headerPair) + " is not of the correct size/count");
                         }
                     }
                 }

@@ -26,8 +26,8 @@ import com.betfair.cougar.core.api.exception.CougarMarshallingException;
 import com.betfair.cougar.core.api.exception.CougarValidationException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.transcription.Parameter;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.marshalling.api.socket.RemotableMethodInvocationMarshaller;
 import com.betfair.cougar.netutil.nio.*;
 import com.betfair.cougar.netutil.nio.message.EventMessage;
@@ -62,7 +62,7 @@ import java.util.logging.Level;
 import static com.betfair.cougar.netutil.nio.NioLogger.LoggingLevel.*;
 
 public class ExecutionVenueNioClient extends AbstractClientTransport implements ApplicationContextAware, InitializingBean {
-    private static final CougarLogger LOG = CougarLoggingUtils.getLogger(ExecutionVenueNioClient.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ExecutionVenueNioClient.class);
 
     private static final int DEFAULT_HANDSHAKE_RESPONSE_TIMEOUT = 5000;
     private static final int DEFAULT_RECONNECT_INTERVAL = 5000;
@@ -202,7 +202,7 @@ public class ExecutionVenueNioClient extends AbstractClientTransport implements 
                 }
             } else {
                 logger.log(PROTOCOL, session, "Received unsupported message: %s", message);
-                LOG.log(Level.WARNING, "Received unsupported message: " + message);
+                LOG.warn("Received unsupported message: " + message);
             }
         }
 
@@ -215,7 +215,7 @@ public class ExecutionVenueNioClient extends AbstractClientTransport implements 
                  logger.log(ALL, session, "ExecutionVenueNioClient: IOException received on session - closing");
             } else {
                 logger.log(SESSION, session, "ExecutionVenueNioClient: Unexpected exception from session - see main log for details");
-                LOG.log(Level.WARNING, "Unexpected exception from session " + NioUtils.getSessionId(session), cause);
+                LOG.warn("Unexpected exception from session " + NioUtils.getSessionId(session), cause);
             }
             sessionFactory.close(session);
         }
@@ -251,7 +251,7 @@ public class ExecutionVenueNioClient extends AbstractClientTransport implements 
         public void operationComplete(IoFuture future) {
             final IoSession session = future.getSession();
             if (session != null) {
-                LOG.log(Level.INFO, "session is closing " + session.getCreationTime());
+                LOG.info("session is closing " + session.getCreationTime());
                 notifyConnectionLost(session);
             }
         }
@@ -279,10 +279,9 @@ public class ExecutionVenueNioClient extends AbstractClientTransport implements 
         if (validateCTX(ctx, observer)) {
             final IoSession session = sessionFactory.getSession();
             if (session == null) {
-                LOG.log(Level.SEVERE, "An attempt was made to execute a method when the client was not connected!");
-                if (LOG.isLoggable(Level.FINE)) {
-                    LOG.log(Level.FINE,
-                            "Operation: " + def.getOperationKey() + " with parameters: " + Arrays.toString(args));
+                LOG.error("An attempt was made to execute a method when the client was not connected!");
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Operation: " + def.getOperationKey() + " with parameters: " + Arrays.toString(args));
                 }
                 observer.onResult(new ExecutionResult(new CougarClientException(ServerFaultCode.FrameworkError,
                         "This Client is not connected to a server so this call cannot be completed!")));
@@ -428,7 +427,7 @@ public class ExecutionVenueNioClient extends AbstractClientTransport implements 
                 }
             }
         } catch (Exception ex) {
-            LOG.log(Level.WARNING, "Error while registering socket session mbeans", ex);
+            LOG.warn("Error while registering socket session mbeans", ex);
         }
     }
 

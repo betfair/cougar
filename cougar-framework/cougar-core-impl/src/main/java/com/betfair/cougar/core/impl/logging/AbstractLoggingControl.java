@@ -16,8 +16,8 @@
 
 package com.betfair.cougar.core.impl.logging;
 
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.util.configuration.PropertyConfigurer;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -28,7 +28,7 @@ import java.util.Map;
  * Abstract base class of a log level controller
  */
 public abstract class AbstractLoggingControl implements InitializingBean {
-    private static final CougarLogger logger = CougarLoggingUtils.getLogger(AbstractLoggingControl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractLoggingControl.class);
 
     private static final String CUSTOM_LOG_LEVEL = "cougar.log.level.";
 
@@ -42,7 +42,7 @@ public abstract class AbstractLoggingControl implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         Map<String, String> props = PropertyConfigurer.getAllLoadedProperties();
-        logger.log(java.util.logging.Level.INFO, "Properties loaded from config files and system property overrides");
+        LOGGER.info("Properties loaded from config files and system property overrides");
         for (Map.Entry<String, String> e: props.entrySet()) {
         	checkEntry(e.getKey(), e.getValue());
         }

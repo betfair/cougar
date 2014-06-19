@@ -22,7 +22,7 @@ import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.LoggerFactory;
 import org.junit.*;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -52,11 +52,6 @@ public class InterceptingExecutableWrapperTest {
     private ExecutionObserver observer;
     private ExecutionVenue ev;
     private OperationKey key;
-
-    @BeforeClass
-    public static void suppressLogs() {
-        CougarLoggingUtils.suppressAllRootLoggerOutput();
-    }
 
     @Before
     public void before() {

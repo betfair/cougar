@@ -25,14 +25,16 @@ import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PostProcessingInterceptorWrapper implements ExecutionObserver {
 
 	private static final InterceptorResult CONTINUE = new InterceptorResult(InterceptorState.CONTINUE);
 
-	private final static CougarLogger logger = CougarLoggingUtils.getLogger(PostProcessingInterceptorWrapper.class);
+	private final static Logger LOGGER = LoggerFactory.getLogger(PostProcessingInterceptorWrapper.class);
 	private ExecutionObserver observer;
 	private List<ExecutionPostProcessor> postProcessors;
 	private ExecutionContext ctx;
@@ -96,7 +98,7 @@ public class PostProcessingInterceptorWrapper implements ExecutionObserver {
 				if (result == null || result.getState() == null) {
 					// defensive
 					String detail = "Post Processor " + postProcessor.getName() + " did not return a valid InterceptorResult.";
-					logger.log(Level.SEVERE, detail);
+                    LOGGER.error(detail);
 					result = new InterceptorResult(InterceptorState.FORCE_ON_EXCEPTION, new IllegalStateException(detail));
 					break;
 				}
@@ -105,8 +107,7 @@ public class PostProcessingInterceptorWrapper implements ExecutionObserver {
 				}
 
 			} catch (Exception e) {
-				logger.log(Level.SEVERE, "Post Processor " + postProcessor.getName() + " has failed.");
-				logger.log(e);
+				LOGGER.error("Post Processor " + postProcessor.getName() + " has failed.", e);
 				result = new InterceptorResult(InterceptorState.FORCE_ON_EXCEPTION, e);
 				break;
 			}

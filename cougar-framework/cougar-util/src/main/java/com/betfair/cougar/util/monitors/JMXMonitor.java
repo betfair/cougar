@@ -16,8 +16,8 @@
 
 package com.betfair.cougar.util.monitors;
 
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.tornjak.monitor.MonitorRegistry;
 import com.betfair.tornjak.monitor.OnDemandMonitor;
 import com.betfair.tornjak.monitor.Status;
@@ -28,7 +28,13 @@ import javax.management.ObjectName;
 import java.util.logging.Level;
 
 public class JMXMonitor extends OnDemandMonitor {
-    private static final CougarLogger logger = CougarLoggingUtils.getLogger(JMXMonitor.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(JMXMonitor.class);
+
+    static Logger setLogger(Logger logger) {
+        Logger tmp = LOGGER;
+        LOGGER = logger;
+        return tmp;
+    }
 
     private final MBeanServer mBeanServer;
     private final ObjectName beanName;
@@ -115,7 +121,7 @@ public class JMXMonitor extends OnDemandMonitor {
         this.failState = failState;
 
         name = "JMX monitor checking "+attributeName+" on " + beanName;
-        logger.log(Level.INFO, name + "Registering Monitor: " + name);
+        LOGGER.info(name + "Registering Monitor: " + name);
         registry.addMonitor(this);
     }
 
@@ -128,12 +134,12 @@ public class JMXMonitor extends OnDemandMonitor {
     public Status checkStatus() {
         if (isFailState()) {
             if (currentStatus != failState) {
-                logger.log(Level.WARNING, "%s %s. Attribute %s is unavailable or incorrect", beanName, failState, attributeName);
+                LOGGER.warn("%s %s. Attribute %s is unavailable or incorrect", beanName, failState, attributeName);
             }
             currentStatus = failState;
         } else {
             if (currentStatus != Status.OK) {
-                logger.log(Level.INFO, "%s recovered. Attribute %s is OK", beanName, attributeName);
+                LOGGER.info("%s recovered. Attribute %s is OK", beanName, attributeName);
             }
             currentStatus = Status.OK;
         }
@@ -145,18 +151,18 @@ public class JMXMonitor extends OnDemandMonitor {
         try {
             if (!mBeanServer.isRegistered(beanName)) {
                 if (ignoreIfBeanMissing) {
-                    logger.log(Level.FINE, "%s missing - ignoring", beanName);
+                    LOGGER.debug("%s missing - ignoring", beanName);
                     return false;
                 } else {
-                    logger.log(Level.FINE, "%s missing - failing", beanName);
+                    LOGGER.debug("%s missing - failing", beanName);
                     return true;
                 }
             }
             Object value = mBeanServer.getAttribute(beanName, attributeName);
-            logger.log(Level.FINE, "retrieved values %s from bean %s", value, beanName);
+            LOGGER.debug("retrieved values %s from bean %s", value, beanName);
             return !isHealthyExpression.evaluate(value);
         } catch (Exception e) {
-            logger.log(Level.WARNING, "Exception retrieving MBean value " + attributeName + "  from bean " + beanName, e);
+            LOGGER.warn("Exception retrieving MBean value " + attributeName + "  from bean " + beanName, e);
             return true;
         }
     }

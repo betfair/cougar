@@ -1,0 +1,3 @@
+2014-02-24 00:45:17.547: com.betfair.cougar.client.socket.ExecutionVenueNioClient INFO - session is closing 1393199204966
+2014-02-24 00:45:17.550: com.betfair.cougar.netutil.nio.RequestResponseManagerImpl INFO - Notified 0 outstanding requests for session 0000210
+2014-02-24 00:45:17.553: com.betfair.cougar.client.socket.IoSessionFactory INFO - Connected to localhost/127.0.0.1:9003

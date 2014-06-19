@@ -39,25 +39,25 @@ import org.springframework.core.io.Resource;
 import org.springframework.util.DefaultPropertiesPersister;
 import org.springframework.util.PropertiesPersister;
 
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class PropertyConfigurer implements BeanFactoryAware, BeanNameAware, BeanFactoryPostProcessor, Ordered, InitializingBean {
-	
-	private static final CougarLogger log = CougarLoggingUtils.getLogger(PropertyConfigurer.class);
+
+	private static final Logger LOG = LoggerFactory.getLogger(PropertyConfigurer.class);
 
     public static final String NO_DEFAULT = "MUST_BE_OVERRIDDEN";
-	
+
 	private static final String DEFAULT_CONFIG_HOST_PROPERTY = "betfair.config.host";
     private static final String JMX_PORT_KEY = "jmx.html.port";
     private static final String HOSTNAME_KEY = "system.hostname";
     private static final String NODEID_KEY = "cougar.core.nodeid";
 
 	public static final String HOSTNAME;
-	
+
 	private static Map<String, String> allLoadedProperties = Collections.synchronizedMap(new TreeMap<String, String>());
-	
+
 	private final PropertyPlaceholderConfigurer propertyPlaceholderConfigurer;
 	private String configHostProp = DEFAULT_CONFIG_HOST_PROPERTY;
 	private Resource defaultConfig;
@@ -96,7 +96,7 @@ public class PropertyConfigurer implements BeanFactoryAware, BeanNameAware, Bean
             }};
         propertyPlaceholderConfigurer.setPropertiesPersister(savingPropertiesPersister);
 	}
-	
+
 	public static Map<String, String> getAllLoadedProperties() {
 	    return allLoadedProperties;
 	}
@@ -104,15 +104,15 @@ public class PropertyConfigurer implements BeanFactoryAware, BeanNameAware, Bean
     public void setPlaceholderPrefix(String placeholderPrefix) {
 		this.propertyPlaceholderConfigurer.setPlaceholderPrefix(placeholderPrefix);
 	}
-	
+
 	public void setConfigHost(String configHost) {
 		this.configHostProp = configHost;
 	}
-	
+
 	public void setDefaultConfig(Resource defaultConfig) {
 		this.defaultConfig = defaultConfig;
 	}
-	
+
 	public void setConfigOverride(String configOverride) {
 		this.configOverride = configOverride;
 	}
@@ -120,19 +120,19 @@ public class PropertyConfigurer implements BeanFactoryAware, BeanNameAware, Bean
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 		propertyPlaceholderConfigurer.setBeanFactory(beanFactory);
-		
+
 	}
 
 	@Override
 	public void setBeanName(String beanName) {
 		propertyPlaceholderConfigurer.setBeanName(beanName);
-		
+
 	}
 
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory arg0) throws BeansException {
 		propertyPlaceholderConfigurer.postProcessBeanFactory(arg0);
-		
+
 	}
 
 	@Override
@@ -142,7 +142,7 @@ public class PropertyConfigurer implements BeanFactoryAware, BeanNameAware, Bean
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-        PropertyLoader pl = new PropertyLoader(defaultConfig, configOverride, log);
+        PropertyLoader pl = new PropertyLoader(defaultConfig, configOverride, LOG);
         propertyPlaceholderConfigurer.setLocations(pl.constructResourceList());
 	}
 

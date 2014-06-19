@@ -33,7 +33,7 @@ import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 import com.betfair.cougar.core.api.exception.CougarValidationException;
 import com.betfair.cougar.core.api.transports.EventTransportMode;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.transport.api.protocol.events.EventBindingDescriptor;
 import com.betfair.cougar.transport.api.protocol.events.EventErrorHandler;
 import com.betfair.cougar.transport.api.protocol.events.EventServiceBindingDescriptor;
@@ -88,11 +88,6 @@ public class JmsEventTransportImplTest {
     private MessageConsumer mockedConsumer;
     private MonitorRegistry monitorRegistry;
     private Connection mockedConnection;
-
-    @BeforeClass
-    public static void suppressLogs() {
-        CougarLoggingUtils.suppressAllRootLoggerOutput();
-    }
 
     private ExecutionObserver inbredExecutionObserver = new ExecutionObserver() {
 

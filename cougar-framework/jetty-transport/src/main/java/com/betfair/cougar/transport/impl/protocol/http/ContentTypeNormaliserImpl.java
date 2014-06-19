@@ -20,8 +20,8 @@ import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.CougarValidationException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.mediatype.MediaTypeUtils;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.util.HeaderUtils;
 import com.betfair.cougar.util.MessageConstants;
 
@@ -33,7 +33,7 @@ import java.util.logging.Level;
 
 public class ContentTypeNormaliserImpl implements ContentTypeNormaliser {
 
-    private static final CougarLogger logger = CougarLoggingUtils.getLogger(ContentTypeNormaliser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ContentTypeNormaliser.class);
     public static final String DEFAULT_ENCODING = "utf-8";
     private Map<String, MediaType> validContentTypes = new ConcurrentHashMap<String, MediaType>();
     private List<MediaType> allContentTypes = Collections.synchronizedList(new ArrayList<MediaType>());
@@ -158,7 +158,7 @@ public class ContentTypeNormaliserImpl implements ContentTypeNormaliser {
             //Extraction from the string failed.
         }
         if (!validEncodings.contains(encoding)) {
-            logger.log(Level.WARNING, "Invalid Encoding '%s' - using default - '%s'", encoding, DEFAULT_ENCODING);
+            LOGGER.warn("Invalid Encoding '%s' - using default - '%s'", encoding, DEFAULT_ENCODING);
             encoding = DEFAULT_ENCODING;
         }
         return encoding;

@@ -16,8 +16,8 @@
 
 package com.betfair.cougar.testing;
 
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -25,27 +25,27 @@ import java.util.Date;
 import java.util.logging.Level;
 
 public abstract class DateTimeLogEntryCondition implements LogEntryCondition {
-	final static CougarLogger logger = CougarLoggingUtils
+	final static Logger LOGGER = LoggerFactory
 	.getLogger(DateTimeLogEntryCondition.class);
-	
-	// 
-	private final SimpleDateFormat dateFormat; 
+
+	//
+	private final SimpleDateFormat dateFormat;
 	// caching this on construction to save time in use - the dateFormat is immutable
-	private final int dateFormatLength;  
+	private final int dateFormatLength;
 
 	private Date checkDate;
-	
+
 	public DateTimeLogEntryCondition(String dateTimeFormatString)
 	{
 		this.dateFormat = new SimpleDateFormat(dateTimeFormatString);
 		this.dateFormatLength = dateTimeFormatString.length();
 	}
-	
+
 	private int getDateFormatLength()
 	{
 		return this.dateFormatLength;
 	}
-	
+
 	private SimpleDateFormat getDateFormat()
 	{
 		return this.dateFormat;
@@ -59,12 +59,12 @@ public abstract class DateTimeLogEntryCondition implements LogEntryCondition {
 	{
 		this.checkDate = checkDate;
 	}
-	
+
 	public void setCheckDate(String checkDateString)
 	{
 		this.checkDate = getDateFromLogEntry(checkDateString);
 	}
-	
+
 	// assumes the date is at the start of the log entry
 	protected Date getDateFromLogEntry(String logEntry)
 	{
@@ -79,7 +79,7 @@ public abstract class DateTimeLogEntryCondition implements LogEntryCondition {
 			catch(ParseException ex)
 			{
 				// it's not a date in the right format
-				logger.log(Level.FINE, datePart+" is not a date time");
+				LOGGER.debug(datePart+" is not a date time");
 			}
 		}
 		return returnDate;

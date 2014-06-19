@@ -21,17 +21,17 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.logging.records.EventLogRecord;
 
 /**
  * Superclass for all event logs handlers
  */
 public abstract class AbstractEventLogHandler extends Handler {
-	private final static CougarLogger logger = CougarLoggingUtils.getLogger(AbstractEventLogHandler.class);
+	private final static Logger LOGGER = LoggerFactory.getLogger(AbstractEventLogHandler.class);
 	private final boolean abstractHandler;
-	
+
 	public AbstractEventLogHandler(boolean abstractHandler) {
 		this.abstractHandler = abstractHandler;
 	}
@@ -48,7 +48,7 @@ public abstract class AbstractEventLogHandler extends Handler {
 				throw new IllegalStateException("Unable to log an event", e);
 			}
 		} else {
-			logger.log(Level.WARNING, "Unable to Event log an record of class: %s", record.getClass().getCanonicalName());
+			LOGGER.warn("Unable to Event log an record of class: %s", record.getClass().getCanonicalName());
 			throw new IllegalArgumentException("Invalid class for event log: " + record.getClass().getCanonicalName() );
 		}
 	}
@@ -61,8 +61,8 @@ public abstract class AbstractEventLogHandler extends Handler {
 		}
 	}
 	protected abstract AbstractEventLogHandler cloneHandlerToName(String namespace, String name) throws IOException;
-	
+
 	public abstract void publishEvent(EventLogRecord event) throws IOException;
-	
-	
+
+
 }

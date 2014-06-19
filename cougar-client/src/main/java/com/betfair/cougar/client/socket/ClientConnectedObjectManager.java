@@ -22,8 +22,8 @@ import com.betfair.cougar.core.api.ev.Subscription;
 import com.betfair.cougar.core.api.exception.CougarClientException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.impl.ev.ConnectedResponseImpl;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.netutil.nio.HeapDelta;
 import com.betfair.cougar.netutil.nio.NioLogger;
 import com.betfair.cougar.netutil.nio.NioUtils;
@@ -36,6 +36,8 @@ import com.betfair.platform.virtualheap.Heap;
 import com.betfair.platform.virtualheap.ImmutableHeap;
 import com.betfair.platform.virtualheap.conflate.Conflater;
 import org.apache.mina.common.IoSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,7 +53,7 @@ import java.util.logging.Level;
  * Manages connected objects, and subscriptions thereof.
  */
 public class ClientConnectedObjectManager {
-    private static final CougarLogger logger = CougarLoggingUtils.getLogger(ClientConnectedObjectManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClientConnectedObjectManager.class);
 
     private ConcurrentHashMap<String, ConnectedHeaps> heapsByServer = new ConcurrentHashMap<String, ConnectedHeaps>();
     private NioLogger nioLogger;
@@ -149,7 +151,7 @@ public class ClientConnectedObjectManager {
         try {
             newHeapSubscription = (NewHeapSubscription) in.getResult();
         } catch (Exception e) {
-            logger.log(Level.WARNING, "Error unpacking subscription result", e);
+            LOGGER.warn("Error unpacking subscription result", e);
             observer.onResult(new ExecutionResult(new CougarClientException(ServerFaultCode.FrameworkError, "Error unpacking subscription result", e)));
             return;
         }
@@ -183,7 +185,7 @@ public class ClientConnectedObjectManager {
         final HeapState heapState = heaps.getHeapState(newHeapSubscription.getHeapId());
         if (heapState == null) {
             nioLogger.log(NioLogger.LoggingLevel.TRANSPORT, currentSession, "Couldn't find heap definition, heapId = %s", newHeapSubscription.getHeapId());
-            logger.log(Level.WARNING, "Can't find the heap for this subscription result. Heap id = " + newHeapSubscription.getHeapId());
+            LOGGER.warn("Can't find the heap for this subscription result. Heap id = " + newHeapSubscription.getHeapId());
             observer.onResult(new ExecutionResult(new CougarClientException(ServerFaultCode.FrameworkError, "Can't find the heap for this subscription result. Heap id = " + newHeapSubscription.getHeapId())));
         } else {
             if (preExistingHeap && heapState.haveSeenInitialUpdate()) {
@@ -193,7 +195,7 @@ public class ClientConnectedObjectManager {
                 } else {
                     // null sub means we already had a subscription with that id, something's not in a good state in the server, so kill this connection as we don't know what's going on
                     nioLogger.log(NioLogger.LoggingLevel.TRANSPORT, currentSession, "Duplicate subscription returned by the server, id = %s - closing session", newHeapSubscription.getSubscriptionId());
-                    logger.log(Level.WARNING, "Duplicate subscription returned by the server, id = " + newHeapSubscription.getSubscriptionId() + " - closing session");
+                    LOGGER.warn("Duplicate subscription returned by the server, id = " + newHeapSubscription.getSubscriptionId() + " - closing session");
                     observer.onResult(new ExecutionResult(new CougarClientException(ServerFaultCode.FrameworkError, "Duplicate subscription returned by the server, id = " + newHeapSubscription.getSubscriptionId())));
                     currentSession.close();
                 }
@@ -224,7 +226,7 @@ public class ClientConnectedObjectManager {
                         } catch (InterruptedException e) {
                             // we got interrupted waiting for the response, oh well..
                         } catch (RuntimeException e) {
-                            logger.log(Level.WARNING, "Error processing initial heap population, treating as a failure", e);
+                            LOGGER.warn("Error processing initial heap population, treating as a failure", e);
                         } finally {
                             if (!resultSent) {
                                 nioLogger.log(NioLogger.LoggingLevel.TRANSPORT, currentSession, "Didn't get initial population message for heap, heapUrl = %s", newHeapSubscription.getUri());
@@ -232,7 +234,7 @@ public class ClientConnectedObjectManager {
                                 if (!preExistingHeap) {
                                     terminateSubscriptions(currentSession, newHeapSubscription.getHeapId(), Subscription.CloseReason.INTERNAL_ERROR);
                                 }
-                                logger.log(Level.WARNING, "Didn't get initial population message for heap id = " + newHeapSubscription.getHeapId());
+                                LOGGER.warn("Didn't get initial population message for heap id = " + newHeapSubscription.getHeapId());
                                 observer.onResult(new ExecutionResult(new CougarClientException(ServerFaultCode.FrameworkError, "Didn't get initial population message for heap id = " + newHeapSubscription.getHeapId())));
                             }
                         }
@@ -252,14 +254,14 @@ public class ClientConnectedObjectManager {
         // if we've got no record then we can't continue, and we can't really throw an exception, so just warn and ignore..
         if (heaps == null) {
             nioLogger.log(NioLogger.LoggingLevel.TRANSPORT, session, "Have no heaps registered for this client, address = %s", session.getRemoteAddress().toString());
-            logger.log(Level.WARNING, "Received a connected object update, yet have no record of any subscriptions. {address=%s,heapId=%s,updateId=%s}", session.getRemoteAddress().toString(), payload.getHeapId(), payload.getUpdateId());
+            LOGGER.warn("Received a connected object update, yet have no record of any subscriptions. {address=%s,heapId=%s,updateId=%s}", session.getRemoteAddress().toString(), payload.getHeapId(), payload.getUpdateId());
             return;
         }
 
         HeapState heapState = heaps.getHeapState(payload.getHeapId());
         if (heapState == null) {
             nioLogger.log(NioLogger.LoggingLevel.TRANSPORT, session, "Can't find this heap for this client, address = %s, heapId = %s", session.getRemoteAddress().toString(), payload.getHeapId());
-            logger.log(Level.WARNING, "Received a connected object update, yet have no record of a subscription for this heap. {address=%s,heapId=%s,updateId=%s}", session.getRemoteAddress().toString(), payload.getHeapId(), payload.getUpdateId());
+            LOGGER.warn("Received a connected object update, yet have no record of a subscription for this heap. {address=%s,heapId=%s,updateId=%s}", session.getRemoteAddress().toString(), payload.getHeapId(), payload.getUpdateId());
             return;
         }
 
@@ -332,7 +334,7 @@ public class ClientConnectedObjectManager {
                                         }
                                     } catch (Exception e) {
                                         // something's gone a bit wrong. abort this client now..
-                                        logger.log(Level.WARNING, "Error processing update", e);
+                                        LOGGER.warn("Error processing update", e);
                                         nioLogger.log(NioLogger.LoggingLevel.TRANSPORT, sessionId, "Error occurred processing update for heapId = %s, terminating heap", heapId);
                                         terminateSubscriptions(sessionId, heapId, Subscription.CloseReason.INTERNAL_ERROR);
                                     } finally {
@@ -370,12 +372,12 @@ public class ClientConnectedObjectManager {
                                                     nioLogger.log(NioLogger.LoggingLevel.TRANSPORT, sessId, "Waited too long for next update for heapId = %s, terminating heap", heapId);
                                                     break;
                                                 default:
-                                                    logger.log(Level.WARNING, "Unrecognized health for queue: " + health);
+                                                    LOGGER.warn("Unrecognized health for queue: " + health);
                                             }
                                             terminateSubscriptions(sessId, heapId, Subscription.CloseReason.INTERNAL_ERROR);
                                         }
                                     } else {
-                                        logger.log(Level.WARNING, "Couldn't find heap state for heapId: " + heapId);
+                                        LOGGER.warn("Couldn't find heap state for heapId: " + heapId);
                                     }
                                 }
                             }
@@ -386,7 +388,7 @@ public class ClientConnectedObjectManager {
                 } catch (InterruptedException ie) {
                     // ignore, we'll go around the loop again and wait on the poll again
                 } catch (Exception e) {
-                    logger.log(Level.WARNING, "Error processing update", e);
+                    LOGGER.warn("Error processing update", e);
                 }
             }
         }
@@ -423,7 +425,7 @@ public class ClientConnectedObjectManager {
                             // if we can't write to the stream to tell the server that the client wants to unsub, then it's likely the session is already
                             // gone. however, we'll log a message to let people know and then request a close of the session to make sure.
                             nioLogger.log(NioLogger.LoggingLevel.SESSION, session, "Error occurred whilst trying to inform server of subscription termination, closing session");
-                            logger.log(Level.INFO, "Error occurred whilst trying to inform server of subscription termination, closing session", ioe);
+                            LOGGER.info("Error occurred whilst trying to inform server of subscription termination, closing session", ioe);
                             session.close();
                         }
                     }

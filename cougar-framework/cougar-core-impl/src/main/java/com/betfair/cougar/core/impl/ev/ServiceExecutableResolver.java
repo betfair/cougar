@@ -37,8 +37,9 @@ import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.logging.EventLogger;
 import com.betfair.cougar.core.impl.logging.RequestLogEvent;
-import com.betfair.cougar.logging.CougarLogger;
 import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Resolves the operation key to a service Executable. The resolver will resolve the executable
@@ -48,7 +49,7 @@ import com.betfair.cougar.logging.CougarLoggingUtils;
  *
  */
 public class ServiceExecutableResolver extends CompoundExecutableResolverImpl {
-    private static final CougarLogger logger = CougarLoggingUtils.getLogger(ServiceExecutableResolver.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceExecutableResolver.class);
 
 	private EventLogger eventLogger;
 
@@ -244,9 +245,10 @@ public class ServiceExecutableResolver extends CompoundExecutableResolverImpl {
 		public void trace(String msg, Object... args) {
             if (original.traceLoggingEnabled()) {
                 if (original.getRequestUUID() == null) {
-                    logger.log(Level.SEVERE, "You need to set a RequestUUID on the ExecutionContext to see trace messages!");
+                    LOGGER.error("You need to set a RequestUUID on the ExecutionContext to see trace messages!");
                 } else {
-                    logger.forceTrace(original.getRequestUUID().toString(), msg, args);
+                    // todo: logging: this used to trace?
+                    CougarLoggingUtils.getTraceLogger().info(original.getRequestUUID().toString(), msg, args);
                 }
             }
 		}

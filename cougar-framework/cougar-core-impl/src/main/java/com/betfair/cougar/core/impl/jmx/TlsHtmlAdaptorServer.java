@@ -16,8 +16,8 @@
 
 package com.betfair.cougar.core.impl.jmx;
 
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.sun.jdmk.comm.CommunicationException;
 import com.sun.jdmk.comm.HtmlAdaptorServer;
 import com.sun.jdmk.comm.JdmkHtmlRequestHandler;
@@ -43,10 +43,10 @@ import java.util.logging.Level;
  * Extends HtmlAdaptorServer to add TLS support
  */
 public class TlsHtmlAdaptorServer extends HtmlAdaptorServer {
-    
+
 	private static final int SOCKET_TIMEOUT = 10 * 1000;
 
-	private static final CougarLogger logger = CougarLoggingUtils.getLogger(TlsHtmlAdaptorServer.class);
+	private static final Logger logger = LoggerFactory.getLogger(TlsHtmlAdaptorServer.class);
 
     private final Resource keystoreResource;
     private final String keystorePasswd;
@@ -80,14 +80,14 @@ public class TlsHtmlAdaptorServer extends HtmlAdaptorServer {
             try {
                 keyStore = loadKeyStore(keystoreResource, keystorePasswd, keystoreType);
             } catch (Exception e) {
-                logger.log(e);
+                logger.error("",e);
                 throw new RuntimeException("Can't load keystore from " + keystoreResource, e);
             }
-    
+
             try {
                 serverSocket = createSecureServerSocket(keyStore, certPasswd);
             } catch (Exception e) {
-                logger.log(e);
+                logger.error("",e);
                 throw new RuntimeException("Error while creating server socket", e);
             }
         }
@@ -95,14 +95,14 @@ public class TlsHtmlAdaptorServer extends HtmlAdaptorServer {
         	try {
         		serverSocket = createServerSocket();
         	} catch (Exception e) {
-                logger.log(e);
+                logger.error("",e);
                 throw new RuntimeException("Error while creating server socket", e);
             }
         }
-        
-        logger.log(Level.INFO, "Created ServerSocket " + serverSocket);
+
+        logger.info("Created ServerSocket " + serverSocket);
     }
-    
+
 	@Override
     protected void doReceive() throws CommunicationException,
     		InterruptedException {
@@ -110,11 +110,11 @@ public class TlsHtmlAdaptorServer extends HtmlAdaptorServer {
             this.socket = this.serverSocket.accept();
             this.socket.setSoTimeout(SOCKET_TIMEOUT);
         } catch (IOException e) {
-            logger.log(e);
+            logger.error("",e);
             throw new CommunicationException(e, "Error while accepting connection on server socket");
         }
     }
-    
+
     @Override
     protected void doProcess() throws CommunicationException ,InterruptedException {
     	this.lastClientAddress = this.socket.getInetAddress();
@@ -123,18 +123,18 @@ public class TlsHtmlAdaptorServer extends HtmlAdaptorServer {
 
         this.socket = null;
     }
-    
+
     @Override
     protected void doUnbind() throws CommunicationException,
     		InterruptedException {
         try {
             this.serverSocket.close();
         } catch (IOException e) {
-            logger.log(e);
+            logger.error("",e);
             throw new CommunicationException(e,"Error while closing socket");
         }
     }
-       
+
     protected ServerSocket createSecureServerSocket(final KeyStore keyStore, final String passwd)
             throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException, IOException {
         final KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
@@ -162,7 +162,7 @@ public class TlsHtmlAdaptorServer extends HtmlAdaptorServer {
         		keyStoreStream.close();
         }
     }
-    
+
     private ServerSocket createServerSocket() throws IOException {
 		ServerSocket ss =  new ServerSocket();
         return bindSocket(ss);

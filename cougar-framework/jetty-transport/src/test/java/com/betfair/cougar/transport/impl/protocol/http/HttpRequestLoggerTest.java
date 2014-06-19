@@ -21,19 +21,22 @@ import com.betfair.cougar.api.ResponseCode;
 import com.betfair.cougar.api.geolocation.GeoLocationDetails;
 import com.betfair.cougar.api.security.IdentityTokenResolver;
 import com.betfair.cougar.core.api.RequestTimer;
-import com.betfair.cougar.logging.CougarLoggingUtils;
 import com.betfair.cougar.logging.EventLogDefinition;
 import com.betfair.cougar.logging.EventLoggingRegistry;
-import com.betfair.cougar.test.MockCapturingLogger;
 import com.betfair.cougar.transport.api.RequestLogger;
 import com.betfair.cougar.transport.api.protocol.http.HttpCommand;
 import com.betfair.cougar.util.HeaderUtils;
 import com.betfair.cougar.util.RequestUUIDImpl;
 import com.betfair.cougar.util.UUIDGeneratorImpl;
 import com.betfair.cougar.util.geolocation.RemoteAddressUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.slf4j.ILoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;
@@ -54,10 +57,11 @@ public class HttpRequestLoggerTest {
 	protected HttpServletRequest request;
 	protected HttpServletResponse response;
 
-    private MockCapturingLogger eventLog;
-
+    private Logger eventLog;
+    private ILoggerFactory loggerFactory;
 
 	private EventLoggingRegistry registry;
+    private ILoggerFactory oldLoggerFactory;
 
     @BeforeClass
     public static void setupStatic() {
@@ -75,9 +79,18 @@ public class HttpRequestLoggerTest {
 		eld.setRegistry(registry);
 		eld.setLogName("ACCESS-LOG");
 		eld.register();
-        eventLog = (MockCapturingLogger)CougarLoggingUtils.getLogger(eld.getLogName());
+
+        loggerFactory = mock(ILoggerFactory.class);
+        oldLoggerFactory = HttpRequestLogger.setLoggerFactory(loggerFactory);
+        eventLog = mock(Logger.class);
 	}
-	
+
+    @After
+    public void after()
+    {
+        HttpRequestLogger.setLoggerFactory(oldLoggerFactory);
+    }
+
 	@Test
 	public void testLogEventNoExtraFields() throws Exception {
         final HttpCommand command = createCommand(null);
@@ -98,17 +111,16 @@ public class HttpRequestLoggerTest {
 		MediaType responseMediaType = MediaType.APPLICATION_XML_TYPE;
 		ResponseCode responseCode = ResponseCode.Ok;
 
-        eventLog.getLogRecords().clear();
-
         command.getTimer().requestComplete();
+
+        when(loggerFactory.getLogger("ACCESS-LOG")).thenReturn(eventLog);
+
 		logger.logAccess(command, context, bytesRead, bytesWritten, requestMediaType, responseMediaType, responseCode);
 
-        assertEquals(eventLog.getLogRecords().size(), 1);
+        ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
+        verify(eventLog, times(1)).info(messageCaptor.capture());
 
-        LogRecord eventLogRecord = eventLog.getLogRecords().get(0);
-
-		assertEquals("ACCESS-LOG", eventLogRecord.getLoggerName());
-        String[] loggedValues = tokenise(eventLogRecord.getMessage());
+        String[] loggedValues = tokenise(messageCaptor.getValue());
         int i=0;
 		assertEquals(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(command.getTimer().getReceivedTime()), loggedValues[i++]);
 		assertEquals(uuid.toString(), loggedValues[i++]);
@@ -125,7 +137,7 @@ public class HttpRequestLoggerTest {
 		assertEquals("xml", loggedValues[i++]);
         assertEquals("[]", loggedValues[i++]);
 	}
-	
+
     @Test
     public void testLogEventWithExtraFields() throws Exception {
         final HttpCommand command = createCommand(null);
@@ -149,16 +161,18 @@ public class HttpRequestLoggerTest {
         MediaType responseMediaType = MediaType.APPLICATION_XML_TYPE;
         ResponseCode responseCode = ResponseCode.Ok;
 
-        eventLog.getLogRecords().clear();
+
+        when(loggerFactory.getLogger("ACCESS-LOG")).thenReturn(eventLog);
+
 
         command.getTimer().requestComplete();
         logger.logAccess(command, context, bytesRead, bytesWritten, requestMediaType, responseMediaType, responseCode);
 
-        assertEquals(eventLog.getLogRecords().size(), 1);
 
-        LogRecord eventLogRecord = eventLog.getLogRecords().get(0);
-        assertEquals("ACCESS-LOG", eventLogRecord.getLoggerName());
-        String[] loggedValues = tokenise(eventLogRecord.getMessage());
+        ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
+        verify(eventLog, times(1)).info(messageCaptor.capture());
+
+        String[] loggedValues = tokenise(messageCaptor.getValue());
         int i=0;
         assertEquals(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(command.getTimer().getReceivedTime()), loggedValues[i++]);
         assertEquals(uuid.toString(), loggedValues[i++]);
@@ -174,44 +188,14 @@ public class HttpRequestLoggerTest {
         assertEquals("json", loggedValues[i++]);
         assertEquals("xml", loggedValues[i++]);
         assertEquals("[User-Agent=IE,eeeep=meeeep]", loggedValues[i++]);
+
+
     }
 
     private String[] tokenise(String message) {
         // Ruddy java regexes don't support infinite length look behinds
         return message.trim().split("(?<!\\[[^\\]]{1,500}),");
     }
-
-	protected class TestServletInputStream extends ServletInputStream {
-
-		private String input;
-		private int pos = 0;
-
-		public TestServletInputStream(String input) {
-			this.input = input;
-		}
-
-		@Override
-		public int read() throws IOException {
-			if (pos < input.length()) {
-				return input.charAt(pos++);
-			}
-			return -1;
-		}
-	};
-
-	protected class TestServletOutputStream extends ServletOutputStream {
-
-		private StringBuffer output = new StringBuffer();
-
-		@Override
-		public void write(int character) throws IOException {
-			output.append((char) character);
-		}
-
-		public String getOutput() {
-			return output.toString();
-		}
-	}
 
     protected HttpCommand createCommand(IdentityTokenResolver identityTokenResolver) {
         return new TestHttpCommand(identityTokenResolver);

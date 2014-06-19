@@ -16,12 +16,13 @@
 
 package com.betfair.cougar.core.impl.logging;
 
-import com.betfair.cougar.logging.CougarLogger;
 import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.LoggerFactory;
 
 import com.sun.org.apache.xpath.internal.jaxp.JAXPVariableStack;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.slf4j.impl.Log4jLoggerAdapter;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
@@ -29,9 +30,10 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 /**
  * Log4j file to programmatically set log levels for log4j. Most useful feature is that this is exposed via MBEAN
  */
+// todo: logging: perhaps we should stop using jdk levels as our interface?
 @ManagedResource
 public class Log4jLoggingControl extends AbstractLoggingControl {
-    private static final CougarLogger logger = CougarLoggingUtils.getLogger(AbstractLoggingControl.class);
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(AbstractLoggingControl.class);
 
     public void setLogLevel(String loggerName, String level, boolean recursive) {
         //This implementation does not support recursive loglevel changes
@@ -42,21 +44,19 @@ public class Log4jLoggingControl extends AbstractLoggingControl {
     public void setLogLevel(String loggerName, String level) {
         Logger l = loggerName == null? Logger.getRootLogger() : Logger.getLogger(loggerName);
 
-        logger.log(java.util.logging.Level.INFO, "Logger %s: level customised to %s", l.getName(), level);
+        logger.info("Logger %s: level customised to %s", l.getName(), level);
 
         l.setLevel(convertJdkLevelToLog4jLevel(level));
     }
 
     @ManagedOperation
     public String getLogLevel(String loggerName) {
-    	if (loggerName == null) {
-    		return CougarLoggingUtils.getLogger("").getLevel().getName();
-    	} else {
-    		return CougarLoggingUtils.getLogger(loggerName).getLevel().getName();
-    	}
+        Logger l = loggerName == null? Logger.getRootLogger() : Logger.getLogger(loggerName);
+
+        return convertLog4jLevelToJdkLevel(l.getLevel());
     }
 
-    public Level convertJdkLevelToLog4jLevel(String inputLevel) {
+    public static Level convertJdkLevelToLog4jLevel(String inputLevel) {
         java.util.logging.Level jdkLogLevel = java.util.logging.Level.parse(inputLevel);
 
         if (java.util.logging.Level.ALL.equals(jdkLogLevel)) {
@@ -75,6 +75,27 @@ public class Log4jLoggingControl extends AbstractLoggingControl {
             return Level.ERROR;
         } else if (java.util.logging.Level.OFF.equals(jdkLogLevel)) {
             return Level.OFF;
+        }
+        throw new IllegalArgumentException("Unable to find a match for level: " + inputLevel);
+    }
+
+    public static String convertLog4jLevelToJdkLevel(Level inputLevel) {
+
+        switch (inputLevel.toInt()) {
+            case Level.ALL_INT:
+                return java.util.logging.Level.ALL.getName();
+            case Level.DEBUG_INT:
+                return java.util.logging.Level.FINE.getName();
+            case Level.TRACE_INT:
+                return java.util.logging.Level.FINEST.getName();
+            case Level.INFO_INT:
+                return java.util.logging.Level.INFO.getName();
+            case Level.WARN_INT:
+                return java.util.logging.Level.WARNING.getName();
+            case Level.ERROR_INT:
+                return java.util.logging.Level.SEVERE.getName();
+            case Level.OFF_INT:
+                return java.util.logging.Level.OFF.getName();
         }
         throw new IllegalArgumentException("Unable to find a match for level: " + inputLevel);
     }

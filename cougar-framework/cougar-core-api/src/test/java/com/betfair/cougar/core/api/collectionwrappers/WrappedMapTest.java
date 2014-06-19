@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.LoggerFactory;
 import junit.framework.TestCase;
 
 import com.betfair.cougar.api.Result;
@@ -30,12 +30,7 @@ public class WrappedMapTest extends TestCase {
 	WrappedMap<String,String> ws = new WrappedMap<String,String>(new HashMap<String,String>());
 	Map<String,String> anotherMap = new HashMap<String,String>();
 
-    @BeforeClass
-    public static void suppressLogs() {
-        CougarLoggingUtils.suppressAllRootLoggerOutput();
-    }
 
-	
 	@Override
 	protected void setUp() throws Exception {
 		anotherMap.put("foo","bar");
@@ -59,7 +54,7 @@ public class WrappedMapTest extends TestCase {
 
 		ws.putAll(anotherMap);
 		ws.put("pie", "mmm");
-		
+
 		assertEquals(3, ws.keySet().size());
 		assertEquals(3, ws.values().size());
 		assertEquals(3, ws.entrySet().size());

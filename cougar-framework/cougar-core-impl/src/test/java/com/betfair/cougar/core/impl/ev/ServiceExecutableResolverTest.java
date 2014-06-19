@@ -20,7 +20,7 @@ import java.util.Date;
 
 import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.util.UUIDGeneratorImpl;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -44,9 +44,9 @@ import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 
 public class ServiceExecutableResolverTest {
-	
+
 	private final OperationKey op1Key = new OperationKey(new ServiceVersion("v1.0"), "Service1", "Operation1");
-	
+
 	private ExecutableResolver simpleResolver;
 	private EventLogger eventLogger;
 	private ExecutionContext context;
@@ -59,15 +59,14 @@ public class ServiceExecutableResolverTest {
     @BeforeClass
     public static void setupStatic() {
         RequestUUIDImpl.setGenerator(new UUIDGeneratorImpl());
-        CougarLoggingUtils.suppressAllRootLoggerOutput();
     }
 
-	
+
 	@Before
 	public void init() {
 
 		simpleResolver = mock(ExecutableResolver.class);
-		
+
 		ServiceLogManager manager = mock(ServiceLogManager.class);
 		when(manager.getLogExtensionClass()).thenAnswer(new Answer<Class<? extends LogExtension>>() {
 			@Override
@@ -80,17 +79,17 @@ public class ServiceExecutableResolverTest {
 
         ev = mock(ServiceRegisterableExecutionVenue.class);
         when(ev.getServiceLogManager(anyString(), anyString(), any(ServiceVersion.class))).thenReturn(manager);
-		
+
 		eventLogger = mock(EventLogger.class);
-		
+
 		serviceResolver = new ServiceExecutableResolver();
 		serviceResolver.registerExecutableResolver(simpleResolver);
 		serviceResolver.setEventLogger(eventLogger);
-		
+
 		context = mock(ExecutionContext.class);
 		when(context.getRequestUUID()).thenReturn(requestuuid);
 	}
-	
+
 	@Test
 	public void testResolveExecutable() {
 		Executable executable = mock(Executable.class);
@@ -98,14 +97,14 @@ public class ServiceExecutableResolverTest {
 
 		//Resolve the executable
 		Executable resultExecutable = serviceResolver.resolveExecutable(op1Key, ev);
-		
+
 		//Execute the returned executable
 		resultExecutable.execute(context, op1Key, new Object[] {}, mock(ExecutionObserver.class), mock(ExecutionVenue.class), DefaultTimeConstraints.NO_CONSTRAINTS);
-		
+
 		//Verify that the registered executable was invoked with a RequestContext
 		verify(executable).execute(any(RequestContext.class), eq(op1Key), any(Object[].class), any(ExecutionObserver.class), any(ExecutionVenue.class), eq(DefaultTimeConstraints.NO_CONSTRAINTS));
 	}
-	
+
 	@Test
 	public void testLoggingResult() {
 		ObserverFunction function = new ObserverFunction() {
@@ -113,10 +112,10 @@ public class ServiceExecutableResolverTest {
 			public void perform(ExecutionObserver observer) {
 				observer.onResult(new ExecutionResult("hello"));
 			}
-		};		
+		};
 		testLogging(function, new RequestLogEventMatcher(""));
 	}
-	
+
 	@Test
 	public void testLoggingException() {
 		ObserverFunction function = new ObserverFunction() {
@@ -127,42 +126,42 @@ public class ServiceExecutableResolverTest {
 		};
 		testLogging(function, new RequestLogEventMatcher("DSC-0002"));
 	}
-	
+
 	private void testLogging(ObserverFunction function, ArgumentMatcher<RequestLogEvent> matchesRequestLogEvent) {
 		TestExecutable executable = new TestExecutable();
 		when(simpleResolver.resolveExecutable(op1Key, ev)).thenReturn(executable);
-		
+
 		Executable resultExecutable = serviceResolver.resolveExecutable(op1Key, ev);
 		resultExecutable.execute(context, op1Key, new Object[] {}, mock(ExecutionObserver.class), mock(ExecutionVenue.class),DefaultTimeConstraints.NO_CONSTRAINTS);
-		
+
 		LoggableEvent event = mock(LoggableEvent.class);
-		
+
 		RequestContext context = executable.getContext();
 		context.addEventLogRecord(event);
 		context.setRequestLogExtension(new TestLogExtension());
 		ExecutionObserver observer = executable.getObserver();
 		function.perform(observer);
-		
+
 		verify(eventLogger).logEvent(argThat(matchesRequestLogEvent), eq(fieldsToLog));
 		verify(eventLogger).logEvent(event, null);
 
 		function.perform(observer);
 		verifyNoMoreInteractions(eventLogger);
 	}
-	
+
 	private interface ObserverFunction {
 		public void perform(ExecutionObserver observer);
 	}
-	
+
 	private class RequestLogEventMatcher extends ArgumentMatcher<RequestLogEvent> {
-		
+
 		private String errorCode;
-		
+
 		public RequestLogEventMatcher(String errorCode) {
 			super();
 			this.errorCode = errorCode;
 		}
-		
+
 		@Override
 		public boolean matches(Object argument) {
 			if (argument instanceof RequestLogEvent) {
@@ -189,12 +188,12 @@ public class ServiceExecutableResolverTest {
             return false;
 		}
 	}
-	
+
 	private class TestExecutable implements Executable {
 
 		private ExecutionObserver observer;
 		private RequestContext context;
-		
+
 		@Override
 		public void execute(ExecutionContext ctx, OperationKey key,
 				Object[] args, ExecutionObserver observer,
@@ -202,22 +201,22 @@ public class ServiceExecutableResolverTest {
 			this.observer = observer;
 			this.context = (RequestContext)ctx;
 		}
-		
+
 		public ExecutionObserver getObserver() {
 			return observer;
 		}
-		
+
 		public RequestContext getContext() {
 			return context;
 		}
 	}
-	
+
 	public class TestLogExtension implements LogExtension {
 
 		@Override
 		public Object[] getFieldsToLog() {
 			return fieldsToLog;
 		}
-		
+
 	}
 }

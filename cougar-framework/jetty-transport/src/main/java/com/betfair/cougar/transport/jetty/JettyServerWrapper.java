@@ -16,8 +16,8 @@
 
 package com.betfair.cougar.transport.jetty;
 
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.util.KeyStoreManagement;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.jmx.MBeanContainer;
@@ -46,7 +46,7 @@ import java.util.logging.Level;
  * This class encapsulate configuration and lifecycle of a Jetty server and its connectors
  */
 public class JettyServerWrapper {
-    private static final CougarLogger logger = CougarLoggingUtils.getLogger(JettyServerWrapper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JettyServerWrapper.class);
 
     private Server jettyServer;
 
@@ -222,16 +222,16 @@ public class JettyServerWrapper {
      */
     private void setBufferSizes(HttpConfiguration buffers) {
         if (requestHeaderSize > 0) {
-            logger.log(Level.INFO, "Request header size set to %d for %s", requestHeaderSize, buffers.getClass().getCanonicalName());
+            LOGGER.info("Request header size set to %d for %s", requestHeaderSize, buffers.getClass().getCanonicalName());
             buffers.setRequestHeaderSize(requestHeaderSize);
         }
 
         if (responseBufferSize > 0) {
-            logger.log(Level.INFO, "Response buffer size set to %d for %s", responseBufferSize, buffers.getClass().getCanonicalName());
+            LOGGER.info("Response buffer size set to %d for %s", responseBufferSize, buffers.getClass().getCanonicalName());
             buffers.setOutputBufferSize(responseBufferSize);
         }
         if (responseHeaderSize > 0) {
-            logger.log(Level.INFO, "Response header size set to %d for %s", responseHeaderSize, buffers.getClass().getCanonicalName());
+            LOGGER.info("Response header size set to %d for %s", responseHeaderSize, buffers.getClass().getCanonicalName());
             buffers.setResponseHeaderSize(responseHeaderSize);
         }
     }

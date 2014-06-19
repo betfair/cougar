@@ -16,8 +16,8 @@
 
 package com.betfair.cougar.transport.socket;
 
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.netutil.nio.HeapDelta;
 import com.betfair.cougar.netutil.nio.TerminateSubscription;
 import com.betfair.cougar.netutil.nio.connected.InitialUpdate;
@@ -39,7 +39,7 @@ import java.util.logging.Level;
  */
 public class ExpectingOutput implements CougarObjectOutput, Runnable {
 
-    private static CougarLogger logger = CougarLoggingUtils.getLogger(ExpectingOutput.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(ExpectingOutput.class);
 
     private List<Update> expectedUpdates;
     private int expectedUpdatesCurrentIndex = 0;
@@ -72,8 +72,8 @@ public class ExpectingOutput implements CougarObjectOutput, Runnable {
             return;
         }
         if (expectedUpdatesCurrentIndex >= expectedUpdates.size()) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, "Received unexpected update: "+delta);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Received unexpected update: "+delta);
             }
             notifyFailure("Received unexpected update: "+delta);
             return;
@@ -100,8 +100,8 @@ public class ExpectingOutput implements CougarObjectOutput, Runnable {
                 return;
             }
             else {
-                if (logger.isLoggable(Level.FINE)) {
-                    logger.log(Level.FINE, "Found expected initial: "+actualInitial);
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Found expected initial: "+actualInitial);
                 }
             }
 
@@ -137,8 +137,8 @@ public class ExpectingOutput implements CougarObjectOutput, Runnable {
                         return;
                     }
                     else {
-                        if (logger.isLoggable(Level.FINE)) {
-                            logger.log(Level.FINE, "Found expected update: " + actual);
+                        if (LOGGER.isDebugEnabled()) {
+                            LOGGER.debug("Found expected update: " + actual);
                         }
                     }
                 }

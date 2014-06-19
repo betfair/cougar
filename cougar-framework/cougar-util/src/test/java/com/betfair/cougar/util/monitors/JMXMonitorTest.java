@@ -21,22 +21,40 @@ import com.betfair.cougar.util.monitors.JMXMonitor.IsHealthyExpression;
 import com.betfair.tornjak.monitor.Monitor;
 import com.betfair.tornjak.monitor.MonitorRegistry;
 import com.betfair.tornjak.monitor.Status;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
 
 import javax.management.MBeanServer;
+import javax.management.ObjectName;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
-import java.util.logging.Level;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 public class JMXMonitorTest extends CougarUtilTestCase {
-	MonitorRegistry registry = mock(MonitorRegistry.class);
-	MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
+	private MonitorRegistry registry;
+	private MBeanServer mBeanServer;
+    private Logger logger;
+    private Logger oldLogger;
 
     public JMXMonitorTest() {
         super(JMXMonitor.class);
+    }
+
+    @Before
+    public void setUp() {
+        registry = mock(MonitorRegistry.class);
+        mBeanServer = mock(MBeanServer.class);
+        logger = mock(Logger.class);
+        oldLogger = JMXMonitor.setLogger(logger);
+    }
+
+    @After
+    public void tearDown() {
+        JMXMonitor.setLogger(oldLogger);
     }
 
 	private static final IsHealthyExpression notHealthy = new IsHealthyExpression() {
@@ -65,54 +83,96 @@ public class JMXMonitorTest extends CougarUtilTestCase {
         }
     }
 
+    private void verifyZeroWarnInteractions() {
+        verify(logger, times(0)).warn(anyString(), anyObject());
+        verify(logger, times(0)).warn(anyString(), anyObject(), anyObject());
+        verify(logger, times(0)).warn(anyString(), any(Object[].class));
+        verify(logger, times(0)).warn(anyString());
+        verify(logger, times(0)).warn(anyString(), any(Throwable.class));
+    }
 
     @Test
 	public void testJMXMonitorOK() throws Exception{
-		JMXMonitor jxm = new JMXMonitor(registry, mBeanServer,
+        when(mBeanServer.isRegistered(any(ObjectName.class))).thenReturn(true);
+        when(mBeanServer.getAttribute(any(ObjectName.class), anyString())).thenReturn("false");
+
+        JMXMonitor jxm = new JMXMonitor(registry, mBeanServer,
 				"java.lang:type=ClassLoading",
 				"Verbose",
 				"false",
 				false);
-		
-		getMessageLog().clear();
+
 		assertEquals(Status.OK, jxm.getStatus());
-		assertEquals(getMessageLog().size(), 0);
+
+        verify(logger, times(1)).debug(anyString(), anyObject(), anyObject());
+        verify(logger, times(1)).info(anyString());
+        verifyZeroWarnInteractions();
 
         verify(registry, times(1)).addMonitor(any(Monitor.class));
 	}
 
     @Test
-	public void testJMXMonitorIgnoreOK() throws Exception{
+	public void testJMXMonitorFail_NotInMBeanServer() throws Exception{
 		JMXMonitor jxm = new JMXMonitor(registry, mBeanServer,
+				"java.lang:type=ClassLoading",
+				"Verbose",
+				"false",
+				false);
+
+		assertEquals(Status.FAIL, jxm.getStatus());
+
+        verify(logger, times(1)).debug(anyString(), anyObject());
+//        verify(logger, times(1)).debug(anyString(), anyObject(), anyObject());
+        verify(logger, times(1)).info(anyString());
+        verifyZeroWarnInteractions();
+
+        verify(registry, times(1)).addMonitor(any(Monitor.class));
+	}
+
+
+
+    @Test
+	public void testJMXMonitorIgnoreOK() throws Exception{
+        when(mBeanServer.isRegistered(any(ObjectName.class))).thenReturn(false);
+
+        JMXMonitor jxm = new JMXMonitor(registry, mBeanServer,
 				"java.lang:type=NON_EXISTENT",
 				"Verbose",
 				"true",
 				true);
-		
-		getMessageLog().clear();
+
 		assertEquals(Status.OK, jxm.getStatus());
-		assertEquals(getMessageLog().size(), 0);
+
+        verify(logger, times(1)).debug(anyString(), anyObject());
+        verify(logger, times(1)).info(anyString());
+        verifyZeroWarnInteractions();
 
         verify(registry, times(1)).addMonitor(any(Monitor.class));
 	}
 
     @Test
 	public void testJMXMonitorFail() throws Exception{
-		JMXMonitor jxm = new JMXMonitor(registry, mBeanServer,
+        when(mBeanServer.isRegistered(any(ObjectName.class))).thenReturn(true);
+
+        JMXMonitor jxm = new JMXMonitor(registry, mBeanServer,
 				"java.lang:type=ClassLoading",
 				"Verbose",
 				"true",
 				false);
-		
-		getMessageLog().clear();
+
 		assertEquals(Status.FAIL, jxm.getStatus());
-		assertEquals(getMessageLog().size(), 1);
+
+        verify(logger, times(1)).debug(anyString(), anyObject(), anyObject());
+        verify(logger, times(1)).info(anyString());
+        verifyZeroWarnInteractions();
 
         verify(registry, times(1)).addMonitor(any(Monitor.class));
 	}
 
     @Test
     public void testJMXMonitorWarning() throws Exception{
+        when(mBeanServer.isRegistered(any(ObjectName.class))).thenReturn(true);
+
         JMXMonitor jxm = new JMXMonitor(registry, mBeanServer,
                 "java.lang:type=ClassLoading",
                 "Verbose",
@@ -120,24 +180,30 @@ public class JMXMonitorTest extends CougarUtilTestCase {
                 false,
                 Status.WARN);
 
-        getMessageLog().clear();
         assertEquals(Status.WARN, jxm.getStatus());
-        assertEquals(getMessageLog().size(), 1);
+
+        verify(logger, times(1)).debug(anyString(), anyObject(), anyObject());
+        verify(logger, times(1)).info(anyString());
+        verifyZeroWarnInteractions();
 
         verify(registry, times(1)).addMonitor(any(Monitor.class));
     }
 
     @Test
 	public void testJMXMonitorIgnoreFail() throws Exception{
-		JMXMonitor jxm = new JMXMonitor(registry, mBeanServer,
+        when(mBeanServer.isRegistered(any(ObjectName.class))).thenReturn(true);
+
+        JMXMonitor jxm = new JMXMonitor(registry, mBeanServer,
 				"java.lang:type=NON_EXISTENT",
 				"Verbose",
 				"true",
 				false);
-		
-		getMessageLog().clear();
+
 		assertEquals(Status.FAIL, jxm.getStatus());
-		assertEquals(getMessageLog().size(), 1);
+
+        verify(logger, times(1)).debug(anyString(), anyObject(), anyObject());
+        verify(logger, times(1)).info(anyString());
+        verifyZeroWarnInteractions();
 
         verify(registry, times(1)).addMonitor(any(Monitor.class));
 	}
@@ -150,6 +216,8 @@ public class JMXMonitorTest extends CougarUtilTestCase {
                 return false;
             }
         };
+        when(mBeanServer.isRegistered(any(ObjectName.class))).thenReturn(true);
+
 		JMXMonitor jxm = new JMXMonitor(registry, mBeanServer,
 				"java.lang:type=NON_EXISTENT",
 				"Verbose",
@@ -157,9 +225,11 @@ public class JMXMonitorTest extends CougarUtilTestCase {
 				false,
                 Status.WARN);
 
-		getMessageLog().clear();
 		assertEquals(Status.WARN, jxm.getStatus());
-		assertEquals(getMessageLog().size(), 1);
+
+        verify(logger, times(1)).debug(anyString(), anyObject(), anyObject());
+        verify(logger, times(1)).info(anyString());
+        verifyZeroWarnInteractions();
 
         verify(registry, times(1)).addMonitor(any(Monitor.class));
 	}
@@ -170,39 +240,49 @@ public class JMXMonitorTest extends CougarUtilTestCase {
 		final IsHealthyExpression unhealthy = mock(IsHealthyExpression.class);
         when(healthy.evaluate(anyString())).thenReturn(true);
         when(unhealthy.evaluate(anyString())).thenReturn(false);
-		JMXMonitor jxm = new JMXMonitor(registry, mBeanServer,
+        when(mBeanServer.isRegistered(any(ObjectName.class))).thenReturn(true);
+
+        JMXMonitor jxm = new JMXMonitor(registry, mBeanServer,
 				"java.lang:type=ClassLoading",
 				"Verbose",
 				"true",
 				false);
-		
-		getMessageLog().clear();
+
 		assertEquals(Status.FAIL, jxm.getStatus());
-		assertEquals(getMessageLog().size(), 1);
-		assertEquals(Level.WARNING, getMessageLog().get(0).getLevel());
+
+        verify(logger, times(1)).debug(anyString(), anyObject(), anyObject());
+        verify(logger, times(1)).info(anyString());
+        verify(logger, times(1)).warn(anyString(), anyString(), anyString(), anyString());
 
 		// Check it doesn't log each time a failure occurs
-		getMessageLog().clear();
 		jxm.getStatus();
 		jxm.getStatus();
-		assertEquals(getMessageLog().size(), 0);
 
-		
+        verify(logger, times(3)).debug(anyString(), anyObject(), anyObject());
+        verify(logger, times(1)).info(anyString());
+        verify(logger, times(0)).info(anyString(), anyString(), anyString(), anyString());
+        verify(logger, times(1)).warn(anyString(), anyString(), anyString(), anyString());
+
+
 		// Put it back into an OK state
 		Field f = jxm.getClass().getDeclaredField("isHealthyExpression");
 		f.setAccessible(true);
 		f.set(jxm, isHealthy);
-		
+
 		assertEquals(Status.OK, jxm.getStatus());
-		assertEquals(getMessageLog().size(), 1);
-        assertEquals(Level.INFO, getMessageLog().get(0).getLevel());
-        getMessageLog().clear();
+
+        verify(logger, times(4)).debug(anyString(), anyObject(), anyObject());
+        verify(logger, times(1)).info(anyString(), anyString(), anyString());
+        verify(logger, times(1)).warn(anyString(), anyString(), anyString(), anyString());
 
 		// And back to failure.
 		f.set(jxm, notHealthy);
-		
+
 		assertEquals(Status.FAIL, jxm.getStatus());
-		assertEquals(getMessageLog().size(), 1);
+
+        verify(logger, times(5)).debug(anyString(), anyObject(), anyObject());
+        verify(logger, times(1)).info(anyString(), anyString(), anyString());
+        verify(logger, times(2)).warn(anyString(), anyString(), anyString(), anyString());
 
         verify(registry, times(1)).addMonitor(any(Monitor.class));
 

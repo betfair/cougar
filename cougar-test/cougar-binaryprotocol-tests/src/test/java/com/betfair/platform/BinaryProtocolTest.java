@@ -38,6 +38,7 @@ import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.CougarValidationException;
 import com.betfair.cougar.core.impl.CougarSpringCtxFactoryImpl;
 import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.LoggerFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
@@ -91,7 +92,7 @@ public class BinaryProtocolTest
 
 		httpClient = new DefaultHttpClient();
 		setServerHealth(OK);
-		CougarLoggingUtils.setTraceLogger(null); //because trace log is static and multiple spring contexts will try to set it		
+		CougarLoggingUtils.setTraceLogger(null); //because trace log is static and multiple spring contexts will try to set it
 		CougarSpringCtxFactoryImpl context = new CougarSpringCtxFactoryImpl();
 		springContext = context.create();
 		client = (BaselineSyncClient) springContext.getBean("baselineClient");
@@ -107,8 +108,8 @@ public class BinaryProtocolTest
 		springContext.getBeanFactory().destroySingletons();
 		springContext.stop();
 	}
-	
-	
+
+
 	@Test(description="Test that making the server unhealthy causes the client to disconnect, and reconnect when the server becomes healthy again")
 	public void testSocketHealth() throws ClientProtocolException, IOException, InterruptedException {
 		setServerHealth(OK);
@@ -118,7 +119,7 @@ public class BinaryProtocolTest
 		} catch (SimpleException e) {
 			Assert.fail("should be connected");
 		}
-		
+
 		setServerHealth(FAIL);
 		try {
 			Boolean result = client.boolSimpleTypeEcho(ec, true);
@@ -130,7 +131,7 @@ public class BinaryProtocolTest
 		catch (CougarClientException e) {
 			//not connected
 		}
-		
+
 		setServerHealth(WARN);
 		// It can take upto 50s for connection to re-establish
         try{Thread.sleep(50000);}catch (Exception ex){}
@@ -153,7 +154,7 @@ public class BinaryProtocolTest
             Assert.fail("unexpected exception",e);
         }
     }
-	
+
 	@Test(description="test basic invocation")
 	public void testSimpleGet() {
 		try {
@@ -163,7 +164,7 @@ public class BinaryProtocolTest
 			Assert.fail("unexpected exception",e);
 		}
 	}
-	
+
 	@Test(description="test that the binary protocol handles list collections")
 	public void testLists() {
 		try {
@@ -174,7 +175,7 @@ public class BinaryProtocolTest
 			Assert.fail("unexpected exception",e);
 		}
 	}
-	
+
 	@Test(description="test that the binary protocol handles sets")
 	public void testSets() {
 		Set<String> request = new HashSet<String>(Arrays.asList("abc","def","ghi"));
@@ -186,7 +187,7 @@ public class BinaryProtocolTest
 			Assert.fail("unexpected exception",e);
 		}
 	}
-	
+
 	@Test(description="test the binary protocol handles maps")
 	public void testMaps() {
 		Map<String, String> request = new HashMap<String, String>();
@@ -198,7 +199,7 @@ public class BinaryProtocolTest
 			Assert.fail("unexpected exception",e);
 		}
 	}
-	
+
 	@Test(description="test binary protocol handles void responses")
 	public void testVoidResponse() {
 		try {
@@ -207,7 +208,7 @@ public class BinaryProtocolTest
 			Assert.fail("unexpected exception",e);
 		}
 	}
-	
+
 	@Test(description="test no param operations")
 	public void testNoParamOperations() {
 		try {
@@ -216,7 +217,7 @@ public class BinaryProtocolTest
 			Assert.fail("unexpected exception",e);
 		}
 	}
-	
+
 	@Test(description="test binary protocol handles null parameters")
 	public void testNonMandatoryParams() {
 		try {
@@ -238,7 +239,7 @@ public class BinaryProtocolTest
 		try {
 			client.voidResponseOperation(ec, null);
 			Assert.fail("expected an exception as parameter is mandatory");
-		} 
+		}
 		catch (SimpleException e) {
 			Assert.fail("unexpected exception",e);
 		}
@@ -246,8 +247,8 @@ public class BinaryProtocolTest
 			//all is good
 		}
 	}
-	
-	
+
+
 	@Test(description="test binary protocol handles complex objects")
 	public void testComplexObjects() {
 		ComplexObject co = new ComplexObject();
@@ -261,7 +262,7 @@ public class BinaryProtocolTest
 			Assert.fail("unexpected exception",e);
 		}
 	}
-	
+
 	@Test(description="test complex objects that have optional elements")
 	public void testComplexObjectWithOptionalElement() {
 		ComplexObject co = new ComplexObject();
@@ -275,7 +276,7 @@ public class BinaryProtocolTest
 			Assert.fail("unexpected exception",e);
 		}
 	}
-	
+
 	@Test(description="test binary protocol handles methods that throw exceptions")
 	public void testExceptions() {
 		try {
@@ -287,7 +288,7 @@ public class BinaryProtocolTest
 			Assert.fail("unexpected exception",e);
 		}
 	}
-	
+
 	@Test(description="test binary protocol handles methods that throw runtime exceptions")
 	public void testRuntimeExceptions() {
 		try {
@@ -300,8 +301,8 @@ public class BinaryProtocolTest
 			//all good
 		}
 	}
-	
-	
+
+
 	@Test(description="test binary protocol handles enumerations")
 	public void testEnumeration() {
 		BodyParamEnumObject obj = new BodyParamEnumObject();
@@ -315,14 +316,14 @@ public class BinaryProtocolTest
 			Assert.fail("unexpected exception",e);
 		}
 	}
-	
-	
+
+
 	private static void setServerHealth(String health) throws ClientProtocolException, IOException, InterruptedException {
 		HttpPost post = new HttpPost("http://localhost:8080/www/cougarBaseline/v2.0/setHealthStatusInfo");
 		post.setEntity(new StringEntity(health));
 		post.setHeader("Content-type", "application/json");
 		readFully(httpClient.execute(post));
-		
+
 		for (int i=0; i<10; i++) {
 			HttpGet get = new HttpGet("http://localhost:8080/www/healthcheck/v2.0/summary?alt=xml");
 			List<String> lines = readFully(httpClient.execute(get));
@@ -330,7 +331,7 @@ public class BinaryProtocolTest
 			if (health == FAIL ) {
 				expectedStatus = "FAIL";
 			}
-			
+
 			for (String line : lines) {
 				if (line.contains(expectedStatus)) {
 					Thread.sleep(1000);
@@ -339,12 +340,12 @@ public class BinaryProtocolTest
 			}
 			System.err.println("server health not reporting expected status, will try again");
 			Thread.sleep(1000);
-			
+
 		}
 		System.err.println("server health not set, expect failing tests to follow ");
-		
+
 	}
-	
+
 	private static List<String> readFully(HttpResponse response) throws IllegalStateException, IOException {
 		response.getStatusLine();
 		InputStream is = response.getEntity().getContent();
@@ -357,14 +358,14 @@ public class BinaryProtocolTest
 		}
 		return lines;
 	}
-	
-	
+
+
 	private static String OK = "{ \"message\" : " +
 	"								{ \"initialiseHealthStatusObject\" : \"true\", " +
 	"								  \"DBConnectionStatusDetail\" : \"OK\", " +
 	"								  \"cacheAccessStatusDetail\" : \"OK\", " +
 	"								  \"serviceStatusDetail\" : \"OK\" } }";
-	
+
 	private static String FAIL = "{ \"message\" : " +
 	"								{ \"initialiseHealthStatusObject\" : \"true\", " +
 	"								  \"DBConnectionStatusDetail\" : \"FAIL\", " +
@@ -376,5 +377,5 @@ public class BinaryProtocolTest
 	"								  \"DBConnectionStatusDetail\" : \"WARN\", " +
 	"								  \"cacheAccessStatusDetail\" : \"WARN\", " +
 	"								  \"serviceStatusDetail\" : \"WARN\" } }";
-	
+
 }

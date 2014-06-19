@@ -16,8 +16,8 @@
 
 package com.betfair.cougar.client.socket;
 
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.netutil.nio.CougarProtocol;
 import com.betfair.cougar.netutil.nio.HandlerListener;
 import com.betfair.cougar.netutil.nio.NioUtils;
@@ -34,7 +34,7 @@ import java.util.logging.Level;
  */
 public class RPCTimeoutChecker implements Runnable, HandlerListener {
 
-    private static final CougarLogger LOG = CougarLoggingUtils.getLogger(RPCTimeoutChecker.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RPCTimeoutChecker.class);
 
     private static final AtomicLong rpcTimeoutCheckerThreadId = new AtomicLong();
     private Thread thread;
@@ -68,7 +68,7 @@ public class RPCTimeoutChecker implements Runnable, HandlerListener {
             }
             catch (Exception e) {
                 // make sure a spurious bug doesn't wipe us out..
-                LOG.log(Level.WARNING, "Exception occurred checking for expired requests", e);
+                LOG.warn("Exception occurred checking for expired requests", e);
             }
             try {
                 Thread.sleep(checkGranularity);

@@ -62,19 +62,12 @@ public class LoggingChangeLoggingLevelFineTestTest {
             // Set the log entry level to be FINEST
             Map map3 = new HashMap();
             map3.put("logString","FINEST-Log-Message");
-            map3.put("logLevel","FINEST");
+            map3.put("logLevel","DEBUG");
             hbean_2.setQueryParams(map3);
             // Get current time for getting log entries later
 //            Thread.sleep(60000);
 
             Timestamp getTimeAsTimeStamp13 = new Timestamp(System.currentTimeMillis());
-            // Make the REST JSON call to the operation
-            hinstance.makeRestCougarHTTPCall(hbean_2, com.betfair.testing.utils.cougar.enums.CougarMessageProtocolRequestTypeEnum.RESTJSON, com.betfair.testing.utils.cougar.enums.CougarMessageContentTypeEnum.JSON);
-            // Set up the second call bean to create a log entry with level FINE
-            Map map5 = new HashMap();
-            map5.put("logString","FINE-Log-Message");
-            map5.put("logLevel","FINE");
-            hbean_2.setQueryParams(map5);
             // Make the REST JSON call to the operation
             hinstance.makeRestCougarHTTPCall(hbean_2, com.betfair.testing.utils.cougar.enums.CougarMessageProtocolRequestTypeEnum.RESTJSON, com.betfair.testing.utils.cougar.enums.CougarMessageContentTypeEnum.JSON);
             // Set up the second call bean to create a log entry with level INFO
@@ -87,28 +80,36 @@ public class LoggingChangeLoggingLevelFineTestTest {
             // Set up the second call bean to create a log entry with level WARNING
             Map map7 = new HashMap();
             map7.put("logString","WARNING-Log-Message");
-            map7.put("logLevel","WARNING");
+            map7.put("logLevel","WARN");
             hbean_2.setQueryParams(map7);
             // Make the REST JSON call to the operation
             hinstance.makeRestCougarHTTPCall(hbean_2, com.betfair.testing.utils.cougar.enums.CougarMessageProtocolRequestTypeEnum.RESTJSON, com.betfair.testing.utils.cougar.enums.CougarMessageContentTypeEnum.JSON);
             // Set up the second call bean to create a log entry with level SEVERE
             Map map8 = new HashMap();
             map8.put("logString","SEVERE-Log-Message");
-            map8.put("logLevel","SEVERE");
+            map8.put("logLevel","ERROR");
             hbean_2.setQueryParams(map8);
             // Make the REST JSON call to the operation
             hinstance.makeRestCougarHTTPCall(hbean_2, com.betfair.testing.utils.cougar.enums.CougarMessageProtocolRequestTypeEnum.RESTJSON, com.betfair.testing.utils.cougar.enums.CougarMessageContentTypeEnum.JSON);
-            // Set up the first call bean to change the log level to INFO
+            // Set up the second call bean to create a log entry with level SEVERE
             Map map9 = new HashMap();
-            map9.put("pathParam","INFO");
-            hbean.setQueryParams(map9);
+            map9.put("logString","FATAL-Log-Message");
+            map9.put("logLevel","FATAL");
+            hbean_2.setQueryParams(map9);
+            // Make the REST JSON call to the operation
+            hinstance.makeRestCougarHTTPCall(hbean_2, com.betfair.testing.utils.cougar.enums.CougarMessageProtocolRequestTypeEnum.RESTJSON, com.betfair.testing.utils.cougar.enums.CougarMessageContentTypeEnum.JSON);
+            // Set up the first call bean to change the log level to INFO
+            Map map9a = new HashMap();
+            map9a.put("pathParam","INFO");
+            hbean.setQueryParams(map9a);
             // Make the REST JSON call to the operation
             hinstance.makeRestCougarHTTPCall(hbean, com.betfair.testing.utils.cougar.enums.CougarMessageProtocolRequestTypeEnum.RESTJSON, com.betfair.testing.utils.cougar.enums.CougarMessageContentTypeEnum.JSON);
             // Assert that only entries with a log level >= FINE have been logged (no entries were made after level set to INFO so doesn't apply)
-            cougarManager1.verifyServiceLogEntriesAfterDate(getTimeAsTimeStamp13, new ServiceLogRequirement("com.betfair.cougar.baseline.BaselineServiceImpl DEBUG - FINE-Log-Message")
+            cougarManager1.verifyServiceLogEntriesAfterDate(getTimeAsTimeStamp13, new ServiceLogRequirement("com.betfair.cougar.baseline.BaselineServiceImpl DEBUG - FINEST-Log-Message")
                                                                                 , new ServiceLogRequirement("com.betfair.cougar.baseline.BaselineServiceImpl INFO - INFO-Log-Message")
                                                                                 , new ServiceLogRequirement("com.betfair.cougar.baseline.BaselineServiceImpl WARN - WARNING-Log-Message")
-                                                                                , new ServiceLogRequirement("com.betfair.cougar.baseline.BaselineServiceImpl ERROR - SEVERE-Log-Message"));
+                    , new ServiceLogRequirement("com.betfair.cougar.baseline.BaselineServiceImpl ERROR - SEVERE-Log-Message")
+                    , new ServiceLogRequirement("com.betfair.cougar.baseline.BaselineServiceImpl FATAL - FATAL-Log-Message"));
         }
         finally {
             // Set log level back to the default level (WARNING)

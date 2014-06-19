@@ -32,8 +32,8 @@ import com.betfair.cougar.core.api.ev.ExecutionTimingRecorder;
 import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.impl.security.CommonNameCertInfoExtractor;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.netutil.nio.CougarProtocol;
 import com.betfair.cougar.netutil.nio.NioLogger;
 import com.betfair.cougar.netutil.nio.TlsNioConfig;
@@ -63,12 +63,14 @@ import com.betfair.cougar.netutil.nio.NioConfig;
 import com.betfair.cougar.netutil.nio.hessian.HessianObjectIOFactory;
 import com.betfair.cougar.transport.nio.ExecutionVenueNioServer;
 import com.betfair.cougar.transport.nio.ExecutionVenueServerHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is used as a stub to facilitate NIO unit testing
  */
 public class ServerClientFactory {
-    private static CougarLogger logger = CougarLoggingUtils.getLogger(ServerClientFactory.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(ServerClientFactory.class);
 
     public static final int COMMAND_STOP_SERVER = 1;
     public static final int COMMAND_SLEEP_60S = 2;
@@ -120,11 +122,11 @@ public class ServerClientFactory {
             public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, TimeConstraints timeConstraints) {
                 switch (Integer.parseInt(args[1].toString())) {
             	case COMMAND_STOP_SERVER:
-                    logger.log(Level.INFO, "Stopping server");
+                    LOGGER.info("Stopping server");
             		server.stop();
             		break;
                 case COMMAND_SLEEP_60S:
-                    logger.log(Level.INFO, "Sleeping for 60s");
+                    LOGGER.info("Sleeping for 60s");
                     try { Thread.sleep(60000L); } catch (Exception e) {}
                 case COMMAND_ECHO_ARG2:
                 	observer.onResult(new ExecutionResult(args[2]));

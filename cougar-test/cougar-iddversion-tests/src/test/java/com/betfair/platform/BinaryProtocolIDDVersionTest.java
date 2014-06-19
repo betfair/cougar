@@ -19,6 +19,7 @@ package com.betfair.platform;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.betfair.cougar.logging.CougarLoggingUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
@@ -31,7 +32,7 @@ import org.testng.annotations.BeforeClass;
 
 import com.betfair.baseline.v2.BaselineSyncClient;
 import com.betfair.cougar.client.socket.ExecutionVenueNioClient;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.LoggerFactory;
 
 public class BinaryProtocolIDDVersionTest extends TestSuite{
 

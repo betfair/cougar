@@ -142,9 +142,11 @@ import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.impl.ev.ConnectedResponseImpl;
 import com.betfair.cougar.core.impl.ev.DefaultSubscription;
 import com.betfair.cougar.core.impl.logging.AbstractLoggingControl;
+import com.betfair.cougar.core.impl.logging.Log4jLoggingControl;
 import com.betfair.cougar.core.impl.security.SSLAwareTokenResolver;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.apache.log4j.Level;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.util.configuration.PropertyConfigurer;
 import com.betfair.nonservice.v3.NonSyncClient;
 import com.betfair.tornjak.kpi.aop.KPITimedEvent;
@@ -177,7 +179,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.logging.Level;
 
 public class BaselineServiceImpl implements BaselineService, GateListener {
     public static final String SONIC_TRANSPORT_INSTANCE_ONE="SonicEventTransportImpl:firstSonicInstance";
@@ -201,7 +202,7 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
 
     private AbstractLoggingControl loggingControl;
 
-	final static CougarLogger LOGGER = CougarLoggingUtils.getLogger(BaselineServiceImpl.class);
+	final static Logger LOGGER = LoggerFactory.getLogger(BaselineServiceImpl.class);
 
     private List<TimeTick> timeTicks = new ArrayList<TimeTick>();
     private List<MatchedBet> matchedBets = new ArrayList<MatchedBet>();
@@ -838,7 +839,27 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
 		ctx.setRequestLogExtension(new BaselineLogExtension(logString, null, null));
 		ctx.trace("Starting logMessage for %s", logString);
 
-		LOGGER.log(Level.parse(logLevel), logString);
+        // todo: should change this to an enum..?? at least change to a shorter list of possible values..
+        Level level = Log4jLoggingControl.convertJdkLevelToLog4jLevel(logLevel);
+        if (level.equals(Level.FATAL)) {
+            LOGGER.warn(logString);
+        }
+        else if (level.equals(Level.ERROR)) {
+            LOGGER.warn(logString);
+        }
+        else if (level.equals(Level.WARN)) {
+            LOGGER.warn(logString);
+        }
+        else if (level.equals(Level.INFO)) {
+            LOGGER.warn(logString);
+        }
+        else if (level.equals(Level.DEBUG)) {
+            LOGGER.warn(logString);
+        }
+        else
+        {
+            throw new SimpleException(SimpleExceptionErrorCodeEnum.UNRECOGNIZED_VALUE, "Unsupported log level: "+logLevel);
+        }
 
 		SimpleResponse response = new SimpleResponse();
 		response.setMessage(logString + " logged at " + logLevel);
@@ -855,15 +876,15 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
                 latch.countDown();
             }
         };
-        LOGGER.log(Level.INFO, "Bulk calling testSimpleGet %d time", cycles);
+        LOGGER.info("Bulk calling testSimpleGet %d time", cycles);
         long startTime = System.nanoTime();
         for (int i = 0; i < cycles; ++i) {
             baselineAsyncClient.testSimpleGet(ctx, "message:"+i, obs);
         }
-        LOGGER.log(Level.INFO, "Bulk calls complete");
+        LOGGER.info("Bulk calls complete");
         try { latch.await(); } catch (InterruptedException e) {}
         long timeTaken = System.nanoTime() - startTime;
-        LOGGER.log(Level.INFO, "All Latches returned in %,d ms", timeTaken/1000000);
+        LOGGER.info("All Latches returned in %,d ms", timeTaken/1000000);
         return timeTaken;
     }
 
@@ -876,15 +897,15 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
 
 		SimpleResponse response = new SimpleResponse();
 		if ((logName==null) || (logName.equalsIgnoreCase("")) || (logName.equalsIgnoreCase("service"))) {
-            loggingControl.setLogLevel(LOGGER.getLogName(), level, false);
+            loggingControl.setLogLevel(BaselineServiceImpl.class.getName(), level, false);
 			response.setMessage("Service logging level set at " + level);
 		} else {
             loggingControl.setLogLevel(logName, level, false);
 			response.setMessage(logName + " logging level set at " + level);
 		}
 
-        LOGGER.log(Level.WARNING, "A warning message");
-        LOGGER.log(Level.INFO,  "A warning message");
+        LOGGER.warn("A warning message");
+        LOGGER.info( "A warning message");
 
 		return response;
 	}
@@ -1591,7 +1612,7 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
             timeTickPublishingObserver.onResult(new ExecutionResult(tte));
             success = true;
         } catch (Throwable ex) {
-        	LOGGER.log(Level.SEVERE, "An exception occurred emitting the matched bet event:", ex);
+        	LOGGER.error("An exception occurred emitting the matched bet event:", ex);
         }
         return success;
     }
@@ -1611,7 +1632,7 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
         try {
             matchedBetObserver.onResult(new ExecutionResult(matchedBet));
         } catch (Throwable ex) {
-        	LOGGER.log(Level.SEVERE, "An exception occurred emitting the matched bet event:", ex);
+        	LOGGER.error("An exception occurred emitting the matched bet event:", ex);
         }
     }
 
@@ -1631,7 +1652,7 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
             // Create a new global execution observer variable for each event and call OnResult() passing the event instance just created
 	        logMessageObserver.onResult(new ExecutionResult(lm));
 	    } catch (Throwable ex) {
-	        LOGGER.log(Level.SEVERE, "An exception occurred emitting the inputted message event:", ex);
+	        LOGGER.error("An exception occurred emitting the inputted message event:", ex);
 	    }
 	}
 
@@ -1652,7 +1673,7 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
         try {
             listMessageObserver.onResult(new ExecutionResult(lEvent));
         } catch (Throwable ex) {
-        	LOGGER.log(Level.SEVERE, "An exception occurred emitting the message list event:", ex);
+        	LOGGER.error("An exception occurred emitting the message list event:", ex);
         }
     }
 
@@ -1673,7 +1694,7 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
         try {
             setMessageObserver.onResult(new ExecutionResult(sEvent));
         } catch (Throwable ex) {
-        	LOGGER.log(Level.SEVERE, "An exception occurred emitting the message set event:", ex);
+        	LOGGER.error("An exception occurred emitting the message set event:", ex);
         }
     }
 
@@ -1694,7 +1715,7 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
         try {
             mapMessageObserver.onResult(new ExecutionResult(mEvent));
         } catch (Throwable ex) {
-        	LOGGER.log(Level.SEVERE, "An exception occurred emitting the message map event:", ex);
+        	LOGGER.error("An exception occurred emitting the message map event:", ex);
         }
 
     }

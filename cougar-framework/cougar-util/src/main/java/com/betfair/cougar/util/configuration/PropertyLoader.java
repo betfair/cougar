@@ -16,13 +16,12 @@
 
 package com.betfair.cougar.util.configuration;
 
-import com.betfair.cougar.logging.CougarLogger;
+import org.slf4j.Logger;
 import com.betfair.cougar.logging.records.SimpleLogRecord;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -36,7 +35,7 @@ public class PropertyLoader {
     private static final String DEFAULT_CONFIG_HOST_PROPERTY_VALUE = "/conf/";
     private static final String COUGAR_APPLICATION_PROPERTIES_FILE = "cougar-application.properties";
 
-    private CougarLogger logger;
+    private Logger logger;
 
     private String configHostProp = DEFAULT_CONFIG_HOST_PROPERTY;
 
@@ -48,7 +47,7 @@ public class PropertyLoader {
         this(defaultConfig, configOverride, null);
     }
 
-    public PropertyLoader(Resource defaultConfig, String configOverride, CougarLogger logger) {
+    public PropertyLoader(Resource defaultConfig, String configOverride, Logger logger) {
         this.defaultConfig = defaultConfig;
         this.appProperties = new ClassPathResource(COUGAR_APPLICATION_PROPERTIES_FILE);
         this.configOverride = configOverride;
@@ -87,7 +86,7 @@ public class PropertyLoader {
     public Resource[] constructResourceList() {
         String configHost = System.getProperties().getProperty(configHostProp);
         if (configHost == null) {
-            log(Level.INFO, "No config Host defined - assuming " + DEFAULT_CONFIG_HOST_PROPERTY_VALUE);
+            log("No config Host defined - assuming " + DEFAULT_CONFIG_HOST_PROPERTY_VALUE);
             configHost = DEFAULT_CONFIG_HOST_PROPERTY_VALUE;
         }
         DefaultResourceLoader loader = new DefaultResourceLoader();
@@ -108,34 +107,34 @@ public class PropertyLoader {
         if(configOverrideResource.exists()){
             if(appProperties.exists()){
                 resourceList = new Resource[] { defaultConfig, appProperties, configOverrideResource };
-                log(Level.INFO, "loading properties from  %s, %s and %s", defaultConfig, appProperties,  configOverrideResource);
+                log("loading properties from  %s, %s and %s", defaultConfig, appProperties,  configOverrideResource);
             }
             else{
                 resourceList = new Resource[] { defaultConfig, configOverrideResource };
-                log(Level.INFO, "loading properties from  %s and %s", defaultConfig, configOverrideResource);
+                log("loading properties from  %s and %s", defaultConfig, configOverrideResource);
             }
         }
         else{
             if(appProperties.exists()){
                 resourceList = new Resource[] { defaultConfig, appProperties };
-                log(Level.INFO, "unable to load override file %s, loading properties from %s and %s ", configOverrideResource, defaultConfig, appProperties);
+                log("unable to load override file %s, loading properties from %s and %s ", configOverrideResource, defaultConfig, appProperties);
             }
             else{
                 resourceList = new Resource[] { defaultConfig };
-                log(Level.INFO, "unable to load override file %s, loading properties from %s ", configOverrideResource, defaultConfig);
+                log("unable to load override file %s, loading properties from %s ", configOverrideResource, defaultConfig);
             }
         }
 
         return resourceList;
     }
 
-    private void log(Level level, String message, Object... args) {
+    private void log(String message, Object... args) {
         if (logger != null) {
-            logger.log(level, message, args);
+            logger.info(message, args);
         } else {
             //This is a last ditch effort to say something useful before the logging
             //superstructure is initialized
-            SimpleLogRecord record = new SimpleLogRecord("", level, message, args);
+            SimpleLogRecord record = new SimpleLogRecord("", Level.INFO, message, args);
             System.out.println(record.getMessage());
         }
     }

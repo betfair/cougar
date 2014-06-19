@@ -33,6 +33,7 @@ import com.betfair.cougar.health.service.v3.to.HealthDetailResponse;
 import com.betfair.cougar.health.service.v3.to.HealthSummaryResponse;
 import com.betfair.cougar.health.service.v3.to.SubComponentStatus;
 import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.LoggerFactory;
 import com.betfair.tornjak.monitor.ActiveMethodMonitor;
 import com.betfair.tornjak.monitor.ErrorCountingPolicy;
 import com.betfair.tornjak.monitor.Monitor;
@@ -114,7 +115,7 @@ public class HealthServiceImplTest {
         when(containerContext.getRegisteredServices()).thenReturn(new ServiceInfo[] {
                 new ServiceInfo(null, service, "HealthService", "3.0", new ArrayList<String>())
         });
-      
+
         when(monitorRegistry.getStatusAggregator()).thenReturn(new DefaultStatusAggregator(Status.OK));
         inOutServiceMonitor.setInService(false);
         HealthSummaryResponse response = service.isHealthy(requestContext, DefaultTimeConstraints.NO_CONSTRAINTS);
@@ -345,7 +346,7 @@ public class HealthServiceImplTest {
             return status;
         }
     }
-    
+
     private class SavingRequestContext implements RequestContext {
 		@Override
 		public void addEventLogRecord(LoggableEvent record) {
@@ -372,18 +373,18 @@ public class HealthServiceImplTest {
         @Override
 		public void trace(String msg, Object... args) {
 		}
-		
+
 		@Override
 		public GeoLocationDetails getLocation() {
 			return null;
 		}
-		
+
 		@Override
 		public IdentityChain getIdentity() {
 			return null;
 		}
-	
-	
+
+
 		@Override
 		public Date getReceivedTime() {
 			return null;

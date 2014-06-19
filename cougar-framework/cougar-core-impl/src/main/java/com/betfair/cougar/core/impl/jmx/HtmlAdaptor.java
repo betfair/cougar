@@ -18,8 +18,8 @@ package com.betfair.cougar.core.impl.jmx;
 
 import com.betfair.cougar.core.api.jmx.JMXHttpParser;
 import com.betfair.cougar.core.api.jmx.JMXHttpParserReader;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.sun.jdmk.comm.AuthInfo;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -28,7 +28,7 @@ import javax.management.ObjectName;
 import java.util.logging.Level;
 
 public class HtmlAdaptor implements InitializingBean, JMXHttpParserReader {
-	private static final CougarLogger logger = CougarLoggingUtils.getLogger(HtmlAdaptor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(HtmlAdaptor.class);
     private static final String PARSER_NAME = "CoUGAR.internal:name=HtmlAdaptorParser";
 
     private final TlsHtmlAdaptorServer htmlAdaptor;
@@ -52,10 +52,10 @@ public class HtmlAdaptor implements InitializingBean, JMXHttpParserReader {
 	        mBeanServer.registerMBean(htmlAdaptor, adaptorObjectName);
 			if (username != null && username.length() > 0 &&
 			        password != null && password.length() > 0) {
-			    logger.log(Level.INFO, "JMX HTML interface password protected");
+			    LOGGER.info("JMX HTML interface password protected");
 	    		htmlAdaptor.addUserAuthenticationInfo(new AuthInfo(username, password));
 			} else {
-		          logger.log(Level.INFO, "JMX HTML interface password NOT protected");
+		          LOGGER.info("JMX HTML interface password NOT protected");
 			}
 
 			ObjectName parserObjectName = new ObjectName(PARSER_NAME);
@@ -68,7 +68,7 @@ public class HtmlAdaptor implements InitializingBean, JMXHttpParserReader {
 			htmlAdaptor.setParser(parserObjectName);
 
             String protocol = htmlAdaptor.isTlsEnabled() ? "https" : "http";
-			logger.log(Level.INFO, "Starting JMX HTML interface on "+protocol+"://localhost:%d/", htmlAdaptor.getPort());
+			LOGGER.info("Starting JMX HTML interface on "+protocol+"://localhost:%d/", htmlAdaptor.getPort());
 			htmlAdaptor.start();
 
 	        // Create a shutdown hook to close the jmx port cleanly
@@ -76,16 +76,16 @@ public class HtmlAdaptor implements InitializingBean, JMXHttpParserReader {
 
 				@Override
 				public void run() {
-					logger.log(Level.INFO, "Gracefully shutting down JMX http server");
+					LOGGER.info("Gracefully shutting down JMX http server");
 					try {
 						htmlAdaptor.stop();
 					} catch (Exception e) {
-						logger.log(Level.WARNING, "Failed to shutdown JMX http server", e);
+						LOGGER.warn("Failed to shutdown JMX http server", e);
 					}
 				}});
 
 		} else {
-			logger.log(Level.INFO, "JMX HTML interface not started");
+			LOGGER.info("JMX HTML interface not started");
 		}
 	}
 
@@ -112,10 +112,10 @@ public class HtmlAdaptor implements InitializingBean, JMXHttpParserReader {
     @Override
     public void addCustomParser(JMXHttpParser parser) {
     	if (httpExport) {
-			logger.log(Level.INFO, "JMX HTML custom parser added for path %s", parser.getPath());
+			LOGGER.info("JMX HTML custom parser added for path %s", parser.getPath());
     		htmlParser.addCustomParser(parser);
     	} else {
-			logger.log(Level.INFO, "No JMX HTML interface - parser ignored");
+			LOGGER.info("No JMX HTML interface - parser ignored");
 
     	}
     }

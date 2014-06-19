@@ -40,7 +40,7 @@ import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.util.RequestUUIDImpl;
 import com.betfair.cougar.util.UUIDGeneratorImpl;
 import org.junit.Before;
@@ -60,7 +60,6 @@ public class BaseExecutionVenueTest {
     @BeforeClass
     public static void setupStatic() {
         RequestUUIDImpl.setGenerator(new UUIDGeneratorImpl());
-        CougarLoggingUtils.suppressAllRootLoggerOutput();
     }
 
     private class EVTestException extends CougarApplicationException {

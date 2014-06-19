@@ -16,8 +16,8 @@
 
 package com.betfair.cougar.test;
 
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.Ignore;
 import org.junit.internal.AssumptionViolatedException;
 import org.junit.internal.runners.model.EachTestNotifier;
@@ -35,7 +35,7 @@ import java.util.logging.Level;
  */
 public class MultiRunner extends BlockJUnit4ClassRunner {
 
-    private static CougarLogger logger = CougarLoggingUtils.getLogger(MultiRunner.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(MultiRunner.class);
 
     private static int numRuns = 1;
 
@@ -58,8 +58,8 @@ public class MultiRunner extends BlockJUnit4ClassRunner {
         eachNotifier.fireTestStarted();
         try {
             for (int i=0; i<numRuns; i++) {
-                if (logger.isLoggable(Level.INFO)) {
-                    logger.log(Level.INFO, "--Starting run "+(i+1)+" of "+method.getName()+"--");
+                if (LOGGER.isInfoEnabled()) {
+                    LOGGER.info("--Starting run "+(i+1)+" of "+method.getName()+"--");
                 }
                 methodBlock(method).evaluate();
             }

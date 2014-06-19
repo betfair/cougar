@@ -31,23 +31,23 @@ import java.util.logging.Level;
 
 import com.betfair.cougar.api.RequestContext;
 import com.betfair.cougar.api.Result;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class MockUtils {	
-	final static CougarLogger logger = CougarLoggingUtils.getLogger(MockUtils.class);
+public class MockUtils {
+	final static Logger LOGGER = LoggerFactory.getLogger(MockUtils.class);
 	public static <T> T generateMockResponse(Class<T> responseClass, RequestContext ctx, Object... params ) {
 		try {
 			Generator generator = new Generator();
 //			T responseObject = responseClass.newInstance();
-				
+
 			T responseObject = generateObject(responseClass, generator);
 			return responseObject;
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to generate response object: "+e.getMessage(), e);
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private static <T> T generateObject(Class<T> clazz, Generator generator) throws Exception {
 		if (Result.class.isAssignableFrom(clazz)) {
@@ -64,10 +64,10 @@ public class MockUtils {
 		}
 	}
 	private static void populateMethod(Method method, Object object, Generator generator) throws Exception {
-		
+
 		Class<?> fieldType = method.getParameterTypes()[0];
 		Object result = getValueIfbasicType(fieldType, generator);
-		if (result != null) { 
+		if (result != null) {
 			method.invoke(object, result);
 		} else if ((List.class.isAssignableFrom(fieldType)) ||
 					(Set.class.isAssignableFrom(fieldType))) {
@@ -81,7 +81,7 @@ public class MockUtils {
 			} else {
 				throw new RuntimeException("parametised list not mockable - "+genericFieldType.getClass());
 			}
-			
+
 
 			Collection<Object> coll;
 			if (Set.class.isAssignableFrom(fieldType)) {
@@ -109,8 +109,8 @@ public class MockUtils {
 			} else {
 				throw new RuntimeException("parametised list not mockable - "+genericFieldType.getClass());
 			}
-			
-			
+
+
 			Map<Object, Object> map = new HashMap<Object, Object>();
 			int length = (generator.getNumber() % 5) + 2;
 			for (int i = 0; i < length; ++i) {
@@ -124,10 +124,10 @@ public class MockUtils {
 			result = generateObject(fieldType, generator);
 			method.invoke(object, result);
 		} else {
-			logger.log(Level.INFO, "Could not mock data of type %s into method %s", fieldType, method.getName());
+			LOGGER.info("Could not mock data of type %s into method %s", fieldType, method.getName());
 		}
 	}
-	
+
 	private static Object getValueIfbasicType(Class<?> fieldType, Generator generator) {
 		if (fieldType == Byte.class) {
 			return (byte)generator.getNumber();
@@ -157,7 +157,7 @@ public class MockUtils {
 	}
 	private static class Generator {
 		private int count = 1;
-		
+
 		String getString() {
 			return "String-"+(count++);
 		}
@@ -165,7 +165,7 @@ public class MockUtils {
 		int getNumber() {
 			return count++;
 		}
-		
+
 		boolean getBoolean() {
 			return (count++)%2==0?true:false;
 		}

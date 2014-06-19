@@ -22,7 +22,7 @@ import com.betfair.cougar.core.api.client.AbstractExceptionFactory;
 import com.betfair.cougar.core.api.exception.CougarClientException;
 import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.LoggerFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -55,11 +55,6 @@ public class AbstractExceptionFactoryTest {
         public String getApplicationFaultNamespace() {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
-    }
-
-    @BeforeClass
-    public static void suppressLogs() {
-        CougarLoggingUtils.suppressAllRootLoggerOutput();
     }
 
 

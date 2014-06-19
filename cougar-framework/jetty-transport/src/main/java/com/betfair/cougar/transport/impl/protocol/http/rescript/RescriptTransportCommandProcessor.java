@@ -39,8 +39,8 @@ import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.core.api.exception.*;
 import com.betfair.cougar.core.api.transcription.EnumUtils;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.marshalling.api.databinding.DataBindingFactory;
 import com.betfair.cougar.marshalling.api.databinding.FaultMarshaller;
 import com.betfair.cougar.marshalling.api.databinding.Marshaller;
@@ -69,7 +69,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
  */
 @ManagedResource
 public class RescriptTransportCommandProcessor extends AbstractTerminateableHttpCommandProcessor {
-    final static CougarLogger logger = CougarLoggingUtils.getLogger(RescriptTransportCommandProcessor.class);
+    final static Logger LOGGER = LoggerFactory.getLogger(RescriptTransportCommandProcessor.class);
 	private Map<String, RescriptOperationBinding> bindings = new HashMap<String, RescriptOperationBinding>();
 
     public RescriptTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader,
@@ -231,7 +231,7 @@ public class RescriptTransportCommandProcessor extends AbstractTerminateableHttp
                         closeStream(out);
                     }
                 } else {
-                    logger.log(Level.FINE, "Skipping error handling for a request where the output channel/socket has been prematurely closed");
+                    LOGGER.debug("Skipping error handling for a request where the output channel/socket has been prematurely closed");
                 }
                 logAccess(command,
                         resolveContextForErrorHandling(context, command), bytesRead,

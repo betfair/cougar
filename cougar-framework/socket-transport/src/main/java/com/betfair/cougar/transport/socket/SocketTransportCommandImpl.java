@@ -17,8 +17,8 @@
 package com.betfair.cougar.transport.socket;
 
 import com.betfair.cougar.core.api.RequestTimer;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.transport.api.protocol.CougarObjectInput;
 import com.betfair.cougar.transport.api.protocol.CougarObjectOutput;
 import org.apache.mina.common.IoSession;
@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class SocketTransportCommandImpl implements SocketTransportCommand {
 
-    private static final CougarLogger logger = CougarLoggingUtils.getLogger(SocketTransportCommandImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SocketTransportCommandImpl.class);
 
 	private final CougarObjectInput input;
     private final String remoteAddress;

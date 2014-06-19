@@ -29,8 +29,10 @@ import com.betfair.cougar.api.geolocation.GeoLocationDetails;
 import com.betfair.cougar.api.security.IdentityChain;
 import com.betfair.cougar.core.api.ev.ExecutionObserver;
 import com.betfair.cougar.core.api.ev.ExecutionResult;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -46,7 +48,7 @@ import java.util.logging.Level;
  * Very basic class to test remote connectivity for client cougar to cougar calculation
  */
 public class CougarToCougarCommsTester implements ApplicationListener {
-    private final static CougarLogger logger = CougarLoggingUtils.getLogger(CougarToCougarCommsTester.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(CougarToCougarCommsTester.class);
 
     private BaselineSyncClient client;
 
@@ -159,7 +161,7 @@ public class CougarToCougarCommsTester implements ApplicationListener {
 
         @Override
         public void onResult(ExecutionResult result) {
-            logger.log(Level.INFO, "Result received: [" + result.getResult().toString() + "]");
+            LOGGER.info("Result received: [" + result.getResult().toString() + "]");
         }
 
     };
@@ -184,7 +186,7 @@ public class CougarToCougarCommsTester implements ApplicationListener {
 
         @Override
         public void onResult(ExecutionResult result) {
-            logger.log(Level.INFO, "Void result received this valid here should be null [" + result.getResult() + "]");
+            LOGGER.info("Void result received this valid here should be null [" + result.getResult() + "]");
         }
     };
 
@@ -310,9 +312,9 @@ public class CougarToCougarCommsTester implements ApplicationListener {
 //                            Thread.sleep(50);
                         }
                     } catch (SimpleException e) {
-                        logger.log(Level.SEVERE, "An exception occurred", e);
+                        LOGGER.error("An exception occurred", e);
 //                    } catch (InterruptedException e) {
-//                        logger.log(Level.SEVERE, "An exception occurred", e);
+//                        LOGGER.error("An exception occurred", e);
                     }
                 }
             }, "ARSE-"+i);

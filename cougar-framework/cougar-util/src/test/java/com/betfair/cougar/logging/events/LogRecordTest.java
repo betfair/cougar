@@ -23,8 +23,6 @@ import com.betfair.cougar.api.LoggableEvent;
 import com.betfair.cougar.logging.records.CougarLogRecord;
 import com.betfair.cougar.logging.records.EventLogRecord;
 import com.betfair.cougar.logging.records.TraceLogRecord;
-import com.betfair.cougar.logging.records.TrackingLogRecord;
-import com.betfair.cougar.logging.records.TrackingLogRecord.Action;
 
 public class LogRecordTest extends CougarUtilTestCase {
 
@@ -33,52 +31,11 @@ public class LogRecordTest extends CougarUtilTestCase {
 		CougarLogRecord e = new CougarLogRecord("NAME", Level.INFO, msg) {};
 		assertTrue(e.getMessage() == msg);
 	}
-	
+
 	public void testLogFormattingComplex() {
 		String msg = "String %s, float %1.2f, int %d";
 		CougarLogRecord e = new CougarLogRecord("NAME", Level.INFO, msg, "string", 3.14, 100) {};
 		assertTrue(e.getMessage().equals("String string, float 3.14, int 100"));
-	}
-
-	public void testMethodEnteringFormatSimple() {
-		TrackingLogRecord e = new TrackingLogRecord("NAME", Action.ENTERING, "Class", "Method");
-		assertTrue(e.getMessage().equals("Entering Class.Method with args: NONE"));
-	}
-
-	public void testMethodEnteringFormatComplex() {
-		TrackingLogRecord e = new TrackingLogRecord("NAME", Action.ENTERING, "Class", "Method", "arg1", "arg2");
-		assertTrue(e.getMessage().equals("Entering Class.Method with args: arg1 arg2"));
-	}
-
-	public void testMethodLeavingFormatSimple() {
-		TrackingLogRecord e = new TrackingLogRecord("NAME", Action.LEAVING, "Class", "Method");
-		assertTrue(e.getMessage().equals("Leaving Class.Method with return value: NONE"));
-	}
-
-	public void testMethodLeavingFormatComplex() {
-		TrackingLogRecord e = new TrackingLogRecord("NAME", Action.LEAVING, "Class", "Method", "result");
-		assertTrue(e.getMessage().equals("Leaving Class.Method with return value: result"));
-	}
-
-	public void testMethodThrowingFormatSimple() {
-		TrackingLogRecord e = new TrackingLogRecord("NAME", Action.THROWING, "Class", "Method");
-		assertTrue(e.getMessage().equals("Throwing exception from Class.Method Exception was: NO EXCEPTION"));
-	}
-
-	public void testMethodThrowingFormatComplex() {
-		TrackingLogRecord e = new TrackingLogRecord("NAME", Action.THROWING, "Class", "Method", new IllegalStateException());
-		assertTrue(e.getMessage().equals("Throwing exception from Class.Method Exception was: java.lang.IllegalStateException"));
-	}
-	
-	public void testTrackingNullAction() {
-		TrackingLogRecord e = new TrackingLogRecord("NAME", null, "Class", "Method", new IllegalStateException());
-		try {
-			e.getMessage();
-			fail();
-		} catch (IllegalArgumentException ex) {
-			// ok
-		}
-		
 	}
 
 	public void testEventSimple() throws Exception{
@@ -96,9 +53,9 @@ public class LogRecordTest extends CougarUtilTestCase {
 		assertEquals("foo,bar", new String(new EventLogRecord(e,null).getBytes()));
 		assertEquals("foo,bar", new EventLogRecord(e,null).getMessage());
 		assertTrue(new EventLogRecord(e,null).getLoggerName().equals("EVENT-LOG-RECORD"));
-		
+
 	}
-	
+
 	public void testTraceEvent() {
 		TraceLogRecord e = new TraceLogRecord("UUID", "message %s", "foo");
         assertEquals("UUID: message foo", e.getMessage());

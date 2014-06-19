@@ -16,8 +16,10 @@
 
 package com.betfair.cougar.core.api.ev;
 
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -29,7 +31,7 @@ import java.util.logging.Level;
  * Useful for providing a synchronous adapter around an async service.
  */
 public class WaitingObserver implements ExecutionObserver {
-    private static final CougarLogger logger = CougarLoggingUtils.getLogger(WaitingObserver.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WaitingObserver.class);
 
     private CountDownLatch latch = new CountDownLatch(1);
 

@@ -22,7 +22,7 @@ import com.betfair.cougar.api.security.IdentityChain;
 import com.betfair.cougar.api.security.IdentityToken;
 import com.betfair.cougar.api.security.InvalidCredentialsException;
 import com.betfair.cougar.core.api.exception.CougarFrameworkException;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.LoggerFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -44,11 +44,6 @@ public class IdentityResolverFactoryTest {
         public List<IdentityToken> tokenise(IdentityChain chain) {
             return null;
         }
-    }
-
-    @BeforeClass
-    public static void suppressLogs() {
-        CougarLoggingUtils.suppressAllRootLoggerOutput();
     }
 
     @Test

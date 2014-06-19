@@ -16,21 +16,19 @@
 
 package com.betfair.cougar.testing;
 
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
 public class EndDateTimeLogEntryCondition extends DateTimeLogEntryCondition
 {
-	final static CougarLogger logger = CougarLoggingUtils
-	.getLogger(EndDateTimeLogEntryCondition.class);
 
 	public EndDateTimeLogEntryCondition(String dateTimeFormatString)
 	{
 		super(dateTimeFormatString);
 	}
-	
+
 	@Override
 	// override this in specific conditions
 	public boolean matchesEntry(String logEntry) {
@@ -42,5 +40,5 @@ public class EndDateTimeLogEntryCondition extends DateTimeLogEntryCondition
 		}
 		return matches;
 	}
-	
+
 }

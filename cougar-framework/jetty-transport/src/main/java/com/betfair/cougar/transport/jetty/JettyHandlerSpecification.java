@@ -19,8 +19,8 @@ package com.betfair.cougar.transport.jetty;
 import com.betfair.cougar.api.export.Protocol;
 import com.betfair.cougar.api.security.IdentityTokenResolver;
 import com.betfair.cougar.core.api.ServiceVersion;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +35,7 @@ import java.util.logging.Level;
  * not using security, then this will remain empty.
  */
 public class JettyHandlerSpecification {
-    private static final CougarLogger logger = CougarLoggingUtils.getLogger(JettyHandlerSpecification.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JettyHandlerSpecification.class);
 
     private static final ServiceVersion JSON_VERSION_AGNOSTIC_KEY = new ServiceVersion("v-1.-1");
 
@@ -61,7 +61,7 @@ public class JettyHandlerSpecification {
                 versionToIdentityTokenResolverMap.put(JSON_VERSION_AGNOSTIC_KEY, resolver);
             } else {
                 if (!mapResolverEntry.equals(resolver)) {
-                    logger.log(Level.WARNING, "You can only have one IdentityTokenResolver wired for JSON-RPC - ignoring [%s]",
+                    LOGGER.warn("You can only have one IdentityTokenResolver wired for JSON-RPC - ignoring [%s]",
                             resolver.getClass().getName());
                 }
             }

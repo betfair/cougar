@@ -26,8 +26,8 @@ import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 import com.betfair.cougar.core.api.logging.EventLogger;
 import com.betfair.cougar.core.impl.ev.ConnectedResponseImpl;
 import com.betfair.cougar.core.impl.ev.DefaultSubscription;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.netutil.nio.CougarProtocol;
 import com.betfair.cougar.netutil.nio.NioLogger;
 import com.betfair.cougar.netutil.nio.TerminateSubscription;
@@ -65,7 +65,7 @@ import static org.mockito.Mockito.*;
 @RunWith(value = ParameterizedMultiRunner.class)
 public class PooledServerConnectedObjectManagerTest {
 
-    private static CougarLogger logger = CougarLoggingUtils.getLogger(PooledServerConnectedObjectManagerTest.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(PooledServerConnectedObjectManagerTest.class);
 
     private PooledServerConnectedObjectManager subject;
     private ExpectingOutput cougarOutput;
@@ -1124,8 +1124,8 @@ public class PooledServerConnectedObjectManagerTest {
             }
         });
 
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "Starting wait for expected updates");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Starting wait for expected updates");
         }
 
         cougarOutput.start();
@@ -1153,10 +1153,10 @@ public class PooledServerConnectedObjectManagerTest {
             }
         }
 
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "CougarObjectOutput.writeObject():");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("CougarObjectOutput.writeObject():");
             for (Object o : new ArrayList<Object>(cougarOutput.getAllValues())) {
-                logger.log(Level.FINE, String.valueOf(o));
+                LOGGER.debug(String.valueOf(o));
             }
         }
 
@@ -1180,10 +1180,10 @@ public class PooledServerConnectedObjectManagerTest {
         }
 
         if (ie != null || afe != null || writes != session.getWritten().size()) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, "session(" + session.getSessionId() + ").write():");
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("session(" + session.getSessionId() + ").write():");
                 for (Object o : session.getWritten()) {
-                    logger.log(Level.FINE, String.valueOf(o));
+                    LOGGER.debug(String.valueOf(o));
                 }
             }
 

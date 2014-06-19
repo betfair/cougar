@@ -19,7 +19,7 @@ package com.betfair.cougar.core.api.ev;
 import com.betfair.cougar.api.ResponseCode;
 import com.betfair.cougar.api.fault.CougarApplicationException;
 import com.betfair.cougar.core.api.exception.CougarFrameworkException;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.LoggerFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -47,11 +47,6 @@ public class ExecutionResultTest {
         public String getApplicationFaultNamespace() {
             return null;
         }
-    }
-
-    @BeforeClass
-    public static void suppressLogs() {
-        CougarLoggingUtils.suppressAllRootLoggerOutput();
     }
 
     @Test

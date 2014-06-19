@@ -18,14 +18,17 @@ package com.betfair.cougar.logging;
 
 
 import com.betfair.cougar.logging.handlers.AbstractLogHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LogDefinition {
 	private AbstractLogHandler handler;
 	private String logName;
 	private boolean traceLog;
-	
+
 	public void setHandler(AbstractLogHandler handler) {
 		this.handler = handler;
+        throw new RuntimeException("Need to kill this");
 	}
 	public void setLogName(String logName) {
 		this.logName = logName;
@@ -36,8 +39,8 @@ public class LogDefinition {
 
 	public void register() {
 		if (traceLog) {
-            CougarLogger cougarLogger = CougarLoggingUtils.getLogger(logName);
-			CougarLoggingUtils.setTraceLogger(cougarLogger);
+            Logger traceLogger = LoggerFactory.getLogger(logName);
+			CougarLoggingUtils.setTraceLogger(traceLogger);
 		}
 	}
 

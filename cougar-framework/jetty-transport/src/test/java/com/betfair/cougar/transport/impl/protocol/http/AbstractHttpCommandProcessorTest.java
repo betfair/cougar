@@ -36,6 +36,7 @@ import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.transport.api.CommandResolver;
 import com.betfair.cougar.transport.api.CommandValidator;
 import com.betfair.cougar.transport.api.ExecutionCommand;

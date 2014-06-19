@@ -26,8 +26,10 @@ import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.core.impl.security.IdentityChainImpl;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 
 import java.util.*;
@@ -44,7 +46,7 @@ import java.util.logging.Level;
  */
 public class BaseExecutionVenue implements ExecutionVenue {
 
-    private final static CougarLogger logger = CougarLoggingUtils.getLogger(ExecutionVenue.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(ExecutionVenue.class);
 
     private List<ExecutionPostProcessor> postProcessorList = new ArrayList<ExecutionPostProcessor>();
     private List<ExecutionPreProcessor> preProcessorList = new ArrayList<ExecutionPreProcessor>();
@@ -74,7 +76,7 @@ public class BaseExecutionVenue implements ExecutionVenue {
                         executable,
                         recorder,
                         maxExecutionTime));
-        logger.log(Level.INFO, "Registered operation: %s", key);
+        LOGGER.info("Registered operation: %s", key);
     }
 
     private boolean isInterceptingSupported() {
@@ -136,7 +138,7 @@ public class BaseExecutionVenue implements ExecutionVenue {
     public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, ExecutionObserver observer, TimeConstraints timeConstraints) {
         final DefinedExecutable de = registry.get(key);
         if (de == null) {
-            logger.log(Level.FINE, "Not request logging request to URI: %s as no operation was found", key.toString());
+            LOGGER.debug("Not request logging request to URI: %s as no operation was found", key.toString());
             observer.onResult(new ExecutionResult(new CougarFrameworkException(ServerFaultCode.NoSuchOperation, "Operation not found: "+key.toString())));
         } else {
             long serverExpiryTime = de.maxExecutionTime == 0 ? Long.MAX_VALUE : System.currentTimeMillis() + de.maxExecutionTime;

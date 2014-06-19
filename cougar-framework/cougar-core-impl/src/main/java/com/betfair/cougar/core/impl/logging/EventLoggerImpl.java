@@ -22,18 +22,18 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 import com.betfair.cougar.api.LoggableEvent;
 import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 import com.betfair.cougar.core.api.logging.EventLogger;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.logging.EventLogDefinition;
 import com.betfair.cougar.logging.EventLoggingRegistry;
 import com.betfair.cougar.logging.records.EventLogRecord;
 
 @ManagedResource
 public class EventLoggerImpl implements EventLogger {
-	private final static CougarLogger logger = CougarLoggingUtils.getLogger(EventLoggerImpl.class);
+	private final static Logger LOGGER = LoggerFactory.getLogger(EventLoggerImpl.class);
 	private EventLoggingRegistry registry;
 	private boolean enabled = true;
-	
+
 	public void setRegistry(EventLoggingRegistry registry) {
 		this.registry = registry;
 	}
@@ -47,7 +47,7 @@ public class EventLoggerImpl implements EventLogger {
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
-	
+
 	@Override
 	public void logEvent(LoggableEvent event) {
         logEvent(event, null);
@@ -60,16 +60,16 @@ public class EventLoggerImpl implements EventLogger {
 			logEventLogRecord(eventLogRecord);
 		}
 	}
-	
+
 	private void logEventLogRecord(EventLogRecord eventLogRecord) {
 		EventLogDefinition invokableLogger = registry.getInvokableLogger(eventLogRecord.getLoggerName());
 		if (invokableLogger != null) {
-			CougarLoggingUtils.getLogger(invokableLogger.getLogName()).log(eventLogRecord);
+			LoggerFactory.getLogger(invokableLogger.getLogName()).info(eventLogRecord.getMessage());
 		} else {
 			throw new CougarFrameworkException("Logger "+eventLogRecord.getLoggerName()+" is not an event logger");
 		}
 	}
-		
+
 }
 
 

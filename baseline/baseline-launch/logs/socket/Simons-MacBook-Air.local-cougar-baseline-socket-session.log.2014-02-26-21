@@ -1,0 +1,15 @@
+21:36:31.290: SocketAcceptorIoProcessor-0.0 0000015: ExecutionVenueServerHandler: Session closed
+21:36:31.349: SocketConnectorIoProcessor-0.8 0000017: CougarProtocolCodecFilter: Created session at 1393450591347 from localhost/127.0.0.1:9003
+21:36:31.418: SocketAcceptorIoProcessor-0.0 0000015: Session closed, terminating live subscriptions
+21:36:31.422: SocketAcceptorIoProcessor-0.0 0000018: CougarProtocolCodecFilter: Created session at 1393450591290 from /127.0.0.1:64099
+21:36:31.424: SocketAcceptorIoProcessor-0.0 0000018: ExecutionVenueServerHandler: Session opened
+21:42:26.052: SocketAcceptorIoProcessor-0.0 0000018: ExecutionVenueServerHandler: Session closed
+21:42:26.052: SocketAcceptorIoProcessor-0.0 0000018: Session closed, terminating live subscriptions
+21:42:26.055: SocketAcceptorIoProcessor-0.0 0000019: CougarProtocolCodecFilter: Created session at 1393450946054 from /127.0.0.1:64607
+21:42:26.056: SocketConnectorIoProcessor-0.9 0000020: CougarProtocolCodecFilter: Created session at 1393450946055 from localhost/127.0.0.1:9003
+21:42:26.057: SocketAcceptorIoProcessor-0.0 0000019: ExecutionVenueServerHandler: Session opened
+21:50:20.697: SocketAcceptorIoProcessor-0.0 0000019: ExecutionVenueServerHandler: Session closed
+21:50:20.697: SocketAcceptorIoProcessor-0.0 0000019: Session closed, terminating live subscriptions
+21:50:20.699: SocketAcceptorIoProcessor-0.0 0000021: CougarProtocolCodecFilter: Created session at 1393451420699 from /127.0.0.1:65165
+21:50:20.700: SocketConnectorIoProcessor-0.10 0000022: CougarProtocolCodecFilter: Created session at 1393451420699 from localhost/127.0.0.1:9003
+21:50:20.700: SocketAcceptorIoProcessor-0.0 0000021: ExecutionVenueServerHandler: Session opened

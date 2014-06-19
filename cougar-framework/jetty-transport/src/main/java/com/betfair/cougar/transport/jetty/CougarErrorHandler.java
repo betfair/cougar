@@ -26,31 +26,31 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.eclipse.jetty.server.handler.ErrorHandler;
 
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CougarErrorHandler extends ErrorHandler {
-	private final static CougarLogger logger = CougarLoggingUtils.getLogger(CougarErrorHandler.class);
-	
+	private final static Logger LOGGER = LoggerFactory.getLogger(CougarErrorHandler.class);
+
 	public static final int BUFFSIZE = 1024;
-	
+
 	@Override
     protected void writeErrorPage(HttpServletRequest request, Writer writer, int code, String message, boolean showStacks)
     	throws IOException
     {
 		// We don't want to show generic Jetty error pages.
-		logger.log(Level.FINE, "Finding error page for code %d", code);
+		LOGGER.debug("Finding error page for code %d", code);
 		InputStream is = getClass().getResourceAsStream("/errorpages/"+code+".html");
 		if (is != null) {
 			InputStreamReader reader = new InputStreamReader(is);
 			try {
 				int len;
-				char[] buff = new char[BUFFSIZE]; 
+				char[] buff = new char[BUFFSIZE];
 				while ((len = reader.read(buff, 0, BUFFSIZE)) != -1) {
 					writer.write(buff, 0, len);
 				}
 				writer.flush();
-			} 
+			}
 			finally {
 				reader.close();
 			}

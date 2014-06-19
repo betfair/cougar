@@ -22,11 +22,12 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
+import com.betfair.cougar.logging.CougarLoggingUtils;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.betfair.cougar.core.api.exception.PanicInTheCougar;
 import com.betfair.cougar.core.impl.CougarSpringCtxFactoryImpl;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.LoggerFactory;
 
 public class TestClientContextFactory extends CougarSpringCtxFactoryImpl{
 
@@ -41,16 +42,16 @@ public class TestClientContextFactory extends CougarSpringCtxFactoryImpl{
                     it.remove();
                 }
             }
-            
+
             Enumeration<URL> appConfis = TestClientContextFactory.class.getClassLoader().getResources(config);
             while (appConfis.hasMoreElements()) {
                 configs.add(appConfis.nextElement().toExternalForm());
             }
-            
+
 
             return new ClassPathXmlApplicationContext(configs.toArray(new String[configs.size()]));
         } catch (Exception e) {
-            CougarLoggingUtils.getLogger(CougarSpringCtxFactoryImpl.class).log(e);
+            LoggerFactory.getLogger(CougarSpringCtxFactoryImpl.class).error("",e);
             throw new PanicInTheCougar(e);
         }
 	}

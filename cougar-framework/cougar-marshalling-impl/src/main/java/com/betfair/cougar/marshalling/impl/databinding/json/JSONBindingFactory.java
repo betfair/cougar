@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 
 import com.betfair.cougar.CougarVersion;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.marshalling.api.databinding.*;
 import org.codehaus.jackson.*;
 import org.codehaus.jackson.io.NumberInput;
@@ -33,19 +33,19 @@ import org.codehaus.jackson.map.deser.StdDeserializer;
 import org.codehaus.jackson.map.module.SimpleModule;
 
 public class JSONBindingFactory implements DataBindingFactory {
-	private final static CougarLogger logger = CougarLoggingUtils.getLogger(JSONBindingFactory.class);
+	private final static Logger LOGGER = LoggerFactory.getLogger(JSONBindingFactory.class);
 
 	private final ObjectMapper objectMapper;
     private final JSONMarshaller marshaller;
     private final JSONUnMarshaller unMarshaller;
 
 	public JSONBindingFactory() {
-		logger.log(Level.INFO, "Initialising JSONBindingFactory");
+		LOGGER.info("Initialising JSONBindingFactory");
 		objectMapper = createBaseObjectMapper();
 		marshaller = new JSONMarshaller(objectMapper);
         unMarshaller = new JSONUnMarshaller(objectMapper);
 	}
-	
+
 	public static ObjectMapper createBaseObjectMapper() {
 		ObjectMapper mapper = new ObjectMapper();
 		JSONDateFormat jdf=new JSONDateFormat();

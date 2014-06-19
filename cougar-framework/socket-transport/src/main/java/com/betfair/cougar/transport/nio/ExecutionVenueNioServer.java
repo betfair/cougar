@@ -19,8 +19,8 @@ package com.betfair.cougar.transport.nio;
 
 import com.betfair.cougar.core.api.BindingDescriptor;
 import com.betfair.cougar.core.api.transports.AbstractRegisterableTransport;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.netutil.nio.CougarProtocol;
 import com.betfair.cougar.netutil.nio.NioConfig;
 import com.betfair.cougar.netutil.nio.TlsNioConfig;
@@ -40,7 +40,7 @@ import java.util.logging.Level;
 @ManagedResource
 public class ExecutionVenueNioServer extends AbstractRegisterableTransport {
 
-    final static CougarLogger logger = CougarLoggingUtils.getLogger(ExecutionVenueNioServer.class);
+    final static Logger LOGGER = LoggerFactory.getLogger(ExecutionVenueNioServer.class);
 
     private TlsNioConfig nioConfig;
 
@@ -105,17 +105,17 @@ public class ExecutionVenueNioServer extends AbstractRegisterableTransport {
             socketAddress = (InetSocketAddress) socketAcceptor.getManagedServiceAddresses().iterator().next();
 
 
-            logger.log(Level.INFO, "ExecutionVenueNioServer started on " + socketAcceptor.getManagedServiceAddresses());
+            LOGGER.info("ExecutionVenueNioServer started on " + socketAcceptor.getManagedServiceAddresses());
 
             // Create a shutdown hook to close the Socket Server cleanly
             Runtime.getRuntime().addShutdownHook(new Thread("EV Socket Server Shutdown Thread") {
                 @Override
                 public void run() {
-                    logger.log(Level.INFO, "Gracefully shutting down ExecutionVenueNioServer");
+                    LOGGER.info("Gracefully shutting down ExecutionVenueNioServer");
                     try {
                         ExecutionVenueNioServer.this.stop();
                     } catch (Exception e) {
-                        logger.log(Level.WARNING, "Failed to shutdown ExecutionVenueNioServer", e);
+                        LOGGER.warn("Failed to shutdown ExecutionVenueNioServer", e);
                     }
                 }
             });
@@ -125,8 +125,8 @@ public class ExecutionVenueNioServer extends AbstractRegisterableTransport {
 
     @ManagedAttribute
     public synchronized void setHealthState(boolean isHealthy) {
-        if (logger.isLoggable(Level.INFO)) {
-            logger.log(Level.INFO, "setting protocol to " + (isHealthy ? "enabled" : "disabled"));
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info("setting protocol to " + (isHealthy ? "enabled" : "disabled"));
         }
         if (socketAcceptor != null) {
             CougarProtocol cougarProtocol = (CougarProtocol) socketAcceptor.getDefaultConfig().getFilterChain().get("protocol");

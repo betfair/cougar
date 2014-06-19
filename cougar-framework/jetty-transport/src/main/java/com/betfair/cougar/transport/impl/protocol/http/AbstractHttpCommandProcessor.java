@@ -27,8 +27,8 @@ import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.core.api.exception.*;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.transport.api.CommandValidator;
 import com.betfair.cougar.transport.api.RequestLogger;
 import com.betfair.cougar.transport.api.RequestTimeResolver;
@@ -63,7 +63,7 @@ import java.util.regex.Pattern;
 public abstract class AbstractHttpCommandProcessor extends
 		AbstractCommandProcessor<HttpCommand> implements HttpCommandProcessor,
 		GateListener {
-    private static CougarLogger logger = CougarLoggingUtils.getLogger(AbstractHttpCommandProcessor.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(AbstractHttpCommandProcessor.class);
 
     private static Pattern VERSION_REMOVAL_PATTERN = Pattern.compile("(/?.*/v\\d+)(?:\\.\\d+)?(/.*)?", Pattern.CASE_INSENSITIVE);
 
@@ -251,7 +251,7 @@ public abstract class AbstractHttpCommandProcessor extends
             return resolveExecutionContextWithTokensAndRequestTime(command, null, false, new Date());
         } catch (RuntimeException e) {
             // Well that failed too... nothing to do but return null
-            logger.log(Level.FINE, "Failed to resolve error execution context", e);
+            LOGGER.debug("Failed to resolve error execution context", e);
             return null;
         }
     }
@@ -355,8 +355,7 @@ public abstract class AbstractHttpCommandProcessor extends
 		//really exceptional and should not be reported by dumping the stack trace.
 		//Instead a summary debug level log message with some relevant info
         incrementIoErrorsEncountered();
-		logger.log(
-				Level.FINE,
+		LOGGER.debug(
 				"Failed to marshall object of class %s to the output channel. Exception (%s) message is: %s",
 				resultClass.getCanonicalName(),
 				e.getClass().getCanonicalName(),
@@ -382,7 +381,7 @@ public abstract class AbstractHttpCommandProcessor extends
         try {
             if (out != null) out.close();
         } catch (IOException e) {
-            logger.log(Level.WARNING, "Failed to close output stream", e);
+            LOGGER.warn("Failed to close output stream", e);
         }
     }
 
@@ -399,7 +398,7 @@ public abstract class AbstractHttpCommandProcessor extends
 
             return sb.toString();
         } else {
-            logger.log(Level.WARNING, "Unable to remove minor version from URI: [" + uri + "], returning unmodified");
+            LOGGER.warn("Unable to remove minor version from URI: [" + uri + "], returning unmodified");
             return uri;
         }
     }

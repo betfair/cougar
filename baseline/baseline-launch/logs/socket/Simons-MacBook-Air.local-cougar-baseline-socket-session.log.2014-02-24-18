@@ -1,0 +1,25 @@
+18:00:11.659: SocketAcceptorIoProcessor-0.0 0000234: ExecutionVenueServerHandler: Session closed
+18:00:11.660: SocketAcceptorIoProcessor-0.0 0000234: Session closed, terminating live subscriptions
+18:00:11.668: SocketAcceptorIoProcessor-0.0 0000235: CougarProtocolCodecFilter: Created session at 1393264811660 from /127.0.0.1:54119
+18:00:11.719: SocketConnectorIoProcessor-0.0 0000236: CougarProtocolCodecFilter: Created session at 1393264811669 from localhost/127.0.0.1:9003
+18:00:11.719: SocketAcceptorIoProcessor-0.0 0000235: ExecutionVenueServerHandler: Session opened
+18:10:44.503: SocketAcceptorIoProcessor-0.0 0000235: ExecutionVenueServerHandler: Session closed
+18:10:44.503: SocketAcceptorIoProcessor-0.0 0000235: Session closed, terminating live subscriptions
+18:10:44.509: SocketAcceptorIoProcessor-0.0 0000237: CougarProtocolCodecFilter: Created session at 1393265444507 from /127.0.0.1:59834
+18:10:44.510: SocketConnectorIoProcessor-0.1 0000238: CougarProtocolCodecFilter: Created session at 1393265444507 from localhost/127.0.0.1:9003
+18:10:44.511: SocketAcceptorIoProcessor-0.0 0000237: ExecutionVenueServerHandler: Session opened
+18:15:40.672: SocketAcceptorIoProcessor-0.0 0000237: ExecutionVenueServerHandler: Session closed
+18:15:40.672: SocketAcceptorIoProcessor-0.0 0000237: Session closed, terminating live subscriptions
+18:15:40.677: SocketAcceptorIoProcessor-0.0 0000239: CougarProtocolCodecFilter: Created session at 1393265740675 from /127.0.0.1:62376
+18:15:40.678: SocketConnectorIoProcessor-0.2 0000240: CougarProtocolCodecFilter: Created session at 1393265740676 from localhost/127.0.0.1:9003
+18:15:40.678: SocketAcceptorIoProcessor-0.0 0000239: ExecutionVenueServerHandler: Session opened
+18:44:26.232: SocketAcceptorIoProcessor-0.0 0000239: ExecutionVenueServerHandler: Session closed
+18:44:26.232: SocketAcceptorIoProcessor-0.0 0000239: Session closed, terminating live subscriptions
+18:44:26.237: SocketAcceptorIoProcessor-0.0 0000241: CougarProtocolCodecFilter: Created session at 1393267466235 from /127.0.0.1:62894
+18:44:26.239: SocketConnectorIoProcessor-0.3 0000242: CougarProtocolCodecFilter: Created session at 1393267466236 from localhost/127.0.0.1:9003
+18:44:26.239: SocketAcceptorIoProcessor-0.0 0000241: ExecutionVenueServerHandler: Session opened
+18:46:13.868: SocketAcceptorIoProcessor-0.0 0000241: ExecutionVenueServerHandler: Session closed
+18:46:13.868: SocketAcceptorIoProcessor-0.0 0000241: Session closed, terminating live subscriptions
+18:46:13.880: SocketAcceptorIoProcessor-0.0 0000243: CougarProtocolCodecFilter: Created session at 1393267573870 from /127.0.0.1:63409
+18:46:13.880: SocketConnectorIoProcessor-0.4 0000244: CougarProtocolCodecFilter: Created session at 1393267573877 from localhost/127.0.0.1:9003
+18:46:13.881: SocketAcceptorIoProcessor-0.0 0000243: ExecutionVenueServerHandler: Session opened

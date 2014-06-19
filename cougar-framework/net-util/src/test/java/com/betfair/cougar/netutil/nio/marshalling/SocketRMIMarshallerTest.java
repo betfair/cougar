@@ -76,7 +76,7 @@ import com.betfair.cougar.core.api.transcription.ParameterType.Type;
 import com.betfair.cougar.core.api.transcription.Transcribable;
 import com.betfair.cougar.core.api.transcription.TranscriptionInput;
 import com.betfair.cougar.core.api.transcription.TranscriptionOutput;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.marshalling.impl.to.Cycle1;
 import com.betfair.cougar.marshalling.impl.to.Cycle2;
 import com.betfair.cougar.marshalling.impl.to.Foo;
@@ -192,10 +192,6 @@ public class SocketRMIMarshallerTest {
     private GeoIPLocator geoIpLocator = Mockito.mock(GeoIPLocator.class);
     private SocketRMIMarshaller cut = new SocketRMIMarshaller(geoIpLocator,new CommonNameCertInfoExtractor(),new DefaultSocketTimeResolver(true));
 
-    @BeforeClass
-    public static void suppressLogs() {
-        CougarLoggingUtils.suppressAllRootLoggerOutput();
-    }
 
     @Before
     public void before() {

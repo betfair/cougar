@@ -35,7 +35,7 @@ import com.betfair.cougar.core.api.transcription.ParameterType;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.core.impl.security.CommonNameCertInfoExtractor;
 import com.betfair.cougar.core.impl.transports.TransportRegistryImpl;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.netutil.nio.marshalling.DefaultSocketTimeResolver;
 import com.betfair.cougar.netutil.nio.marshalling.SocketRMIMarshaller;
 import com.betfair.cougar.netutil.nio.CougarProtocol;
@@ -185,7 +185,6 @@ public class ExecutionVenueNioServerTest {
     @BeforeClass
     public static void setupStatic() {
         RequestUUIDImpl.setGenerator(new UUIDGeneratorImpl());
-        CougarLoggingUtils.suppressAllRootLoggerOutput();
     }
 
     @Before

@@ -16,8 +16,10 @@
 
 package com.betfair.cougar;
 
-import com.betfair.cougar.logging.CougarLogger;
-import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +30,7 @@ import java.util.regex.Pattern;
 
 public class CougarVersion {
 
-    private final static CougarLogger logger = CougarLoggingUtils.getLogger(CougarVersion.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(CougarVersion.class);
 
     private static String VERSION;
     private static String MAJOR_MINOR_VERSION;
@@ -46,15 +48,15 @@ public class CougarVersion {
             Properties prop = new Properties();
             prop.load(is);
             VERSION = prop.getProperty("version");
-            logger.log(Level.INFO, "Labeled Cougar version is "+VERSION);
+            LOGGER.info("Labeled Cougar version is "+VERSION);
         } catch (Exception e) {
-            logger.log(Level.WARNING, "Failed to read Cougar version", e);
+            LOGGER.warn("Failed to read Cougar version", e);
         } finally {
             if (is != null) {
                 try {
                     is.close();
                 } catch (IOException e) {
-                    logger.log(Level.WARNING, "Exception closing version stream", e);
+                    LOGGER.warn("Exception closing version stream", e);
                 }
             }
         }

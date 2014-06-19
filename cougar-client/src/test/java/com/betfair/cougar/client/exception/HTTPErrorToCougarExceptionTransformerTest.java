@@ -23,6 +23,7 @@ import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.fault.CougarFault;
 import com.betfair.cougar.core.api.fault.FaultDetail;
 import com.betfair.cougar.logging.CougarLoggingUtils;
+import org.slf4j.LoggerFactory;
 import com.betfair.cougar.marshalling.api.databinding.FaultUnMarshaller;
 import org.junit.BeforeClass;
 import org.junit.Test;
