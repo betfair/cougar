@@ -91,10 +91,10 @@ public class JettyHandler extends AbstractHandler {
 			JettyTransportCommand command = new JettyTransportCommand(request, response, itr);
 
 			if (!command.getContinuation().isExpired()) {
-				LOGGER.debug("Message Received at Jetty Handler for path %s", target);
+				LOGGER.debug("Message Received at Jetty Handler for path {}", target);
 				commandProcessor.process(command);
 			} else {
-				LOGGER.debug("Message Timeout at Jetty Handler for path %s", target);
+				LOGGER.debug("Message Timeout at Jetty Handler for path {}", target);
 				response.sendError(HttpServletResponse.SC_GATEWAY_TIMEOUT);
 			}
 		} catch (CougarException ce) {

@@ -73,9 +73,9 @@ public class CougarLog4JBootstrap implements LogBootstrap {
         String filenameFormat = getValueOrDefault(properties, FILENAME_FORMAT_PROPERTY, DEFAULT_LOG_FILENAME_FORMAT);
         String rotationPolicy = Log4JLogHandler.RolloverPolicy.valueOf(getValueOrDefault(properties,
                 ROTATION_POLICY_FORMAT_PROPERTY, DEFAULT_ROTATION_POLICY)).getLog4jDatePattern();
-        String jdkLogLevelString = getValueOrDefault(properties, LOG_LEVEL_PROPERTY, DEFAULT_LOG_LEVEL);
+        String log4jLogLevelString = getValueOrDefault(properties, LOG_LEVEL_PROPERTY, DEFAULT_LOG_LEVEL);
 
-        Level logLevel = new Log4jLoggingControl().convertJdkLevelToLog4jLevel(jdkLogLevelString);
+        Level logLevel = Level.toLevel(log4jLogLevelString);
 
         if (logDir == null) {
             throw new PanicInTheCougar("Cannot start with " + LOG_DIR_PROPERTY + " being set - value is currently null");

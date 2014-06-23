@@ -32,7 +32,7 @@ public class EventLoggingRegistry {
 	}
 
 	public void register(EventLogDefinition logDef) {
-		LOGGER.info("Registering %s logger %s", logDef.isAbstract() ? "abstract" : "invokable", logDef.getLogName());
+		LOGGER.info("Registering {} logger {}", logDef.isAbstract() ? "abstract" : "invokable", logDef.getLogName());
 		if (logDef.isAbstract()) {
 			if (abstractGlobalLogger == null) {
 				abstractGlobalLogger = logDef;

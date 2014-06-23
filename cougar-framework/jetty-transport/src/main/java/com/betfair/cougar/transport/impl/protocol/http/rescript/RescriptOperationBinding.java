@@ -129,7 +129,7 @@ public class RescriptOperationBinding {
                     default :
                         throw new PanicInTheCougar("Unsupported argument annotation "+ descriptor.getSource());
                 }
-                //request.trace("Deserialised argument %d from %s to value %s", i, param.getSource(), args[i]);
+                //request.trace("Deserialised argument {} from {} to value {2}", i, param.getSource(), args[i]);
             }
         }
         catch (EnumDerialisationException ede) {

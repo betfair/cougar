@@ -254,14 +254,14 @@ public class ClientConnectedObjectManager {
         // if we've got no record then we can't continue, and we can't really throw an exception, so just warn and ignore..
         if (heaps == null) {
             nioLogger.log(NioLogger.LoggingLevel.TRANSPORT, session, "Have no heaps registered for this client, address = %s", session.getRemoteAddress().toString());
-            LOGGER.warn("Received a connected object update, yet have no record of any subscriptions. {address=%s,heapId=%s,updateId=%s}", session.getRemoteAddress().toString(), payload.getHeapId(), payload.getUpdateId());
+            LOGGER.warn("Received a connected object update, yet have no record of any subscriptions. {address={},heapId={},updateId={2}}", session.getRemoteAddress().toString(), payload.getHeapId(), payload.getUpdateId());
             return;
         }
 
         HeapState heapState = heaps.getHeapState(payload.getHeapId());
         if (heapState == null) {
             nioLogger.log(NioLogger.LoggingLevel.TRANSPORT, session, "Can't find this heap for this client, address = %s, heapId = %s", session.getRemoteAddress().toString(), payload.getHeapId());
-            LOGGER.warn("Received a connected object update, yet have no record of a subscription for this heap. {address=%s,heapId=%s,updateId=%s}", session.getRemoteAddress().toString(), payload.getHeapId(), payload.getUpdateId());
+            LOGGER.warn("Received a connected object update, yet have no record of a subscription for this heap. {address={},heapId={},updateId={2}}", session.getRemoteAddress().toString(), payload.getHeapId(), payload.getUpdateId());
             return;
         }
 

@@ -26,7 +26,7 @@ public abstract class CougarLogRecord extends LogRecord {
 
 	private final long nanoTime;
 	private final AtomicReference<String> formattedMessage = new AtomicReference<String>();
-	
+
 	public CougarLogRecord(String logName, Level level, String msg, Object... args) {
         super(level, msg);
         nanoTime = System.nanoTime();
@@ -37,15 +37,15 @@ public abstract class CougarLogRecord extends LogRecord {
     public long getNanoTime() {
 		return nanoTime;
 	}
-    
+
     public String getMessage() {
     	// Store the formatted message in a AtomicReference in case we're logging to more than
     	// one handler. (AtomicReference in case we're logging asynchronously)
-    	String msg = formattedMessage.get(); 
+    	String msg = formattedMessage.get();
     	if (msg == null) {
 	    	Object[] params = getParameters();
 	        if (params != null && params.length > 0) {
-	            msg = String.format(super.getMessage(), params);
+	            msg = String.format(super.getMessage().replace("{}","%s"), params);
 	        } else {
 	        	msg = super.getMessage();
 	        }

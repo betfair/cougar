@@ -48,7 +48,7 @@ public abstract class AbstractEventLogHandler extends Handler {
 				throw new IllegalStateException("Unable to log an event", e);
 			}
 		} else {
-			LOGGER.warn("Unable to Event log an record of class: %s", record.getClass().getCanonicalName());
+			LOGGER.warn("Unable to Event log an record of class: {}", record.getClass().getCanonicalName());
 			throw new IllegalArgumentException("Invalid class for event log: " + record.getClass().getCanonicalName() );
 		}
 	}

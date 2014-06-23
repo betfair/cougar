@@ -134,12 +134,12 @@ public class JMXMonitor extends OnDemandMonitor {
     public Status checkStatus() {
         if (isFailState()) {
             if (currentStatus != failState) {
-                LOGGER.warn("%s %s. Attribute %s is unavailable or incorrect", beanName, failState, attributeName);
+                LOGGER.warn("{} {}. Attribute {2} is unavailable or incorrect", beanName, failState, attributeName);
             }
             currentStatus = failState;
         } else {
             if (currentStatus != Status.OK) {
-                LOGGER.info("%s recovered. Attribute %s is OK", beanName, attributeName);
+                LOGGER.info("{} recovered. Attribute {} is OK", beanName, attributeName);
             }
             currentStatus = Status.OK;
         }
@@ -151,15 +151,15 @@ public class JMXMonitor extends OnDemandMonitor {
         try {
             if (!mBeanServer.isRegistered(beanName)) {
                 if (ignoreIfBeanMissing) {
-                    LOGGER.debug("%s missing - ignoring", beanName);
+                    LOGGER.debug("{} missing - ignoring", beanName);
                     return false;
                 } else {
-                    LOGGER.debug("%s missing - failing", beanName);
+                    LOGGER.debug("{} missing - failing", beanName);
                     return true;
                 }
             }
             Object value = mBeanServer.getAttribute(beanName, attributeName);
-            LOGGER.debug("retrieved values %s from bean %s", value, beanName);
+            LOGGER.debug("retrieved values {} from bean {}", value, beanName);
             return !isHealthyExpression.evaluate(value);
         } catch (Exception e) {
             LOGGER.warn("Exception retrieving MBean value " + attributeName + "  from bean " + beanName, e);

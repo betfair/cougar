@@ -106,10 +106,10 @@ public class ContainerAwareExecutionVenue extends ServiceRegisterableExecutionVe
                         .getStatusAggregator()
                         .getStatus();
                 if (status != Status.OK) {
-                    LOGGER.warn("Cougar returned status %s at startup", status);
+                    LOGGER.warn("Cougar returned status {} at startup", status);
                 }
                 else {
-                    LOGGER.info("Cougar returned status %s at startup", status);
+                    LOGGER.info("Cougar returned status {} at startup", status);
                 }
 			} catch (Exception e) {
 				throw new PanicInTheCougar("Failed to initialise server", e);
@@ -131,7 +131,7 @@ public class ContainerAwareExecutionVenue extends ServiceRegisterableExecutionVe
 
 	@Override
 	public boolean registerStartingListener(GateListener listener) {
-		LOGGER.info("Registering gate listener %s with priority %d", listener.getName(), listener.getPriority());
+		LOGGER.info("Registering gate listener {} with priority {}", listener.getName(), listener.getPriority());
 		return startingListeners.add(listener);
 	}
 
@@ -142,7 +142,7 @@ public class ContainerAwareExecutionVenue extends ServiceRegisterableExecutionVe
 		int cnt = 0;
 		Collections.sort(startingListeners, LISTENER_COMPARATOR);
 		for (GateListener listener: startingListeners) {
-			LOGGER.info("(%d of %d) Calling gate listener %s", ++cnt, numListeners, listener.getName());
+			LOGGER.info("({} of {}) Calling gate listener {2}", ++cnt, numListeners, listener.getName());
 			listener.onCougarStart();
 		}
 	}

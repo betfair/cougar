@@ -131,7 +131,8 @@ public class CougarSpringCtxFactoryImpl implements CougarSpringCtxFactory {
         } catch (Exception ex) {
             System.err.println("An error occurred initialising the logger. Ensure the value of property [" +
                     LOGGING_BOOTSTRAP_CLASS_PROPERTY +
-                    "] points to a class that the implements LogBootstrap interface or is set to \"none\"" + ex);
+                    "] points to a class that the implements LogBootstrap interface or is set to \"none\"");
+            ex.printStackTrace();
             throw new PanicInTheCougar(ex);
         }
 

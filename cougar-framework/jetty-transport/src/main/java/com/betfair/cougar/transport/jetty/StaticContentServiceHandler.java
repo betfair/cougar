@@ -101,7 +101,7 @@ public class StaticContentServiceHandler extends ContextHandler {
 
 	@Override
 	public void doHandle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		LOGGER.debug("Static content stream handler for context path %s invoked for request path %s", getContextPath(), target);
+		LOGGER.debug("Static content stream handler for context path {} invoked for request path {}", getContextPath(), target);
 		baseRequest.setHandled(true);
         final RequestTimer timer = new RequestTimer();
         response.setHeader("Server", VERSION_HEADER);
@@ -112,13 +112,13 @@ public class StaticContentServiceHandler extends ContextHandler {
 			try {
 				InputStream rawStream = getClass().getResourceAsStream(target);
 				if (rawStream != null) {
-                    LOGGER.debug("Static content stream found for path %s", target);
+                    LOGGER.debug("Static content stream found for path {}", target);
                     bytesWritten = ServletResponseFileStreamer.getInstance().streamFileToResponse(rawStream, response,
                             HttpServletResponse.SC_OK, getContentType(contentType, target), CACHE_CONTROL_HEADER );
 					numOK.incrementAndGet();
 				}
 				else {
-					LOGGER.debug("Static content stream not found for path %s", target);
+					LOGGER.debug("Static content stream not found for path {}", target);
                     responseCode = ResponseCode.NotFound;
 					bytesWritten = ServletResponseFileStreamer.getInstance().stream404ToResponse(response);
 					num404s.incrementAndGet();
@@ -136,7 +136,7 @@ public class StaticContentServiceHandler extends ContextHandler {
 				numErrors.incrementAndGet();
 			}
 		} else {
-			LOGGER.debug("Static content stream did not match regex for path %s", target);
+			LOGGER.debug("Static content stream did not match regex for path {}", target);
             responseCode = ResponseCode.NotFound;
             bytesWritten = ServletResponseFileStreamer.getInstance().stream404ToResponse(response);
 			num404s.incrementAndGet();

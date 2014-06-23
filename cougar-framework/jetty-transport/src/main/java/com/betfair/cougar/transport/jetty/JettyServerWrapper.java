@@ -222,16 +222,16 @@ public class JettyServerWrapper {
      */
     private void setBufferSizes(HttpConfiguration buffers) {
         if (requestHeaderSize > 0) {
-            LOGGER.info("Request header size set to %d for %s", requestHeaderSize, buffers.getClass().getCanonicalName());
+            LOGGER.info("Request header size set to {} for {}", requestHeaderSize, buffers.getClass().getCanonicalName());
             buffers.setRequestHeaderSize(requestHeaderSize);
         }
 
         if (responseBufferSize > 0) {
-            LOGGER.info("Response buffer size set to %d for %s", responseBufferSize, buffers.getClass().getCanonicalName());
+            LOGGER.info("Response buffer size set to {} for {}", responseBufferSize, buffers.getClass().getCanonicalName());
             buffers.setOutputBufferSize(responseBufferSize);
         }
         if (responseHeaderSize > 0) {
-            LOGGER.info("Response header size set to %d for %s", responseHeaderSize, buffers.getClass().getCanonicalName());
+            LOGGER.info("Response header size set to {} for {}", responseHeaderSize, buffers.getClass().getCanonicalName());
             buffers.setResponseHeaderSize(responseHeaderSize);
         }
     }

@@ -22,14 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class LogDefinition {
-	private AbstractLogHandler handler;
 	private String logName;
 	private boolean traceLog;
 
-	public void setHandler(AbstractLogHandler handler) {
-		this.handler = handler;
-        throw new RuntimeException("Need to kill this");
-	}
 	public void setLogName(String logName) {
 		this.logName = logName;
 	}

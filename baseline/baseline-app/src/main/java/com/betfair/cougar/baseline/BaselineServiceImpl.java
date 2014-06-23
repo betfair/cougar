@@ -340,7 +340,7 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
     @KPITimedEvent(value = "Baseline.service.testSimpleGet", catchFailures = true)
     @Override
     public SimpleResponse testSimpleGet(RequestContext ctx, String message, TimeConstraints timeConstraints) throws SimpleException {
-        ctx.trace("Starting simple get for %s", message);
+        ctx.trace("Starting simple get for {}", message);
         ctx.setRequestLogExtension(new BaselineLogExtension(message, null, null));
         if (message.startsWith("FORWARD:")) {
             return baselineAsClient.testSimpleGet(ctx, "FORWARDED:"+ message.substring(8));
@@ -355,7 +355,7 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
 	@Override
 	public SimpleResponse testSimpleGetQA(RequestContext ctx, String message, TimeConstraints timeConstraints) throws SimpleException {
 		ctx.setRequestLogExtension(new BaselineLogExtension(message, null, null));
-		ctx.trace("Starting simple get for %s", message);
+		ctx.trace("Starting simple get for {}", message);
 		if (message.equalsIgnoreCase("GET_CHANNEL_INFO")) {
 			SimpleResponse response = new SimpleResponse();
 			response.setMessage("ChannelId: " + ctx.getIdentity().toString());
@@ -477,7 +477,7 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
     @KPITimedEvent(value = "Baseline.service.testComplexMutator", catchFailures = true)
     @Override
     public SimpleResponse testComplexMutator(RequestContext ctx, ComplexObject message, TimeConstraints timeConstraints) throws SimpleException {
-        ctx.trace("Starting complex mutator for %s", message.getName());
+        ctx.trace("Starting complex mutator for {}", message.getName());
         ctx.setRequestLogExtension(new BaselineLogExtension(message, "mutate", null));
         SimpleResponse response = new SimpleResponse();
         Integer val2 = message.getValue2();
@@ -491,7 +491,7 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
     @KPITimedEvent(value = "Baseline.service.testLargePost", catchFailures = true)
     @Override
     public SimpleResponse testLargePost(RequestContext ctx, LargeRequest message, TimeConstraints timeConstraints) throws SimpleException {
-        ctx.trace("Starting large post with array size %s", message.getSize());
+        ctx.trace("Starting large post with array size {}", message.getSize());
         ctx.setRequestLogExtension(new BaselineLogExtension(message.getOddOrEven(), "largepost", message.getSize()));
         SimpleResponse response = new SimpleResponse();
         response.setMessage("There were " + message.getSize() + " items specified in the list, " + message.getObjects().size()
@@ -503,7 +503,7 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
 	@Override
 	public SimpleResponse testLargePostQA(RequestContext ctx, LargeRequest message, TimeConstraints timeConstraints)
 			throws SimpleException {
-		ctx.trace("Starting large post with array size %s", message.getSize());
+		ctx.trace("Starting large post with array size {}", message.getSize());
 		ctx.setRequestLogExtension(new BaselineLogExtension(message.getOddOrEven(), "largepostQA", message.getSize()));
 		SimpleResponse response = new SimpleResponse();
 
@@ -546,7 +546,7 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
     @KPITimedEvent(value = "Baseline.service.testException", catchFailures = true)
     @Override
     public SimpleResponse testException(RequestContext ctx, String responseCode, String message, TimeConstraints timeConstraints) throws SimpleException, WotsitException {
-        ctx.trace("Starting exception thrower with message %s", message);
+        ctx.trace("Starting exception thrower with message {}", message);
         ResponseCode response;
         try {
             response = ResponseCode.valueOf(responseCode);
@@ -581,7 +581,7 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
 	@Override
 	public SimpleResponse testExceptionQA(RequestContext ctx, String message, TimeConstraints timeConstraints)
 			throws SimpleException, WotsitException {
-		ctx.trace("Starting exception thrower with message %s", message);
+		ctx.trace("Starting exception thrower with message {}", message);
 		ctx.setRequestLogExtension(new BaselineLogExtension(null, null, null));
 
 		try {
@@ -806,7 +806,7 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
 	public SimpleResponse kpiTesting(RequestContext ctx, String message, TimeConstraints timeConstraints)
 			throws SimpleException {
 		ctx.setRequestLogExtension(new BaselineLogExtension(message, null, null));
-		ctx.trace("Starting kpiTesting for %s", message);
+		ctx.trace("Starting kpiTesting for {}", message);
 
 		SimpleResponse response = new SimpleResponse();
 		response.setMessage("This method uses KPI testing. Message received : " + message);
@@ -817,7 +817,7 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
 	public SimpleResponse waitSeconds(RequestContext ctx, String seconds, TimeConstraints timeConstraints)
 			throws SimpleException {
 		ctx.setRequestLogExtension(new BaselineLogExtension(seconds, null, null));
-		ctx.trace("Starting waitSeconds for %s", seconds);
+		ctx.trace("Starting waitSeconds for {}", seconds);
 
 		try {
 			long sec = Long.parseLong(seconds);
@@ -837,24 +837,21 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
 	public SimpleResponse logMessage(RequestContext ctx, String logString, String logLevel, TimeConstraints timeConstraints)
 			throws SimpleException {
 		ctx.setRequestLogExtension(new BaselineLogExtension(logString, null, null));
-		ctx.trace("Starting logMessage for %s", logString);
+		ctx.trace("Starting logMessage for {}", logString);
 
         // todo: should change this to an enum..?? at least change to a shorter list of possible values..
-        Level level = Log4jLoggingControl.convertJdkLevelToLog4jLevel(logLevel);
-        if (level.equals(Level.FATAL)) {
-            LOGGER.warn(logString);
-        }
-        else if (level.equals(Level.ERROR)) {
-            LOGGER.warn(logString);
+        Level level = Level.toLevel(logLevel);
+        if (level.equals(Level.ERROR)) {
+            LOGGER.error(logString);
         }
         else if (level.equals(Level.WARN)) {
             LOGGER.warn(logString);
         }
         else if (level.equals(Level.INFO)) {
-            LOGGER.warn(logString);
+            LOGGER.info(logString);
         }
         else if (level.equals(Level.DEBUG)) {
-            LOGGER.warn(logString);
+            LOGGER.debug(logString);
         }
         else
         {
@@ -893,7 +890,7 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
 			String level, TimeConstraints timeConstraints) throws SimpleException {
 
 		ctx.setRequestLogExtension(new BaselineLogExtension(logName + ": " + level, null, null));
-		ctx.trace("Starting changeLogLevel to %s", level);
+		ctx.trace("Starting changeLogLevel to {}", level);
 
 		SimpleResponse response = new SimpleResponse();
 		if ((logName==null) || (logName.equalsIgnoreCase("")) || (logName.equalsIgnoreCase("service"))) {

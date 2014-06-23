@@ -33,7 +33,7 @@ public class LogRecordTest extends CougarUtilTestCase {
 	}
 
 	public void testLogFormattingComplex() {
-		String msg = "String %s, float %1.2f, int %d";
+		String msg = "String {}, float %1.2f, int %d";
 		CougarLogRecord e = new CougarLogRecord("NAME", Level.INFO, msg, "string", 3.14, 100) {};
 		assertTrue(e.getMessage().equals("String string, float 3.14, int 100"));
 	}

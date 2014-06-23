@@ -61,7 +61,7 @@ public class JettyHandlerSpecification {
                 versionToIdentityTokenResolverMap.put(JSON_VERSION_AGNOSTIC_KEY, resolver);
             } else {
                 if (!mapResolverEntry.equals(resolver)) {
-                    LOGGER.warn("You can only have one IdentityTokenResolver wired for JSON-RPC - ignoring [%s]",
+                    LOGGER.warn("You can only have one IdentityTokenResolver wired for JSON-RPC - ignoring [{}]",
                             resolver.getClass().getName());
                 }
             }

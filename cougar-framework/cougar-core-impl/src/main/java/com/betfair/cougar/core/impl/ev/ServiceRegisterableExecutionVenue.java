@@ -25,6 +25,7 @@ import com.betfair.cougar.core.api.ServiceRegistrar;
 import com.betfair.cougar.core.api.ServiceVersion;
 import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.security.IdentityResolverFactory;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.betfair.cougar.util.configuration.PropertyConfigurer;
@@ -101,7 +102,7 @@ public class ServiceRegisterableExecutionVenue extends BaseExecutionVenue implem
         getImplementationMapForNamespace(namespace).put(serviceDefinition, implementation);
         registerServiceDefinition(namespace, serviceDefinition, resolver);
 
-        LOGGER.info("Initialising %s Service version %s",
+        LOGGER.info("Initialising {} Service version {}",
                 serviceDefinition.getServiceName(),
                 serviceDefinition.getServiceVersion().toString());
 
@@ -163,7 +164,8 @@ public class ServiceRegisterableExecutionVenue extends BaseExecutionVenue implem
             if (me.getKey().toLowerCase().contains("password")) {
             	value = "*****";
             }
-            LOGGER.info("  %-"+longest+"s = %s%s",
+            LOGGER.info("  {} = {}{2}",
+                            StringUtils.rightPad(value,longest),
                             me.getKey(),
                             value,
                             (sysOverride == null ? "" : " [OVERRIDDEN]"));

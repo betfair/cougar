@@ -168,21 +168,20 @@
 
     <bean class="com.betfair.cougar.logging.LogDefinition" init-method="register">
         <property name="logName" value="SOCKET_TRANSPORT-LOG" />
-        <property name="handler">
-            <bean factory-bean="cougar.core.logHandlerFactory" factory-method="createLogHandler">
-                <constructor-arg type="java.util.Map">
-                    <util:map map-class="java.util.HashMap">
-                       <entry key="logName" value="SOCKET_TRANSPORT-LOG"/>
-                       <entry key="fileName" value="$COUGAR{cougar.log.dir}/socket/$COUGAR{system.hostname}-$COUGAR{cougar.app.name}-socket-session.log"/>
-                       <entry key="flush" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.log.SESSION-LOG.flush}"/>
-                       <entry key="append" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.log.SESSION-LOG.append}"/>
-                       <entry key="rotation" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.log.SESSION-LOG.rotation}"/>
-                       <entry key="abstractLogger" value="false"/>
-                       <entry key="format" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.log.SESSION-LOG.format}"/>
-                    </util:map>
-                </constructor-arg>
-            </bean>
-        </property>
+    </bean>
+
+    <bean factory-bean="cougar.core.logHandlerFactory" factory-method="createLogHandler">
+        <constructor-arg type="java.util.Map">
+            <util:map map-class="java.util.HashMap">
+                <entry key="logName" value="SOCKET_TRANSPORT-LOG"/>
+                <entry key="fileName" value="$COUGAR{cougar.log.dir}/socket/$COUGAR{system.hostname}-$COUGAR{cougar.app.name}-socket-session.log"/>
+                <entry key="flush" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.log.SESSION-LOG.flush}"/>
+                <entry key="append" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.log.SESSION-LOG.append}"/>
+                <entry key="rotation" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.log.SESSION-LOG.rotation}"/>
+                <entry key="abstractLogger" value="false"/>
+                <entry key="format" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.log.SESSION-LOG.format}"/>
+            </util:map>
+        </constructor-arg>
     </bean>
 
     <bean class="com.betfair.cougar.logging.EventLogDefinition" init-method="register">
@@ -193,22 +192,21 @@
 
     <bean class="com.betfair.cougar.logging.LogDefinition" init-method="register">
         <property name="logName" value="PUSH_SUBSCRIPTION-LOG" />
-        <property name="handler">
-            <bean factory-bean="cougar.core.logHandlerFactory" factory-method="createLogHandler">
-                <constructor-arg type="java.util.Map">
-                    <util:map map-class="java.util.HashMap">
-                        <entry key="logName" value="PUSH_SUBSCRIPTION-LOG"/>
-                        <entry key="fileName" value="$COUGAR{cougar.log.dir}/dw/$COUGAR{system.hostname}-$COUGAR{cougar.app.name}-push-subscription.log"/>
-                        <entry key="flush" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.log.PUSH_SUBSCRIPTION-LOG.flush}"/>
-                        <entry key="append" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.log.PUSH_SUBSCRIPTION-LOG.append}"/>
-                        <entry key="rotation" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.log.PUSH_SUBSCRIPTION-LOG.rotation}"/>
-                        <entry key="abstractLogger" value="false"/>
-                        <entry key="format" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.log.PUSH_SUBSCRIPTION-LOG.format}"/>
-                        <entry key="immediateFlush" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.log.PUSH_SUBSCRIPTION-LOG.immediateFlush}"/>
-                    </util:map>
-                </constructor-arg>
-            </bean>
-        </property>
+    </bean>
+
+    <bean factory-bean="cougar.core.logHandlerFactory" factory-method="createLogHandler">
+        <constructor-arg type="java.util.Map">
+            <util:map map-class="java.util.HashMap">
+                <entry key="logName" value="PUSH_SUBSCRIPTION-LOG"/>
+                <entry key="fileName" value="$COUGAR{cougar.log.dir}/dw/$COUGAR{system.hostname}-$COUGAR{cougar.app.name}-push-subscription.log"/>
+                <entry key="flush" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.log.PUSH_SUBSCRIPTION-LOG.flush}"/>
+                <entry key="append" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.log.PUSH_SUBSCRIPTION-LOG.append}"/>
+                <entry key="rotation" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.log.PUSH_SUBSCRIPTION-LOG.rotation}"/>
+                <entry key="abstractLogger" value="false"/>
+                <entry key="format" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.log.PUSH_SUBSCRIPTION-LOG.format}"/>
+                <entry key="immediateFlush" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.log.PUSH_SUBSCRIPTION-LOG.immediateFlush}"/>
+            </util:map>
+        </constructor-arg>
     </bean>
 
     <bean class="org.springframework.jmx.export.MBeanExporter">

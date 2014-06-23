@@ -61,8 +61,8 @@ public class LoggingDefaultLevelTestTest {
             hbean_2.setVersion("v2");
             // Set the log entry level to be FINE
             Map map3 = new HashMap();
-            map3.put("logString","FINE-Log-Message");
-            map3.put("logLevel","FINE");
+            map3.put("logString","DEBUG-Log-Message");
+            map3.put("logLevel","DEBUG");
             hbean_2.setQueryParams(map3);
 //            Thread.sleep(60000);
 
@@ -85,7 +85,7 @@ public class LoggingDefaultLevelTestTest {
             // Set log level back to the default level (WARNING)
             Map map2 = new HashMap();
             map2.put("logName","service");
-            map2.put("level","WARNING");
+            map2.put("level","WARN");
             hbean.setQueryParams(map2);
             hinstance.makeRestCougarHTTPCall(hbean, com.betfair.testing.utils.cougar.enums.CougarMessageProtocolRequestTypeEnum.RESTJSON, com.betfair.testing.utils.cougar.enums.CougarMessageContentTypeEnum.JSON);
         }

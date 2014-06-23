@@ -122,7 +122,7 @@ public class TestingServiceImpl implements TestingService {
     @Override
     public IDD getIDD(RequestContext ctx, String name, TimeConstraints timeConstraints) throws TestingException {
         InputStream iddStream = getClass().getResourceAsStream("/idd/" + name);
-        LOGGER.debug("Retriving IDD %s", "/idd/" + name);
+        LOGGER.debug("Retriving IDD {}", "/idd/" + name);
         if (iddStream != null) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(
                     iddStream));
@@ -149,7 +149,7 @@ public class TestingServiceImpl implements TestingService {
             idd.setContent(sb.toString());
             return idd;
         }
-        LOGGER.debug("IDD %s not found", "idd/" + name);
+        LOGGER.debug("IDD {} not found", "idd/" + name);
         throw new TestingException(ResponseCode.NotFound,
                 TestingExceptionErrorCodeEnum.NOT_FOUND);
 

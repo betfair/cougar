@@ -58,7 +58,7 @@ public class ServletResponseFileStreamer {
                     for (String[] headerPair : headers) {
                         if (headerPair.length >= 2) {
                             response.addHeader(headerPair[0], headerPair[1]);
-                            LOGGER.debug( "Adding the following http header value [%s, %s]", headerPair[0], headerPair[1]);
+                            LOGGER.debug( "Adding the following http header value [{}, {}]", headerPair[0], headerPair[1]);
                         } else {
                             LOGGER.warn("Unable to add header as " + Arrays.toString(headerPair) + " is not of the correct size/count");
                         }

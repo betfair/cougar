@@ -112,7 +112,7 @@ public class HtmlAdaptor implements InitializingBean, JMXHttpParserReader {
     @Override
     public void addCustomParser(JMXHttpParser parser) {
     	if (httpExport) {
-			LOGGER.info("JMX HTML custom parser added for path %s", parser.getPath());
+			LOGGER.info("JMX HTML custom parser added for path {}", parser.getPath());
     		htmlParser.addCustomParser(parser);
     	} else {
 			LOGGER.info("No JMX HTML interface - parser ignored");

@@ -158,7 +158,7 @@ public class ContentTypeNormaliserImpl implements ContentTypeNormaliser {
             //Extraction from the string failed.
         }
         if (!validEncodings.contains(encoding)) {
-            LOGGER.warn("Invalid Encoding '%s' - using default - '%s'", encoding, DEFAULT_ENCODING);
+            LOGGER.warn("Invalid Encoding '{}' - using default - '{}'", encoding, DEFAULT_ENCODING);
             encoding = DEFAULT_ENCODING;
         }
         return encoding;

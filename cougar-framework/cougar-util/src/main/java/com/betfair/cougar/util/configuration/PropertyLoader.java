@@ -107,21 +107,21 @@ public class PropertyLoader {
         if(configOverrideResource.exists()){
             if(appProperties.exists()){
                 resourceList = new Resource[] { defaultConfig, appProperties, configOverrideResource };
-                log("loading properties from  %s, %s and %s", defaultConfig, appProperties,  configOverrideResource);
+                log("loading properties from  {}, {} and {}", defaultConfig, appProperties,  configOverrideResource);
             }
             else{
                 resourceList = new Resource[] { defaultConfig, configOverrideResource };
-                log("loading properties from  %s and %s", defaultConfig, configOverrideResource);
+                log("loading properties from  {} and {}", defaultConfig, configOverrideResource);
             }
         }
         else{
             if(appProperties.exists()){
                 resourceList = new Resource[] { defaultConfig, appProperties };
-                log("unable to load override file %s, loading properties from %s and %s ", configOverrideResource, defaultConfig, appProperties);
+                log("unable to load override file {}, loading properties from {} and {} ", configOverrideResource, defaultConfig, appProperties);
             }
             else{
                 resourceList = new Resource[] { defaultConfig };
-                log("unable to load override file %s, loading properties from %s ", configOverrideResource, defaultConfig);
+                log("unable to load override file {}, loading properties from {} ", configOverrideResource, defaultConfig);
             }
         }
 

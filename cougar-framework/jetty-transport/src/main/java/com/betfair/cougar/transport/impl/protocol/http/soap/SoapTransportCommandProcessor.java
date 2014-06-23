@@ -418,7 +418,7 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
                 if (element.getLocalName().equalsIgnoreCase(SECURITY_CREDENTIALS)) {
                     return element;
                 } else {
-                    LOGGER.debug("Unexpected security header arrived: %s", element.getLocalName());
+                    LOGGER.debug("Unexpected security header arrived: {}", element.getLocalName());
                 }
             }
         }

@@ -50,7 +50,7 @@ public class HtmlAdaptorParser implements HtmlParser, DynamicMBean {
     @Override
     public String parseRequest(String request) {
         try {
-            LOGGER.debug("Parsing JMX/HTTP request %s", request);
+            LOGGER.debug("Parsing JMX/HTTP request {}", request);
             if(!isValid(request)) {
                 LOGGER.warn("XSS attempt detected for request: "+request);
                 return "<h1>Illegal request</h1>";
@@ -261,7 +261,7 @@ public class HtmlAdaptorParser implements HtmlParser, DynamicMBean {
             		.append(result)
             		.append(separator);
         } catch (Exception e) {
-        	LOGGER.debug("Unable to run operation %s on bean %s ", operation, separator);
+        	LOGGER.debug("Unable to run operation {} on bean {} ", operation, separator);
 
         }
     }

@@ -76,7 +76,7 @@ public class BaseExecutionVenue implements ExecutionVenue {
                         executable,
                         recorder,
                         maxExecutionTime));
-        LOGGER.info("Registered operation: %s", key);
+        LOGGER.info("Registered operation: {}", key);
     }
 
     private boolean isInterceptingSupported() {
@@ -138,7 +138,7 @@ public class BaseExecutionVenue implements ExecutionVenue {
     public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args, ExecutionObserver observer, TimeConstraints timeConstraints) {
         final DefinedExecutable de = registry.get(key);
         if (de == null) {
-            LOGGER.debug("Not request logging request to URI: %s as no operation was found", key.toString());
+            LOGGER.debug("Not request logging request to URI: {} as no operation was found", key.toString());
             observer.onResult(new ExecutionResult(new CougarFrameworkException(ServerFaultCode.NoSuchOperation, "Operation not found: "+key.toString())));
         } else {
             long serverExpiryTime = de.maxExecutionTime == 0 ? Long.MAX_VALUE : System.currentTimeMillis() + de.maxExecutionTime;

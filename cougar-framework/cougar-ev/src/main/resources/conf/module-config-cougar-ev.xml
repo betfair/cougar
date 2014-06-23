@@ -26,11 +26,6 @@
         <property name="detailedFaults" value="$COUGAR-EV{cougar.fault.detailed}"/>
     </bean>
 
-    <bean id="loggingErrorManager" class="com.betfair.cougar.logging.CougarLogManager"
-        factory-method="getInstance">
-        <property name="baseLogDirectory" value="$COUGAR{cougar.log.dir}"/>
-    </bean>
-
     <bean id="serviceLogManagerFactory" class="com.betfair.cougar.core.impl.ev.DefaultServiceLogManagerFactory">
         <constructor-arg index="0" ref="cougar.core.EventLoggingRegistry"/>
     </bean>
@@ -127,7 +122,6 @@
         <property name="beans">
             <map>
                 <entry key="CoUGAR:name=executionVenue" value-ref="executionVenue"/>
-                <entry key="CoUGAR:name=Logging" value-ref="loggingErrorManager"/>
                 <entry key="CoUGAR:name=eventLogging" value-ref="cougar.core.EventLogger"/>
                 <entry key="CoUGAR:name=faultController" value-ref="faultController"/>
                 <entry key="CoUGAR:name=LoggingControl" value-ref="cougar.core.LoggingControl"/>

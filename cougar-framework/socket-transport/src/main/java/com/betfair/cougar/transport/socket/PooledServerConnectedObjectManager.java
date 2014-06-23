@@ -487,7 +487,7 @@ public class PooledServerConnectedObjectManager implements ServerConnectedObject
                     for (IoSession session : sessions) {
                         terminateSubscriptions(session, state, heapUri, reason);
                     }
-                    LOGGER.error("Terminating heap state '%s'", heapUri);
+                    LOGGER.error("Terminating heap state '{}'", heapUri);
                     state.terminate();
                     state.removeListener();
                 }

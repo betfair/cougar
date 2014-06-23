@@ -248,7 +248,7 @@ public class ServiceExecutableResolver extends CompoundExecutableResolverImpl {
                     LOGGER.error("You need to set a RequestUUID on the ExecutionContext to see trace messages!");
                 } else {
                     // todo: logging: this used to trace?
-                    CougarLoggingUtils.getTraceLogger().info(original.getRequestUUID().toString(), msg, args);
+                    CougarLoggingUtils.getTraceLogger().info(original.getRequestUUID().toString()+": "+ msg, args);
                 }
             }
 		}

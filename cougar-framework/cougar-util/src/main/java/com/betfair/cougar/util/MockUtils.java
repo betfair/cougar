@@ -124,7 +124,7 @@ public class MockUtils {
 			result = generateObject(fieldType, generator);
 			method.invoke(object, result);
 		} else {
-			LOGGER.info("Could not mock data of type %s into method %s", fieldType, method.getName());
+			LOGGER.info("Could not mock data of type {} into method {}", fieldType, method.getName());
 		}
 	}
 
