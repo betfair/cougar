@@ -67,7 +67,7 @@ public class ClientConnectedObjectManagerTest {
 
     @ParameterizedMultiRunner.Parameters
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][]{{},{2}});
+        return Arrays.asList(new Object[][]{{1},{2}});
     }
 
     @BeforeClass

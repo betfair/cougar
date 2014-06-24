@@ -47,8 +47,6 @@
         </constructor-arg>
     </bean>
 
-    <!--<alias name="$COUGAR{cougar.events.logHandlerFactory}" alias="cougar.core.logHandlerFactory"/>-->
-    <alias name="log4jLogHandlerFactory" alias="cougar.core.logHandlerFactory"/>
-    <!--todo: logging-->
+    <alias name="$COUGAR{cougar.events.logHandlerFactory}" alias="cougar.core.logHandlerFactory" />
 
 </beans>
