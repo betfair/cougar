@@ -68,8 +68,6 @@ public class RPCBlacklistedIPTest {
         // Set up the Http Call Bean to make the request
         CougarManager cougarManager = CougarManager.getInstance();
         HttpCallBean callBean = cougarManager.getNewHttpCallBean(testIPAddress.replace(";",","));
-        // Get logging attribute for getting log entries later
-        String logAttribute = cougarManager.getCougarLogManagerJMXAttributeValue("BaseLogDirectory");
         // Set Cougar Fault Controller attributes
         cougarManager.setCougarFaultControllerJMXMBeanAttrbiute("DetailedFaults", "false");
         // Set the call bean to use JSON batching

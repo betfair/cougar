@@ -40,21 +40,19 @@ public class RestContainerInvalidServiceTest {
         HttpCallBean httpCallBeanBaseline = cougarManager.getNewHttpCallBean();
         // Point the created HttpCallBean at the correct service
         httpCallBeanBaseline.setServiceName("baseline", "cougarBaseline");
-        
+
         httpCallBeanBaseline.setVersion("v2");
         // Set up the Http Call Bean to make the request
         HttpCallBean getNewHttpCallBean = cougarManager.getNewHttpCallBean("87.248.113.14");
-        // Get logging attribute for getting log entries later
-        cougarManager.getCougarLogManagerJMXAttributeValue("BaseLogDirectory");
-        
+
         cougarManager.setCougarFaultControllerJMXMBeanAttrbiute("DetailedFaults", "false");
-        
+
         getNewHttpCallBean.setOperationName("testSimpleGet", "simple");
         // Point the request at a service that doesn't exist
         getNewHttpCallBean.setServiceName("invalidservice", "invalidExtension");
-        
+
         getNewHttpCallBean.setVersion("v2");
-        
+
         Map map3 = new HashMap();
         map3.put("message", "foo");
         getNewHttpCallBean.setQueryParams(map3);

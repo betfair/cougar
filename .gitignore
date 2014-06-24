@@ -5,6 +5,7 @@
 
 # Log files
 *.log
+logs
 
 # Compiled files
 target

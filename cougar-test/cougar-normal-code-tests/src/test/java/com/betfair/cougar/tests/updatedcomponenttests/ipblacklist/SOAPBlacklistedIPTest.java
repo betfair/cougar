@@ -71,8 +71,6 @@ public class SOAPBlacklistedIPTest {
         // Get an HTTPCallBean
         CougarManager cougarManager = CougarManager.getInstance();
         HttpCallBean HTTPCallBean = cougarManager.getNewHttpCallBean(testIPAddress.replace(";", ","));
-        // Get LogManager JMX Attribute
-        String logManager = cougarManager.getCougarLogManagerJMXAttributeValue("BaseLogDirectory");
         // Set Cougar Fault Controller attributes
         cougarManager.setCougarFaultControllerJMXMBeanAttrbiute("DetailedFaults", "false");
         // Set service name to call

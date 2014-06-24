@@ -44,8 +44,6 @@ public class RestPostRequestTypesDateTime60SecondsTest {
         HttpCallBean getNewHttpCallBean1 = cougarManager1.getNewHttpCallBean("87.248.113.14");
         try {
             cougarManager1.setCougarFaultControllerJMXMBeanAttrbiute("DetailedFaults", "false");
-            // Get logging attribute for getting log entries later
-            String getCougarLogManagerJMXAttributeValue2 = cougarManager1.getCougarLogManagerJMXAttributeValue("BaseLogDirectory");
 
             getNewHttpCallBean1.setOperationName("dateTimeOperation");
 

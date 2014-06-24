@@ -385,7 +385,7 @@ public class JettyHttpTransport extends AbstractRegisterableTransport implements
         try {
             boolean http = server.isHttpEnabled();
             return String.format(
-                    "{}://{}:{2}",
+                    "%s://%s:%s",
                     http ? "http" : "https",
                     InetAddress.getLocalHost().getHostAddress(),
                     http ? server.getHttpPort() : server.getHttpsPort()

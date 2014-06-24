@@ -44,17 +44,15 @@ public class RestContainerInvalidServiceVersionTest {
         // Set up the Http Call Bean to make the request
         HttpCallBean getNewHttpCallBean = cougarManager.getNewHttpCallBean("87.248.113.14");
         cougarManager = cougarManager;
-        // Get logging attribute for getting log entries later
-        cougarManager.getCougarLogManagerJMXAttributeValue("BaseLogDirectory");
-        
+
         cougarManager.setCougarFaultControllerJMXMBeanAttrbiute("DetailedFaults", "false");
-        
+
         getNewHttpCallBean.setOperationName("testSimpleGet", "simple");
-        
+
         getNewHttpCallBean.setServiceName("baseline", "cougarBaseline");
         // Point the request at a verions of the service that doesn't exist
         getNewHttpCallBean.setVersion("v0.1");
-        
+
         Map map3 = new HashMap();
         map3.put("message","foo");
         getNewHttpCallBean.setQueryParams(map3);
@@ -73,17 +71,17 @@ public class RestContainerInvalidServiceVersionTest {
         AssertionUtils.multiAssertEquals(responseObjects.get(CougarMessageProtocolRequestTypeEnum.RESTXML), response6.getResponseObject());
         AssertionUtils.multiAssertEquals(404, response6.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Not Found", response6.getHttpStatusText());
-        
+
         HttpResponseBean response7 = getNewHttpCallBean.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTJSONJSON);
         AssertionUtils.multiAssertEquals(responseObjects.get(CougarMessageProtocolRequestTypeEnum.RESTJSON), response7.getResponseObject());
         AssertionUtils.multiAssertEquals(404, response7.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Not Found", response7.getHttpStatusText());
-        
+
         HttpResponseBean response8 = getNewHttpCallBean.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTXMLJSON);
         AssertionUtils.multiAssertEquals(responseObjects.get(CougarMessageProtocolRequestTypeEnum.RESTJSON), response8.getResponseObject());
         AssertionUtils.multiAssertEquals(404, response8.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Not Found", response8.getHttpStatusText());
-        
+
         HttpResponseBean response9 = getNewHttpCallBean.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTJSONXML);
         AssertionUtils.multiAssertEquals(responseObjects.get(CougarMessageProtocolRequestTypeEnum.RESTXML), response9.getResponseObject());
         AssertionUtils.multiAssertEquals(404, response9.getHttpStatusCode());
