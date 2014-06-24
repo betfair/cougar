@@ -22,6 +22,6 @@ import java.util.Map;
 /**
  * This interface describes a component to create a concrete log implementation
  */
-public interface EventLogHandlerFactory {
-    AbstractLogHandler createLogHandler(Map<String, String> logConfig) throws IOException;
+public interface LogHandlerFactory {
+    AbstractLogHandler registerLogHandler(Map<String, String> logConfig) throws IOException;
 }

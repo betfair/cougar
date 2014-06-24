@@ -23,12 +23,12 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * a log4j implementation of @See EventLogHandlerFactory
+ * a log4j implementation of @See LogHandlerFactory
  */
-public class Log4JLogHandlerFactory implements EventLogHandlerFactory {
+public class Log4JLogHandlerFactory implements LogHandlerFactory {
 
     @Override
-    public AbstractLogHandler createLogHandler(Map<String, String> logConfig) throws IOException {
+    public AbstractLogHandler registerLogHandler(Map<String, String> logConfig) throws IOException {
 
         String logName = logConfig.get("logName");
         String fileName  = logConfig.get("fileName");

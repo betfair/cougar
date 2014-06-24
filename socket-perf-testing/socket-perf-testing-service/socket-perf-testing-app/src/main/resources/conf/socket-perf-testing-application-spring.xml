@@ -17,7 +17,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
 						http://www.springframework.org/schema/beans/spring-beans.xsd
 						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
@@ -29,12 +29,12 @@
 	    <property name="placeholderPrefix" value="$PUSH{"/>
 	</bean>
 
-	<!-- define a log file --> 
+	<!-- define a log file -->
 	<bean class="com.betfair.cougar.logging.EventLogDefinition" init-method="register">
 		<property name="logName" value="PUSH-ASYNC-LOG"/>
 		<property name="registry" ref="eventLoggingRegistry"/>
         <property name="handler">
-            <bean factory-bean="cougar.core.logHandlerFactory" factory-method="createLogHandler">
+            <bean factory-bean="cougar.core.logHandlerFactory" factory-method="registerLogHandler">
                 <constructor-arg type="java.util.Map">
                     <util:map map-class="java.util.HashMap">
                         <entry key="logName" value="PUSH-ASYNC-LOG"/>

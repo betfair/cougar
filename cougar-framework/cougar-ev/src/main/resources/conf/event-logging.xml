@@ -35,7 +35,7 @@
         <property name="registry" ref="eventLoggingRegistry"/>
         <property name="abstract" value="true"/>
         <property name="handler">
-            <bean factory-bean="cougar.core.logHandlerFactory" factory-method="createLogHandler">
+            <bean factory-bean="cougar.core.logHandlerFactory" factory-method="registerLogHandler">
                 <constructor-arg type="java.util.Map">
                     <util:map map-class="java.util.HashMap">
                         <entry key="fileName" value="$COUGAR{cougar.log.dir}/dw/$COUGAR{system.hostname}-$COUGAR{cougar.app.name}-request-##NAME####NAMESPACE##.log"/>

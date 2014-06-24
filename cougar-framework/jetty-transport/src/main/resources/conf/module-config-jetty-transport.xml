@@ -18,10 +18,10 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
 						http://www.springframework.org/schema/beans/spring-beans.xsd
 						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
-	 
+
 	<bean class="com.betfair.cougar.util.configuration.PropertyConfigurer">
         <constructor-arg index="0" ref="cougar.core.EncryptorRegistry"/>
 		<property name="defaultConfig" value="classpath:conf/jetty-transport-defaults.properties"/>
@@ -30,7 +30,7 @@
 	</bean>
 
     <bean id="defaultGeoLocationDeserializer" class="com.betfair.cougar.transport.impl.protocol.http.DefaultGeoLocationDeserializer"/>
-	
+
     <bean id="jettyInstance" class="com.betfair.cougar.transport.jetty.JettyHttpTransport" init-method="start" destroy-method="stop" lazy-init="false" scope="singleton">
         <property name="jmxControl" ref="cougar.core.JmxControl"/>
         <property name="startingGate" ref="cougar.core.StartingGate"/>
@@ -39,7 +39,7 @@
 		<property name="commandProcessorFactory" ref="cougar.transport.CommandProcessorFactory"/>
 		<property name="defaultCommandProcessor" ref="cougar.transport.ServiceNotFoundCommandProcessor"/>
         <property name="protocolBindingRegistry" ref="cougar.transport.ProtocolBindingRegistry"/>
-		
+
         <property name="htmlContextPath" value="$COUGAR-JETTY{cougar.htmlHandler.contextPath}"/>
         <property name="htmlRegex" value="$COUGAR-JETTY{cougar.htmlHandler.regex}"/>
         <property name="htmlMediaType" value="$COUGAR-JETTY{cougar.htmlHandler.mediaType}"/>
@@ -101,7 +101,7 @@
         <property name="timeoutInSeconds" value="$COUGAR-JETTY{jetty.request.timeoutInSeconds}"/>
 
         <property name="jettyEndPoints" ref="jettyEndPoints"/>
-        
+
         <property name="gzipEnabled" value="$COUGAR-JETTY{cougar.gzipHandler.enabled}"/>
         <property name="gzipBufferSize" value="$COUGAR-JETTY{cougar.gzipHandler.bufferSize}"/>
         <property name="gzipMinSize" value="$COUGAR-JETTY{cougar.gzipHandler.minSize}"/>
@@ -121,7 +121,7 @@
     </bean>
 
 	<bean id="jettyEndPoints" class="com.betfair.cougar.transport.jetty.jmx.JettyEndpoints"/>
-	
+
     <bean id="jetty.mbean.server" class="org.eclipse.jetty.server.jmx.ServerMBean">
        <constructor-arg>
            <bean factory-bean="jettyInstance" factory-method="getJettyServer"/>
@@ -193,7 +193,7 @@
         <property name="logName" value="ACCESS-LOG" />
         <property name="registry" ref="cougar.core.EventLoggingRegistry"/>
         <property name="handler">
-            <bean factory-bean="cougar.core.logHandlerFactory" factory-method="createLogHandler">
+            <bean factory-bean="cougar.core.logHandlerFactory" factory-method="registerLogHandler">
                 <constructor-arg type="java.util.Map">
                     <util:map map-class="java.util.HashMap">
                         <entry key="logName" value="ACCESS-LOG"/>
@@ -258,7 +258,7 @@
                 <entry key="CoUGAR:type=commandProcessorExecutor" value-ref="commandProcessorExecutor"/>
 			</map>
 		</property>
-		
+
 		<property name="assembler">
 			<bean id="assembler" class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler">
 				<property name="attributeSource">
@@ -267,5 +267,5 @@
 			</bean>
 		</property>
 	</bean>
-	
+
 </beans>

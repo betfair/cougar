@@ -170,8 +170,9 @@
         <property name="logName" value="SOCKET_TRANSPORT-LOG" />
     </bean>
 
-    <bean factory-bean="cougar.core.logHandlerFactory" factory-method="createLogHandler">
-        <constructor-arg type="java.util.Map">
+    <bean class="com.betfair.cougar.logging.HandlerCreator" init-method="create">
+        <property name="factory" ref="cougar.core.logHandlerFactory"/>
+        <property name="properties">
             <util:map map-class="java.util.HashMap">
                 <entry key="logName" value="SOCKET_TRANSPORT-LOG"/>
                 <entry key="fileName" value="$COUGAR{cougar.log.dir}/socket/$COUGAR{system.hostname}-$COUGAR{cougar.app.name}-socket-session.log"/>
@@ -181,7 +182,7 @@
                 <entry key="abstractLogger" value="false"/>
                 <entry key="format" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.log.SESSION-LOG.format}"/>
             </util:map>
-        </constructor-arg>
+        </property>
     </bean>
 
     <bean class="com.betfair.cougar.logging.EventLogDefinition" init-method="register">
@@ -194,8 +195,9 @@
         <property name="logName" value="PUSH_SUBSCRIPTION-LOG" />
     </bean>
 
-    <bean factory-bean="cougar.core.logHandlerFactory" factory-method="createLogHandler">
-        <constructor-arg type="java.util.Map">
+    <bean class="com.betfair.cougar.logging.HandlerCreator" init-method="create">
+        <property name="factory" ref="cougar.core.logHandlerFactory"/>
+        <property name="properties">
             <util:map map-class="java.util.HashMap">
                 <entry key="logName" value="PUSH_SUBSCRIPTION-LOG"/>
                 <entry key="fileName" value="$COUGAR{cougar.log.dir}/dw/$COUGAR{system.hostname}-$COUGAR{cougar.app.name}-push-subscription.log"/>
@@ -206,7 +208,7 @@
                 <entry key="format" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.log.PUSH_SUBSCRIPTION-LOG.format}"/>
                 <entry key="immediateFlush" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.log.PUSH_SUBSCRIPTION-LOG.immediateFlush}"/>
             </util:map>
-        </constructor-arg>
+        </property>
     </bean>
 
     <bean class="org.springframework.jmx.export.MBeanExporter">

@@ -32,8 +32,9 @@
 		<property name="traceLog" value="true" />
 	</bean>
 
-    <bean factory-bean="cougar.core.logHandlerFactory" factory-method="createLogHandler">
-        <constructor-arg type="java.util.Map">
+    <bean class="com.betfair.cougar.logging.HandlerCreator" init-method="create">
+        <property name="factory" ref="cougar.core.logHandlerFactory"/>
+        <property name="properties">
             <util:map map-class="java.util.HashMap">
                 <entry key="logName" value="TRACE-LOG"/>
                 <entry key="fileName" value="$COUGAR{cougar.log.dir}/$COUGAR{system.hostname}-$COUGAR{cougar.app.name}-trace.log"/>
@@ -44,8 +45,9 @@
                 <entry key="format" value="$COUGAR{cougar.log.traceFormatter.pattern}"/>
                 <entry key="isTraceLogger" value="true"/>
             </util:map>
-        </constructor-arg>
+        </property>
     </bean>
+
 
     <alias name="$COUGAR{cougar.events.logHandlerFactory}" alias="cougar.core.logHandlerFactory"/>
     <!--<alias name="log4jLogHandlerFactory" alias="cougar.core.logHandlerFactory"/>-->
