@@ -16,6 +16,8 @@
 
 package com.betfair.cougar.core.api.exception;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
 import com.betfair.cougar.api.ResponseCode;
@@ -29,8 +31,9 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("serial")
 public abstract class CougarException extends RuntimeException {
 	private final ServerFaultCode serverFault;
+    private static Map<Class<? extends CougarException>,Logger> loggers = new HashMap<>();
 
-	CougarException(Level level, ServerFaultCode serverFault) {
+    CougarException(Level level, ServerFaultCode serverFault) {
 		super();
 		this.serverFault = serverFault;
 		logMe(serverFault, level);
@@ -54,22 +57,37 @@ public abstract class CougarException extends RuntimeException {
 		logMe(serverFault, level);
 	}
 
+    private Logger getLogger()
+    {
+        Class<? extends CougarException> c = getClass();
+        Logger logger = loggers.get(c);
+        if (logger == null)
+        {
+            logger = LoggerFactory.getLogger(c);
+            loggers.put(c, logger);
+        }
+        return logger;
+    }
+
 	private void logMe(ServerFaultCode serverFault, Level level) {
 		// If it's an internal error, then we should always log.
 		// A client fault is only logged if we're on debug logging.
 		if (ResponseCode.InternalError == serverFault.getResponseCode()) {
 			level = Level.WARNING;
 		}
-        // todo: should perhaps cache these?
-        Logger logger = LoggerFactory.getLogger(getClass());
+        Logger logger = getLogger();
+
+        String additionalInfo = additionalInfo();
+        String message = additionalInfo == null ? "Exception thrown" : "Exception thrown: " + additionalInfo;
+
         if (level.equals(Level.SEVERE)) {
-            logger.error("Exception thrown", this);
+            logger.error(message, this);
         }
         else if (level.equals(Level.WARNING)) {
-            logger.warn("Exception thrown", this);
+            logger.warn(message, this);
         }
         else {
-            logger.debug("Exception thrown", this);
+            logger.debug(message, this);
         }
 	}
 
@@ -84,8 +102,14 @@ public abstract class CougarException extends RuntimeException {
 	// Prevent defined services overriding the exception message
 	@Override
 	public final String getMessage() {
-		return super.getMessage();
+        String additional = additionalInfo();
+        return additional == null ? super.getMessage() : super.getMessage() + ": " + additional;
 	}
+
+    protected String additionalInfo()
+    {
+        return null;
+    }
 
 	public ServerFaultCode getServerFaultCode() {
 		return serverFault;

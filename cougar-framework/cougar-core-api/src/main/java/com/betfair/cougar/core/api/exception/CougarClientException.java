@@ -78,6 +78,11 @@ public class CougarClientException extends CougarException {
     	}
 	}
 
+    @Override
+    protected String additionalInfo() {
+        return confirmedAsCougar ? null : "Server not confirmed to be a Cougar";
+    }
+
     public boolean isConfirmedAsCougar() {
         return confirmedAsCougar;
     }
