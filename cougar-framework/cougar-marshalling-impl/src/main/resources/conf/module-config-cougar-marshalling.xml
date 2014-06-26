@@ -18,7 +18,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
 						http://www.springframework.org/schema/beans/spring-beans.xsd
 						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
@@ -44,9 +44,14 @@
     <bean id="jsonBindingFactory" class="com.betfair.cougar.marshalling.impl.databinding.kpi.KPITimingDataBindingFactory">
         <constructor-arg ref="kpiMonitor"/>
         <constructor-arg value="json"/>
-        <constructor-arg>
-            <bean class="com.betfair.cougar.marshalling.impl.databinding.json.JSONBindingFactory"/>
-        </constructor-arg>
+        <constructor-arg ref="rawJsonBindingFactory"/>
+    </bean>
+
+
+    <bean id="rawJsonBindingFactory" class="com.betfair.cougar.marshalling.impl.databinding.json.JSONBindingFactory">
+        <property name="enableAfterburner" value="$COUGAR_MARSHALLING{cougar.marshalling.json.afterburner.enabled}"/>
+        <property name="useOptimizedBeanDeserializer" value="$COUGAR_MARSHALLING{cougar.marshalling.json.afterburner.useOptimizedBeanDeserializer}"/>
+        <property name="useValueClassLoader" value="$COUGAR_MARSHALLING{cougar.marshalling.json.afterburner.useValueClassLoader}"/>
     </bean>
 
     <!-- XML Configuration -->

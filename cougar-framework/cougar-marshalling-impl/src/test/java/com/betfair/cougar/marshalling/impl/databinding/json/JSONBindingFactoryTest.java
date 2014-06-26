@@ -16,11 +16,11 @@
 
 package com.betfair.cougar.marshalling.impl.databinding.json;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.type.SimpleType;
-import org.codehaus.jackson.node.IntNode;
-import org.codehaus.jackson.type.JavaType;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.IntNode;
+import com.fasterxml.jackson.databind.type.SimpleType;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertNotNull;

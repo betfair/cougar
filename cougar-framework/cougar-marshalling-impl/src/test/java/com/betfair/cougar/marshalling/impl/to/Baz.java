@@ -22,7 +22,7 @@ import com.betfair.cougar.core.api.ServiceVersion;
 import com.betfair.cougar.core.api.transcription.TranscribableParams;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.betfair.cougar.api.Result;
 import com.betfair.cougar.core.api.transcription.Parameter;

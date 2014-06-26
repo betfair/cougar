@@ -68,7 +68,7 @@
       		<groupId>com.betfair.cougar</groupId>
       		<artifactId>cougar-core-api</artifactId>
 			<version>${project.version}</version>
-  	    </dependency>  
+  	    </dependency>
         <dependency>
             <groupId>com.betfair.cougar</groupId>
             <artifactId>cougar-core-impl</artifactId>
@@ -126,7 +126,7 @@
 		<dependency>
 			<groupId>org.codehaus.woodstox</groupId>
 			<artifactId>woodstox-core-asl</artifactId>
-		</dependency>			
+		</dependency>
 		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>

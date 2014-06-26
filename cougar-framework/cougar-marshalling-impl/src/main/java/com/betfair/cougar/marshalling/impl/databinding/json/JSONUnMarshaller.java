@@ -26,20 +26,18 @@ import java.util.*;
 import com.betfair.cougar.api.fault.FaultCode;
 import com.betfair.cougar.core.api.client.EnumWrapper;
 import com.betfair.cougar.core.api.exception.CougarMarshallingException;
-import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.fault.CougarFault;
 import com.betfair.cougar.core.api.fault.FaultDetail;
 import com.betfair.cougar.core.api.transcription.EnumDerialisationException;
 import com.betfair.cougar.core.api.transcription.ParameterType;
 import com.betfair.cougar.marshalling.api.databinding.FaultUnMarshaller;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.ObjectMapper;
-
-import com.betfair.cougar.core.api.exception.CougarValidationException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.SimpleType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.betfair.cougar.marshalling.api.databinding.UnMarshaller;
-import org.codehaus.jackson.map.type.TypeFactory;
-import org.codehaus.jackson.type.JavaType;
 
 public class JSONUnMarshaller implements UnMarshaller, FaultUnMarshaller {
 
@@ -92,23 +90,23 @@ public class JSONUnMarshaller implements UnMarshaller, FaultUnMarshaller {
 
     }
 
-    private JavaType buildJavaType(ParameterType paramType) {
+    public static JavaType buildJavaType(ParameterType paramType) {
 		return paramType.transform(new ParameterType.TransformingVisitor<JavaType>() {
 			@Override
 			public JavaType transformMapType(JavaType keyType, JavaType valueType) {
-				return TypeFactory.mapType(HashMap.class, keyType, valueType);
+				return TypeFactory.defaultInstance().constructMapType(HashMap.class, keyType, valueType);
 			}
 			@Override
 			public JavaType transformListType(JavaType elemType) {
-				return TypeFactory.collectionType(ArrayList.class, elemType);
+				return TypeFactory.defaultInstance().constructCollectionType(ArrayList.class, elemType);
 			}
 			@Override
 			public JavaType transformSetType(JavaType elemType) {
-				return TypeFactory.collectionType(HashSet.class, elemType);
+				return TypeFactory.defaultInstance().constructCollectionType(HashSet.class, elemType);
 			}
 			@Override
 			public JavaType transformType(ParameterType.Type type, Class implementationClass) {
-				return TypeFactory.fastSimpleType(implementationClass);
+                return TypeFactory.defaultInstance().uncheckedSimpleType(implementationClass);
 			}
 		});
 

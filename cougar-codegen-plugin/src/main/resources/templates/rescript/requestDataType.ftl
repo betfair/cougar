@@ -42,15 +42,15 @@ import com.betfair.cougar.util.BitmapBuilder;
 import com.betfair.cougar.core.api.transcription.ParameterType;
 import com.betfair.cougar.transport.api.protocol.http.rescript.RescriptBody;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  *
  * Wrapper object for the ${name} operation
  */
-@SuppressWarnings("all") 
+@SuppressWarnings("all")
 @XmlRootElement(name="${className}")
 @XmlAccessorOrder(XmlAccessOrder.UNDEFINED)
 @XmlType(propOrder={})
@@ -58,7 +58,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 public class ${className} implements RescriptBody {
 
 	private Map<String,Object> parameters = new HashMap<String,Object>();
-	
+
 	@Override
 	public Object getValue(String name) {
 		return parameters.get(name);
@@ -140,6 +140,6 @@ public class ${className} implements RescriptBody {
             </#if>
         </#list>
     </#if>
-	
+
 }
 

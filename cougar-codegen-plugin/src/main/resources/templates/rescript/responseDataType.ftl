@@ -42,14 +42,14 @@ import com.betfair.cougar.util.BitmapBuilder;
 import com.betfair.cougar.core.api.transcription.ParameterType;
 import com.betfair.cougar.transport.api.protocol.http.rescript.RescriptResponse;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  *
  * Wrapper object for the ${name} operation response
  * needed to make the response compliant with the schema
  */
-@SuppressWarnings("all") 
+@SuppressWarnings("all")
 @XmlRootElement(name="${className}")
 @XmlAccessorType(XmlAccessType.NONE)
 @JsonIgnoreProperties(ignoreUnknown=true)
@@ -162,7 +162,7 @@ public class  ${className} implements RescriptResponse {
     }
     </#if>
 
-    	
+
 </#macro><#t>
 <#t>
 <#macro @element></#macro><#t>

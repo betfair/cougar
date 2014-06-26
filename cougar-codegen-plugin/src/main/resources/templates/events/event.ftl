@@ -27,9 +27,9 @@ import com.betfair.cougar.core.api.transcription.*;
 
 import java.util.*;
 import javax.xml.bind.annotation.*;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
 <#assign event=parseEvent(doc, interface)><#t>

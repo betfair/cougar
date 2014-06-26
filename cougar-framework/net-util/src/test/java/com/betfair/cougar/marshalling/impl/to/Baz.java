@@ -26,7 +26,7 @@ import com.betfair.cougar.core.api.transcription.TranscriptionInput;
 import com.betfair.cougar.core.api.transcription.TranscriptionOutput;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.xml.bind.annotation.XmlTransient;
 import java.util.Set;

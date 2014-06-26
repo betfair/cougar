@@ -23,11 +23,10 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.betfair.cougar.core.api.exception.CougarMarshallingException;
-import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.marshalling.api.databinding.FaultMarshaller;
 import com.betfair.cougar.marshalling.api.databinding.Marshaller;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.betfair.cougar.core.api.fault.CougarFault;
 import com.betfair.cougar.core.api.fault.FaultController;

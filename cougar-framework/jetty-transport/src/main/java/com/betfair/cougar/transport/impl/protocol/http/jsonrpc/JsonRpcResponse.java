@@ -16,7 +16,7 @@
 
 package com.betfair.cougar.transport.impl.protocol.http.jsonrpc;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public abstract class JsonRpcResponse {
     private static final String JSONRPC = "2.0";
@@ -29,7 +29,7 @@ public abstract class JsonRpcResponse {
 	private JsonRpcError error;
 	@JsonProperty
 	private Object id;
-	
+
 	protected JsonRpcResponse(JsonRpcRequest request) {
 		this.id = request!=null ? request.getId() : null;
 	}

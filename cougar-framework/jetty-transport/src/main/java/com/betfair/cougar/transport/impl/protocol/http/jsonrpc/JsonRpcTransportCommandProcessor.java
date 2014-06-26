@@ -39,6 +39,10 @@ import com.betfair.cougar.core.api.transcription.EnumDerialisationException;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.betfair.cougar.transport.api.CommandResolver;
@@ -47,10 +51,6 @@ import com.betfair.cougar.transport.api.RequestTimeResolver;
 import com.betfair.cougar.transport.api.protocol.http.ExecutionContextFactory;
 import com.betfair.cougar.transport.api.protocol.http.GeoLocationDeserializer;
 import com.betfair.cougar.transport.impl.protocol.http.AbstractHttpCommandProcessor;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.type.TypeFactory;
-import org.codehaus.jackson.type.JavaType;
 
 import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.ResponseCode;
@@ -80,12 +80,10 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
 	private static final int INTERNAL_ERROR = -32603;
 	private static final int SERVER_ERROR = -32099;
 
-    private static final MediaType DEFAULT_RESPONSE_MEDIA_TYPE = MediaType.APPLICATION_JSON_TYPE;
+	private static final JavaType BATCH_REQUEST_TYPE = TypeFactory.defaultInstance().constructCollectionType(ArrayList.class, JsonRpcRequest.class);
+	private static final JavaType SINGLE_REQUEST_TYPE = TypeFactory.defaultInstance().uncheckedSimpleType(JsonRpcRequest.class);
 
-	private static final JavaType BATCH_REQUEST_TYPE = TypeFactory.collectionType(ArrayList.class, JsonRpcRequest.class);
-	private static final JavaType SINGLE_REQUEST_TYPE = TypeFactory.fastSimpleType(JsonRpcRequest.class);
-
-	private ObjectMapper mapper = JSONBindingFactory.createBaseObjectMapper();
+	private ObjectMapper mapper;
 
 	private Map<String, JsonRpcOperationBinding> bindings = new HashMap<String, JsonRpcOperationBinding>();
 
@@ -106,13 +104,14 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
     // package private for testing
     static final ExecutionTimingRecorder IDENTITY_RESOLUTION_TIMING_RECORDER = new NullExecutionTimingRecorder();
 
-    public JsonRpcTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, String requestTimeoutHeader, RequestTimeResolver requestTimeResolver) {
-        this(geoIPLocator, deserializer, uuidHeader, requestTimeoutHeader, requestTimeResolver, null);
+    public JsonRpcTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, String requestTimeoutHeader, RequestTimeResolver requestTimeResolver, JSONBindingFactory jsonBindingFactory) {
+        this(geoIPLocator, deserializer, uuidHeader, requestTimeoutHeader, requestTimeResolver, null, jsonBindingFactory);
     }
 
-	public JsonRpcTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, String requestTimeoutHeader, RequestTimeResolver requestTimeResolver, InferredCountryResolver<HttpServletRequest> countryResolver) {
+	public JsonRpcTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, String requestTimeoutHeader, RequestTimeResolver requestTimeResolver, InferredCountryResolver<HttpServletRequest> countryResolver, JSONBindingFactory jsonBindingFactory) {
 		super(geoIPLocator, deserializer, uuidHeader, requestTimeoutHeader, requestTimeResolver, countryResolver);
 		setName("JsonRpcTransportCommandProcessor");
+        mapper = jsonBindingFactory.createBaseObjectMapper();
 	}
 
 	@Override

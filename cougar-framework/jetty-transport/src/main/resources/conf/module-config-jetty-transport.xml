@@ -171,6 +171,7 @@
     </bean>
 
     <bean id="jsonRpcCommandProcessor" class="com.betfair.cougar.transport.impl.protocol.http.jsonrpc.JsonRpcTransportCommandProcessor" parent="httpCommandProcessor" scope="singleton">
+        <constructor-arg index="5" ref="rawJsonBindingFactory"/>
         <property name="contentTypeNormaliser" ref="contentTypeNormaliser"/>
         <property name="hardFailEnumDeserialisation" value="$COUGAR-JETTY{cougar.http.enums.hardFailure}"/>
         <property name="maxPostBodyLength" value="$COUGAR-JETTY{cougar.http.jsonrpc.maxPostBodyLength}"/>

@@ -16,28 +16,25 @@
 
 package com.betfair.cougar.transport.impl.protocol.http.jsonrpc;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 
-import org.codehaus.jackson.map.type.TypeFactory;
-import org.codehaus.jackson.type.JavaType;
+import com.betfair.cougar.marshalling.impl.databinding.json.JSONUnMarshaller;
+
 
 import com.betfair.cougar.core.api.ev.OperationDefinition;
 import com.betfair.cougar.core.api.ev.OperationKey;
 import com.betfair.cougar.core.api.transcription.Parameter;
-import com.betfair.cougar.core.api.transcription.ParameterType;
+import com.fasterxml.jackson.databind.JavaType;
 
 /**
  * This class represents the binding between a JsonRpc operation and an operation definition
  *
  */
 public class JsonRpcOperationBinding {
-		
+
 	private final String jsonRpcMethod;
     private final OperationDefinition operationDefinition;
     private final JsonRpcParam [] jsonRpcParams;
-    
+
     public JsonRpcOperationBinding(OperationDefinition def) {
     	this.operationDefinition = def;
     	this.jsonRpcMethod = buildMethod(def.getOperationKey());
@@ -46,7 +43,7 @@ public class JsonRpcOperationBinding {
     		jsonRpcParams[i] = new JsonRpcParam(def.getParameters()[i]);
     	}
     }
-    
+
     public String getJsonRpcMethod() {
 		return jsonRpcMethod;
 	}
@@ -71,17 +68,17 @@ public class JsonRpcOperationBinding {
 
 		return  sb.toString().toLowerCase();
 	}
-	
-	   
+
+
     public class JsonRpcParam {
     	private final JavaType javaType;
     	private final Parameter param;
-    	
+
     	private JsonRpcParam (Parameter param){
     		this.param = param;
-    		this.javaType = buildJavaType(param.getParameterType());
+    		this.javaType = JSONUnMarshaller.buildJavaType(param.getParameterType());
     	}
-    	
+
     	public String getName() {
     		return param.getName();
     	}
@@ -92,31 +89,10 @@ public class JsonRpcOperationBinding {
     		return javaType;
     	}
     }
-    
-    
-    
-    
-    private static JavaType buildJavaType(ParameterType paramType) {		
-		return paramType.transform(new ParameterType.TransformingVisitor<JavaType>() {
-			@Override
-			public JavaType transformMapType(JavaType keyType, JavaType valueType) {
-				return TypeFactory.mapType(HashMap.class, keyType, valueType);
-			}
-			@Override
-			public JavaType transformListType(JavaType elemType) {
-				return TypeFactory.collectionType(ArrayList.class, elemType);
-			}
-			@Override
-			public JavaType transformSetType(JavaType elemType) {
-				return TypeFactory.collectionType(HashSet.class, elemType);
-			}
-			@Override
-			public JavaType transformType(ParameterType.Type type, Class implementationClass) {
-				return TypeFactory.fastSimpleType(implementationClass);
-			}
-		});
-		
-	}
-   
+
+
+
+
+
 }
 

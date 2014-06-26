@@ -16,7 +16,7 @@
 
 package com.betfair.cougar.transport.impl.protocol.http.jsonrpc;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class JsonRpcError {
 	@JsonProperty
@@ -31,5 +31,5 @@ public class JsonRpcError {
 		this.message = message;
 		this.data = data;
 	}
-	
+
 }

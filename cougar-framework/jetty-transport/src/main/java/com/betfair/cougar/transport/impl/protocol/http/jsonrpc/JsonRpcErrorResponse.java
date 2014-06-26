@@ -16,8 +16,8 @@
 
 package com.betfair.cougar.transport.impl.protocol.http.jsonrpc;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.annotate.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class represents the result of an failing JSON-RPC call

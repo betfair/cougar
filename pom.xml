@@ -104,7 +104,8 @@
         <commons.exec.version>1.1</commons.exec.version>
         <commons.io.version>2.4</commons.io.version>
         <commons.collections.version>3.2.1</commons.collections.version>
-        <jackson.mapper.version>1.9.13</jackson.mapper.version>
+        <jackson.databind.version>2.3.2</jackson.databind.version>
+        <jackson.afterburner.version>2.4.0</jackson.afterburner.version>
         <jasypt.version>1.9.1</jasypt.version>
         <jetty.version>9.0.6.v20130930</jetty.version>
         <opendmk.version>1.0-b02</opendmk.version>
@@ -262,9 +263,14 @@
                 <version>${commons.io.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.codehaus.jackson</groupId>
-                <artifactId>jackson-mapper-asl</artifactId>
-                <version>${jackson.mapper.version}</version>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.databind.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-afterburner</artifactId>
+                <version>${jackson.afterburner.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>

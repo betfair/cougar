@@ -16,19 +16,19 @@
 
 package com.betfair.cougar.transport.impl.protocol.http.jsonrpc;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class JsonRpcRequest {
 	@JsonProperty
 	private Object id;
 	@JsonProperty
 	private JsonNode params;
-	@JsonProperty		
+	@JsonProperty
 	private String method;
 	@JsonProperty
 	private String jsonrpc;
-	
+
 	public Object getId() {
 		return id;
 	}
@@ -41,6 +41,6 @@ public class JsonRpcRequest {
 	public String getJsonrpc() {
 		return jsonrpc;
 	}
-	
-	
+
+
 }

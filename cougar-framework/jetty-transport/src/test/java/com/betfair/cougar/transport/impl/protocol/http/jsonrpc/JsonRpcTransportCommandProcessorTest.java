@@ -45,7 +45,8 @@ import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
 import com.betfair.cougar.core.impl.ev.BaseExecutionVenue;
 import com.betfair.cougar.logging.CougarLoggingUtils;
-import org.slf4j.LoggerFactory;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.betfair.cougar.logging.EventLogDefinition;
 import com.betfair.cougar.logging.EventLoggingRegistry;
 import com.betfair.cougar.marshalling.impl.databinding.json.JSONBindingFactory;
@@ -67,9 +68,7 @@ import com.betfair.cougar.util.RequestUUIDImpl;
 import com.betfair.cougar.util.UUIDGeneratorImpl;
 import com.betfair.cougar.util.geolocation.GeoIPLocator;
 import com.betfair.cougar.util.geolocation.RemoteAddressUtils;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.type.TypeFactory;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -143,7 +142,7 @@ public class JsonRpcTransportCommandProcessorTest  {
 
         requestTimeResolver = mock(RequestTimeResolver.class);
 
-        commandProcessor = new LocalJsonRpcCommandProcessor(requestTimeResolver);
+        commandProcessor = new LocalJsonRpcCommandProcessor(requestTimeResolver, new JSONBindingFactory());
         commandProcessor.setContentTypeNormaliser(ctn);
         commandProcessor.setRequestLogger(logger);
         commandProcessor.setValidatorRegistry(validatorRegistry);
@@ -881,12 +880,12 @@ public class JsonRpcTransportCommandProcessorTest  {
     public void testInRangeIntegerForNonBodyParam() throws IOException {
         bindOperations();
 
-        ObjectMapper mapper = JSONBindingFactory.createBaseObjectMapper();
+        ObjectMapper mapper = new JSONBindingFactory().createBaseObjectMapper();
         String request = "{\"params\": [21474836470]}"; // If successfully narrowed to int, would be -10
         JsonNode root = mapper.readTree(new ByteArrayInputStream(request.getBytes()));
-        JsonRpcRequest rpc = mapper.convertValue(root, TypeFactory.fastSimpleType(JsonRpcRequest.class));
+        JsonRpcRequest rpc = mapper.convertValue(root, TypeFactory.defaultInstance().uncheckedSimpleType(JsonRpcRequest.class));
         JsonNode paramValue = rpc.getParams().get(0);
-        mapper.convertValue(paramValue, TypeFactory.fastSimpleType(Integer.class));
+        mapper.convertValue(paramValue, TypeFactory.defaultInstance().uncheckedSimpleType(Integer.class));
     }
 
     /**
@@ -896,12 +895,12 @@ public class JsonRpcTransportCommandProcessorTest  {
     public void testInRangeIntegerForBodyParam() throws IOException {
         bindOperations();
 
-        ObjectMapper mapper = JSONBindingFactory.createBaseObjectMapper();
+        ObjectMapper mapper = new JSONBindingFactory().createBaseObjectMapper();
         String request =  "{\"params\": [{\"integer\":21474836470}]}";
         JsonNode root = mapper.readTree(new ByteArrayInputStream(request.getBytes()));
-        JsonRpcRequest rpc = mapper.convertValue(root, TypeFactory.fastSimpleType(JsonRpcRequest.class));
+        JsonRpcRequest rpc = mapper.convertValue(root, TypeFactory.defaultInstance().uncheckedSimpleType(JsonRpcRequest.class));
         JsonNode paramValue = rpc.getParams().get(0);
-        BodyType result = (BodyType) mapper.convertValue(paramValue, TypeFactory.type(BodyType.class));
+        BodyType result = (BodyType) mapper.convertValue(paramValue, TypeFactory.defaultInstance().constructType(BodyType.class));
     }
 
     /**
@@ -911,12 +910,12 @@ public class JsonRpcTransportCommandProcessorTest  {
     public void testInRangeLongForNonBodyParam() throws IOException {
         bindOperations();
 
-        ObjectMapper mapper = JSONBindingFactory.createBaseObjectMapper();
+        ObjectMapper mapper = new JSONBindingFactory().createBaseObjectMapper();
         String request = "{\"params\": [92233720368547758080]}"; // If successfully narrowed to long, would be 0
         JsonNode root = mapper.readTree(new ByteArrayInputStream(request.getBytes()));
-        JsonRpcRequest rpc = mapper.convertValue(root, TypeFactory.fastSimpleType(JsonRpcRequest.class));
+        JsonRpcRequest rpc = mapper.convertValue(root, TypeFactory.defaultInstance().uncheckedSimpleType(JsonRpcRequest.class));
         JsonNode paramValue = rpc.getParams().get(0);
-        System.out.println(mapper.convertValue(paramValue, TypeFactory.fastSimpleType(Long.class)));
+        System.out.println(mapper.convertValue(paramValue, TypeFactory.defaultInstance().uncheckedSimpleType(Long.class)));
     }
 
     /**
@@ -926,12 +925,12 @@ public class JsonRpcTransportCommandProcessorTest  {
     public void testInRangeLongForBodyParam() throws IOException {
         bindOperations();
 
-        ObjectMapper mapper = JSONBindingFactory.createBaseObjectMapper();
+        ObjectMapper mapper = new JSONBindingFactory().createBaseObjectMapper();
         String request =  "{\"params\": [{\"looong\":92233720368547758080}]}";
         JsonNode root = mapper.readTree(new ByteArrayInputStream(request.getBytes()));
-        JsonRpcRequest rpc = mapper.convertValue(root, TypeFactory.fastSimpleType(JsonRpcRequest.class));
+        JsonRpcRequest rpc = mapper.convertValue(root, TypeFactory.defaultInstance().uncheckedSimpleType(JsonRpcRequest.class));
         JsonNode paramValue = rpc.getParams().get(0);
-        BodyType result = (BodyType) mapper.convertValue(paramValue, TypeFactory.type(BodyType.class));
+        BodyType result = (BodyType) mapper.convertValue(paramValue, TypeFactory.defaultInstance().constructType(BodyType.class));
     }
 
     @Test
@@ -1173,10 +1172,10 @@ public class JsonRpcTransportCommandProcessorTest  {
 
     private class LocalJsonRpcCommandProcessor extends JsonRpcTransportCommandProcessor {
         private boolean errorCalled;
-        public LocalJsonRpcCommandProcessor(RequestTimeResolver requestTimeResolver) {
+        public LocalJsonRpcCommandProcessor(RequestTimeResolver requestTimeResolver, JSONBindingFactory jsonBindingFactory) {
             super(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID", "X-RequestTimeout", requestTimeResolver, new InferredCountryResolver<HttpServletRequest>() {
                 public String inferCountry(HttpServletRequest input) { return AZ;}
-            });
+            }, jsonBindingFactory);
         }
 
         public LocalJsonRpcCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, RequestTimeResolver requestTimeResolver) {

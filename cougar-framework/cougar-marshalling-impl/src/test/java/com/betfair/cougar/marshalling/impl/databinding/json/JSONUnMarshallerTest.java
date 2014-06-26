@@ -26,8 +26,8 @@ import com.betfair.cougar.marshalling.api.databinding.FaultUnMarshaller;
 import com.betfair.cougar.marshalling.api.databinding.UnMarshaller;
 import com.betfair.cougar.test.CougarTestCase;
 import com.betfair.cougar.util.dates.DateTimeUtility;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mockito.Mockito;
 
 import java.io.ByteArrayInputStream;

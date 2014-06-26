@@ -17,7 +17,6 @@
 // Originally from UpdatedComponentTests/StandardValidation/RPC/RPC_ByteParam_IncorrectDataType.xls;
 package com.betfair.cougar.tests.updatedcomponenttests.standardvalidation.rpc;
 
-import com.betfair.cougar.marshalling.impl.databinding.json.JSONBindingFactory;
 import com.betfair.testing.utils.cougar.assertions.AssertionUtils;
 import com.betfair.testing.utils.cougar.beans.HttpCallBean;
 import com.betfair.testing.utils.cougar.beans.HttpResponseBean;
@@ -26,11 +25,6 @@ import com.betfair.testing.utils.cougar.manager.AccessLogRequirement;
 import com.betfair.testing.utils.cougar.manager.CougarManager;
 import com.betfair.testing.utils.cougar.manager.RequestLogRequirement;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.type.SimpleType;
-import org.codehaus.jackson.node.IntNode;
-import org.codehaus.jackson.type.JavaType;
 import org.testng.annotations.Test;
 
 import java.sql.Timestamp;
@@ -40,7 +34,7 @@ import java.util.Map;
 import static org.testng.AssertJUnit.fail;
 
 /**
- * Ensure that Cougar returns the correct fault when a  RPC request with byte param  is made with incorrect data type parameter 
+ * Ensure that Cougar returns the correct fault when a  RPC request with byte param  is made with incorrect data type parameter
  */
 public class RPCByteParamIncorrectDataTypeTest {
 
@@ -53,13 +47,13 @@ public class RPCByteParamIncorrectDataTypeTest {
         // Get the cougar logging attribute for getting log entries later
         // Point the created HttpCallBean at the correct service
         httpCallBeanBaseline.setServiceName("baseline", "cougarBaseline");
-        
+
         httpCallBeanBaseline.setVersion("v2");
         // Set up the Http Call Bean to make the request
         CougarManager cougarManager2 = CougarManager.getInstance();
         HttpCallBean callBean = cougarManager2.getNewHttpCallBean("87.248.113.14");
         CougarManager cougarManager = cougarManager2;
-        
+
         cougarManager.setCougarFaultControllerJMXMBeanAttrbiute("DetailedFaults", "false");
         // Set the call bean to use JSON batching
         callBean.setJSONRPC(true);
@@ -101,9 +95,9 @@ public class RPCByteParamIncorrectDataTypeTest {
         // Pause the test to allow the logs to be filled
         // generalHelpers.pauseTest(500L);
         // Check the log entries are as expected
-        
+
         cougarManager.verifyRequestLogEntriesAfterDate(timeStamp, new RequestLogRequirement("2.8", "byteOperation") );
-        
+
         CougarManager cougarManager10 = CougarManager.getInstance();
         cougarManager10.verifyAccessLogEntriesAfterDate(timeStamp, new AccessLogRequirement("87.248.113.14", "/json-rpc", "Ok") );
     }

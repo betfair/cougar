@@ -20,15 +20,14 @@ import com.betfair.cougar.api.ResponseCode;
 import com.betfair.cougar.api.fault.CougarApplicationException;
 import com.betfair.cougar.api.fault.FaultCode;
 import com.betfair.cougar.core.api.exception.CougarMarshallingException;
-import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.fault.Fault;
 import com.betfair.cougar.core.api.fault.FaultController;
 import com.betfair.cougar.marshalling.api.databinding.Marshaller;
 import com.betfair.cougar.test.CougarTestCase;
 import com.betfair.cougar.util.dates.DateTimeUtility;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -89,8 +88,8 @@ public class JSONMarshallerTest extends CougarTestCase {
             ObjectMapper m = new ObjectMapper();
             JsonNode rootNode = m.readValue(new ByteArrayInputStream(bos.toByteArray()), JsonNode.class);
 
-            assertEquals("Server", rootNode.get("faultcode").getTextValue());
-            assertEquals("EX01", rootNode.get("faultstring").getTextValue());
+            assertEquals("Server", rootNode.get("faultcode").asText());
+            assertEquals("EX01", rootNode.get("faultstring").asText());
 
             JsonNode detail = rootNode.get("detail");
             assertNotNull(detail);
@@ -98,8 +97,8 @@ public class JSONMarshallerTest extends CougarTestCase {
             JsonNode exceptionNode = detail.get("TestFaultException");
             assertNotNull(exceptionNode);
             assertEquals(2, exceptionNode.size());
-            assertEquals("foo", exceptionNode.get("foo").getTextValue());
-            assertEquals("1234", exceptionNode.get("bar").getTextValue());
+            assertEquals("foo", exceptionNode.get("foo").asText());
+            assertEquals("1234", exceptionNode.get("bar").asText());
         } finally {
             FaultController.getInstance().setDetailedFaults(true);
         }
@@ -139,8 +138,8 @@ public class JSONMarshallerTest extends CougarTestCase {
         ObjectMapper m = new ObjectMapper();
         JsonNode rootNode = m.readValue(new ByteArrayInputStream(bos.toByteArray()), JsonNode.class);
 
-        assertEquals("Server", rootNode.get("faultcode").getTextValue());
-        assertEquals("EX01", rootNode.get("faultstring").getTextValue());
+        assertEquals("Server", rootNode.get("faultcode").asText());
+        assertEquals("EX01", rootNode.get("faultstring").asText());
 
         JsonNode detail = rootNode.get("detail");
         assertNotNull(detail);
@@ -148,14 +147,14 @@ public class JSONMarshallerTest extends CougarTestCase {
         JsonNode exceptionNode = detail.get("TestFaultException");
         assertNotNull(exceptionNode);
         assertEquals(2, exceptionNode.size());
-        assertEquals("foo", exceptionNode.get("foo").getTextValue());
-        assertEquals("1234", exceptionNode.get("bar").getTextValue());
+        assertEquals("foo", exceptionNode.get("foo").asText());
+        assertEquals("1234", exceptionNode.get("bar").asText());
 
-        String trace = detail.get("trace").getTextValue();
+        String trace = detail.get("trace").asText();
         assertTrue(trace.length() > 10);
         assertTrue(trace.contains("TestFaultException"));
 
-        assertEquals("MyMessage", detail.get("message").getTextValue());
+        assertEquals("MyMessage", detail.get("message").asText());
     }
 
     public void testMarshalException() {

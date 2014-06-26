@@ -23,8 +23,8 @@ import com.betfair.cougar.core.api.transcription.TranscribableParams;
 import com.betfair.cougar.core.api.transcription.TranscriptionInput;
 import com.betfair.cougar.core.api.transcription.TranscriptionOutput;
 import com.betfair.cougar.transport.api.protocol.events.AbstractEvent;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.xml.bind.annotation.XmlTransient;
 import java.util.Set;
