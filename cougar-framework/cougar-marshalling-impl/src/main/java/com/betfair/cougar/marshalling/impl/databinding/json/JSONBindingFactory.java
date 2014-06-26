@@ -40,9 +40,9 @@ public class JSONBindingFactory implements DataBindingFactory {
 	private final ObjectMapper objectMapper;
     private final JSONMarshaller marshaller;
     private final JSONUnMarshaller unMarshaller;
-    private boolean enableAfterburner;
-    private boolean useOptimizedBeanDeserializer;
-    private boolean useValueClassLoader;
+    private boolean enableAfterburner = true;
+    private boolean useOptimizedBeanDeserializer = true;
+    private boolean useValueClassLoader = true;
 
     public JSONBindingFactory() {
 		LOGGER.info("Initialising JSONBindingFactory");

@@ -36,7 +36,7 @@ public class JSONBindingFactoryTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testByteConversion() {
-        ObjectMapper mapper = JSONBindingFactory.createBaseObjectMapper();
+        ObjectMapper mapper = new JSONBindingFactory().createBaseObjectMapper();
         JsonNode paramValue = new IntNode(128);
         JavaType javaType = SimpleType.construct(byte.class);
         mapper.convertValue(paramValue, javaType);

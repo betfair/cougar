@@ -671,7 +671,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         bindOperations();
 
         LocalJsonRpcCommandProcessor commandProcessorWithoutCountryResolver =
-                new LocalJsonRpcCommandProcessor(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID", requestTimeResolver);
+                new LocalJsonRpcCommandProcessor(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID", requestTimeResolver, new JSONBindingFactory());
 
         HttpCommand command = mock(HttpCommand.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
@@ -1178,8 +1178,8 @@ public class JsonRpcTransportCommandProcessorTest  {
             }, jsonBindingFactory);
         }
 
-        public LocalJsonRpcCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, RequestTimeResolver requestTimeResolver) {
-            super(geoIPLocator, deserializer, uuidHeader, "X-RequestTimeout", requestTimeResolver, null);
+        public LocalJsonRpcCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, RequestTimeResolver requestTimeResolver, JSONBindingFactory jsonBindingFactory) {
+            super(geoIPLocator, deserializer, uuidHeader, "X-RequestTimeout", requestTimeResolver, jsonBindingFactory);
         }
 
         @Override
