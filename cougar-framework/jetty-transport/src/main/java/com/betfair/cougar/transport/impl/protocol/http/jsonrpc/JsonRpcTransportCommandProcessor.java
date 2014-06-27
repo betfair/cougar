@@ -213,7 +213,7 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
                                     }
                                 });
                             } catch (Exception e) {
-                                if (e instanceof IllegalArgumentException && e.getCause()!=null && e.getCause().getCause()!=null && e.getCause().getCause() instanceof EnumDerialisationException) {
+                                if (e instanceof IllegalArgumentException && e.getCause() != null && (e.getCause().getCause()==null || e.getCause().getCause() instanceof EnumDerialisationException)) {
                                     responses.add(JsonRpcErrorResponse.buildErrorResponse(rpc, new JsonRpcError(INVALID_PARAMS, ServerFaultCode.ServerDeserialisationFailure.getDetail(), null)));
                                 }
                                 else {
