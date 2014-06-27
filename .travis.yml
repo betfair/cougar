@@ -14,7 +14,7 @@ before_install:
    - "gem install travis-artifacts"
 install: "echo 'No install command here!'"
 script: "mvn install -Pintegration-test -B"
-after_failure:
+after_failure: # this seems bust at the mo
   - "bash uploadSurefireReports.sh"
 after_success:
   - "bash deploySnapshotBuild.sh"
