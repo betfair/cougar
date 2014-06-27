@@ -81,6 +81,7 @@ public class CougarTransformations implements Transformations{
 
                 new Transformation("clientSyncServiceInterface.ftl", "/interface", "${package}/${majorVersion}", "${name}SyncClient.java", false, false, OutputDomain.Client_and_Server),
                 new Transformation("dataType.ftl", "/interface/dataType", "${package}/${majorVersion}/to", "${name}.java", true, false, OutputDomain.Client_and_Server),
+                new Transformation("dataTypeBuilder.ftl", "/interface/dataType", "${package}/${majorVersion}/to", "${name}Builder.java", true, false, OutputDomain.Client_and_Server),
                 new Transformation("dataTypeDelegate.ftl", "/interface/dataType", "${package}/${majorVersion}/to", "${name}Delegate.java", false, false, OutputDomain.Client_and_Server),
                 new Transformation("events/event.ftl", "/interface/event", "${package}/${majorVersion}/events", "${name}.java", true, false, OutputDomain.Client_and_Server),
                 new Transformation("events/jmsServiceBindingDescriptor.ftl", "/interface", "${package}/${majorVersion}/events", "${name}JMSServiceBindingDescriptor.java", true, false, OutputDomain.Client_and_Server),
@@ -103,7 +104,7 @@ public class CougarTransformations implements Transformations{
         };
         transformations.addAll(Arrays.asList(definitions));
 
-   
+
         validations.add(new DataTypeValidator());
         validations.add(new OperationValidator());
         validations.add(new ExceptionValidator());
@@ -113,7 +114,7 @@ public class CougarTransformations implements Transformations{
         validations.add(new MapsValidator());
         validations.add(new UnknownDataTypeValidator());
         validations.add(new ParameterNameValidator());
-        
+
         manglers.add(new CommonTypesMangler());
         manglers.add(new SimpleTypeMangler());
         manglers.add(new ResponseToSimpleResponseMangler());

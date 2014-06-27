@@ -104,6 +104,7 @@
     <#return ret><#t>
 </#function>
 
+
 <#function getSimpleTypeName interface paramType><#t>
     <#assign ret = paramType><#t>
     <#list interface.simpleType as st><#t>
