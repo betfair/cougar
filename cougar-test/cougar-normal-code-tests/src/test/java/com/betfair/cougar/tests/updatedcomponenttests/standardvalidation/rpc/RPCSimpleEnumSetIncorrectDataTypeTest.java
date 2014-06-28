@@ -44,13 +44,13 @@ public class RPCSimpleEnumSetIncorrectDataTypeTest {
         // Get the cougar logging attribute for getting log entries later
         // Point the created HttpCallBean at the correct service
         httpCallBeanBaseline.setServiceName("baseline", "cougarBaseline");
-        
+
         httpCallBeanBaseline.setVersion("v2");
         // Set up the Http Call Bean to make the request
         CougarManager cougarManager2 = CougarManager.getInstance();
         HttpCallBean callBean = cougarManager2.getNewHttpCallBean("87.248.113.14");
         CougarManager cougarManager = cougarManager2;
-        
+
         cougarManager.setCougarFaultControllerJMXMBeanAttrbiute("DetailedFaults", "false");
         // Set the call bean to use JSON batching
         callBean.setJSONRPC(true);
@@ -88,18 +88,18 @@ public class RPCSimpleEnumSetIncorrectDataTypeTest {
         CougarHelpers cougarHelpers5 = new CougarHelpers();
         Map<String, Object> map6 = cougarHelpers5.convertBatchedResponseToMap(actualResponseJSON);
         AssertionUtils.multiAssertEquals("{\"id\":\"Call with correct params\",\"result\":{\"headerParameter\":\"FOOBAR,FOOFOO\",\"queryParameter\":\"BAR,BARFOO,FOO\"},\"jsonrpc\":\"2.0\"}", map6.get("responseCall with correct params"));
-        AssertionUtils.multiAssertEquals("{\"id\":\"Incorrect Header param\",\"error\":{\"message\":\"DSC-0018\",\"code\":-32602},\"jsonrpc\":\"2.0\"}", map6.get("responseIncorrect Header param"));
-        AssertionUtils.multiAssertEquals("{\"id\":\"Incorrect Query param\",\"error\":{\"message\":\"DSC-0018\",\"code\":-32602},\"jsonrpc\":\"2.0\"}", map6.get("responseIncorrect Query param"));
-        AssertionUtils.multiAssertEquals("{\"id\":\"Null header param\",\"error\":{\"message\":\"DSC-0018\",\"code\":-32602},\"jsonrpc\":\"2.0\"}", map6.get("responseNull header param"));
+        AssertionUtils.multiAssertEquals("{\"id\":\"Incorrect Header param\",\"error\":{\"message\":\"DSC-0044\",\"code\":-32602},\"jsonrpc\":\"2.0\"}", map6.get("responseIncorrect Header param"));
+        AssertionUtils.multiAssertEquals("{\"id\":\"Incorrect Query param\",\"error\":{\"message\":\"DSC-0044\",\"code\":-32602},\"jsonrpc\":\"2.0\"}", map6.get("responseIncorrect Query param"));
+        AssertionUtils.multiAssertEquals("{\"id\":\"Null header param\",\"error\":{\"message\":\"DSC-0044\",\"code\":-32602},\"jsonrpc\":\"2.0\"}", map6.get("responseNull header param"));
         AssertionUtils.multiAssertEquals("{\"id\":\"Call with duplicate params\",\"result\":{\"headerParameter\":\"FOOFOO\",\"queryParameter\":\"BAR,BARFOO,FOO\"},\"jsonrpc\":\"2.0\"}", map6.get("responseCall with duplicate params"));
         AssertionUtils.multiAssertEquals(200, map6.get("httpStatusCode"));
         AssertionUtils.multiAssertEquals("OK", map6.get("httpStatusText"));
         // Pause the test to allow the logs to be filled
         // generalHelpers.pauseTest(500L);
         // Check the log entries are as expected
-        
+
         cougarManager.verifyRequestLogEntriesAfterDate(timeStamp, new RequestLogRequirement("2.8", "simpleEnumSetOperation"),new RequestLogRequirement("2.8", "simpleEnumSetOperation") );
-        
+
         CougarManager cougarManager10 = CougarManager.getInstance();
         cougarManager10.verifyAccessLogEntriesAfterDate(timeStamp, new AccessLogRequirement("87.248.113.14", "/json-rpc", "Ok") );
     }

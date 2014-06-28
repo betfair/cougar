@@ -96,7 +96,7 @@ public class RPCDateTimeParamIncorrectDataTypeTest {
         CougarHelpers cougarHelpers5 = new CougarHelpers();
         Map<String, Object> map6 = cougarHelpers5.convertBatchedResponseToMap(actualResponseJSON);
         AssertionUtils.multiAssertEquals("{\"id\":\"Call with correct params\",\"result\":{\"localTime\":\"2009-12-01T23:00:00.000Z\",\"localTime2\":\"2009-12-01T23:00:00.000Z\"},\"jsonrpc\":\"2.0\"}", map6.get("responseCall with correct params"));
-        AssertionUtils.multiAssertEquals("{\"id\":\"Invalid parameter type\",\"error\":{\"message\":\"DSC-0018\",\"code\":-32602},\"jsonrpc\":\"2.0\"}", map6.get("responseInvalid parameter type"));
+        AssertionUtils.multiAssertEquals("{\"id\":\"Invalid parameter type\",\"error\":{\"message\":\"DSC-0044\",\"code\":-32602},\"jsonrpc\":\"2.0\"}", map6.get("responseInvalid parameter type"));
         AssertionUtils.multiAssertEquals("{\"id\":\"Invalid Hour\",\"error\":{\"message\":\"DSC-0044\",\"code\":-32602},\"jsonrpc\":\"2.0\"}", map6.get("responseInvalid Hour"));
         AssertionUtils.multiAssertEquals("{\"id\":\"Invalid Minute\",\"error\":{\"message\":\"DSC-0044\",\"code\":-32602},\"jsonrpc\":\"2.0\"}", map6.get("responseInvalid Minute"));
         AssertionUtils.multiAssertEquals("{\"id\":\"Invalid Leap Year\",\"error\":{\"message\":\"DSC-0044\",\"code\":-32602},\"jsonrpc\":\"2.0\"}", map6.get("responseInvalid Leap Year"));

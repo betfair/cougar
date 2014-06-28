@@ -65,15 +65,15 @@ public class RPCbyteInvalidResponseTest {
         // Convert the returned json object to a map for comparison
         CougarHelpers cougarHelpers4 = new CougarHelpers();
         Map<String, Object> map5 = cougarHelpers4.convertBatchedResponseToMap(response);
-        AssertionUtils.multiAssertEquals("{\"id\":1,\"error\":{\"message\":\"DSC-0018\",\"code\":-32602},\"jsonrpc\":\"2.0\"}", map5.get("response1"));
-        AssertionUtils.multiAssertEquals("{\"id\":2,\"error\":{\"message\":\"DSC-0018\",\"code\":-32602},\"jsonrpc\":\"2.0\"}", map5.get("response2"));
+        AssertionUtils.multiAssertEquals("{\"id\":1,\"error\":{\"message\":\"DSC-0044\",\"code\":-32602},\"jsonrpc\":\"2.0\"}", map5.get("response1"));
+        AssertionUtils.multiAssertEquals("{\"id\":2,\"error\":{\"message\":\"DSC-0044\",\"code\":-32602},\"jsonrpc\":\"2.0\"}", map5.get("response2"));
         AssertionUtils.multiAssertEquals(200, map5.get("httpStatusCode"));
         AssertionUtils.multiAssertEquals("OK", map5.get("httpStatusText"));
         // Pause the test to allow the logs to be filled
         // generalHelpers.pauseTest(500L);
         // Check the log entries are as expected
-        
-        
+
+
         cougarManager.verifyAccessLogEntriesAfterDate(timeStamp, new AccessLogRequirement("87.248.113.14", "/json-rpc", "Ok") );
     }
 
