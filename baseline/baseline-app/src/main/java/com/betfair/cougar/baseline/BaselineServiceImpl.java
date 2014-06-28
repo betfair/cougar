@@ -55,76 +55,7 @@ import com.betfair.baseline.v2.events.SetEvent;
 import com.betfair.baseline.v2.events.TimeTick;
 import com.betfair.baseline.v2.exception.SimpleException;
 import com.betfair.baseline.v2.exception.WotsitException;
-import com.betfair.baseline.v2.to.BodyParamBoolObject;
-import com.betfair.baseline.v2.to.BodyParamByteObject;
-import com.betfair.baseline.v2.to.BodyParamComplexMapObject;
-import com.betfair.baseline.v2.to.BodyParamComplexSetObject;
-import com.betfair.baseline.v2.to.BodyParamDateTimeListObject;
-import com.betfair.baseline.v2.to.BodyParamDateTimeMapObject;
-import com.betfair.baseline.v2.to.BodyParamDateTimeObject;
-import com.betfair.baseline.v2.to.BodyParamDateTimeSetObject;
-import com.betfair.baseline.v2.to.BodyParamDoubleObject;
-import com.betfair.baseline.v2.to.BodyParamEnumObject;
-import com.betfair.baseline.v2.to.BodyParamFloatObject;
-import com.betfair.baseline.v2.to.BodyParamI32Object;
-import com.betfair.baseline.v2.to.BodyParamI64Object;
-import com.betfair.baseline.v2.to.BodyParamMapDateTimeKeyObject;
-import com.betfair.baseline.v2.to.BodyParamSimpleMapObject;
-import com.betfair.baseline.v2.to.BodyParamSimpleSetObject;
-import com.betfair.baseline.v2.to.BoolOperationResponseObject;
-import com.betfair.baseline.v2.to.ByteOperationResponseObject;
-import com.betfair.baseline.v2.to.CallSecurity;
-import com.betfair.baseline.v2.to.ComplexMapOperationResponseObject;
-import com.betfair.baseline.v2.to.ComplexMapOperationResponseObjectDelegate;
-import com.betfair.baseline.v2.to.ComplexObject;
-import com.betfair.baseline.v2.to.ComplexSetOperationResponseObject;
-import com.betfair.baseline.v2.to.DateContainer;
-import com.betfair.baseline.v2.to.DateTimeListOperationResponseObject;
-import com.betfair.baseline.v2.to.DateTimeMapOperationResponseObject;
-import com.betfair.baseline.v2.to.DateTimeOperationResponseObject;
-import com.betfair.baseline.v2.to.DateTimeSetOperationResponseObject;
-import com.betfair.baseline.v2.to.DoubleContainer;
-import com.betfair.baseline.v2.to.DoubleOperationResponseObject;
-import com.betfair.baseline.v2.to.DoubleResponse;
-import com.betfair.baseline.v2.to.EnumHandling;
-import com.betfair.baseline.v2.to.EnumOperationResponseObject;
-import com.betfair.baseline.v2.to.EnumSimpleRequestObject;
-import com.betfair.baseline.v2.to.EnumSimpleResponseObject;
-import com.betfair.baseline.v2.to.FloatOperationResponseObject;
-import com.betfair.baseline.v2.to.HealthStatusInfoRequest;
-import com.betfair.baseline.v2.to.I32OperationResponseObject;
-import com.betfair.baseline.v2.to.I32SimpleOperationResponseObject;
-import com.betfair.baseline.v2.to.I32SimpleTypeRequestObject;
-import com.betfair.baseline.v2.to.I64OperationResponseObject;
-import com.betfair.baseline.v2.to.Ident;
-import com.betfair.baseline.v2.to.IdentChain;
-import com.betfair.baseline.v2.to.LargeRequest;
-import com.betfair.baseline.v2.to.LogMessageContainer;
-import com.betfair.baseline.v2.to.MandatoryParamsOperationResponseObject;
-import com.betfair.baseline.v2.to.MandatoryParamsRequest;
-import com.betfair.baseline.v2.to.MapDataType;
-import com.betfair.baseline.v2.to.MapDateTimeKeyOperationResponseObject;
-import com.betfair.baseline.v2.to.MarketStruct;
-import com.betfair.baseline.v2.to.MatchedBetContainer;
-import com.betfair.baseline.v2.to.MatchedBetStruct;
-import com.betfair.baseline.v2.to.NoParamsResponse;
-import com.betfair.baseline.v2.to.NonMandatoryParamsOperationResponseObject;
-import com.betfair.baseline.v2.to.NonMandatoryParamsRequest;
-import com.betfair.baseline.v2.to.PrimitiveLists;
-import com.betfair.baseline.v2.to.ReceivedEvent;
-import com.betfair.baseline.v2.to.SimpleConnectedObject;
-import com.betfair.baseline.v2.to.SimpleContainer;
-import com.betfair.baseline.v2.to.SimpleListContainer;
-import com.betfair.baseline.v2.to.SimpleMap;
-import com.betfair.baseline.v2.to.SimpleMapOperationResponseObject;
-import com.betfair.baseline.v2.to.SimpleResponse;
-import com.betfair.baseline.v2.to.SimpleResponseDelegate;
-import com.betfair.baseline.v2.to.SimpleResponseMap;
-import com.betfair.baseline.v2.to.SimpleSetOperationResponseObject;
-import com.betfair.baseline.v2.to.SomeComplexObject;
-import com.betfair.baseline.v2.to.TestResults;
-import com.betfair.baseline.v2.to.TimeContainer;
-import com.betfair.baseline.v2.to.VeryComplexObject;
+import com.betfair.baseline.v2.to.*;
 import com.betfair.cougar.api.ContainerContext;
 import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.RequestContext;
@@ -139,6 +70,7 @@ import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.core.api.events.EventTransportIdentity;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
+import com.betfair.cougar.core.api.transcription.SetBuilder;
 import com.betfair.cougar.core.impl.ev.ConnectedResponseImpl;
 import com.betfair.cougar.core.impl.ev.DefaultSubscription;
 import com.betfair.cougar.core.impl.logging.AbstractLoggingControl;
@@ -1233,7 +1165,7 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
 
 		ctx.setRequestLogExtension(new BaselineLogExtension(message, null, null));
 		Set<SomeComplexObject> requestSet = message.getComplexSet();
-		Set<SomeComplexObject> responseSet = new LinkedHashSet<SomeComplexObject>();
+		SetBuilder<SomeComplexObject> responseSet = new SetBuilder<SomeComplexObject>().toLinkedHashSet();
 
 		// Put object from set into a map with the value from the string field as the Key
 		// So we can order based on that.
@@ -1251,17 +1183,17 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
 
 		for (String key : mapKeys) {
 			SomeComplexObject requestComplexObject = requestSetObjectMap.get(key);
-			SomeComplexObject responseComplexObject = new SomeComplexObject();
-			responseComplexObject.setDateTimeParameter(requestComplexObject.getDateTimeParameter());
-			responseComplexObject.setListParameter(requestComplexObject.getListParameter());
-			responseComplexObject.setEnumParameter(requestComplexObject.getEnumParameter());
-			responseComplexObject.setStringParameter(requestComplexObject.getStringParameter());
+			SomeComplexObjectBuilder responseComplexObject = new SomeComplexObjectBuilder()
+                .setDateTimeParameter(requestComplexObject.getDateTimeParameter())
+                .setListParameter(requestComplexObject.getListParameter())
+                .setEnumParameter(requestComplexObject.getEnumParameter())
+                .setStringParameter(requestComplexObject.getStringParameter());
 
 			responseSet.add(responseComplexObject);
 		}
 
-		ComplexSetOperationResponseObject response = new ComplexSetOperationResponseObject();
-		response.setResponseSet(responseSet);
+		ComplexSetOperationResponseObject response = new ComplexSetOperationResponseObjectBuilder()
+		    .setResponseSet(responseSet).build();
 		return response;
 	}
 

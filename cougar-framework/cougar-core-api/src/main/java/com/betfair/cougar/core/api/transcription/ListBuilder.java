@@ -16,13 +16,12 @@
 
 package com.betfair.cougar.core.api.transcription;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Builder implementation for lists.
+ * Builder implementation for lists. Initial list by default is a LinkedList, but this can
+ * be changed using the toXXX() methods.
  */
 public class ListBuilder<T> implements Builder<List<T>> {
     private List<T> ret;
@@ -47,6 +46,16 @@ public class ListBuilder<T> implements Builder<List<T>> {
 
     public ListBuilder<T> toArrayList() {
         ret = new ArrayList<>(ret);
+        return this;
+    }
+
+    public ListBuilder<T> toVector() {
+        ret = new Vector<>(ret);
+        return this;
+    }
+
+    public ListBuilder<T> toCopyOnWriteArrayList() {
+        ret = new CopyOnWriteArrayList<>(ret);
         return this;
     }
 

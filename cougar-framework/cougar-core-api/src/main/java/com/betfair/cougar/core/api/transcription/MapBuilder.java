@@ -19,7 +19,8 @@ package com.betfair.cougar.core.api.transcription;
 import java.util.*;
 
 /**
- * Builder implementation for maps.
+ * Builder implementation for maps. Initial map by default is a HashMap, but this can
+ * be changed using the toXXX() methods.
  */
 public class MapBuilder<K,V> implements Builder<Map<K,V>> {
     private Map<K,V> ret;
@@ -57,6 +58,16 @@ public class MapBuilder<K,V> implements Builder<Map<K,V>> {
      */
     public MapBuilder<K,V> lock() {
         ret = Collections.unmodifiableMap(ret);
+        return this;
+    }
+
+    public MapBuilder<K,V> toHashtable() {
+        ret = new Hashtable<>(ret);
+        return this;
+    }
+
+    public MapBuilder<K,V> toIdentityHashMap() {
+        ret = new IdentityHashMap<>(ret);
         return this;
     }
 
