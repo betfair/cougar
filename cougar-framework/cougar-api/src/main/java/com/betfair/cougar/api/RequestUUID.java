@@ -18,6 +18,32 @@ package com.betfair.cougar.api;
 
 import java.io.Externalizable;
 
+/**
+ * Represents a unique identifier for a request. May be received from transports and sent to servers to allow
+ * identification of traffic flows all stemming from a common source. Consists of three components, each of which is
+ * individually a guid. If this uuid is the root of a tree then the root and parent components will be null.
+ */
 public interface RequestUUID extends Externalizable {
-	public String getUUID();
+    /**
+     * String representation of this uuid. Contains any/all relevant component uuids.
+     */
+	String getUUID();
+
+    /**
+     * Get the root component of this uuid. Returns null if there is none.
+     */
+    String getRootUUIDComponent();
+    /**
+     * Get the parent component of this uuid. Returns null if there is none.
+     */
+    String getParentUUIDComponent();
+    /**
+     * Get the local component of this uuid. Always returns a valid string.
+     */
+    String getLocalUUIDComponent();
+
+    /**
+     * Obtain a new sub-uuid.
+     */
+    RequestUUID getNewSubUUID();
 }

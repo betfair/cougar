@@ -76,7 +76,6 @@ import com.betfair.cougar.core.api.transcription.ParameterType.Type;
 import com.betfair.cougar.core.api.transcription.Transcribable;
 import com.betfair.cougar.core.api.transcription.TranscriptionInput;
 import com.betfair.cougar.core.api.transcription.TranscriptionOutput;
-import org.slf4j.LoggerFactory;
 import com.betfair.cougar.marshalling.impl.to.Cycle1;
 import com.betfair.cougar.marshalling.impl.to.Cycle2;
 import com.betfair.cougar.marshalling.impl.to.Foo;
@@ -590,7 +589,7 @@ public class SocketRMIMarshallerTest {
             cougarObjectOutput.writeString(null);
         }
         cut.writeIdentity(expected, cougarObjectOutput, identityResolver);
-        cut.writeRequestUUID(new RequestUUIDImpl(), cougarObjectOutput);
+        cut.writeRequestUUID(new RequestUUIDImpl(), cougarObjectOutput, protocolVersion);
         cut.writeReceivedTime(new Date(), cougarObjectOutput);
         cougarObjectOutput.writeBoolean(false); // traceEnabled
         cut.writeRequestTime(cougarObjectOutput, protocolVersion);
@@ -611,7 +610,7 @@ public class SocketRMIMarshallerTest {
             cougarObjectOutput.writeString(null);
         }
         cut.writeIdentity(expected, cougarObjectOutput, identityResolver);
-        cut.writeRequestUUID(new RequestUUIDImpl(), cougarObjectOutput);
+        cut.writeRequestUUID(new RequestUUIDImpl(), cougarObjectOutput, protocolVersion);
         cut.writeReceivedTime(new Date(), cougarObjectOutput);
         cougarObjectOutput.writeBoolean(false); // traceEnabled
         cut.writeRequestTime(cougarObjectOutput, protocolVersion);
@@ -633,7 +632,7 @@ public class SocketRMIMarshallerTest {
             cougarObjectOutput.writeString(null);
         }
         cut.writeIdentity(expected, cougarObjectOutput, identityResolver);
-        cut.writeRequestUUID(new RequestUUIDImpl(), cougarObjectOutput);
+        cut.writeRequestUUID(new RequestUUIDImpl(), cougarObjectOutput, protocolVersion);
         cut.writeReceivedTime(new Date(), cougarObjectOutput);
         cougarObjectOutput.writeBoolean(false); // traceEnabled
         cut.writeRequestTime(cougarObjectOutput, protocolVersion);

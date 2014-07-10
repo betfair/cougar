@@ -101,15 +101,15 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
     private SchemaValidationFailureParser schemaValidationFailureParser;
 
     public SoapTransportCommandProcessor(GeoIPLocator geoIPLocator,
-                                         GeoLocationDeserializer deserializer, String uuidHeader, String requestTimeoutHeader, RequestTimeResolver requestTimeResolver, SchemaValidationFailureParser schemaValidationFailureParser) {
-        this(geoIPLocator, deserializer, uuidHeader, requestTimeoutHeader, requestTimeResolver, schemaValidationFailureParser, null);
+                                         GeoLocationDeserializer deserializer, String uuidHeader, String uuidParentsHeader, String requestTimeoutHeader, RequestTimeResolver requestTimeResolver, SchemaValidationFailureParser schemaValidationFailureParser) {
+        this(geoIPLocator, deserializer, uuidHeader, uuidParentsHeader, requestTimeoutHeader, requestTimeResolver, schemaValidationFailureParser, null);
     }
 
     // for testing only
-    SoapTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader,
+    SoapTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, String uuidParentsHeader,
                                   String requestTimeoutHeader, RequestTimeResolver requestTimeResolver, SchemaValidationFailureParser schemaValidationFailureParser,
                                   InferredCountryResolver<HttpServletRequest> countryResolver) {
-        super(geoIPLocator, deserializer, uuidHeader, countryResolver, requestTimeoutHeader, requestTimeResolver);
+        super(geoIPLocator, deserializer, uuidHeader, uuidParentsHeader, countryResolver, requestTimeoutHeader, requestTimeResolver);
         setName("SoapTransportCommandProcessor");
         this.schemaValidationFailureParser = schemaValidationFailureParser;
     }

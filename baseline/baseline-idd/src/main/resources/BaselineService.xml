@@ -120,7 +120,7 @@
             </exceptions>
         </parameters>
     </operation>
-    
+
     <operation name="mapOfComplexOperation" since="2.0">
         <description>Operation to pass a map of string:complex objects to check missing fields of entries are detected</description>
         <parameters>
@@ -158,7 +158,7 @@
             </exceptions>
         </parameters>
     </operation>
-    
+
     <operation name="testSimpleMapGet" since="2.0">
         <description>Takes a single arg and echos it back in a map</description>
         <parameters>
@@ -294,7 +294,7 @@
             </exceptions>
         </parameters>
     </operation>
-    
+
     <operation name="testMapsNameClash" since="1.0.0">
         <description>
         </description>
@@ -314,7 +314,7 @@
             </exceptions>
         </parameters>
     </operation>
-  
+
 
 	<operation name="testSleep" since="1.0.0">
 		<description>provides a call that will sleep for the supplied period</description>
@@ -392,7 +392,7 @@
 			</exceptions>
 		</parameters>
 	</operation>
-	
+
 	<operation name="testParameterStylesQA" since="2.0">
 		<description>Ensure that REST parameters can be taken from different sources</description>
 		<parameters>
@@ -428,7 +428,7 @@
 			</exceptions>
 		</parameters>
 	</operation>
-	
+
 	<operation name="testDateRetrieval" since="1.0.0">
 		<description>Return some date information</description>
 		<parameters>
@@ -447,7 +447,7 @@
 			</exceptions>
 		</parameters>
 	</operation>
-	
+
     <operation name="testDoubleHandling" since="1.0.0">
         <description>Return some date information</description>
         <parameters>
@@ -469,7 +469,7 @@
             </exceptions>
         </parameters>
     </operation>
-    
+
     <operation name="testListRetrieval" since="1.0.0">
 		<description>Return some lists</description>
 		<parameters>
@@ -488,7 +488,7 @@
 			</exceptions>
 		</parameters>
 	</operation>
-	
+
 	<operation name="testComplexMutator" since="1.0.0">
 		<description>test of a service that takes a complex object and returns a complex object</description>
 		<parameters>
@@ -507,10 +507,10 @@
 			</exceptions>
 		</parameters>
 	</operation>
- 
+
 	<operation name="testLargePost" since="1.0.0">
 		<description>
-			Takes a list of complex objects and returns the number of values in the list. 
+			Takes a list of complex objects and returns the number of values in the list.
 			Used to test input parsing speed.
 		</description>
 		<parameters>
@@ -529,10 +529,10 @@
 			</exceptions>
 		</parameters>
 	</operation>
-	
+
 	<operation name="testLargePostQA" since="2.0">
 		<description>
-			Takes a list of complex objects and returns the number of values in the list. 
+			Takes a list of complex objects and returns the number of values in the list.
 			Used to test input parsing speed.
 		</description>
 		<parameters>
@@ -576,7 +576,7 @@
 			</exceptions>
 		</parameters>
 	</operation>
-	
+
 	<operation name="testExceptionQA" since="2.0">
 		<description>a service that always throws an exception</description>
 		<parameters>
@@ -617,14 +617,14 @@
             </exceptions>
         </parameters>
     </operation>
-	
+
 	<operation name="testSecureService" since="1.0.0">
 		<description>
 			a service with a security attribute - cannot be called without an Authorisation token.
 			Models placing a bet on an Australian exchange
 			use CoUGARAUS as the token you should have permission to call the service
 			use CoUGARUK as the token and the call will be rejected
-			no token and the call will be rejected 
+			no token and the call will be rejected
 		</description>
 		<parameters>
 			<request>
@@ -812,33 +812,14 @@
 			</exceptions>
 		</parameters>
 	</operation>
-	
+
 	<operation name="kpiTesting" since="2.0">
 		<description>logs a message</description>
 		<parameters>
 			<request>
 				<parameter mandatory="true" name="message" type="string">
 					<description>the message to log</description>
-				</parameter>	
-			</request>
-			<response type="SimpleResponse">
-				<description>The response</description>
-			</response>
-			<exceptions>
-				<exception type="SimpleException">
-    				<description>If the echo service fails for any reason</description>
-    			</exception>
-			</exceptions>
-		</parameters>
-	</operation>	
-	
-	<operation name="waitSeconds" since="2.0">
-		<description>logs a message</description>
-		<parameters>
-			<request>
-				<parameter mandatory="true" name="seconds" type="string">
-					<description>the message to log</description>
-				</parameter>	
+				</parameter>
 			</request>
 			<response type="SimpleResponse">
 				<description>The response</description>
@@ -850,7 +831,26 @@
 			</exceptions>
 		</parameters>
 	</operation>
-	
+
+	<operation name="waitSeconds" since="2.0">
+		<description>logs a message</description>
+		<parameters>
+			<request>
+				<parameter mandatory="true" name="seconds" type="string">
+					<description>the message to log</description>
+				</parameter>
+			</request>
+			<response type="SimpleResponse">
+				<description>The response</description>
+			</response>
+			<exceptions>
+				<exception type="SimpleException">
+    				<description>If the echo service fails for any reason</description>
+    			</exception>
+			</exceptions>
+		</parameters>
+	</operation>
+
 	<operation name="logMessage" since="2.0">
 		<description>logs a message</description>
 		<parameters>
@@ -860,7 +860,7 @@
 				</parameter>
 				<parameter mandatory="true" name="logLevel" type="string">
 					<description>log level</description>
-				</parameter>								
+				</parameter>
 			</request>
 			<response type="SimpleResponse">
 				<description>The response</description>
@@ -915,8 +915,8 @@
     			</exception>
 			</exceptions>
 		</parameters>
-	</operation>	
-	
+	</operation>
+
 	<operation name="enumOperation" since="2.0">
 		<description>Takes one of each rest parameter type, that is an enum</description>
 		<parameters>
@@ -1045,7 +1045,7 @@
 			</exceptions>
 		</parameters>
 	</operation>
-	
+
 	<operation name="i32Operation" since="2.0">
 		<description>Takes one of each rest parameter type, that is an Integer</description>
 		<parameters>
@@ -1094,7 +1094,7 @@
 			</exceptions>
 		</parameters>
 	</operation>
-	
+
 	<operation name="byteOperation" since="2.0">
 		<description>Takes one of each rest parameter type, that is a byte</description>
 		<parameters>
@@ -1119,7 +1119,7 @@
 			</exceptions>
 		</parameters>
 	</operation>
-	
+
 	<operation name="floatOperation" since="2.0">
 		<description>Takes one of each rest parameter type, that is a Float</description>
 		<parameters>
@@ -1219,7 +1219,7 @@
 			</exceptions>
 		</parameters>
 	</operation>
-	
+
 	<operation name="mandatoryParamsOperation" since="2.0">
 		<description>Takes one of each rest parameter type, but they are not mandatory (barring path which is always mandatory)</description>
 		<parameters>
@@ -1244,7 +1244,7 @@
 			</exceptions>
 		</parameters>
 	</operation>
-	
+
 	<operation name="setHealthStatusInfo" since="1.0.0">
 		<description>Sets the Baseline2 service's healthy status</description>
 		<parameters>
@@ -1263,7 +1263,7 @@
 			</exceptions>
 		</parameters>
 	</operation>
-	
+
 	<operation name="dateTimeOperation" since="2.0">
 		<description>Takes one of each rest parameter type, that is a dateTime</description>
 		<parameters>
@@ -1282,7 +1282,7 @@
 			</exceptions>
 		</parameters>
 	</operation>
-	
+
 		<operation name="simpleMapOperation" since="2.0">
 		<description>Takes a post body that contains a simple (string, string) map</description>
 		<parameters>
@@ -1339,7 +1339,7 @@
 			</exceptions>
 		</parameters>
 	</operation>
-	
+
 	<operation name="complexSetOperation" since="2.0">
 		<description>Takes a post body that contains a more complex (some complex object) set</description>
 		<parameters>
@@ -1358,7 +1358,7 @@
 			</exceptions>
 		</parameters>
 	</operation>
-	
+
 	<operation name="dateTimeSetOperation" since="2.0">
 		<description>Takes a post body that contains a more complex (dateTime object) set</description>
 		<parameters>
@@ -1377,7 +1377,7 @@
 			</exceptions>
 		</parameters>
 	</operation>
-	
+
 	<operation name="dateTimeListOperation" since="2.0">
 		<description>Takes a post body that contains a date time list</description>
 		<parameters>
@@ -1415,7 +1415,7 @@
 			</exceptions>
 		</parameters>
 	</operation>
-	
+
 	<operation name="mapDateTimeKeyOperation" since="2.0">
 		<description>Takes a post body that contains a map with a date time key</description>
 		<parameters>
@@ -1434,7 +1434,7 @@
 			</exceptions>
 		</parameters>
 	</operation>
-	
+
 	<operation name="i32SimpleTypeOperation" since="2.0">
 		<description>Takes one of each rest parameter type, that is an Integer</description>
 		<parameters>
@@ -1459,7 +1459,7 @@
 			</exceptions>
 		</parameters>
 	</operation>
-	
+
 	<operation name="enumSimpleOperation" since="2.0">
 		<description>Takes one of each rest parameter type, that is an enum</description>
 		<parameters>
@@ -1506,7 +1506,7 @@
 			</exceptions>
 		</parameters>
 	</operation>
-	
+
 	<operation name="stringSetOperation" since="2.0">
 		<description>Takes one of each rest parameter type, that is an set of strings</description>
 		<parameters>
@@ -1528,7 +1528,7 @@
 			</exceptions>
 		</parameters>
 	</operation>
-	
+
 	<operation name="simpleEnumListOperation" since="2.0">
 		<description>Takes one of each rest parameter type, that is an list of SimpleEnums</description>
 		<parameters>
@@ -1566,7 +1566,7 @@
             </exceptions>
         </parameters>
     </operation>
-	
+
 	<operation name="simpleEnumSetOperation" since="2.0">
 		<description>Takes one of each rest parameter type, that is an set of SimpleEnums</description>
 		<parameters>
@@ -1622,7 +1622,22 @@
             </exceptions>
         </parameters>
     </operation>
-	
+
+    <operation name="echoRequestUuid" since="2.8">
+        <description>Returns the string representation of the call's request uuid</description>
+        <parameters>
+            <request/>
+            <response type="string">
+                <description>The uuid</description>
+            </response>
+            <exceptions>
+                <exception type="SimpleException">
+                    <description>If the operation fails for any reason</description>
+                </exception>
+            </exceptions>
+        </parameters>
+    </operation>
+
     <operation name="simpleEventPublication" since="2.0">
         <description>Bridging call between a request based transport and an event based transport.  This parameter will be published to an event destination</description>
         <parameters>
@@ -1663,7 +1678,7 @@
             </exceptions>
         </parameters>
     </operation>
-    
+
     <operation name="emitLogMessage" since="2.0">
      <description>Publish the log message to the message transport</description>
      <parameters>
@@ -2218,7 +2233,7 @@
             <description>body of the event</description>
         </parameter>
     </event>
-    
+
     <event name="LogMessage" since="2.0">
 	     <description>An event for logging a message</description>
         <parameter type="LogMessageContainer" name="body" mandatory="true">
@@ -2341,7 +2356,7 @@
             <description>The value of this bet in pennies</description>
         </parameter>
     </dataType>
-	
+
     <dataType name="MarketStruct">
         <description>Stores details of a market</description>
         <parameter name="marketName" type="string">
@@ -2361,7 +2376,7 @@
                   <description>the application status</description>
             </parameter>
       </dataType>
-	
+
     <dataType name="DoubleContainer">
 		<description>Status info</description>
 		<parameter name="map" type="map(string,double)" mandatory="true">
@@ -2391,7 +2406,7 @@
 			<description>message</description>
 		</parameter>
 	</dataType>
-		
+
 	<dataType name="SimpleResponseMap">
         <description>A map of simple types to complex objects from a request</description>
         <parameter name="cache" type="map(string,string)" mandatory="true">
@@ -2408,9 +2423,9 @@
     </dataType>
 
 	<exceptionType name="SimpleException" prefix="SEX">
-		<!-- 
+		<!--
 			Cougar currently requires that all Exceptions have a first parameter
-			that is defined by its valid values, all defined by an incrementing id 
+			that is defined by its valid values, all defined by an incrementing id
 		-->
 		<!--<description>This exception is thrown when an operation fails</description>-->
 		<parameter name="errorCode" type="string">
@@ -2432,12 +2447,12 @@
 		</parameter>
 		<parameter name="reason" type="string">
 			<description>A human readable description of this error</description>
-		</parameter>		
+		</parameter>
 	</exceptionType>
 	<exceptionType name="WotsitException" prefix="WEX">
-		<!-- 
+		<!--
 			Cougar currently requires that all Exceptions have a first parameter
-			that is defined by its valid values, all defined by an incrementing id 
+			that is defined by its valid values, all defined by an incrementing id
 		-->
 		<description>This exception might be thrown when an operation fails</description>
 		<parameter name="errorCode" type="string">
@@ -2492,8 +2507,8 @@
             </value>
         </validValues>
     </simpleType>
-    
+
     <xi:include href="baseline-datatypes.inc" />
     <xi:include href="baseline-simpletypes.inc" />
-    
+
 </interface>

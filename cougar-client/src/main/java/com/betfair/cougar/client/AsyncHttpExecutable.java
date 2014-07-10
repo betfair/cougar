@@ -73,13 +73,13 @@ public class AsyncHttpExecutable extends AbstractHttpExecutable<Request> impleme
 
     public AsyncHttpExecutable(HttpServiceBindingDescriptor bindingDescriptor, GeoLocationSerializer serializer,
                                ExecutorService threadPool, ExecutorService responseThreadPool) {
-        this(bindingDescriptor, serializer, DEFAULT_REQUEST_UUID_HEADER, threadPool, responseThreadPool);
+        this(bindingDescriptor, serializer, DEFAULT_REQUEST_UUID_HEADER, DEFAULT_REQUEST_UUID_PARENTS_HEADER, threadPool, responseThreadPool);
     }
 
     public AsyncHttpExecutable(HttpServiceBindingDescriptor bindingDescriptor, GeoLocationSerializer serializer,
-                               String requestUUIDHeader,
+                               String requestUUIDHeader, String requestUUIDParentsHeader,
                                ExecutorService threadPool, ExecutorService responseThreadPool) {
-        super(bindingDescriptor, new JettyCougarRequestFactory(serializer, requestUUIDHeader));
+        super(bindingDescriptor, new JettyCougarRequestFactory(serializer, requestUUIDHeader, requestUUIDParentsHeader));
         ((JettyCougarRequestFactory)super.requestFactory).setExecutable(this);
         this.threadPool = threadPool;
         this.responseThreadPool = responseThreadPool;

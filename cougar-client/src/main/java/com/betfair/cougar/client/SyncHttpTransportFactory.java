@@ -34,6 +34,7 @@ public class SyncHttpTransportFactory {
 
     private GeoLocationSerializer serializer;
     private String uuidHeader;
+    private String uuidParentsHeader;
     private HttpRequestRetryHandler retryHandler;
     private DataBindingFactory dataBindingFactory;
     private QueryStringGeneratorFactory queryStringGeneratorFactory;
@@ -49,6 +50,10 @@ public class SyncHttpTransportFactory {
 
     public void setUuidHeader(String uuidHeader) {
         this.uuidHeader = uuidHeader;
+    }
+
+    public void setUuidParentsHeader(String uuidParentsHeader) {
+        this.uuidParentsHeader = uuidParentsHeader;
     }
 
     public void setRetryHandler(HttpRequestRetryHandler retryHandler) {
@@ -100,7 +105,7 @@ public class SyncHttpTransportFactory {
                                                  IdentityResolver identityResolver, boolean sslEnabled, Resource keyStore,
                                                  String keyPassword, Resource trustStore, String trustPassword,
                                                  boolean hostnameVerificationDisabled) {
-        final HttpClientExecutable client = new HttpClientExecutable(bindingDescriptor, serializer, uuidHeader);
+        final HttpClientExecutable client = new HttpClientExecutable(bindingDescriptor, serializer, uuidHeader, uuidParentsHeader);
         populateTransportAttributes(client, remoteServerAddress, exceptionFactory, identityTokenResolver, identityResolver,
                 sslEnabled, keyStore, keyPassword, trustStore, trustPassword, hostnameVerificationDisabled);
         return client;

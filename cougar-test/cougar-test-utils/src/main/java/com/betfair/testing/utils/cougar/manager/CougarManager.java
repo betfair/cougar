@@ -403,16 +403,16 @@ public class CougarManager {
         accessLogTailer.lookForLogLines(fromDate, timeoutMs, requirements);
     }
 
-    public void verifyRequestLogEntriesAfterDate(Timestamp fromDate, RequestLogRequirement... requirements) throws IOException, InterruptedException {
-        verifyRequestLogEntriesAfterDate(fromDate, getLogTimeoutMs(), requirements);
+    public LogTailer.LogLine[] verifyRequestLogEntriesAfterDate(Timestamp fromDate, RequestLogRequirement... requirements) throws IOException, InterruptedException {
+        return verifyRequestLogEntriesAfterDate(fromDate, getLogTimeoutMs(), requirements);
     }
-    public void verifyRequestLogEntriesAfterDate(Timestamp fromDate, long timeoutMs, RequestLogRequirement... requirements) throws IOException, InterruptedException {
+    public LogTailer.LogLine[] verifyRequestLogEntriesAfterDate(Timestamp fromDate, long timeoutMs, RequestLogRequirement... requirements) throws IOException, InterruptedException {
         if (requestLogTailer == null) {
             requestLogTailer = new RequestLogTailer(new File(getBaseLogDirectory(), getRequestLogFileName()));
             requestLogTailer.awaitStart();
         }
 
-        requestLogTailer.lookForLogLines(fromDate, timeoutMs, requirements);
+        return requestLogTailer.lookForLogLines(fromDate, timeoutMs, requirements);
     }
 
     public long getLogTimeoutMs() {

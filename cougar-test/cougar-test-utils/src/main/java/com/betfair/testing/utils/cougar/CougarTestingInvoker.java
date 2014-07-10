@@ -17,6 +17,7 @@
 package com.betfair.testing.utils.cougar;
 
 import com.betfair.testing.utils.cougar.enums.CougarMessageContentTypeEnum;
+import com.betfair.testing.utils.cougar.manager.LogTailer;
 
 
 /**
@@ -33,15 +34,28 @@ public interface CougarTestingInvoker {
 
     CougarTestingInvoker setOperation(String operation);
 
+    CougarTestingInvoker setOperation(String operation, String operationPath);
+
     CougarTestingInvoker addHeaderParam(String key, String value);
 
     CougarTestingInvoker addQueryParam(String key, String value);
 
-    CougarTestingInvoker makeMatrixCalls(CougarMessageContentTypeEnum... mediaTypes);
+    CougarTestingInvoker makeMatrixRescriptCalls(CougarMessageContentTypeEnum... mediaTypes);
 
     CougarTestingInvoker setExpectedResponse(CougarMessageContentTypeEnum mediaType, String response);
 
     CougarTestingInvoker setExpectedHttpResponse(int code, String text);
 
-    void verify();
+    CougarTestingInvoker verify();
+
+    LogTailer.LogLine[] getRequestLogEntries();
+
+    CougarTestingInvoker setSoapBody(String body);
+
+    CougarTestingInvoker makeSoapCall();
+
+    CougarTestingInvoker addJsonRpcMethodCall(String id, String method, String body);
+    CougarTestingInvoker addJsonRpcExpectedResponse(String body);
+
+    CougarTestingInvoker makeJsonRpcCalls();
 }

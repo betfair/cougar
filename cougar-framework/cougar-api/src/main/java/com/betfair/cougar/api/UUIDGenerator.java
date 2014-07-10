@@ -16,8 +16,13 @@
 
 package com.betfair.cougar.api;
 
+/**
+ * Responsible for generating valid and globally unique uuids. Implementations MUST be thread-safe.
+ */
 public interface UUIDGenerator {
-	public String getNextUUID();
+    public static String COMPONENT_SEPARATOR = ":";
+    String getNextUUID();
 
-    void validateUuid(String uuid);
+    String[] validateUuid(String uuid);
+
 }

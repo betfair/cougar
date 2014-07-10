@@ -294,7 +294,7 @@ public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller 
 	private void writeExecutionContext(ExecutionContext ctx, CougarObjectOutput out, IdentityResolver identityResolver, byte protocolVersion) throws IOException {
 		writeGeoLocation(ctx.getLocation(), out, protocolVersion);
 		writeIdentity(ctx.getIdentity(), out, identityResolver);
-        writeRequestUUID(ctx.getRequestUUID(), out);
+        writeRequestUUID(ctx.getRequestUUID(), out, protocolVersion);
         writeReceivedTime(ctx.getReceivedTime(), out);
         out.writeBoolean(ctx.traceLoggingEnabled());
         writeRequestTime(out, protocolVersion);
@@ -387,10 +387,15 @@ public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller 
         }
     }
 
-    void writeRequestUUID(RequestUUID uuid, CougarObjectOutput out) throws IOException {
+    void writeRequestUUID(RequestUUID uuid, CougarObjectOutput out, byte protocolVersion) throws IOException {
         if (uuid != null) {
             out.writeBoolean(true);
-            out.writeString(uuid.toString());
+            if (protocolVersion >= CougarProtocol.TRANSPORT_PROTOCOL_VERSION_TIME_CONSTRAINTS) {
+                out.writeString(uuid.getNewSubUUID().toString());
+            }
+            else {
+                out.writeString(uuid.getNewSubUUID().getLocalUUIDComponent());
+            }
         } else {
             out.writeBoolean(false);
         }

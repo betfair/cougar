@@ -32,8 +32,8 @@ class JettyCougarRequestFactory extends CougarRequestFactory<Request> {
 
     private AsyncHttpExecutable executable;
 
-    public JettyCougarRequestFactory(GeoLocationSerializer serializer, String requestUUIDHeader) {
-        super(serializer, requestUUIDHeader);
+    public JettyCougarRequestFactory(GeoLocationSerializer serializer, String requestUUIDHeader, String requestUUIDParentsHeader) {
+        super(serializer, requestUUIDHeader, requestUUIDParentsHeader);
     }
 
     void setExecutable(AsyncHttpExecutable executable) {

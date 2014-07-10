@@ -1,4 +1,3 @@
-
 <!--
   ~ Copyright 2013, The Sporting Exchange Limited
   ~
@@ -103,7 +102,7 @@
             <method>POST</method>
         </extensions>
     </operation>
-    
+
     <operation name="setOfComplexOperation" since="2.0.0">
         <parameters>
             <request>
@@ -135,7 +134,7 @@
             <method>POST</method>
         </extensions>
     </operation>
-    
+
     <operation name="testSimpleMapGet" since="1.0.0">
         <parameters>
             <request>
@@ -1466,7 +1465,7 @@
                 <method>POST</method>
 		</extensions>
 	</operation>
-	
+
 		<operation name="mapDateTimeKeyOperation" since="2.0.0">
 		<description>Takes a post body that contains a map with a date time key</description>
 		<parameters>
@@ -1704,17 +1703,17 @@
                 <method>GET</method>
 		</extensions>
 	</operation>
-	
+
 	<operation name="voidResponseOperation" since="1.0.0">
 		<description>Operation with a void response type</description>
 		<parameters>
 			<request>
 				<parameter mandatory="true" name="message" type="string">
-					<description>message</description>					
+					<description>message</description>
 					<extensions>
 	                     <style>query</style>
-	                </extensions>	
-                </parameter>			
+	                </extensions>
+                </parameter>
 			</request>
 			<response type="void">
 				<description>ignored</description>
@@ -1731,9 +1730,16 @@
         </extensions>
 	</operation>
 
-    <operation name="callUnknownOperation" since="2.0">
+    <operation name="callUnknownOperation">
         <extensions>
             <path>/callUnknownOperation</path>
+            <method>GET</method>
+        </extensions>
+    </operation>
+
+    <operation name="echoRequestUuid">
+        <extensions>
+            <path>/echoRequestUuid</path>
             <method>GET</method>
         </extensions>
     </operation>
@@ -1798,23 +1804,23 @@
 	     <description>Publish the log message to the message transport</description>
 	     <parameters>
 	          <request>
-	              <parameter type= "string" name="logString" mandatory="true">    
+	              <parameter type= "string" name="logString" mandatory="true">
 		          <description>the message to log</description>
 		          <extensions>
 			 			<style>body</style>
-			   		</extensions>      
+			   		</extensions>
 			      </parameter>
-			      <parameter type= "string" name="logLevel" mandatory="true">    
-			           <description>log level</description> 
+			      <parameter type= "string" name="logLevel" mandatory="true">
+			           <description>log level</description>
 			           <extensions>
 			 			<style>body</style>
-			   		</extensions>     
+			   		</extensions>
 			      </parameter>
-			      <parameter type= "i64" name="timeStamp" mandatory="true">    
-			           <description>timestamp to identify the event</description> 
+			      <parameter type= "i64" name="timeStamp" mandatory="true">
+			           <description>timestamp to identify the event</description>
 			           <extensions>
 			 			<style>body</style>
-			   		</extensions>     
+			   		</extensions>
 			      </parameter>
 	          </request>
 	          <response type="void">
@@ -1830,7 +1836,7 @@
            <path>/emitLogMessage</path>
            <method>POST</method>
       </extensions>
-	       
+
 	</operation>
 
      <operation name="emitListEvent" since="2.2.0">
@@ -2464,7 +2470,7 @@
     </event>
 
 
-	
+
 	<extensions>
 		<path>/cougarBaseline</path>
 	</extensions>

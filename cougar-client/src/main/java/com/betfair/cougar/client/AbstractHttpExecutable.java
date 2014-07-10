@@ -68,6 +68,7 @@ public abstract class AbstractHttpExecutable<HR> extends AbstractClientTransport
     protected static final String CONTENT_TYPE = "application/json";
     private static final String UNMARSHALL_ENCODING = "utf-8";
     protected static final String DEFAULT_REQUEST_UUID_HEADER = "X-UUID";
+    protected static final String DEFAULT_REQUEST_UUID_PARENTS_HEADER = "X-UUID-PARENTS";
     protected static final int DEFAULT_HTTPS_PORT = 443;
     protected static final int DEFAULT_HTTP_PORT = 80;
 

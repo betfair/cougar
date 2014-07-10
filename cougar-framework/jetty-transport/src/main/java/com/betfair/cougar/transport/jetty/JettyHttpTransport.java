@@ -89,6 +89,7 @@ public class JettyHttpTransport extends AbstractRegisterableTransport implements
 
     private GeoLocationDeserializer deserializer;
     private String uuidHeader;
+    private String uuidParentsHeader;
 
     private int timeoutInSeconds;
 
@@ -185,6 +186,7 @@ public class JettyHttpTransport extends AbstractRegisterableTransport implements
                 wsdlRegex,
                 wsdlMediaType,
                 uuidHeader,
+                uuidParentsHeader,
                 deserializer,
                 geoIPLocator,
                 requestLogger,
@@ -196,6 +198,7 @@ public class JettyHttpTransport extends AbstractRegisterableTransport implements
                 htmlRegex,
                 htmlMediaType,
                 uuidHeader,
+                uuidParentsHeader,
                 deserializer,
                 geoIPLocator,
                 requestLogger,
@@ -470,6 +473,10 @@ public class JettyHttpTransport extends AbstractRegisterableTransport implements
 
     public void setUuidHeader(String uuidHeader) {
         this.uuidHeader = uuidHeader;
+    }
+
+    public void setUuidParentsHeader(String uuidParentsHeader) {
+        this.uuidParentsHeader = uuidParentsHeader;
     }
 
     public void setGeoIPLocator(GeoIPLocator geoIPLocator) {

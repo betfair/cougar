@@ -25,11 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -118,11 +114,12 @@ public abstract class LogTailer<T extends LogTailer.LogRequirement> implements T
         lookForLogLines(fromDate, timeoutMs, new ArrayList<T>(), true, matchers);
     }
 
-    public void lookForLogLines(Timestamp fromDate, long timeoutMs, T... requirements) {
-        lookForLogLines(fromDate, timeoutMs, new ArrayList<T>(Arrays.asList(requirements)), requirements.length == 0, null);
+    public LogLine[] lookForLogLines(Timestamp fromDate, long timeoutMs, T... requirements) {
+        return lookForLogLines(fromDate, timeoutMs, new ArrayList<T>(Arrays.asList(requirements)), requirements.length == 0, null);
     }
 
-    private void lookForLogLines(Timestamp fromDate, long timeoutMs, List<T> remainingRequirements, boolean expectingNoLines, T[] matchers) {
+    private LogLine[] lookForLogLines(Timestamp fromDate, long timeoutMs, List<T> remainingRequirements, boolean expectingNoLines, T[] matchers) {
+        List<LogLine> soFar = new LinkedList<>();
         // right, we look through the queue, testing each line to see if it matches the first requirement
         // each time we match a requirement, we discard it (in order)
         LogLine line;
@@ -135,16 +132,17 @@ public abstract class LogTailer<T extends LogTailer.LogRequirement> implements T
             // before and after..
             if (remainingRequirements.isEmpty()) {
                 if (!expectingNoLines) {
-                    return;
+                    return soFar.toArray(new LogTailer.LogLine[soFar.size()]);
                 }
             }
             else if (matches(line, remainingRequirements.get(0))) {
+                soFar.add(line);
                 remainingRequirements.remove(0);
             }
             // once we run out of requirements we exit cleanly
             if (remainingRequirements.isEmpty() && !expectingNoLines) {
 //                logger.debug(System.currentTimeMillis()+": Found all lines we were looking for!");
-                return;
+                return soFar.toArray(new LogTailer.LogLine[soFar.size()]);
             }
         }
         // if we run out of queued lines or we're not expecting any lines, then we start waiting for input to come into the queue
@@ -175,19 +173,21 @@ public abstract class LogTailer<T extends LogTailer.LogRequirement> implements T
                 }
                 if (matches(line, remainingRequirements.get(0))) {
                     remainingRequirements.remove(0);
+                    soFar.add(line);
                 }
                 // once we run out of requirements we exit cleanly
                 if (remainingRequirements.isEmpty()) {
 //                        logger.debug(System.currentTimeMillis()+": Found all lines we were looking for!");
-                    return;
+                    return soFar.toArray(new LogTailer.LogLine[soFar.size()]);
                 }
             }
             line = blockingPoll(inputQueue, remainingTime);
         } while ((remainingTime = endTime - System.currentTimeMillis()) > 0);
         if (!expectingNoLines) {
             // if we run out of time then we fail..
-            throw new IllegalStateException(new Date()+"."+System.currentTimeMillis()%1000+" Failed to find all log lines in time, remaining: "+remainingRequirements);
+            throw new IllegalStateException(new Date()+"."+System.currentTimeMillis()%1000+" Failed to find all log lines in time, remaining: "+remainingRequirements+", soFar: "+soFar);
         }
+        return soFar.toArray(new LogTailer.LogLine[soFar.size()]);
     }
 
     protected <T> T blockingPoll(BlockingQueue<T> queue, long ms) {
@@ -209,7 +209,7 @@ public abstract class LogTailer<T extends LogTailer.LogRequirement> implements T
 
     }
 
-    protected class LogLine implements Comparable<LogLine> {
+    public class LogLine implements Comparable<LogLine> {
         private long id = idSource.incrementAndGet();
         private Timestamp datetime;
         private Map<String, String> fields;

@@ -104,12 +104,12 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
     // package private for testing
     static final ExecutionTimingRecorder IDENTITY_RESOLUTION_TIMING_RECORDER = new NullExecutionTimingRecorder();
 
-    public JsonRpcTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, String requestTimeoutHeader, RequestTimeResolver requestTimeResolver, JSONBindingFactory jsonBindingFactory) {
-        this(geoIPLocator, deserializer, uuidHeader, requestTimeoutHeader, requestTimeResolver, null, jsonBindingFactory);
+    public JsonRpcTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, String uuidParentsHeader, String requestTimeoutHeader, RequestTimeResolver requestTimeResolver, JSONBindingFactory jsonBindingFactory) {
+        this(geoIPLocator, deserializer, uuidHeader, uuidParentsHeader, requestTimeoutHeader, requestTimeResolver, null, jsonBindingFactory);
     }
 
-	public JsonRpcTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, String requestTimeoutHeader, RequestTimeResolver requestTimeResolver, InferredCountryResolver<HttpServletRequest> countryResolver, JSONBindingFactory jsonBindingFactory) {
-		super(geoIPLocator, deserializer, uuidHeader, requestTimeoutHeader, requestTimeResolver, countryResolver);
+	public JsonRpcTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, String uuidParentsHeader, String requestTimeoutHeader, RequestTimeResolver requestTimeResolver, InferredCountryResolver<HttpServletRequest> countryResolver, JSONBindingFactory jsonBindingFactory) {
+		super(geoIPLocator, deserializer, uuidHeader, uuidParentsHeader, requestTimeoutHeader, requestTimeResolver, countryResolver);
 		setName("JsonRpcTransportCommandProcessor");
         mapper = jsonBindingFactory.createBaseObjectMapper();
 	}

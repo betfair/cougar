@@ -65,19 +65,20 @@ public class HttpClientExecutable extends AbstractHttpExecutable<HttpUriRequest>
 
 
     public HttpClientExecutable(final HttpServiceBindingDescriptor bindingDescriptor, GeoLocationSerializer serializer) {
-        this(bindingDescriptor, serializer, DEFAULT_REQUEST_UUID_HEADER);
+        this(bindingDescriptor, serializer, DEFAULT_REQUEST_UUID_HEADER, DEFAULT_REQUEST_UUID_PARENTS_HEADER);
     }
 
     public HttpClientExecutable(final HttpServiceBindingDescriptor bindingDescriptor,
                                 final GeoLocationSerializer serializer,
-                                final String requestUUIDHeader) {
-        this(bindingDescriptor, serializer, requestUUIDHeader, new CougarClientConnManager());
+                                final String requestUUIDHeader,
+                                final String requestUUIDParentsHeader) {
+        this(bindingDescriptor, serializer, requestUUIDHeader, requestUUIDParentsHeader, new CougarClientConnManager());
     }
 
 
     public HttpClientExecutable(final HttpServiceBindingDescriptor bindingDescriptor, GeoLocationSerializer serializer,
-                                String requestUUIDHeader, CougarClientConnManager clientConnectionManager) {
-        super(bindingDescriptor, new HttpClientCougarRequestFactory(serializer, requestUUIDHeader));
+                                String requestUUIDHeader, String requestUUIDParentsHeader, CougarClientConnManager clientConnectionManager) {
+        super(bindingDescriptor, new HttpClientCougarRequestFactory(serializer, requestUUIDHeader, requestUUIDParentsHeader));
         this.clientConnectionManager = clientConnectionManager;
     }
 

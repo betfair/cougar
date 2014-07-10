@@ -19,6 +19,7 @@ package com.betfair.cougar.client;
 import com.betfair.cougar.CougarVersion;
 import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.RequestUUID;
+import com.betfair.cougar.api.UUIDGenerator;
 import com.betfair.cougar.api.geolocation.GeoLocationDetails;
 import com.betfair.cougar.client.api.GeoLocationSerializer;
 import com.betfair.cougar.core.api.ev.TimeConstraints;
@@ -48,15 +49,17 @@ public abstract class CougarRequestFactory<HR> {
     // todo: base this on app name as well?
     static final String USER_AGENT_HEADER = "Cougar Client " + CougarVersion.getVersion();
 
-    private final String xRequestUUIDHeader;
+    private final String uuidHeader;
+    private final String uuidParentsHeader;
 
     private final GeoLocationSerializer geoLocationSerializer;
 
     private volatile boolean gzipCompressionEnabled;
 
-    public CougarRequestFactory(GeoLocationSerializer geoLocationSerializer, String xRequestUUIDHeader) {
+    public CougarRequestFactory(GeoLocationSerializer geoLocationSerializer, String uuidHeader, String uuidParentsHeader) {
         this.geoLocationSerializer = geoLocationSerializer;
-        this.xRequestUUIDHeader = xRequestUUIDHeader;
+        this.uuidHeader = uuidHeader;
+        this.uuidParentsHeader = uuidParentsHeader;
     }
 
     public HR create(final String uri, final String httpMethod, final Message message,
@@ -131,9 +134,12 @@ public abstract class CougarRequestFactory<HR> {
             geoLocationSerializer.serialize(gld, result);
         }
 
-        if (xRequestUUIDHeader != null) {
-            RequestUUID requestUUID = ctx.getRequestUUID() != null ? ctx.getRequestUUID() : new RequestUUIDImpl();
-            result.add(new BasicHeader(xRequestUUIDHeader, requestUUID.toString()));
+        if (uuidHeader != null) {
+            RequestUUID requestUUID = ctx.getRequestUUID() != null ? ctx.getRequestUUID().getNewSubUUID() : new RequestUUIDImpl();
+            result.add(new BasicHeader(uuidHeader, requestUUID.getLocalUUIDComponent()));
+            if (uuidParentsHeader != null && requestUUID.getRootUUIDComponent() != null) {
+                result.add(new BasicHeader(uuidParentsHeader, requestUUID.getRootUUIDComponent()+ UUIDGenerator.COMPONENT_SEPARATOR+requestUUID.getParentUUIDComponent()));
+            }
         }
 
         // time headers

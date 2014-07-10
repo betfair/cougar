@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 
 public class UUIDGeneratorImpl implements UUIDGenerator {
 
-    private static Pattern VALID_UUID = Pattern.compile("[\\w\\d\\-]{20,50}", Pattern.CASE_INSENSITIVE);
+    private static Pattern VALID_UUID_COMPONENT = Pattern.compile("[\\w\\d\\-]{20,50}", Pattern.CASE_INSENSITIVE);
 
     public static final String DEFAULT_HOSTNAME = "localhost";
 
@@ -58,10 +58,20 @@ public class UUIDGeneratorImpl implements UUIDGenerator {
     }
 
     @Override
-    public void validateUuid(String uuid) {
-        if (!VALID_UUID.matcher(uuid).matches()) {
-            throw new IllegalArgumentException("UUid "+uuid+" invalid - must match pattern "+ VALID_UUID.pattern());
+    public String[] validateUuid(String uuid) {
+        String[] components = uuid.split(Pattern.quote(UUIDGenerator.COMPONENT_SEPARATOR));
+        if (components.length != 1 && components.length != 3) {
+            throw new IllegalArgumentException("UUid "+uuid+" has "+components.length+" component parts, expected 1 or 3");
         }
+        for (int i=0; i<components.length; i++) {
+            if (!VALID_UUID_COMPONENT.matcher(components[i]).matches()) {
+                throw new IllegalArgumentException("UUid component "+i+"("+components[i]+") invalid - must match pattern "+ VALID_UUID_COMPONENT.pattern());
+            }
+        }
+        if (components.length == 1) {
+            return new String[] { null, null, uuid };
+        }
+        return components;
     }
 
     private static String randomUUID() {

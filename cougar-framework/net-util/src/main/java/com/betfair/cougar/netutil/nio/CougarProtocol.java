@@ -55,8 +55,9 @@ public class CougarProtocol extends IoFilterAdapter implements Exportable {
     public static final byte TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC = 2;
     public static final byte TRANSPORT_PROTOCOL_VERSION_START_TLS = 3;
     public static final byte TRANSPORT_PROTOCOL_VERSION_TIME_CONSTRAINTS = 4;
+    public static final byte TRANSPORT_PROTOCOL_VERSION_COMPOUND_REQUEST_UUID = 5;
     public static final byte TRANSPORT_PROTOCOL_VERSION_MIN_SUPPORTED = TRANSPORT_PROTOCOL_VERSION_CLIENT_ONLY_RPC;
-    public static final byte TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED = TRANSPORT_PROTOCOL_VERSION_TIME_CONSTRAINTS;
+    public static final byte TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED = TRANSPORT_PROTOCOL_VERSION_COMPOUND_REQUEST_UUID;
     public static final byte TRANSPORT_PROTOCOL_VERSION_UNSUPPORTED = TRANSPORT_PROTOCOL_VERSION_MIN_SUPPORTED - 1;
 
     // these allow tests to force us to particular versions of the protocol, even invalid ones
@@ -106,6 +107,7 @@ public class CougarProtocol extends IoFilterAdapter implements Exportable {
         map[TRANSPORT_PROTOCOL_VERSION_BIDIRECTION_RPC] =  Collections.unmodifiableSet(EnumSet.noneOf(TranscribableParams.class));
         map[TRANSPORT_PROTOCOL_VERSION_START_TLS] =  Collections.unmodifiableSet(EnumSet.of(TranscribableParams.EnumsWrittenAsStrings, TranscribableParams.MajorOnlyPackageNaming));
         map[TRANSPORT_PROTOCOL_VERSION_TIME_CONSTRAINTS] =  Collections.unmodifiableSet(EnumSet.of(TranscribableParams.EnumsWrittenAsStrings, TranscribableParams.MajorOnlyPackageNaming));
+        map[TRANSPORT_PROTOCOL_VERSION_COMPOUND_REQUEST_UUID] =  Collections.unmodifiableSet(EnumSet.of(TranscribableParams.EnumsWrittenAsStrings, TranscribableParams.MajorOnlyPackageNaming));
         transcribableParamsByProtocolVersion = map;
     }
 

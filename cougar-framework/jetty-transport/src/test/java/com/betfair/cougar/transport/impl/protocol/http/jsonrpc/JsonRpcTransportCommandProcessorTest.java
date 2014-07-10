@@ -671,7 +671,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         bindOperations();
 
         LocalJsonRpcCommandProcessor commandProcessorWithoutCountryResolver =
-                new LocalJsonRpcCommandProcessor(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID", requestTimeResolver, new JSONBindingFactory());
+                new LocalJsonRpcCommandProcessor(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID", "X-UUID-Parents", requestTimeResolver, new JSONBindingFactory());
 
         HttpCommand command = mock(HttpCommand.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
@@ -1173,13 +1173,13 @@ public class JsonRpcTransportCommandProcessorTest  {
     private class LocalJsonRpcCommandProcessor extends JsonRpcTransportCommandProcessor {
         private boolean errorCalled;
         public LocalJsonRpcCommandProcessor(RequestTimeResolver requestTimeResolver, JSONBindingFactory jsonBindingFactory) {
-            super(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID", "X-RequestTimeout", requestTimeResolver, new InferredCountryResolver<HttpServletRequest>() {
+            super(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID", "X-UUID-Parents", "X-RequestTimeout", requestTimeResolver, new InferredCountryResolver<HttpServletRequest>() {
                 public String inferCountry(HttpServletRequest input) { return AZ;}
             }, jsonBindingFactory);
         }
 
-        public LocalJsonRpcCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, RequestTimeResolver requestTimeResolver, JSONBindingFactory jsonBindingFactory) {
-            super(geoIPLocator, deserializer, uuidHeader, "X-RequestTimeout", requestTimeResolver, jsonBindingFactory);
+        public LocalJsonRpcCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, String uuidParentsHeader, RequestTimeResolver requestTimeResolver, JSONBindingFactory jsonBindingFactory) {
+            super(geoIPLocator, deserializer, uuidHeader, uuidParentsHeader, "X-RequestTimeout", requestTimeResolver, jsonBindingFactory);
         }
 
         @Override

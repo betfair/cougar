@@ -76,7 +76,8 @@ public abstract class AbstractHttpCommandProcessor extends
 
     private final GeoLocationDeserializer geoLocationDeserializer;
 
-	private final String uuidHeader;
+    private final String uuidHeader;
+    private final String uuidParentsHeader;
 
     private final String requestTimeoutHeader;
 
@@ -115,9 +116,9 @@ public abstract class AbstractHttpCommandProcessor extends
      *            the key of the Http Header containing the unique id for a request
      */
     public AbstractHttpCommandProcessor(GeoIPLocator geoIPLocator,
-                                        GeoLocationDeserializer geoLocationDeserializer, String uuidHeader,
+                                        GeoLocationDeserializer geoLocationDeserializer, String uuidHeader, String uuidParentsHeader,
                                         String requestTimeoutHeader, RequestTimeResolver requestTimeResolver){
-        this(geoIPLocator, geoLocationDeserializer, uuidHeader, requestTimeoutHeader, requestTimeResolver, null);
+        this(geoIPLocator, geoLocationDeserializer, uuidHeader, uuidParentsHeader, requestTimeoutHeader, requestTimeResolver, null);
     }
 
 	/**
@@ -129,11 +130,12 @@ public abstract class AbstractHttpCommandProcessor extends
      * @param inferredCountryResolver
      */
 	public AbstractHttpCommandProcessor(GeoIPLocator geoIPLocator,
-                                        GeoLocationDeserializer geoLocationDeserializer, String uuidHeader,
+                                        GeoLocationDeserializer geoLocationDeserializer, String uuidHeader, String uuidParentsHeader,
                                         String requestTimeoutHeader, RequestTimeResolver requestTimeResolver, InferredCountryResolver<HttpServletRequest> inferredCountryResolver) {
 		this.geoIPLocator = geoIPLocator;
         this.geoLocationDeserializer = geoLocationDeserializer;
 		this.uuidHeader = uuidHeader;
+        this.uuidParentsHeader = uuidParentsHeader;
         this.inferredCountryResolver = inferredCountryResolver;
         this.requestTimeoutHeader = requestTimeoutHeader;
         this.requestTimeResolver = requestTimeResolver;
@@ -318,7 +320,7 @@ public abstract class AbstractHttpCommandProcessor extends
             if (command.getRequest().getScheme().equals("https")) {
                 keyLength = SSLRequestUtils.getTransportSecurityStrengthFactor(command.getRequest(), unknownCipherKeyLength);
             }
-           return ExecutionContextFactory.resolveExecutionContext(command, tokens, uuidHeader, geoLocationDeserializer, geoIPLocator, inferredCountry, keyLength, ignoreSubsequentWritesOfIdentity, requestTime);
+           return ExecutionContextFactory.resolveExecutionContext(command, tokens, uuidHeader, uuidParentsHeader, geoLocationDeserializer, geoIPLocator, inferredCountry, keyLength, ignoreSubsequentWritesOfIdentity, requestTime);
    	}
 
     /**
@@ -436,6 +438,11 @@ public abstract class AbstractHttpCommandProcessor extends
     @ManagedAttribute
     public String getUuidHeader() {
         return uuidHeader;
+    }
+
+    @ManagedAttribute
+    public String getUuidParentsHeader() {
+        return uuidParentsHeader;
     }
 
     @ManagedAttribute

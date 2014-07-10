@@ -38,8 +38,8 @@ public abstract class AbstractTerminateableHttpCommandProcessor extends Abstract
 	 *            the key of the Http Header containing the unique id for a request
 	 */
 	public AbstractTerminateableHttpCommandProcessor(GeoIPLocator geoIPLocator,
-                                                     GeoLocationDeserializer deserializer, String uuidHeader, InferredCountryResolver<HttpServletRequest> countryResolver,
+                                                     GeoLocationDeserializer deserializer, String uuidHeader, String uuidParentsHeader, InferredCountryResolver<HttpServletRequest> countryResolver,
                                                      String requestTimeoutHeader, RequestTimeResolver requestTimeResolver) {
-        super(geoIPLocator, deserializer, uuidHeader, requestTimeoutHeader, requestTimeResolver, countryResolver);
+        super(geoIPLocator, deserializer, uuidHeader, uuidParentsHeader, requestTimeoutHeader, requestTimeResolver, countryResolver);
 	}
 }

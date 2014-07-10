@@ -47,7 +47,7 @@ import static org.mockito.Mockito.*;
 public class StaticContentServiceHandlerTest {
 
 	private static final String CONTENT_TYPE = "text/xml";
-	
+
 	private StaticContentServiceHandler handler;
 	private HttpServletResponse httpServletResponse;
 	private org.eclipse.jetty.server.Request request;
@@ -61,7 +61,7 @@ public class StaticContentServiceHandlerTest {
             baos.write(b);
         }
     };
-    
+
     private GeoIPLocator locator = new GeoIPLocator() {
         @Override
         public GeoLocationDetails getGeoLocation(String remoteIP, List<String> resolvedIPs, String inferredCountry) {
@@ -108,7 +108,7 @@ public class StaticContentServiceHandlerTest {
 	@Before
 	public void setUp() throws Exception {
         requestLogger = mock(RequestLogger.class);
-		handler = new StaticContentServiceHandler( "/wsdl", "/wsdl/[fo]+\\.wsdl", CONTENT_TYPE, "X-UUID", new DefaultGeoLocationDeserializer(), locator, requestLogger, true);
+		handler = new StaticContentServiceHandler( "/wsdl", "/wsdl/[fo]+\\.wsdl", CONTENT_TYPE, "X-UUID", "X-UUID-Parents", new DefaultGeoLocationDeserializer(), locator, requestLogger, true);
         handler.start();
 
 		// Set up the Continuations mock.

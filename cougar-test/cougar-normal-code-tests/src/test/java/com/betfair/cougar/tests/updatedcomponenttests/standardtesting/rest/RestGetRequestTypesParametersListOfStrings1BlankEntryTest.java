@@ -19,21 +19,8 @@ package com.betfair.cougar.tests.updatedcomponenttests.standardtesting.rest;
 
 import com.betfair.testing.utils.cougar.CougarBaseline2_8TestingInvoker;
 import com.betfair.testing.utils.cougar.enums.CougarMessageContentTypeEnum;
-import com.betfair.testing.utils.cougar.misc.XMLHelpers;
-import com.betfair.testing.utils.JSONHelpers;
-import com.betfair.testing.utils.cougar.assertions.AssertionUtils;
-import com.betfair.testing.utils.cougar.beans.HttpCallBean;
-import com.betfair.testing.utils.cougar.beans.HttpResponseBean;
-import com.betfair.testing.utils.cougar.manager.CougarManager;
-import com.betfair.testing.utils.cougar.manager.RequestLogRequirement;
 
-import org.json.JSONObject;
 import org.testng.annotations.Test;
-import org.w3c.dom.Document;
-
-import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Ensure that when the 4 supported Rest XML/JSON Gets are performed, Cougar can handle an empty List of Strings being passed in the Header and Query parameters
@@ -51,7 +38,7 @@ public class RestGetRequestTypesParametersListOfStrings1BlankEntryTest {
                 .setExpectedResponse(CougarMessageContentTypeEnum.XML, expectedXmlResponse)
                 .setExpectedResponse(CougarMessageContentTypeEnum.JSON, expectedJsonResponse)
                 .setExpectedHttpResponse(200, "OK")
-                .makeMatrixCalls(CougarMessageContentTypeEnum.JSON, CougarMessageContentTypeEnum.XML)
+                .makeMatrixRescriptCalls(CougarMessageContentTypeEnum.JSON, CougarMessageContentTypeEnum.XML)
                 .verify();
 
     }

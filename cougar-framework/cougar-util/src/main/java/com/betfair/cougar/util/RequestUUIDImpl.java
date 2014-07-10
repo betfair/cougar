@@ -22,16 +22,12 @@ import com.betfair.cougar.api.UUIDGenerator;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Date;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class RequestUUIDImpl implements RequestUUID {
 
-    private String uuid;
+    private String rootUUid;
+    private String parentUUid;
+    private String localUUid;
 
     private static UUIDGenerator generator;
 
@@ -42,16 +38,28 @@ public class RequestUUIDImpl implements RequestUUID {
         setGenerator(generator);
     }
 
+    RequestUUIDImpl(String rootUUid, String parentUUid, String localUUid) {
+        this.rootUUid = rootUUid;
+        this.parentUUid = parentUUid;
+        this.localUUid = localUUid;
+    }
+
     public RequestUUIDImpl() {
-        this.uuid = generator.getNextUUID();
+        this.localUUid = generator.getNextUUID();
     }
 
     public RequestUUIDImpl(String uuid) {
         if (uuid == null) {
             throw new IllegalArgumentException("The UUID argument cannot be null");
         }
-        generator.validateUuid(uuid);
-        this.uuid = uuid;
+        setUuidRaw(uuid);
+    }
+
+    private void setUuidRaw(String rawUuid) {
+        String[] components = generator.validateUuid(rawUuid);
+        rootUUid = components[0];
+        parentUUid = components[1];
+        localUUid = components[2];
     }
 
     public RequestUUIDImpl(ObjectInput in) throws IOException {
@@ -65,7 +73,7 @@ public class RequestUUIDImpl implements RequestUUID {
     @Override
     public void readExternal(ObjectInput in) throws IOException {
         try {
-            uuid = (String) in.readObject();
+            setUuidRaw((String) in.readObject());
         } catch (ClassNotFoundException e) {
             throw new IOException(e);
         }
@@ -73,35 +81,69 @@ public class RequestUUIDImpl implements RequestUUID {
 
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(uuid);
+        out.writeObject(toString());
     }
 
     @Override
     public String toString() {
-        return uuid;
+        return getUUID();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RequestUUIDImpl that = (RequestUUIDImpl) o;
+
+        if (!localUUid.equals(that.localUUid)) return false;
+        if (parentUUid != null ? !parentUUid.equals(that.parentUUid) : that.parentUUid != null) return false;
+        if (rootUUid != null ? !rootUUid.equals(that.rootUUid) : that.rootUUid != null) return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return uuid.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object rhs) {
-        if (this == rhs) {
-            return true;
-        }
-        if (rhs == null) {
-            return false;
-        }
-        if (getClass() != rhs.getClass()) {
-            return false;
-        }
-        RequestUUIDImpl that = (RequestUUIDImpl) rhs;
-        return this.uuid.equals(that.uuid);
+        int result = rootUUid != null ? rootUUid.hashCode() : 0;
+        result = 31 * result + (parentUUid != null ? parentUUid.hashCode() : 0);
+        result = 31 * result + localUUid.hashCode();
+        return result;
     }
 
     public String getUUID() {
-        return uuid;
+        StringBuilder sb = new StringBuilder();
+        String sep = "";
+        if (rootUUid != null) {
+            sb.append(rootUUid);
+            sep = UUIDGenerator.COMPONENT_SEPARATOR;
+            sb.append(sep).append(parentUUid);
+        }
+        sb.append(sep).append(localUUid);
+        return sb.toString();
+    }
+
+    @Override
+    public String getRootUUIDComponent() {
+        return rootUUid;
+    }
+
+    @Override
+    public String getParentUUIDComponent() {
+        return parentUUid;
+    }
+
+    @Override
+    public String getLocalUUIDComponent() {
+        return localUUid;
+    }
+
+    @Override
+    public RequestUUID getNewSubUUID() {
+        // means that no uuid was passed into construction -> we are the root
+        if (rootUUid == null) {
+            return new RequestUUIDImpl(localUUid, localUUid, generator.getNextUUID());
+        }
+        return new RequestUUIDImpl(rootUUid, localUUid, generator.getNextUUID());
     }
 }

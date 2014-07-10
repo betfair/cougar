@@ -51,13 +51,13 @@ public class ServiceNotFoundHttpCommandProcessor extends AbstractHttpCommandProc
 
 
 	public ServiceNotFoundHttpCommandProcessor(GeoIPLocator geoIPLocator,
-                                               GeoLocationDeserializer deserializer, String uuidHeader, String requestTimeoutHeader, RequestTimeResolver requestTimeResolver) {
-		this(geoIPLocator, deserializer, uuidHeader, requestTimeoutHeader, requestTimeResolver, null);
+                                               GeoLocationDeserializer deserializer, String uuidHeader, String uuidParentsHeader, String requestTimeoutHeader, RequestTimeResolver requestTimeResolver) {
+		this(geoIPLocator, deserializer, uuidHeader, uuidParentsHeader, requestTimeoutHeader, requestTimeResolver, null);
 	}
 
     public ServiceNotFoundHttpCommandProcessor(GeoIPLocator geoIPLocator,
-			GeoLocationDeserializer deserializer, String uuidHeader, String requestTimeoutHeader, RequestTimeResolver requestTimeResolver, InferredCountryResolver<HttpServletRequest> resolver) {
-		super(geoIPLocator, deserializer, uuidHeader, requestTimeoutHeader, requestTimeResolver, resolver);
+			GeoLocationDeserializer deserializer, String uuidHeader, String uuidParentsHeader, String requestTimeoutHeader, RequestTimeResolver requestTimeResolver, InferredCountryResolver<HttpServletRequest> resolver) {
+		super(geoIPLocator, deserializer, uuidHeader, uuidParentsHeader, requestTimeoutHeader, requestTimeResolver, resolver);
 		setName("ServiceNotFoundHttpCommandProcessor");
 		setPriority(0);
 	}

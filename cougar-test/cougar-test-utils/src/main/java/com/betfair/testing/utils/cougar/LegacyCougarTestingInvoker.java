@@ -21,15 +21,17 @@ import com.betfair.testing.utils.cougar.assertions.AssertionUtils;
 import com.betfair.testing.utils.cougar.beans.HttpCallBean;
 import com.betfair.testing.utils.cougar.beans.HttpResponseBean;
 import com.betfair.testing.utils.cougar.enums.CougarMessageContentTypeEnum;
+import com.betfair.testing.utils.cougar.enums.CougarMessageProtocolRequestTypeEnum;
+import com.betfair.testing.utils.cougar.helpers.CougarHelpers;
 import com.betfair.testing.utils.cougar.manager.CougarManager;
+import com.betfair.testing.utils.cougar.manager.LogTailer;
 import com.betfair.testing.utils.cougar.manager.RequestLogRequirement;
 import com.betfair.testing.utils.cougar.misc.XMLHelpers;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
 
 import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * New utility for writing integration tests via. Initially just delegates to old code.
@@ -49,9 +51,15 @@ class LegacyCougarTestingInvoker implements CougarTestingInvoker {
     private int numCalls;
     private Document expectedResponseXML;
     private JSONObject expectedResponseJson;
+    private LogTailer.LogLine[] requestLogEntries;
+    private String soapBody;
+    private List<Map<String, String>> jsonCalls;
+    private List<String> expectedResponsesJsonRpc;
 
     public LegacyCougarTestingInvoker() {
         httpCallBeanBaseline = cougarManager.getNewHttpCallBean();
+        jsonCalls = new LinkedList<>();
+        expectedResponsesJsonRpc = new ArrayList<>();
     }
 
     public static LegacyCougarTestingInvoker create() {
@@ -75,7 +83,11 @@ class LegacyCougarTestingInvoker implements CougarTestingInvoker {
     }
 
     public CougarTestingInvoker setOperation(String operation) {
-        httpCallBeanBaseline.setOperationName(operation);
+        return setOperation(operation,operation);
+    }
+
+    public CougarTestingInvoker setOperation(String operation, String operationPath) {
+        httpCallBeanBaseline.setOperationName(operationPath);
         this.operation = operation;
         return this;
     }
@@ -90,7 +102,23 @@ class LegacyCougarTestingInvoker implements CougarTestingInvoker {
         return this;
     }
 
-    public CougarTestingInvoker makeMatrixCalls(CougarMessageContentTypeEnum... mediaTypes) {
+
+
+    @Override
+    public CougarTestingInvoker makeSoapCall() {
+        this.timestamp = new Timestamp(System.currentTimeMillis());
+        this.numCalls = 1;
+
+        httpCallBeanBaseline.setHeaderParams(headerParams);
+        Document request = new XMLHelpers().getXMLObjectFromString(soapBody);
+        httpCallBeanBaseline.setPostObjectForRequestType(request, "SOAP");
+
+        cougarManager.makeSoapCougarHTTPCalls(httpCallBeanBaseline);
+
+        return this;
+    }
+
+    public CougarTestingInvoker makeMatrixRescriptCalls(CougarMessageContentTypeEnum... mediaTypes) {
         this.timestamp = new Timestamp(System.currentTimeMillis());
         this.numCalls = mediaTypes.length*mediaTypes.length;
 
@@ -106,6 +134,43 @@ class LegacyCougarTestingInvoker implements CougarTestingInvoker {
         // this ignores the media types that have been set
         cougarManager.makeRestCougarHTTPCalls(httpCallBeanBaseline);
 
+        return this;
+    }
+
+    @Override
+    public CougarTestingInvoker makeJsonRpcCalls() {
+        this.timestamp = new Timestamp(System.currentTimeMillis());
+        this.numCalls = 1;
+
+        httpCallBeanBaseline.setHeaderParams(headerParams);
+        httpCallBeanBaseline.setJSONRPC(true);
+        Map<String,String>[] mapArray = jsonCalls.toArray(new Map[jsonCalls.size()]);
+        httpCallBeanBaseline.setBatchedRequests(mapArray);
+
+        cougarManager.makeRestCougarHTTPCall(httpCallBeanBaseline, CougarMessageProtocolRequestTypeEnum.RESTJSON, CougarMessageContentTypeEnum.JSON);
+
+        return this;
+    }
+
+    @Override
+    public CougarTestingInvoker setSoapBody(String body) {
+        this.soapBody = body;
+        return this;
+    }
+
+    @Override
+    public CougarTestingInvoker addJsonRpcMethodCall(String id, String method, String body) {
+        Map<String,String> call = new HashMap<>();
+        call.put("id",id);
+        call.put("method",method);
+        call.put("params",body);
+        jsonCalls.add(call);
+        return this;
+    }
+
+    @Override
+    public CougarTestingInvoker addJsonRpcExpectedResponse(String body) {
+        expectedResponsesJsonRpc.add(body);
         return this;
     }
 
@@ -133,37 +198,71 @@ class LegacyCougarTestingInvoker implements CougarTestingInvoker {
         return this;
     }
 
-    public void verify() {
-        // Check the 4 responses are as expected
-        HttpResponseBean response7 = httpCallBeanBaseline.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTXMLXML);
-        AssertionUtils.multiAssertEquals(expectedResponseXML, response7.getResponseObject());
-        AssertionUtils.multiAssertEquals(expectedHttpStatusCode, response7.getHttpStatusCode());
-        AssertionUtils.multiAssertEquals(expectedHttpStatusText, response7.getHttpStatusText());
+    public CougarTestingInvoker verify() {
+        if (expectedResponseXML != null) {
+            // Check the 4 responses are as expected
+            HttpResponseBean response7 = httpCallBeanBaseline.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTXMLXML);
+            AssertionUtils.multiAssertEquals(expectedResponseXML, response7.getResponseObject());
+            AssertionUtils.multiAssertEquals(expectedHttpStatusCode, response7.getHttpStatusCode());
+            AssertionUtils.multiAssertEquals(expectedHttpStatusText, response7.getHttpStatusText());
 
-        HttpResponseBean response8 = httpCallBeanBaseline.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTJSONJSON);
-        AssertionUtils.multiAssertEquals(expectedResponseJson, response8.getResponseObject());
-        AssertionUtils.multiAssertEquals(expectedHttpStatusCode, response8.getHttpStatusCode());
-        AssertionUtils.multiAssertEquals("OK", response8.getHttpStatusText());
+            HttpResponseBean response10 = httpCallBeanBaseline.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTJSONXML);
+            AssertionUtils.multiAssertEquals(expectedResponseXML, response10.getResponseObject());
+            AssertionUtils.multiAssertEquals(expectedHttpStatusCode, response10.getHttpStatusCode());
+            AssertionUtils.multiAssertEquals(expectedHttpStatusText, response10.getHttpStatusText());
+        }
 
-        HttpResponseBean response9 = httpCallBeanBaseline.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTXMLJSON);
-        AssertionUtils.multiAssertEquals(expectedResponseJson, response9.getResponseObject());
-        AssertionUtils.multiAssertEquals(expectedHttpStatusCode, response9.getHttpStatusCode());
-        AssertionUtils.multiAssertEquals("OK", response9.getHttpStatusText());
+        if (expectedResponseJson != null) {
+            HttpResponseBean response8 = httpCallBeanBaseline.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTJSONJSON);
+            AssertionUtils.multiAssertEquals(expectedResponseJson, response8.getResponseObject());
+            AssertionUtils.multiAssertEquals(expectedHttpStatusCode, response8.getHttpStatusCode());
+            AssertionUtils.multiAssertEquals(expectedHttpStatusText, response8.getHttpStatusText());
 
-        HttpResponseBean response10 = httpCallBeanBaseline.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTJSONXML);
-        AssertionUtils.multiAssertEquals(expectedResponseXML, response10.getResponseObject());
-        AssertionUtils.multiAssertEquals(expectedHttpStatusCode, response10.getHttpStatusCode());
-        AssertionUtils.multiAssertEquals("OK", response10.getHttpStatusText());
+            HttpResponseBean response9 = httpCallBeanBaseline.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTXMLJSON);
+            AssertionUtils.multiAssertEquals(expectedResponseJson, response9.getResponseObject());
+            AssertionUtils.multiAssertEquals(expectedHttpStatusCode, response9.getHttpStatusCode());
+            AssertionUtils.multiAssertEquals(expectedHttpStatusText, response9.getHttpStatusText());
+        }
 
-        try {
-            RequestLogRequirement[] reqs = new RequestLogRequirement[numCalls];
-            for (int i=0; i<numCalls; i++) {
-                reqs[i] = new RequestLogRequirement(version, operation);
+        if (!expectedResponsesJsonRpc.isEmpty()) {
+            try {
+                HttpResponseBean response = httpCallBeanBaseline.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTJSONJSON);
+                // Convert the returned json object to a map for comparison
+                CougarHelpers cougarHelpers = new CougarHelpers();
+                Map<String, Object> map5 = cougarHelpers.convertBatchedResponseToMap(response);
+                for (int i=0; i<expectedResponsesJsonRpc.size(); i++) {
+                    AssertionUtils.multiAssertEquals(expectedResponsesJsonRpc.get(i), map5.get("response"+(i+1)));
+                }
+                AssertionUtils.multiAssertEquals(expectedHttpStatusCode, map5.get("httpStatusCode"));
+                AssertionUtils.multiAssertEquals(expectedHttpStatusText, map5.get("httpStatusText"));
             }
-            CougarManager.getInstance().verifyRequestLogEntriesAfterDate(timestamp, reqs);
+            catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
-        catch (Exception e) {
-            throw new RuntimeException(e);
+
+        ensureHaveRequestLogEntries();
+
+        return this;
+    }
+
+    private void ensureHaveRequestLogEntries() {
+        if (requestLogEntries == null) {
+            try {
+                RequestLogRequirement[] reqs = new RequestLogRequirement[numCalls];
+                for (int i=0; i<numCalls; i++) {
+                    reqs[i] = new RequestLogRequirement(version, operation);
+                }
+                requestLogEntries = CougarManager.getInstance().verifyRequestLogEntriesAfterDate(timestamp, reqs);
+            }
+            catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
+    }
+
+    public LogTailer.LogLine[] getRequestLogEntries() {
+        ensureHaveRequestLogEntries();
+        return requestLogEntries;
     }
 }

@@ -55,7 +55,7 @@ public class JettyCougarRequestFactoryTest {
     @Mock
     private TimeConstraints mockTimeConstraints;
 
-    private JettyCougarRequestFactory factory = new JettyCougarRequestFactory(new DefaultGeoLocationSerializer(), "X-REQUEST-UUID");
+    private JettyCougarRequestFactory factory = new JettyCougarRequestFactory(new DefaultGeoLocationSerializer(), "X-REQUEST-UUID", "X-REQUEST-UUID-PARENTS");
 
     private String uri = "http://Some.uri";
     private String contentType = "application/X-my-type";

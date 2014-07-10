@@ -101,14 +101,14 @@ public class UUIDGeneratorImplTest {
 		ObjectOutput out = new ObjectOutputStream(baos);
 
 		uuid.writeExternal(out);
-		
+
 		// must close the writer or it doesn't actually do the write to the underlying
 		// buffer
 		out.close();
-		
+
 		ObjectInput in = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()));
 		RequestUUID clone = new RequestUUIDImpl(in);
-		
+
 		assertEquals("RequestUUID implementation's toString() output do not match", uuid.toString(), clone.toString());
 	}
 
@@ -165,6 +165,38 @@ public class UUIDGeneratorImplTest {
 
         System.out.println("Time taken for 5,000,000 requests was "+totalTime+" ms");
     }
+
+    @Test
+    public void tripleComponent() {
+        UUIDGeneratorImpl impl = new UUIDGeneratorImpl();
+        String[] component = impl.validateUuid("abcd001-abcdef-00001:defg002-ghijkl-00001:hijk003-mnopqr-00001");
+        assertEquals(3, component.length);
+        assertEquals("abcd001-abcdef-00001",component[0]);
+        assertEquals("defg002-ghijkl-00001",component[1]);
+        assertEquals("hijk003-mnopqr-00001",component[2]);
+    }
+    @Test
+    public void singleComponent() {
+        UUIDGeneratorImpl impl = new UUIDGeneratorImpl();
+        String[] component = impl.validateUuid("abcd001-abcdef-00001");
+        assertEquals(3, component.length);
+        assertNull(component[0]);
+        assertNull(component[1]);
+        assertEquals("abcd001-abcdef-00001",component[2]);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void tripleComponentWrongSep() {
+        UUIDGeneratorImpl impl = new UUIDGeneratorImpl();
+        impl.validateUuid("abcd001-abcdef-00001;defg002-ghijkl-00001;hijk003-mnopqr-00001");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void twoComponents() {
+        UUIDGeneratorImpl impl = new UUIDGeneratorImpl();
+        impl.validateUuid("abcd001-abcdef-00001:defg002-ghijkl-00001");
+    }
+
 
     private static class UUIDThread extends Thread {
         private long timeTaken;

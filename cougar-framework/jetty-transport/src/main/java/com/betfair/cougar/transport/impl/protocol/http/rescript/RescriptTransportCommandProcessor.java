@@ -72,14 +72,14 @@ public class RescriptTransportCommandProcessor extends AbstractTerminateableHttp
     final static Logger LOGGER = LoggerFactory.getLogger(RescriptTransportCommandProcessor.class);
 	private Map<String, RescriptOperationBinding> bindings = new HashMap<String, RescriptOperationBinding>();
 
-    public RescriptTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader,
+    public RescriptTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, String uuidParentsHeader,
                                              String requestTimeoutHeader, RequestTimeResolver requestTimeResolver) {
-        this(geoIPLocator, deserializer, uuidHeader, requestTimeoutHeader, requestTimeResolver, null);
+        this(geoIPLocator, deserializer, uuidHeader, uuidParentsHeader, requestTimeoutHeader, requestTimeResolver, null);
     }
 
-	public RescriptTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader,
+	public RescriptTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, String uuidParentsHeader,
                                              String requestTimeoutHeader, RequestTimeResolver requestTimeResolver, InferredCountryResolver<HttpServletRequest> countryResolver) {
-		super(geoIPLocator, deserializer, uuidHeader, countryResolver, requestTimeoutHeader, requestTimeResolver);
+		super(geoIPLocator, deserializer, uuidHeader, uuidParentsHeader, countryResolver, requestTimeoutHeader, requestTimeResolver);
 		setName("RescriptTransportCommandProcessor");
 	}
 

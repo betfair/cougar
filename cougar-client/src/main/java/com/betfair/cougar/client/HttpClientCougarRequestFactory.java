@@ -33,8 +33,8 @@ import java.util.List;
  */
 public class HttpClientCougarRequestFactory extends CougarRequestFactory<HttpUriRequest> {
 
-    public HttpClientCougarRequestFactory(GeoLocationSerializer serializer, String requestUUIDHeader) {
-        super(serializer, requestUUIDHeader);
+    public HttpClientCougarRequestFactory(GeoLocationSerializer serializer, String requestUUIDHeader, String requestUUIDParentsHeader) {
+        super(serializer, requestUUIDHeader, requestUUIDParentsHeader);
     }
 
     @Override

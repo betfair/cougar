@@ -68,6 +68,7 @@ public class StaticContentServiceHandler extends ContextHandler {
     private final AtomicLong ioErrorsEncountered = new AtomicLong();
 
     private final String uuidHeader;
+    private final String uuidParentsHeader;
     private final GeoLocationDeserializer deserializer;
     private final GeoIPLocator geoIPLocator;
 
@@ -84,6 +85,7 @@ public class StaticContentServiceHandler extends ContextHandler {
 					String staticContentRegex,
 					String contentType,
                     String uuidHeader,
+                    String uuidParentsHeader,
                     GeoLocationDeserializer deserializer,
 					GeoIPLocator geoIPLocator,
                     RequestLogger requestLogger,
@@ -91,6 +93,7 @@ public class StaticContentServiceHandler extends ContextHandler {
 		this.contextPath = contextPath;
 		this.contentType = contentType;
         this.uuidHeader = uuidHeader;
+        this.uuidParentsHeader = uuidParentsHeader;
         this.deserializer = deserializer;
         this.geoIPLocator = geoIPLocator;
         this.requestLogger = requestLogger;
@@ -159,7 +162,7 @@ public class StaticContentServiceHandler extends ContextHandler {
             keyLength = SSLRequestUtils.getTransportSecurityStrengthFactor(request, unknownCipherKeyLength);
         }
 
-        ExecutionContext ctx = ExecutionContextFactory.resolveExecutionContext(cmd, null, uuidHeader, deserializer, geoIPLocator, null, keyLength, false, new Date());
+        ExecutionContext ctx = ExecutionContextFactory.resolveExecutionContext(cmd, null, uuidHeader, uuidParentsHeader, deserializer, geoIPLocator, null, keyLength, false, new Date());
         requestLogger.logAccess(cmd, ctx, 0, bytesWritten, null, mediaType, responseCode);
     }
 

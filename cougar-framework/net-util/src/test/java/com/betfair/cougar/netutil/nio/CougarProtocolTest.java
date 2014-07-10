@@ -93,6 +93,8 @@ public class CougarProtocolTest {
             client = new CougarProtocol3(false, logger, 2000, 5000, clientSslFilter, clientSupportsTls, clientRequiresTls, 0);
         } else if (clientVersion == CougarProtocol.TRANSPORT_PROTOCOL_VERSION_TIME_CONSTRAINTS) {
             client = new CougarProtocol4(false, logger, 2000, 5000, clientSslFilter, clientSupportsTls, clientRequiresTls, 0);
+        } else if (clientVersion == CougarProtocol.TRANSPORT_PROTOCOL_VERSION_COMPOUND_REQUEST_UUID) {
+            client = new CougarProtocol5(false, logger, 2000, 5000, clientSslFilter, clientSupportsTls, clientRequiresTls, 0);
         } else {
             throw new IllegalArgumentException("Unsupported client version: " + clientVersion);
         }
@@ -110,6 +112,8 @@ public class CougarProtocolTest {
             server = new CougarProtocol3(true, logger, 2000, 5000, serverSslFilter, serverSupportsTls, serverRequiresTls, 0);
         } else if (serverVersion == CougarProtocol.TRANSPORT_PROTOCOL_VERSION_TIME_CONSTRAINTS) {
             server = new CougarProtocol4(true, logger, 2000, 5000, serverSslFilter, serverSupportsTls, serverRequiresTls, 0);
+        } else if (serverVersion == CougarProtocol.TRANSPORT_PROTOCOL_VERSION_COMPOUND_REQUEST_UUID) {
+            server = new CougarProtocol5(true, logger, 2000, 5000, serverSslFilter, serverSupportsTls, serverRequiresTls, 0);
         } else {
             throw new IllegalArgumentException("Unsupported client version: " + clientVersion);
         }

@@ -158,7 +158,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
 				new RescriptOperationBindingDescriptor(invalidOpKey, "/InvalidOp", "GET", invalidOpParamBindings, TestResponse.class),
                 new RescriptOperationBindingDescriptor(voidReturnOpKey, "/VoidReturnOp", "GET", voidReturnOpParamBindings, null)};
 
-		rescriptCommandProcessor = new RescriptTransportCommandProcessor(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID","X-RequestTimeout",requestTimeResolver);
+		rescriptCommandProcessor = new RescriptTransportCommandProcessor(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID","X-UUID-Parents","X-RequestTimeout",requestTimeResolver);
 		init(rescriptCommandProcessor);
 		ctn = mock(ContentTypeNormaliser.class);
 		when(ctn.getNormalisedRequestMediaType(any(HttpServletRequest.class))).thenReturn(MediaType.APPLICATION_XML_TYPE);
@@ -390,7 +390,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
         RescriptOperationBindingDescriptor op1 = new RescriptOperationBindingDescriptor(key, "url1", "GET", Collections.<RescriptParamBindingDescriptor>emptyList(), null);
         RescriptOperationBindingDescriptor op2 = new RescriptOperationBindingDescriptor(key, "url2", "POST", Collections.<RescriptParamBindingDescriptor>emptyList(), null);
 
-        RescriptTransportCommandProcessor sut = new RescriptTransportCommandProcessor(null, null, null, "X-RequestTimeout",requestTimeResolver);
+        RescriptTransportCommandProcessor sut = new RescriptTransportCommandProcessor(null, null, null, null, "X-RequestTimeout",requestTimeResolver);
         sut.setExecutionVenue(ev);
         sut.bindOperation(serviceDescriptor, op1);
         sut.bindOperation(serviceDescriptor, op2);
@@ -459,7 +459,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
             }
         };
         RescriptOperationBindingDescriptor op1 = new RescriptOperationBindingDescriptor(key, "url1", "GET", Collections.<RescriptParamBindingDescriptor>emptyList(), null);
-        RescriptTransportCommandProcessor sut = new RescriptTransportCommandProcessor(null, null, null, null, null);
+        RescriptTransportCommandProcessor sut = new RescriptTransportCommandProcessor(null, null, null, null, null, null);
         sut.setExecutionVenue(ev);
         sut.bindOperation(serviceDescriptorV1, op1);
         sut.bindOperation(serviceDescriptorV2, op1);

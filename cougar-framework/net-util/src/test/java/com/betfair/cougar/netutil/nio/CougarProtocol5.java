@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package com.betfair.testing.utils.cougar;
+package com.betfair.cougar.netutil.nio;
+
+import org.apache.mina.filter.SSLFilter;
 
 /**
- * Utility to aid invoking cougar baseline 2.8 for testing purposes.
+ *
  */
-public class CougarBaseline2_8TestingInvoker {
-    public static CougarTestingInvoker create() {
-        return LegacyCougarTestingInvoker.create().setService("Baseline","cougarBaseline").setVersion("2.8");
+public class CougarProtocol5 extends CougarProtocol implements ICougarProtocol {
+
+    public CougarProtocol5(boolean server, NioLogger nioLogger, int keepAliveInterval, int keepAliveTimeout, SSLFilter sslFilter, boolean supportsTls, boolean requiresTls, long rpcTimeoutMillis) {
+        super(server, nioLogger, keepAliveInterval, keepAliveTimeout, sslFilter, supportsTls, requiresTls, rpcTimeoutMillis);
     }
 }

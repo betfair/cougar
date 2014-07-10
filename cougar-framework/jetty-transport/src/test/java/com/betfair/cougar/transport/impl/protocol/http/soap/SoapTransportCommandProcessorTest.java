@@ -161,7 +161,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
     @Before
 	public void init() throws Exception {
 		super.init();
-		soapCommandProcessor = new SoapTransportCommandProcessor(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID",
+		soapCommandProcessor = new SoapTransportCommandProcessor(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID", "X-UUID-Parents",
                 "X-RequestTimeout", requestTimeResolver, new JdkEmbeddedXercesSchemaValidationFailureParser(), new InferredCountryResolver<HttpServletRequest>() {
             public String inferCountry(HttpServletRequest input) { return AZ;}
         });

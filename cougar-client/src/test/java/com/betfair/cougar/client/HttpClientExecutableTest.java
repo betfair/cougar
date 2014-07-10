@@ -51,6 +51,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static com.betfair.cougar.client.AbstractHttpExecutable.DEFAULT_REQUEST_UUID_PARENTS_HEADER;
 import static com.betfair.cougar.client.HttpClientExecutable.DEFAULT_REQUEST_UUID_HEADER;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -74,7 +75,7 @@ public class HttpClientExecutableTest extends AbstractHttpExecutableTest<HttpUri
 
         mockManager = mock(CougarClientConnManager.class);
 
-        HttpClientExecutable ret = new HttpClientExecutable(tsbd, new DefaultGeoLocationSerializer(), DEFAULT_REQUEST_UUID_HEADER, mockManager);
+        HttpClientExecutable ret = new HttpClientExecutable(tsbd, new DefaultGeoLocationSerializer(), DEFAULT_REQUEST_UUID_HEADER, DEFAULT_REQUEST_UUID_PARENTS_HEADER, mockManager);
         ret.setClient(mockHttpClient);
         return ret;
     }

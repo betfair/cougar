@@ -17,18 +17,10 @@
 package com.betfair.cougar.util;
 
 import com.betfair.cougar.api.RequestUUID;
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.*;
-import java.lang.reflect.Field;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
 
@@ -47,14 +39,14 @@ public class RequestUUIDImplTest {
 		ObjectOutput out = new ObjectOutputStream(baos);
 
 		uuid.writeExternal(out);
-		
+
 		// must close the writer or it doesn't actually do the write to the underlying
 		// buffer
 		out.close();
-		
+
 		ObjectInput in = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()));
 		RequestUUID clone = new RequestUUIDImpl(in);
-		
+
 		assertEquals("RequestUUID implementation's toString() output do not match", uuid.toString(), clone.toString());
 	}
 
@@ -98,12 +90,61 @@ public class RequestUUIDImplTest {
         testGeneration("123456789-77777777-foo", false);
     }
 
+    @Test
+    public void tripleComponent() {
+        testGeneration("abcd001-abcdef-00001:defg002-ghijkl-00001:hijk003-mnopqr-00001",false);
+    }
+
+    @Test
+    public void tripleComponentWrongSep() {
+        testGeneration("abcd001-abcdef-00001;defg002-ghijkl-00001;hijk003-mnopqr-00001",true);
+    }
+
+    @Test
+    public void twoComponents() {
+        testGeneration("abcd001-abcdef-00001:defg002-ghijkl-00001",true);
+    }
+
+    @Test
+    public void subsequentSubUuids() {
+        RequestUUID parentUuid = new RequestUUIDImpl("abcd001-abcdefghijkl");
+        RequestUUID firstUuid = parentUuid.getNewSubUUID();
+        RequestUUID secondUuid = parentUuid.getNewSubUUID();
+        RequestUUID thirdUuid = parentUuid.getNewSubUUID();
+        assertNotEquals(firstUuid, secondUuid);
+        assertNotEquals(secondUuid, thirdUuid);
+        assertNotEquals(thirdUuid, firstUuid);
+        assertEquals(parentUuid.getLocalUUIDComponent(), firstUuid.getRootUUIDComponent());
+        assertEquals(parentUuid.getLocalUUIDComponent(), firstUuid.getParentUUIDComponent());
+        assertEquals(parentUuid.getLocalUUIDComponent(), secondUuid.getRootUUIDComponent());
+        assertEquals(parentUuid.getLocalUUIDComponent(), secondUuid.getParentUUIDComponent());
+        assertEquals(parentUuid.getLocalUUIDComponent(), thirdUuid.getRootUUIDComponent());
+        assertEquals(parentUuid.getLocalUUIDComponent(), thirdUuid.getParentUUIDComponent());
+    }
+
+    @Test
+    public void subsequentSubUuidsWithComponents() {
+        RequestUUID parentUuid = new RequestUUIDImpl("abcd001-abcdef-00001:defg002-ghijkl-00001:hijk003-mnopqr-00001");
+        RequestUUID firstUuid = parentUuid.getNewSubUUID();
+        RequestUUID secondUuid = parentUuid.getNewSubUUID();
+        RequestUUID thirdUuid = parentUuid.getNewSubUUID();
+        assertEquals(parentUuid.getRootUUIDComponent(), firstUuid.getRootUUIDComponent());
+        assertEquals(parentUuid.getRootUUIDComponent(),secondUuid.getRootUUIDComponent());
+        assertEquals(parentUuid.getRootUUIDComponent(), thirdUuid.getRootUUIDComponent());
+        assertEquals(parentUuid.getLocalUUIDComponent(), firstUuid.getParentUUIDComponent());
+        assertEquals(parentUuid.getLocalUUIDComponent(), secondUuid.getParentUUIDComponent());
+        assertEquals(parentUuid.getLocalUUIDComponent(), thirdUuid.getParentUUIDComponent());
+        assertNotEquals(firstUuid, secondUuid);
+        assertNotEquals(secondUuid, thirdUuid);
+        assertNotEquals(thirdUuid, firstUuid);
+    }
+
     private void testGeneration(String uuid, boolean expectFail) {
         try {
             new RequestUUIDImpl(uuid);
             if (expectFail) fail("Failed to fail for uuid "+uuid);
         } catch (IllegalArgumentException e) {
-            if (!expectFail) fail("Unexpected Fail for uuid "+uuid);
+            if (!expectFail) fail("Unexpected Fail for uuid "+uuid+": "+e.getMessage());
         }
     }
 }

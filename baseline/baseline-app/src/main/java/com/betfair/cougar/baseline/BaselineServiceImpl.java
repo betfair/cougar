@@ -1529,6 +1529,12 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
     }
 
     @Override
+    public String echoRequestUuid(RequestContext ctx, TimeConstraints timeConstraints) throws SimpleException {
+        ctx.setRequestLogExtension(new BaselineLogExtension(null,null,null));
+        return ctx.getRequestUUID().toString();
+    }
+
+    @Override
     public Boolean simpleEventPublication(RequestContext ctx, TimeContainer time, TimeConstraints timeConstraints) throws SimpleException {
         ctx.setRequestLogExtension(new BaselineLogExtension(time, null, null));
 

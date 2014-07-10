@@ -44,10 +44,6 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-/**
- * Date: 30/01/2013
- * Time: 10:28
- */
 public class CougarRequestFactoryTest {
     private static final String CONTENT_TYPE = "application/x-my-type";
 
@@ -113,12 +109,15 @@ public class CougarRequestFactoryTest {
         Object result = factory.create(uri, httpMethod, mockMessage, mockMarshaller, contentType, mockContext, mockTimeConstraints);
 
         assertSame(httpRequest, result);
-        assertEquals(9, headers.size());
+        assertEquals(10, headers.size());
         assertHeadersContains(headers, ACCEPT, contentType);
         assertHeadersContains(headers, USER_AGENT, CougarRequestFactory.USER_AGENT_HEADER);
         assertHeadersContains(headers, ACCEPT_ENCODING, "gzip");
         assertHeadersContains(headers, "X-Trace-Me", "true");
-        assertHeadersContains(headers, "X-REQUEST-UUID", uuid);
+        String uuidHeaderParent = assertHeadersContains(headers, "X-REQUEST-UUID-PARENTS");
+        assertEquals(uuid+":"+uuid,uuidHeaderParent);
+        String uuidHeader = assertHeadersContains(headers, "X-REQUEST-UUID");
+        assertNotEquals(uuid,uuidHeader);
         assertHeadersContains(headers, "X-RequestTime");
         assertHeadersContains(headers, "X-RequestTimeout", "0");
         assertHeadersContains(headers, "X-My-Header", "value");
@@ -166,20 +165,21 @@ public class CougarRequestFactoryTest {
         fail("Did not find header '" + name + "' with value '" + value + "'");
     }
 
-    private void assertHeadersContains(List<Header> headers, String name) {
+    private String assertHeadersContains(List<Header> headers, String name) {
         for (Header h : headers) {
             if (h.getName().equals(name) && (h.getValue() != null)) {
-                return;
+                return h.getValue();
             }
         }
         fail("Did not find header '" + name + "'");
+        return null; // won't happen
     }
 
 
     private class TestCougarRequestFactory extends CougarRequestFactory<Object> {
 
         public TestCougarRequestFactory() {
-            super(new DefaultGeoLocationSerializer(), "X-REQUEST-UUID");
+            super(new DefaultGeoLocationSerializer(), "X-REQUEST-UUID", "X-REQUEST-UUID-PARENTS");
         }
 
         @Override

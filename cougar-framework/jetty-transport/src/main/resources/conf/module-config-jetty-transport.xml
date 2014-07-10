@@ -53,6 +53,7 @@
 
         <property name="geoLocationDeserializer" ref="$COUGAR-JETTY{cougar.http.geoLocationDeserializerBean}"/>
         <property name="uuidHeader" value="$COUGAR-JETTY{cougar.http.uuidheader}"/>
+        <property name="uuidParentsHeader" value="$COUGAR-JETTY{cougar.http.uuidparentsheader}"/>
 
         <property name="requestLogger" ref="httpRequestLogger"/>
 
@@ -142,8 +143,9 @@
         <constructor-arg ref="cougar.core.GeoIPLocator" index="0"/>
         <constructor-arg ref="$COUGAR-JETTY{cougar.http.geoLocationDeserializerBean}" index="1"/>
         <constructor-arg value="$COUGAR-JETTY{cougar.http.uuidheader}" index="2"/>
-        <constructor-arg value="$COUGAR-JETTY{cougar.http.requestTimeoutHeader}" index="3"/>
-        <constructor-arg ref="$COUGAR-JETTY{cougar.http.requestTimeResolver}" index="4"/>
+        <constructor-arg value="$COUGAR-JETTY{cougar.http.uuidparentsheader}" index="3"/>
+        <constructor-arg value="$COUGAR-JETTY{cougar.http.requestTimeoutHeader}" index="4"/>
+        <constructor-arg ref="$COUGAR-JETTY{cougar.http.requestTimeResolver}" index="5"/>
         <property name="executionVenue" ref="cougar.core.ExecutionVenue"/>
         <property name="startingGate" ref="cougar.core.StartingGate"/>
         <property name="executor" ref="cougar.core.CommandProcessorExecutor"/>
@@ -163,7 +165,7 @@
     </bean>
 
     <bean id="soapCommandProcessor" class="com.betfair.cougar.transport.impl.protocol.http.soap.SoapTransportCommandProcessor" parent="httpCommandProcessor" scope="singleton">
-        <constructor-arg index="5" ref="$COUGAR-JETTY{cougar.http.soap.schemaValidationFailureParserBean}"/>
+        <constructor-arg index="6" ref="$COUGAR-JETTY{cougar.http.soap.schemaValidationFailureParserBean}"/>
         <property name="contentTypeNormaliser" ref="contentTypeNormaliser"/>
         <property name="hardFailEnumDeserialisation" value="$COUGAR-JETTY{cougar.http.enums.hardFailure}"/>
         <property name="schemaValidationEnabled" value="$COUGAR-JETTY{cougar.http.soap.schemaValidationEnabled}"/>
@@ -171,7 +173,7 @@
     </bean>
 
     <bean id="jsonRpcCommandProcessor" class="com.betfair.cougar.transport.impl.protocol.http.jsonrpc.JsonRpcTransportCommandProcessor" parent="httpCommandProcessor" scope="singleton">
-        <constructor-arg index="5" ref="rawJsonBindingFactory"/>
+        <constructor-arg index="6" ref="rawJsonBindingFactory"/>
         <property name="contentTypeNormaliser" ref="contentTypeNormaliser"/>
         <property name="hardFailEnumDeserialisation" value="$COUGAR-JETTY{cougar.http.enums.hardFailure}"/>
         <property name="maxPostBodyLength" value="$COUGAR-JETTY{cougar.http.jsonrpc.maxPostBodyLength}"/>

@@ -19,11 +19,13 @@ package com.betfair.cougar.transport.api.protocol.http;
 import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.ExecutionContextWithTokens;
 import com.betfair.cougar.api.RequestUUID;
+import com.betfair.cougar.api.UUIDGenerator;
 import com.betfair.cougar.api.geolocation.GeoLocationDetails;
 import com.betfair.cougar.api.security.IdentityChain;
 import com.betfair.cougar.api.security.IdentityToken;
 import com.betfair.cougar.util.RequestUUIDImpl;
 import com.betfair.cougar.util.geolocation.GeoIPLocator;
+import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -39,18 +41,20 @@ public class ExecutionContextFactory {
 
 
     public static ExecutionContextWithTokens resolveExecutionContext(final HttpCommand command, final List<IdentityToken> tokens,
-                                                       final String uuidHeader, GeoLocationDeserializer geoLocationDeserializer,
+                                                       final String uuidHeader, final String uuidParentsHeader, GeoLocationDeserializer geoLocationDeserializer,
                                                        final GeoIPLocator geoIPLocator,
                                                        final String inferredCountry,
                                                        final int transportSecurityStrengthFactor, final boolean ignoreSubsequentWritesOfIdentity, Date requestTime) {
         final HttpServletRequest request = command.getRequest();
         String uuidString = request.getHeader(uuidHeader);
+        String uuidParentsString = request.getHeader(uuidParentsHeader);
 
-        return resolveExecutionContext(tokens, uuidString, request.getRemoteAddr(), geoLocationDeserializer.deserialize(request, request.getRemoteAddr()), geoIPLocator, inferredCountry, request.getHeader(TRACE_ME_HEADER_PARAM), transportSecurityStrengthFactor, ignoreSubsequentWritesOfIdentity, requestTime);
+        return resolveExecutionContext(tokens, uuidString, uuidParentsString, request.getRemoteAddr(), geoLocationDeserializer.deserialize(request, request.getRemoteAddr()), geoIPLocator, inferredCountry, request.getHeader(TRACE_ME_HEADER_PARAM), transportSecurityStrengthFactor, ignoreSubsequentWritesOfIdentity, requestTime);
     }
 
     private static ExecutionContextWithTokens resolveExecutionContext(List<IdentityToken> tokens,
                                                        final String uuidString,
+                                                       final String uuidParentsString,
                                                        final String remoteAddress,
                                                        final List<String> resolvedAddresses,
                                                        final GeoIPLocator geoIPLocator,
@@ -65,7 +69,12 @@ public class ExecutionContextFactory {
         final Date receivedTime = new Date();
         final RequestUUID requestUUID;
         if (uuidString != null) {
-            requestUUID = new RequestUUIDImpl(uuidString);
+            if (StringUtils.isNotBlank(uuidParentsString)) {
+                requestUUID = new RequestUUIDImpl(uuidParentsString + UUIDGenerator.COMPONENT_SEPARATOR + uuidString);
+            }
+            else {
+                requestUUID = new RequestUUIDImpl(uuidString);
+            }
         } else {
             requestUUID = new RequestUUIDImpl();
         }

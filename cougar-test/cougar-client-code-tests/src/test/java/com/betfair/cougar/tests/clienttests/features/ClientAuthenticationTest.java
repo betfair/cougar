@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.betfair.cougar.tests.clienttests.authentication;
+package com.betfair.cougar.tests.clienttests.features;
 
 import com.betfair.baseline.v2.BaselineSyncClient;
 import com.betfair.baseline.v2.to.IdentChain;
