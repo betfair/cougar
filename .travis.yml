@@ -12,6 +12,7 @@ notifications:
 before_install:
    - "gem install --version 0.8.9 faraday"
    - "gem install travis-artifacts"
+   - "echo 'MAVEN_OPTS = $MAVEN_OPTS'"
 install: "echo 'No install command here!'"
 script: "mvn install -Pintegration-test -B"
 after_failure: # this seems bust at the mo
@@ -22,6 +23,7 @@ env:
  global:
    - "ARTIFACTS_AWS_REGION=eu-west-1"
    - "ARTIFACTS_S3_BUCKET=betfair.travis-ci"
+   #- "MAVEN_OPTS=-Xmx2g"
    # S3 credentials
    - secure: "PMdX+2QqkQPpGbKiMRQDPRQeYNMLAqnXvnGb/EhEWdRF9o7pxten5AllxUAVXkx5b88X5x1wPhd4UZj43/lDoRLIwsnHe7Nstc3kWX4g0xXsKty2s2he40bu4Q7aZvsEfpTjm/KNe5cLVOcBKWP3ovgY4JFUP7qWz9R0Z+ttU5Y="
    - secure: "UIM47HAplfuaXAQLe3R10KpK1wCDtzVTLb2Vu6gp92JTlAxnMDJj7AYt0aN7ETaVF+6ZPac7kELQdufctcSKSD6N93tpOusw5yKmk2yk10t8uhzbXsHkN3scUi/0VSZ7gdHOWaNFVejtKSFOHqHOgN6ll93T0iviMhvl6xj7Y/c="
