@@ -42,7 +42,7 @@ public class RemoteAddressUtils {
             StringBuilder localAddresses = new StringBuilder();
             Enumeration<NetworkInterface> enumeration = NetworkInterface.getNetworkInterfaces();
             if (enumeration == null) {
-                throw new RuntimeException("Failed to retrieve any network interfaces");
+                throw new RuntimeException("Failed to retrieve any network interfaces, consider setting system property \"cougar.addressUtils.allowLoopBackIfNoOthers\" to true");
             }
             // we only use this if there are no others and we're willing to accept the loopback
             NetworkInterface loopback = null;
