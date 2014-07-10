@@ -21,6 +21,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.logging.Level;
 
 import com.betfair.cougar.api.LoggableEvent;
@@ -93,7 +94,9 @@ public final class EventLogRecord extends CougarLogRecord {
 
     private DateFormat getDateFormatter() {
         if (dateFormatter.get() == null) {
-            dateFormatter.set(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"));
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            dateFormatter.set(dateFormat);
         }
         return dateFormatter.get();
     }
