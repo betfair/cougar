@@ -20,7 +20,7 @@
 	<parent>
 		<groupId>com.betfair.cougar</groupId>
 		<artifactId>cougar-health-service</artifactId>
-		<version>3.1.0.rc5-SNAPSHOT</version>
+		<version>3.1.0</version>
 	</parent>
 	
 	<artifactId>cougar-health-service-idd</artifactId>
