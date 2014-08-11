@@ -23,6 +23,7 @@ import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.ServiceBindingDescriptor;
+import com.betfair.cougar.core.api.tracing.Tracer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.betfair.cougar.transport.api.CommandResolver;
@@ -36,7 +37,6 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.logging.Level;
 
 /**
  * Command processor handles invalid service context path. Sends a 404 status and logs the request.
@@ -64,24 +64,32 @@ public class ServiceNotFoundHttpCommandProcessor extends AbstractHttpCommandProc
 
 	@Override
 	protected CommandResolver<HttpCommand> createCommandResolver(
-			HttpCommand command) {
+            HttpCommand command, Tracer tracer) {
 		throw new CougarServiceException(ServerFaultCode.NoSuchService, "Service does not exist");
 	}
 
 	@Override
 	protected void writeErrorResponse(HttpCommand command,
-			ExecutionContextWithTokens context, CougarException e) {
-		if (command.getStatus() == CommandStatus.InProcess) {
-            try {
-                int bytesWritten = ServletResponseFileStreamer.getInstance().stream404ToResponse(command.getResponse());
-                logAccess(command, resolveContextForErrorHandling(context, command), 0, bytesWritten, null, null, ResponseCode.NotFound);
-            } catch (IOException ex) {
-                LOGGER.error("Unable to write error response", ex);
-            } finally {
-                command.onComplete();
+                                      ExecutionContextWithTokens context, CougarException e, boolean traceStarted) {
+        try {
+            if (command.getStatus() == CommandStatus.InProgress) {
+                try {
+                    int bytesWritten = ServletResponseFileStreamer.getInstance().stream404ToResponse(command.getResponse());
+                    logAccess(command, resolveContextForErrorHandling(context, command), 0, bytesWritten, null, null, ResponseCode.NotFound);
+                } catch (IOException ex) {
+                    LOGGER.error("Unable to write error response", ex);
+                } finally {
+                    command.onComplete();
+                    // no attempt to stop tracing here since it will never have started due to the timing of the call to createCommandResolver()
+                }
             }
-		}
-	}
+        }
+        finally {
+            if (context != null && traceStarted) {
+                tracer.end(context.getRequestUUID());
+            }
+        }
+    }
 
 	@Override
 	public void bind(ServiceBindingDescriptor operation) {

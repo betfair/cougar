@@ -43,7 +43,6 @@ import java.io.InputStream;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 @ManagedResource
@@ -257,7 +256,7 @@ public class StaticContentServiceHandler extends ContextHandler {
 
         @Override
         public CommandStatus getStatus() {
-            return CommandStatus.InProcess;
+            return CommandStatus.InProgress;
         }
 
         @Override

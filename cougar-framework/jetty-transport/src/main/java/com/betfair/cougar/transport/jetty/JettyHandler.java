@@ -24,7 +24,6 @@ import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -133,7 +132,7 @@ public class JettyHandler extends AbstractHandler {
         }
 
 		public JettyTransportCommand(final HttpServletRequest request, final HttpServletResponse response, IdentityTokenResolver identityTokenResolver) {
-			status = new AtomicReference<CommandStatus>(CommandStatus.InProcess);
+			status = new AtomicReference<CommandStatus>(CommandStatus.InProgress);
 			this.request = request;
 			this.response = response;
             this.identityTokenResolver = identityTokenResolver;
@@ -195,7 +194,7 @@ public class JettyHandler extends AbstractHandler {
 		 */
 		@Override
 		public void onComplete() {
-			if (status.compareAndSet(CommandStatus.InProcess, CommandStatus.Complete)) {
+			if (status.compareAndSet(CommandStatus.InProgress, CommandStatus.Complete)) {
 				continuation.complete();
 			}
 		}

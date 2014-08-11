@@ -151,6 +151,7 @@
         <property name="executor" ref="cougar.core.CommandProcessorExecutor"/>
         <property name="requestLogger" ref="httpRequestLogger"/>
         <property name="validatorRegistry" ref="httpCommandValidatorRegistry"/>
+        <property name="tracer" ref="cougar.core.Tracer"/>
     </bean>
 
     <bean id="defaultRequestTimeResolver" class="com.betfair.cougar.transport.impl.protocol.http.SimpleHttpRequestTimeResolver">

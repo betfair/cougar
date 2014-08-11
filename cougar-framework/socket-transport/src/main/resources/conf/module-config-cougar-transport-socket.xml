@@ -58,6 +58,7 @@
         <property name="connectedObjectManager" ref="pooledConnectedObjectManager"/>
         <property name="nioLogger" ref="nioLogger"/>
         <property name="unknownCipherKeyLength" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.ssl.unknownCipherKeyLength}"/>
+        <property name="tracer" ref="cougar.core.Tracer"/>
     </bean>
 
     <bean name="pooledConnectedObjectManager" class="com.betfair.cougar.transport.socket.PooledServerConnectedObjectManager" init-method="start" destroy-method="stop">

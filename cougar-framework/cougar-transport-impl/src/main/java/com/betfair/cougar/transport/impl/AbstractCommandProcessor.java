@@ -23,6 +23,7 @@ import com.betfair.cougar.core.api.ev.OperationDefinition;
 import com.betfair.cougar.core.api.ev.OperationKey;
 import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarFrameworkException;
+import com.betfair.cougar.core.api.tracing.Tracer;
 import com.betfair.cougar.transport.api.CommandResolver;
 import com.betfair.cougar.transport.api.CommandValidator;
 import com.betfair.cougar.transport.api.ExecutionCommand;
@@ -40,10 +41,12 @@ import java.util.concurrent.atomic.AtomicLong;
  * @param <T> The type of TransportCommand that the TransportHandler implementation can process
  */
 public abstract class AbstractCommandProcessor<T extends TransportCommand> implements TransportCommandProcessor<T> {
-	
+
 	private ExecutionVenue ev;
 
 	private Executor executor;
+
+    protected Tracer tracer;
 
     private AtomicLong executionsProcessed = new AtomicLong();
     private AtomicLong commandsProcessed = new AtomicLong();
@@ -66,7 +69,7 @@ public abstract class AbstractCommandProcessor<T extends TransportCommand> imple
     }
 
     /**
-	 * 
+	 *
 	 * @param executor
 	 */
 	public void setExecutor(Executor executor) {
@@ -82,19 +85,22 @@ public abstract class AbstractCommandProcessor<T extends TransportCommand> imple
 	 * @param command
 	 */
 	public void process(final T command) {
+        boolean traceStarted = false;
         incrementCommandsProcessed();
 		ExecutionContextWithTokens ctx = null;
 		try {
             validateCommand(command);
-			CommandResolver<T> resolver = createCommandResolver(command);
+			CommandResolver<T> resolver = createCommandResolver(command, tracer);
 			ctx = resolver.resolveExecutionContext();
+            tracer.start(ctx.getRequestUUID());
+            traceStarted = true;
 			for (ExecutionCommand exec : resolver.resolveExecutionCommands()) {
                 executeCommand(exec, ctx);
 			}
 		} catch(CougarException ce) {
-            executeError(command, ctx, ce);
+            executeError(command, ctx, ce, traceStarted);
 		} catch (Exception e) {
-            executeError(command, ctx, new CougarFrameworkException("Unexpected exception while processing transport command", e));
+            executeError(command, ctx, new CougarFrameworkException("Unexpected exception while processing transport command", e), traceStarted);
 		}
 	}
 
@@ -128,46 +134,61 @@ public abstract class AbstractCommandProcessor<T extends TransportCommand> imple
                    finalExec.getTimeConstraints());
     }
 
-    protected void executeError(final T finalExec, final ExecutionContextWithTokens finalCtx, final CougarException finalError) {
+    protected void executeError(final T finalExec, final ExecutionContextWithTokens finalCtx, final CougarException finalError, final boolean traceStarted) {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                writeErrorResponse(finalExec, finalCtx, finalError);
+                writeErrorResponse(finalExec, finalCtx, finalError, traceStarted);
             }
         });
     }
-	
+
 	/**
 	 * Create an implementation that will resolve the supplied command to an operation key,
 	 * arguments and a listener for callback
-	 * @param command the command to resolve
-	 * @return the resolved operation, arguments and listener
+	 *
+     * @param command the command to resolve
+     * @param tracer
+     * @return the resolved operation, arguments and listener
 	 */
-	protected abstract CommandResolver<T> createCommandResolver(T command);
-	
+	protected abstract CommandResolver<T> createCommandResolver(T command, Tracer tracer);
+
 	/**
 	 * Write an exception back to the client.
-	 * @param command the command that caused the error
-	 * @param e the exception that was thrown
-	 */
-	protected abstract void writeErrorResponse(T command, ExecutionContextWithTokens context, CougarException e);
+     * @param command the command that caused the error
+     * @param e the exception that was thrown
+     * @param traceStarted
+     */
+	protected abstract void writeErrorResponse(T command, ExecutionContextWithTokens context, CougarException e, boolean traceStarted);
 
 	protected final OperationDefinition getOperationDefinition(OperationKey key) {
 		return ev.getOperationDefinition(key);
 	}
 
-	/**
+    public void setTracer(Tracer tracer) {
+        this.tracer = tracer;
+    }
+
+    /**
 	 * Convenience abstract implementation of CommandResolver where only a single
 	 * ExecutionRequest is to be resolved.
 	 * @param <C> The type of Command that the CommandResolver implementation can resolve
 	 */
 	protected abstract class SingleExecutionCommandResolver<C extends TransportCommand> implements CommandResolver<C> {
-		public final Iterable<ExecutionCommand> resolveExecutionCommands() {
+
+
+        private Tracer tracer;
+
+        public SingleExecutionCommandResolver(Tracer tracer) {
+            this.tracer = tracer;
+        }
+
+        public final Iterable<ExecutionCommand> resolveExecutionCommands() {
 			ArrayList<ExecutionCommand> list = new ArrayList<ExecutionCommand>();
-			list.add(resolveExecutionCommand());
+			list.add(resolveExecutionCommand(tracer));
 			return list;
 		}
-		public abstract ExecutionCommand resolveExecutionCommand();
+		public abstract ExecutionCommand resolveExecutionCommand(Tracer tracer);
 	}
 
     protected final void incrementIoErrorsEncountered() {

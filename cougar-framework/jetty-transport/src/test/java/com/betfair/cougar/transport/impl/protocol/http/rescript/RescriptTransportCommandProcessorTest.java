@@ -36,6 +36,7 @@ import com.betfair.cougar.core.api.exception.PanicInTheCougar;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.fault.CougarFault;
 import com.betfair.cougar.core.api.fault.Fault;
+import com.betfair.cougar.core.api.tracing.Tracer;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.marshalling.api.databinding.DataBindingFactory;
 import com.betfair.cougar.marshalling.api.databinding.FaultMarshaller;
@@ -132,6 +133,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
     private RescriptIdentityTokenResolver credentialResolver;
     private TestHttpCommand command;
 
+
     @BeforeClass
     public static void setupStatic() {
         RequestUUIDImpl.setGenerator(new UUIDGeneratorImpl());
@@ -190,6 +192,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
 
 		rescriptCommandProcessor.bind(serviceBinding);
 		rescriptCommandProcessor.onCougarStart();
+
 	}
 
 	/**
@@ -224,6 +227,8 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
 		inorder.verify(marshaller).marshall(any(OutputStream.class), argThat(matchesResponse("goodbye")), eq("utf-8"), eq(false));
         inorder.verify(logger).logAccess(eq(command), any(ExecutionContext.class), anyLong(), anyLong(),
                                             any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+
+        verifyTracerCalls();
 	}
 
 
@@ -259,6 +264,8 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
 		verify(response).setStatus(HttpServletResponse.SC_FORBIDDEN);
 		assertEquals("TestError-123", faultCaptor.getValue().getErrorCode());
 		assertEquals(FaultCode.Client, faultCaptor.getValue().getFaultCode());
+
+        verifyTracerCalls();
 	}
 
 	/**
@@ -283,6 +290,8 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
 		inorder.verify(faultMarshaller).marshallFault(any(OutputStream.class), any(CougarFault.class), eq("utf-8"));
         inorder.verify(logger).logAccess(eq(command), any(ExecutionContext.class), anyLong(), anyLong(),
                                             any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+
+        verifyTracerCalls();
 	}
 
 	@Test
@@ -313,6 +322,8 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
         inorder.verify(logger).logAccess(eq(command), any(ExecutionContext.class), anyLong(), anyLong(),
                 any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
 
+        verifyTracerCalls();
+
 	}
 
     @Test
@@ -329,6 +340,8 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
         ev.getObserver().onResult(new ExecutionResult());
 
         verify(response).setStatus(HttpServletResponse.SC_OK);
+
+        verifyTracerCalls();
     }
 
     @Test
@@ -348,6 +361,8 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
         inorder.verify(faultMarshaller).marshallFault(any(OutputStream.class), any(CougarFault.class), eq("utf-8"));
         inorder.verify(logger).logAccess(eq(command), any(ExecutionContext.class), anyLong(), anyLong(),
                                             any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+
+        verifyTracerCalls();
     }
 
 
@@ -474,7 +489,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
         when(request.getScheme()).thenReturn("http");
 
         // resolve the command
-        CommandResolver<HttpCommand> cr = rescriptCommandProcessor.createCommandResolver(command);
+        CommandResolver<HttpCommand> cr = rescriptCommandProcessor.createCommandResolver(command, tracer);
         Iterable<ExecutionCommand> executionCommands = cr.resolveExecutionCommands();
 
         // check the output
@@ -493,7 +508,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
         // resolve the command
         when(request.getHeader("X-RequestTimeout")).thenReturn("10000");
         when(requestTimeResolver.resolveRequestTime(any())).thenReturn(new Date());
-        CommandResolver<HttpCommand> cr = rescriptCommandProcessor.createCommandResolver(command);
+        CommandResolver<HttpCommand> cr = rescriptCommandProcessor.createCommandResolver(command, tracer);
         Iterable<ExecutionCommand> executionCommands = cr.resolveExecutionCommands();
 
         // check the output
@@ -512,7 +527,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
         // resolve the command
         when(request.getHeader("X-RequestTimeout")).thenReturn("10000");
         when(requestTimeResolver.resolveRequestTime(any())).thenReturn(new Date(System.currentTimeMillis()-10001));
-        CommandResolver<HttpCommand> cr = rescriptCommandProcessor.createCommandResolver(command);
+        CommandResolver<HttpCommand> cr = rescriptCommandProcessor.createCommandResolver(command, tracer);
         Iterable<ExecutionCommand> executionCommands = cr.resolveExecutionCommands();
 
         // check the output

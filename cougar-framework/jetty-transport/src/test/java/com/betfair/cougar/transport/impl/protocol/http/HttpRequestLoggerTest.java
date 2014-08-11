@@ -36,18 +36,13 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
-import java.io.IOException;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
-import java.util.logging.LogRecord;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -203,7 +198,7 @@ public class HttpRequestLoggerTest {
 
     protected class TestHttpCommand implements HttpCommand {
 
-        private CommandStatus commandStatus = CommandStatus.InProcess;
+        private CommandStatus commandStatus = CommandStatus.InProgress;
         private RequestTimer timer = new RequestTimer();
         private IdentityTokenResolver identityTokenResolver;
 

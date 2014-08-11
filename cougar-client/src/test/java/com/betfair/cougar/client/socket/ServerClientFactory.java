@@ -32,6 +32,7 @@ import com.betfair.cougar.core.api.ev.ExecutionTimingRecorder;
 import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.impl.security.CommonNameCertInfoExtractor;
+import com.betfair.cougar.core.impl.tracing.CompoundTracer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.betfair.cougar.netutil.nio.CougarProtocol;
@@ -85,6 +86,7 @@ public class ServerClientFactory {
 
 
 	    SocketTransportCommandProcessor cmdProcessor = new SocketTransportCommandProcessor();
+        cmdProcessor.setTracer(new CompoundTracer());
         cmdProcessor.setIdentityResolverFactory(new IdentityResolverFactory());
 
 		Executor executor = new Executor() {

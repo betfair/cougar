@@ -49,7 +49,6 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
 
 import static com.betfair.cougar.core.api.ev.Subscription.CloseReason.*;
 
@@ -285,7 +284,7 @@ public class PooledServerConnectedObjectManager implements ServerConnectedObject
                         // note this won't notify this sub, which never got started. the publisher code won't expect a call back for this since
                         // it's just terminated the heap, which implies it wants to disconnect all clients anyway
                         terminateSubscriptions(command.getSession(), heapUri, REQUESTED_BY_PUBLISHER);
-                        commandProcessor.writeErrorResponse(command, context, new CougarFrameworkException("Subscription requested for terminated heap: " + heapUri));
+                        commandProcessor.writeErrorResponse(command, context, new CougarFrameworkException("Subscription requested for terminated heap: " + heapUri), true);
                         return;
                     }
 
@@ -320,7 +319,7 @@ public class PooledServerConnectedObjectManager implements ServerConnectedObject
 
                     // first tell the client about the heap
                     ExecutionResult executionResult = new ExecutionResult(response);
-                    boolean successfulResponse = commandProcessor.writeSuccessResponse(command, executionResult);
+                    boolean successfulResponse = commandProcessor.writeSuccessResponse(command, executionResult, context);
                     // so if we couldn't send the response it means we know the client isn't going to have a sub response, which means we need to clean up on our
                     // end so we don't get warnings on the client about receiving updates for something it knows nothing about..
                     if (!successfulResponse) {

@@ -55,7 +55,6 @@ import java.util.*;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
-import java.util.logging.Level;
 
 import static com.betfair.platform.virtualheap.projection.ProjectorFactory.objectProjector;
 import static junit.framework.Assert.*;
@@ -116,7 +115,7 @@ public class PooledServerConnectedObjectManagerTest {
     @Test
     public void firstSubscription() throws Exception {
         SocketTransportCommandProcessor commandProcessor = mock(SocketTransportCommandProcessor.class);
-        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class))).thenReturn(true);
+        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class), any(ExecutionContextWithTokens.class))).thenReturn(true);
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         IoSession session = new MyIoSession(String.valueOf(ioSessionId++));
@@ -133,7 +132,7 @@ public class PooledServerConnectedObjectManagerTest {
         subject.addSubscription(commandProcessor, command, subscriptionResult, operationDefinition, requestContext, null);
 
         ArgumentCaptor<ExecutionResult> resultCaptor = ArgumentCaptor.forClass(ExecutionResult.class);
-        verify(commandProcessor).writeSuccessResponse(any(SocketTransportRPCCommand.class), resultCaptor.capture());
+        verify(commandProcessor).writeSuccessResponse(any(SocketTransportRPCCommand.class), resultCaptor.capture(), any(ExecutionContextWithTokens.class));
 
         ExecutionResult executionResult = resultCaptor.getValue();
 
@@ -146,7 +145,7 @@ public class PooledServerConnectedObjectManagerTest {
     @Test
     public void secondSubscriptionToSameHeap() throws Exception {
         SocketTransportCommandProcessor commandProcessor = mock(SocketTransportCommandProcessor.class);
-        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class))).thenReturn(true);
+        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class), any(ExecutionContextWithTokens.class))).thenReturn(true);
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         MyIoSession session = new MyIoSession(String.valueOf(ioSessionId++));
@@ -170,7 +169,7 @@ public class PooledServerConnectedObjectManagerTest {
         subject.addSubscription(commandProcessor, command, subscriptionResult2, operationDefinition, requestContext, null);
 
         ArgumentCaptor<ExecutionResult> resultCaptor = ArgumentCaptor.forClass(ExecutionResult.class);
-        verify(commandProcessor, times(2)).writeSuccessResponse(any(SocketTransportRPCCommand.class), resultCaptor.capture());
+        verify(commandProcessor, times(2)).writeSuccessResponse(any(SocketTransportRPCCommand.class), resultCaptor.capture(), any(ExecutionContextWithTokens.class));
 
         ExecutionResult executionResult = resultCaptor.getAllValues().get(1);
 
@@ -190,7 +189,7 @@ public class PooledServerConnectedObjectManagerTest {
     @Test
     public void twoSubscriptionsToDifferentHeaps() throws Exception {
         SocketTransportCommandProcessor commandProcessor = mock(SocketTransportCommandProcessor.class);
-        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class))).thenReturn(true);
+        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class), any(ExecutionContextWithTokens.class))).thenReturn(true);
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         IoSession session = new MyIoSession(String.valueOf(ioSessionId++));
@@ -207,7 +206,7 @@ public class PooledServerConnectedObjectManagerTest {
         subject.addSubscription(commandProcessor, command, new ConnectedResponseImpl(new MutableHeap("secondHeap"), sub), operationDefinition, requestContext, null);
 
         ArgumentCaptor<ExecutionResult> resultCaptor = ArgumentCaptor.forClass(ExecutionResult.class);
-        verify(commandProcessor, times(2)).writeSuccessResponse(any(SocketTransportRPCCommand.class), resultCaptor.capture());
+        verify(commandProcessor, times(2)).writeSuccessResponse(any(SocketTransportRPCCommand.class), resultCaptor.capture(), any(ExecutionContextWithTokens.class));
 
         ExecutionResult executionResult0 = resultCaptor.getAllValues().get(0);
         assertTrue(executionResult0.getResult() instanceof NewHeapSubscription);
@@ -225,7 +224,7 @@ public class PooledServerConnectedObjectManagerTest {
     @Test
     public void subscribeToTerminatedHeap() throws Exception {
         SocketTransportCommandProcessor commandProcessor = mock(SocketTransportCommandProcessor.class);
-        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class))).thenReturn(true);
+        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class), any(ExecutionContextWithTokens.class))).thenReturn(true);
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         IoSession session = new MyIoSession("1");
@@ -244,7 +243,7 @@ public class PooledServerConnectedObjectManagerTest {
 
         subject.addSubscription(commandProcessor, command, subscriptionResult, operationDefinition, requestContext, null);
 
-        verify(commandProcessor).writeErrorResponse(any(SocketTransportCommand.class), any(ExecutionContextWithTokens.class), any(CougarFrameworkException.class));
+        verify(commandProcessor).writeErrorResponse(any(SocketTransportCommand.class), any(ExecutionContextWithTokens.class), any(CougarFrameworkException.class), eq(true));
 
         assertNull(subject.getHeapsByClient().get(session));
         assertEquals(0, subject.getHeapStates().size());
@@ -256,7 +255,7 @@ public class PooledServerConnectedObjectManagerTest {
     @Test
     public void secondSubscribeToTerminatedHeap() throws Exception {
         SocketTransportCommandProcessor commandProcessor = mock(SocketTransportCommandProcessor.class);
-        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class))).thenReturn(true);
+        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class), any(ExecutionContextWithTokens.class))).thenReturn(true);
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         IoSession session = new MyIoSession(String.valueOf(ioSessionId++));
@@ -271,7 +270,7 @@ public class PooledServerConnectedObjectManagerTest {
         OperationDefinition operationDefinition = mock(OperationDefinition.class);
 
         subject.addSubscription(commandProcessor, command, subscriptionResult, operationDefinition, requestContext, null);
-        verify(commandProcessor).writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class));
+        verify(commandProcessor).writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class), any(ExecutionContextWithTokens.class));
 
         heap.beginUpdate();
         heap.terminateHeap();
@@ -281,7 +280,7 @@ public class PooledServerConnectedObjectManagerTest {
         subscriptionResult = new ConnectedResponseImpl(heap, sub2);
         subject.addSubscription(commandProcessor, command, subscriptionResult, operationDefinition, requestContext, null);
 
-        verify(commandProcessor).writeErrorResponse(any(SocketTransportCommand.class), any(ExecutionContextWithTokens.class), any(CougarFrameworkException.class));
+        verify(commandProcessor).writeErrorResponse(any(SocketTransportCommand.class), any(ExecutionContextWithTokens.class), any(CougarFrameworkException.class), eq(true));
 
         assertNull(subject.getHeapsByClient().get(session));
         assertEquals(0, subject.getHeapStates().size());
@@ -295,7 +294,7 @@ public class PooledServerConnectedObjectManagerTest {
     @Test
     public void basicUpdate() throws Exception {
         SocketTransportCommandProcessor commandProcessor = mock(SocketTransportCommandProcessor.class);
-        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class))).thenReturn(true);
+        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class), any(ExecutionContextWithTokens.class))).thenReturn(true);
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         MyIoSession session = new MyIoSession(String.valueOf(ioSessionId++));
@@ -336,7 +335,7 @@ public class PooledServerConnectedObjectManagerTest {
     @Test
     public void basicMultiUpdate() throws Exception {
         SocketTransportCommandProcessor commandProcessor = mock(SocketTransportCommandProcessor.class);
-        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class))).thenReturn(true);
+        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class), any(ExecutionContextWithTokens.class))).thenReturn(true);
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         MyIoSession session = new MyIoSession(String.valueOf(ioSessionId++));
@@ -385,7 +384,7 @@ public class PooledServerConnectedObjectManagerTest {
     @Test
     public void basicUpdateToTwoSessions() throws Exception {
         SocketTransportCommandProcessor commandProcessor = mock(SocketTransportCommandProcessor.class);
-        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class))).thenReturn(true);
+        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class), any(ExecutionContextWithTokens.class))).thenReturn(true);
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         MyIoSession session = new MyIoSession(String.valueOf(ioSessionId++));
@@ -432,7 +431,7 @@ public class PooledServerConnectedObjectManagerTest {
     public void basicMultiUpdateToTwoSessions() throws Exception {
         SocketTransportCommandProcessor commandProcessor = mock(SocketTransportCommandProcessor.class);
         ArgumentCaptor<ExecutionResult> resultCaptor = ArgumentCaptor.forClass(ExecutionResult.class);
-        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), resultCaptor.capture())).thenReturn(true);
+        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), resultCaptor.capture(), any(ExecutionContextWithTokens.class))).thenReturn(true);
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         MyIoSession session = new MyIoSession(String.valueOf(ioSessionId++));
@@ -491,7 +490,7 @@ public class PooledServerConnectedObjectManagerTest {
     @Test
     public void addSubscriptionMidStream() throws Exception {
         SocketTransportCommandProcessor commandProcessor = mock(SocketTransportCommandProcessor.class);
-        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class))).thenReturn(true);
+        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class), any(ExecutionContextWithTokens.class))).thenReturn(true);
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         MyIoSession session = new MyIoSession(String.valueOf(ioSessionId++));
@@ -542,7 +541,7 @@ public class PooledServerConnectedObjectManagerTest {
     @Test
     public void addSecondSubscriptionMidStream() throws Exception {
         SocketTransportCommandProcessor commandProcessor = mock(SocketTransportCommandProcessor.class);
-        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class))).thenReturn(true);
+        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class), any(ExecutionContextWithTokens.class))).thenReturn(true);
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
 
@@ -605,7 +604,7 @@ public class PooledServerConnectedObjectManagerTest {
     @Test
     public void heapTerminationMidStream() throws Exception {
         SocketTransportCommandProcessor commandProcessor = mock(SocketTransportCommandProcessor.class);
-        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class))).thenReturn(true);
+        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class), any(ExecutionContextWithTokens.class))).thenReturn(true);
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         MyIoSession session = new MyIoSession(String.valueOf(ioSessionId++));
@@ -668,7 +667,7 @@ public class PooledServerConnectedObjectManagerTest {
     @Test
     public void sessionClosed() throws Exception {
         SocketTransportCommandProcessor commandProcessor = mock(SocketTransportCommandProcessor.class);
-        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class))).thenReturn(true);
+        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class), any(ExecutionContextWithTokens.class))).thenReturn(true);
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         MyIoSession session = new MyIoSession(String.valueOf(ioSessionId++)) {
@@ -723,7 +722,7 @@ public class PooledServerConnectedObjectManagerTest {
     @Test
     public void oneOfTwoSessionsClosed() throws Exception {
         SocketTransportCommandProcessor commandProcessor = mock(SocketTransportCommandProcessor.class);
-        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class))).thenReturn(true);
+        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class), any(ExecutionContextWithTokens.class))).thenReturn(true);
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
 
@@ -803,7 +802,7 @@ public class PooledServerConnectedObjectManagerTest {
     @Test
     public void exceptionInPusher() throws Exception {
         SocketTransportCommandProcessor commandProcessor = mock(SocketTransportCommandProcessor.class);
-        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class))).thenReturn(true);
+        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class), any(ExecutionContextWithTokens.class))).thenReturn(true);
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         MyIoSession session = new MyIoSession(String.valueOf(ioSessionId++));
@@ -867,7 +866,7 @@ public class PooledServerConnectedObjectManagerTest {
     @Test
     public void secondSubscriptionClosedByPublisher() throws Exception {
         SocketTransportCommandProcessor commandProcessor = mock(SocketTransportCommandProcessor.class);
-        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class))).thenReturn(true);
+        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class), any(ExecutionContextWithTokens.class))).thenReturn(true);
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         MyIoSession session = new MyIoSession(String.valueOf(ioSessionId++));
@@ -916,7 +915,7 @@ public class PooledServerConnectedObjectManagerTest {
     @Test
     public void lastSubscriptionClosedByPublisher() throws Exception {
         SocketTransportCommandProcessor commandProcessor = mock(SocketTransportCommandProcessor.class);
-        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class))).thenReturn(true);
+        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class), any(ExecutionContextWithTokens.class))).thenReturn(true);
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         MyIoSession session = new MyIoSession(String.valueOf(ioSessionId++));
@@ -958,7 +957,7 @@ public class PooledServerConnectedObjectManagerTest {
     @Test
     public void subscriptionCloseNotificationFails() throws Exception {
         SocketTransportCommandProcessor commandProcessor = mock(SocketTransportCommandProcessor.class);
-        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class))).thenReturn(true);
+        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class), any(ExecutionContextWithTokens.class))).thenReturn(true);
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         MyIoSession session = new MyIoSession(String.valueOf(ioSessionId++));
@@ -1002,7 +1001,7 @@ public class PooledServerConnectedObjectManagerTest {
     @Test
     public void secondSubscriptionClosedBySubscriber() throws Exception {
         SocketTransportCommandProcessor commandProcessor = mock(SocketTransportCommandProcessor.class);
-        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class))).thenReturn(true);
+        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class), any(ExecutionContextWithTokens.class))).thenReturn(true);
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         MyIoSession session = new MyIoSession(String.valueOf(ioSessionId++));
@@ -1054,7 +1053,7 @@ public class PooledServerConnectedObjectManagerTest {
     @Test
     public void lastSubscriptionClosedBySubscriber() throws Exception {
         SocketTransportCommandProcessor commandProcessor = mock(SocketTransportCommandProcessor.class);
-        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class))).thenReturn(true);
+        when(commandProcessor.writeSuccessResponse(any(SocketTransportRPCCommand.class), any(ExecutionResult.class), any(ExecutionContextWithTokens.class))).thenReturn(true);
 
         SocketTransportRPCCommand command = mock(SocketTransportRPCCommand.class);
         MyIoSession session = new MyIoSession(String.valueOf(ioSessionId++));

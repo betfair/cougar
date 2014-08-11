@@ -27,6 +27,7 @@ import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.fault.FaultController;
+import com.betfair.cougar.core.api.tracing.Tracer;
 import com.betfair.cougar.marshalling.impl.databinding.xml.JdkEmbeddedXercesSchemaValidationFailureParser;
 import com.betfair.cougar.transport.api.CommandResolver;
 import com.betfair.cougar.transport.api.ExecutionCommand;
@@ -176,6 +177,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
 		soapCommandProcessor.bind(serviceBinding);
 		soapCommandProcessor.onCougarStart();
         command=super.createCommand(identityTokenResolver, Protocol.SOAP);
+
 	}
 
     /**
@@ -208,6 +210,8 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         verify(response).setContentType(MediaType.TEXT_XML);
         verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
                                             any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+
+        verifyTracerCalls();
     }
 
     /**
@@ -239,6 +243,8 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         verify(response).setContentType(MediaType.TEXT_XML);
         verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
                                             any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+
+        verifyTracerCalls();
     }
 
     /**
@@ -271,6 +277,8 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         verify(response).setContentType(MediaType.TEXT_XML);
         verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
                                             any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+
+        verifyTracerCalls();
     }
 
     /**
@@ -293,6 +301,8 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
                                             any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+
+        verifyTracerCalls();
     }
 
     /**
@@ -324,6 +334,8 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         verify(response).setContentType(MediaType.TEXT_XML);
         verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
                 any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+
+        verifyTracerCalls();
     }
 
 
@@ -357,6 +369,8 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
                                             any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+
+        verifyTracerCalls();
 	}
 
     /**
@@ -365,42 +379,48 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
      */
     @Test
     public void testDetailedFaultReporting() throws Exception {
-		// Set up the input
-		when(request.getInputStream()).thenReturn(
-				new TestServletInputStream(buildSoapMessage(null, firstOpIn, null, null)));
-        when(request.getScheme()).thenReturn("http");
-		faultMessages = new ArrayList<String[]>();
-		faultMessages.add(new String[] {"TheError", "The Error Detail"});
-
-		// Resolve the input command
-		soapCommandProcessor.process(command);
         FaultController.getInstance().setDetailedFaults(true);
+        try {
+            // Set up the input
+            when(request.getInputStream()).thenReturn(
+                    new TestServletInputStream(buildSoapMessage(null, firstOpIn, null, null)));
+            when(request.getScheme()).thenReturn("http");
+            faultMessages = new ArrayList<String[]>();
+            faultMessages.add(new String[] {"TheError", "The Error Detail"});
 
-		// Assert that the expected exception is sent
-        TestApplicationException tae = new TestApplicationException(ResponseCode.Forbidden, "TestError-123");
-		ev.getObserver().onResult(new ExecutionResult(new CougarServiceException(
-					ServerFaultCode.ServiceCheckedException, "Error in App",
-					tae)));
-		assertEquals(CommandStatus.Complete, command.getStatus());
+            // Resolve the input command
+            soapCommandProcessor.process(command);
 
-        String message = testOut.getOutput();
-        int traceStartPos = message.indexOf("<trace>");
-        int traceEndPos = message.indexOf("</trace>");
+            // Assert that the expected exception is sent
+            TestApplicationException tae = new TestApplicationException(ResponseCode.Forbidden, "TestError-123");
+            ev.getObserver().onResult(new ExecutionResult(new CougarServiceException(
+                        ServerFaultCode.ServiceCheckedException, "Error in App",
+                        tae)));
+            assertEquals(CommandStatus.Complete, command.getStatus());
 
-        int messageStartPos = message.indexOf("<message>");
-        int messageEndPos = message.indexOf("</message>");
+            String message = testOut.getOutput();
+            int traceStartPos = message.indexOf("<trace>");
+            int traceEndPos = message.indexOf("</trace>");
 
-        assertTrue(traceStartPos != -1);
-        assertTrue(traceEndPos != -1);
-        assertTrue(messageStartPos != -1);
-        assertTrue(messageEndPos != -1);
+            int messageStartPos = message.indexOf("<message>");
+            int messageEndPos = message.indexOf("</message>");
 
-        assertTrue(traceEndPos > (traceStartPos+7));
-        assertTrue(messageEndPos > (messageStartPos+9));
+            assertTrue(traceStartPos != -1);
+            assertTrue(traceEndPos != -1);
+            assertTrue(messageStartPos != -1);
+            assertTrue(messageEndPos != -1);
 
-        FaultController.getInstance().setDetailedFaults(false);
-        verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
-                                            any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+            assertTrue(traceEndPos > (traceStartPos+7));
+            assertTrue(messageEndPos > (messageStartPos+9));
+
+            verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
+                                                any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+
+            verifyTracerCalls();
+        }
+        finally {
+            FaultController.getInstance().setDetailedFaults(false);
+        }
     }
 
 
@@ -423,6 +443,8 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
                                             any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+
+        verifyTracerCalls();
 	}
 
 	/**
@@ -468,6 +490,8 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
 		assertSoapyEquals(buildSoapMessage(null, mapOpOut, null, null), testOut.getOutput());
         verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
                                             any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+
+        verifyTracerCalls();
 	}
 
 	/**
@@ -507,6 +531,8 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
 		assertSoapyEquals(buildSoapMessage(null, listOpOut, null, null), testOut.getOutput());
         verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
                                             any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+
+        verifyTracerCalls();
 	}
 
     /**
@@ -585,6 +611,8 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         verify(response).setContentType(MediaType.TEXT_XML);
         verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
                                             any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+
+        verifyTracerCalls();
     }
 
 
@@ -608,6 +636,8 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         verify(logger).logAccess(eq(command), any(ExecutionContext.class), anyLong(), anyLong(),
                 any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+
+        //verifyTracerCalls(); // todo: #81: put this back
     }
     /**
      * US53541
@@ -629,6 +659,8 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         verify(logger).logAccess(eq(command), any(ExecutionContext.class), anyLong(), anyLong(),
                 any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+
+        //verifyTracerCalls(); // todo: #81: put this back
     }
 
     @Test
@@ -647,6 +679,8 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         verify(response).setContentType(MediaType.TEXT_XML);
         verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
                 any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+
+        verifyTracerCalls();
     }
 
     @Test
@@ -679,6 +713,8 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         verify(logger).logAccess(eq(command), any(ExecutionContext.class), anyLong(), anyLong(),
                 any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+
+        //verifyTracerCalls(); // todo: #81: put this back
     }
 
 
@@ -703,6 +739,8 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
                 any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+
+        //verifyTracerCalls(); // todo: #81: put this back
     }
 
 
@@ -725,6 +763,8 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
                 any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+
+        //verifyTracerCalls(); // todo: #81: put this back
     }
 
     @Test
@@ -736,7 +776,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         when(request.getScheme()).thenReturn("http");
 
         // resolve the command
-        CommandResolver<HttpCommand> cr = soapCommandProcessor.createCommandResolver(command);
+        CommandResolver<HttpCommand> cr = soapCommandProcessor.createCommandResolver(command, tracer);
         Iterable<ExecutionCommand> executionCommands = cr.resolveExecutionCommands();
 
         // check the output
@@ -756,7 +796,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         // resolve the command
         when(request.getHeader("X-RequestTimeout")).thenReturn("10000");
         when(requestTimeResolver.resolveRequestTime(any())).thenReturn(new Date());
-        CommandResolver<HttpCommand> cr = soapCommandProcessor.createCommandResolver(command);
+        CommandResolver<HttpCommand> cr = soapCommandProcessor.createCommandResolver(command, tracer);
         Iterable<ExecutionCommand> executionCommands = cr.resolveExecutionCommands();
 
         // check the output
@@ -776,7 +816,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         // resolve the command
         when(request.getHeader("X-RequestTimeout")).thenReturn("10000");
         when(requestTimeResolver.resolveRequestTime(any())).thenReturn(new Date(System.currentTimeMillis() - 10001));
-        CommandResolver<HttpCommand> cr = soapCommandProcessor.createCommandResolver(command);
+        CommandResolver<HttpCommand> cr = soapCommandProcessor.createCommandResolver(command, tracer);
         Iterable<ExecutionCommand> executionCommands = cr.resolveExecutionCommands();
 
         // check the output

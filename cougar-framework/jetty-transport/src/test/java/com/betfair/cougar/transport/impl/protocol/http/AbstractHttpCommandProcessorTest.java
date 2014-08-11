@@ -18,6 +18,7 @@ package com.betfair.cougar.transport.impl.protocol.http;
 
 import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.ExecutionContextWithTokens;
+import com.betfair.cougar.api.RequestUUID;
 import com.betfair.cougar.api.ResponseCode;
 import com.betfair.cougar.api.export.Protocol;
 import com.betfair.cougar.api.fault.CougarApplicationException;
@@ -32,11 +33,11 @@ import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.PanicInTheCougar;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
+import com.betfair.cougar.core.api.tracing.Tracer;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.logging.CougarLoggingUtils;
-import org.slf4j.LoggerFactory;
 import com.betfair.cougar.transport.api.CommandResolver;
 import com.betfair.cougar.transport.api.CommandValidator;
 import com.betfair.cougar.transport.api.ExecutionCommand;
@@ -51,9 +52,13 @@ import com.betfair.cougar.util.geolocation.GeoIPLocator;
 import com.betfair.cougar.util.geolocation.RemoteAddressUtils;
 import com.betfair.cougar.util.geolocation.SuspectNetworkList;
 import org.custommonkey.xmlunit.XMLTestCase;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import javax.servlet.ServletInputStream;
@@ -104,8 +109,9 @@ public class AbstractHttpCommandProcessorTest {
 
     protected static final OperationKey voidReturnOpKey = new OperationKey( new ServiceVersion(2, 1), "HTTPTest", "VoidReturnTestOp");
     protected static final Parameter[] voidReturnOpParams = new Parameter[] { new Parameter("VoidReturnOpFirstParam", ParameterType.create(TestEnum.class, null), true)};
+    protected ExecutionContextWithTokens context;
 
-	public static enum TestEnum {
+    public static enum TestEnum {
 		TEST1,
 		TEST2,
         UNRECOGNIZED_VALUE
@@ -118,6 +124,7 @@ public class AbstractHttpCommandProcessorTest {
 	protected List<String[]> faultMessages;
 	protected TestEV ev;
 	protected RequestLogger logger;
+    protected Tracer tracer;
 	protected GeoIPLocator geoIPLocator;
 	protected SuspectNetworkList suspectNetworks;
     protected CommandValidatorRegistry<HttpCommand> validatorRegistry = new CommandValidatorRegistry<HttpCommand>();
@@ -135,8 +142,10 @@ public class AbstractHttpCommandProcessorTest {
 
         RequestUUIDImpl.setGenerator(new UUIDGeneratorImpl());
 
+        context = mock(ExecutionContextWithTokens.class);
         logger = mock(RequestLogger.class);
 		geoIPLocator = mock(GeoIPLocator.class);
+        tracer = mock(Tracer.class);
 
 		request = mock(HttpServletRequest.class);
         when(request.getContextPath()).thenReturn(SERVICE_PATH);
@@ -156,6 +165,24 @@ public class AbstractHttpCommandProcessorTest {
         commandProcessor = new LocalCommandProcessor();
 		init(commandProcessor);
 	}
+
+    protected void verifyTracerCalls() {
+        final ArgumentCaptor<RequestUUID> captor = ArgumentCaptor.forClass(RequestUUID.class);
+
+        InOrder inOrder = inOrder(tracer);
+        inOrder.verify(tracer).start(captor.capture());
+        inOrder.verify(tracer).end(argThat(new BaseMatcher<RequestUUID>() {
+            @Override
+            public boolean matches(Object o) {
+                return o.equals(captor.getValue());
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+        }));
+    }
 
     @Test(expected = PanicInTheCougar.class)
     public void testMultipleServiceBindSameVersion() {
@@ -402,8 +429,8 @@ public class AbstractHttpCommandProcessorTest {
         List ipAddresses = Collections.emptyList();
         when(geoIPLocator.getGeoLocation(null, ipAddresses, null)).thenReturn(gld);
         AbstractHttpCommandProcessor underTest = new AbstractHttpCommandProcessor(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID","X-UUID-Parents","X-RequestTimeout",requestTimeResolver) {
-            protected CommandResolver<HttpCommand> createCommandResolver(HttpCommand command) {return null;}
-            protected void writeErrorResponse(HttpCommand command, ExecutionContextWithTokens context, CougarException e) {}
+            protected CommandResolver<HttpCommand> createCommandResolver(HttpCommand command, Tracer tracer) {return null;}
+            protected void writeErrorResponse(HttpCommand command, ExecutionContextWithTokens context, CougarException e, boolean traceStarted) {}
             public void onCougarStart() {}
         };
         ExecutionContext context = underTest.resolveExecutionContext(command, null, null);
@@ -466,6 +493,7 @@ public class AbstractHttpCommandProcessorTest {
 		commandProcessor.setRequestLogger(logger);
         commandProcessor.setValidatorRegistry(validatorRegistry);
         commandProcessor.setHardFailEnumDeserialisation(true);
+        commandProcessor.setTracer(tracer);
 	}
 
 	protected class TestEV implements ExecutionVenue {
@@ -576,7 +604,7 @@ public class AbstractHttpCommandProcessorTest {
 
 	protected class TestHttpCommand implements HttpCommand {
 
-		private CommandStatus commandStatus = CommandStatus.InProcess;
+		private CommandStatus commandStatus = CommandStatus.InProgress;
 		private RequestTimer timer = new RequestTimer();
         private IdentityTokenResolver identityTokenResolver;
         private String pathInfo = "/test";
@@ -668,11 +696,11 @@ public class AbstractHttpCommandProcessorTest {
         }
 
         @Override
-        protected CommandResolver<HttpCommand> createCommandResolver(final HttpCommand command) {
+        protected CommandResolver<HttpCommand> createCommandResolver(final HttpCommand command, Tracer tracer) {
             return new CommandResolver<HttpCommand>() {
                 @Override
                 public ExecutionContextWithTokens resolveExecutionContext() {
-                    return null;
+                    return context;
                 }
 
                 @Override
@@ -703,7 +731,7 @@ public class AbstractHttpCommandProcessorTest {
         }
 
         @Override
-        protected void writeErrorResponse(HttpCommand command, ExecutionContextWithTokens context, CougarException e) {
+        protected void writeErrorResponse(HttpCommand command, ExecutionContextWithTokens context, CougarException e, boolean traceStarted) {
             errorCalled = true;
         }
 

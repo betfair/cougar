@@ -34,10 +34,10 @@ import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.security.IdentityResolverFactory;
+import com.betfair.cougar.core.api.tracing.Tracer;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
-import org.slf4j.LoggerFactory;
 import com.betfair.cougar.logging.EventLoggingRegistry;
 import com.betfair.cougar.marshalling.api.socket.RemotableMethodInvocationMarshaller;
 import com.betfair.cougar.netutil.nio.CougarProtocol;
@@ -51,13 +51,10 @@ import com.betfair.cougar.transport.api.protocol.socket.InvocationResponse;
 import com.betfair.cougar.transport.api.protocol.socket.SocketOperationBindingDescriptor;
 import com.betfair.cougar.transport.impl.AbstractCommandProcessor;
 import com.betfair.cougar.util.RequestUUIDImpl;
+import com.betfair.cougar.util.UUIDGeneratorImpl;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.ArgumentMatcher;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.io.ByteArrayOutputStream;
@@ -146,6 +143,9 @@ public class SocketTransportCommandProcessorTest {
     private SocketTransportCommandProcessor commandProcessor;
 
     @Mock
+    private Tracer tracer;
+
+    @Mock
     private ExecutionVenue ev;
 
     @Mock
@@ -163,12 +163,16 @@ public class SocketTransportCommandProcessorTest {
     public void init() {
         MockitoAnnotations.initMocks(this);
 
+        RequestUUIDImpl.setGenerator(new UUIDGeneratorImpl());
+
         commandProcessor = new SocketTransportCommandProcessor();
         commandProcessor.setExecutionVenue(ev);
         commandProcessor.setExecutor(executor);
         commandProcessor.setMarshaller(marshaller);
         commandProcessor.setRegistry(eventLoggingRegistry);
         commandProcessor.setIdentityResolverFactory(Mockito.mock(IdentityResolverFactory.class));
+        commandProcessor.setTracer(tracer);
+
     }
 
     private class SocketTransportCommandProcessorDelegator extends AbstractCommandProcessor<SocketTransportCommand> {
@@ -184,8 +188,8 @@ public class SocketTransportCommandProcessorTest {
         }
 
         @Override
-        public CommandResolver<SocketTransportCommand> createCommandResolver(SocketTransportCommand command)  {
-            CommandResolver<SocketTransportCommand> commandResolver = commandProcessor.createCommandResolver(command);
+        public CommandResolver<SocketTransportCommand> createCommandResolver(SocketTransportCommand command, Tracer tracer)  {
+            CommandResolver<SocketTransportCommand> commandResolver = commandProcessor.createCommandResolver(command, tracer);
             assertNotNull(commandResolver);
 
             verify(ev, atLeast(1)).getOperationDefinition(eq(key));
@@ -290,7 +294,7 @@ public class SocketTransportCommandProcessorTest {
         }
 
         @Override
-        public void writeErrorResponse(SocketTransportCommand command, ExecutionContextWithTokens context, CougarException e) {
+        public void writeErrorResponse(SocketTransportCommand command, ExecutionContextWithTokens context, CougarException e, boolean traceStarted) {
         }
 
         @Override
@@ -312,7 +316,7 @@ public class SocketTransportCommandProcessorTest {
         }
     }
 
-    private CommandResolver<SocketTransportCommand> createCommandResolver(TimeConstraints toReturn) throws IOException {
+    private CommandResolver<SocketTransportCommand> createCommandResolver(TimeConstraints toReturn, Tracer tracer) throws IOException {
         SocketTransportRPCCommand command = Mockito.mock(SocketTransportRPCCommand.class);
         when(command.getOutput()).thenReturn(new HessianObjectIOFactory(false).newCougarObjectOutput(out, CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED));
         MyIoSession session = new MyIoSession("abc");
@@ -341,18 +345,18 @@ public class SocketTransportCommandProcessorTest {
         when(desc.getServiceVersion()).thenReturn(opKey.getVersion());
         d.bind(desc);
         d.onCougarStart();
-        return d.createCommandResolver(command);
+        return d.createCommandResolver(command, tracer);
     }
 
     @Test
     public void testCreateCommandResolver() throws IOException {
-        createCommandResolver(DefaultTimeConstraints.NO_CONSTRAINTS);
+        createCommandResolver(DefaultTimeConstraints.NO_CONSTRAINTS, tracer);
     }
 
     @Test
     public void createCommandResolver_NoTimeout() throws IOException {
         // resolve the command
-        CommandResolver<SocketTransportCommand> cr = createCommandResolver(DefaultTimeConstraints.NO_CONSTRAINTS);
+        CommandResolver<SocketTransportCommand> cr = createCommandResolver(DefaultTimeConstraints.NO_CONSTRAINTS, tracer);
         Iterable<ExecutionCommand> executionCommands = cr.resolveExecutionCommands();
 
         // check the output
@@ -364,7 +368,7 @@ public class SocketTransportCommandProcessorTest {
     @Test
     public void createCommandResolver_WithTimeout() throws IOException {
         // resolve the command
-        CommandResolver<SocketTransportCommand> cr = createCommandResolver(DefaultTimeConstraints.fromTimeout(10000));
+        CommandResolver<SocketTransportCommand> cr = createCommandResolver(DefaultTimeConstraints.fromTimeout(10000), tracer);
         Iterable<ExecutionCommand> executionCommands = cr.resolveExecutionCommands();
 
         // check the output
@@ -377,7 +381,7 @@ public class SocketTransportCommandProcessorTest {
     public void createCommandResolver_WithTimeoutAndOldRequestTime() throws IOException {
         requestTime = new Date(System.currentTimeMillis()-10001);
         // resolve the command
-        CommandResolver<SocketTransportCommand> cr = createCommandResolver(DefaultTimeConstraints.fromTimeout(10000));
+        CommandResolver<SocketTransportCommand> cr = createCommandResolver(DefaultTimeConstraints.fromTimeout(10000), tracer);
         Iterable<ExecutionCommand> executionCommands = cr.resolveExecutionCommands();
 
         // check the output

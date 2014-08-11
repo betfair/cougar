@@ -30,6 +30,7 @@ import com.betfair.cougar.core.api.exception.*;
 import com.betfair.cougar.core.api.fault.CougarFault;
 import com.betfair.cougar.core.api.fault.FaultController;
 import com.betfair.cougar.core.api.fault.FaultDetail;
+import com.betfair.cougar.core.api.tracing.Tracer;
 import com.betfair.cougar.core.api.transcription.*;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import org.slf4j.Logger;
@@ -80,7 +81,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.*;
-import java.util.logging.Level;
 
 /**
  * TransportCommandProcessor for the SOAP protocol.
@@ -156,7 +156,7 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
 
     @Override
     protected CommandResolver<HttpCommand> createCommandResolver(
-            final HttpCommand command) {
+            final HttpCommand command, final Tracer tracer) {
         String operationName = null;
         ByteCountingInputStream in = null;
         try {
@@ -182,7 +182,7 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
                 }
 
                 final ByteCountingInputStream finalIn = in;
-                return new SingleExecutionCommandResolver<HttpCommand>() {
+                return new SingleExecutionCommandResolver<HttpCommand>(tracer) {
 
                     private ExecutionContextWithTokens context;
                     private ExecutionCommand exec;
@@ -196,10 +196,10 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
                     }
 
                     @Override
-                    public ExecutionCommand resolveExecutionCommand() {
+                    public ExecutionCommand resolveExecutionCommand(Tracer tracer) {
                         if (exec == null) {
                             exec = SoapTransportCommandProcessor.this.resolveExecutionCommand(binding, command,
-                                    resolveExecutionContext(), requestNode, finalIn);
+                                    resolveExecutionContext(), requestNode, finalIn, tracer);
                         }
                         return exec;
                     }
@@ -239,7 +239,7 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
     private ExecutionCommand resolveExecutionCommand(
             final SoapOperationBinding operationBinding,
             final HttpCommand command, final ExecutionContextWithTokens context,
-            OMElement requestNode, ByteCountingInputStream in) {
+            OMElement requestNode, ByteCountingInputStream in, final Tracer tracer) {
         final Object[] args = readArgs(operationBinding, requestNode);
         final long bytesRead = in.getCount();
         final TimeConstraints realTimeConstraints = DefaultTimeConstraints.rebaseFromNewStartTime(context.getRequestTime(), readRawTimeConstraints(command.getRequest()));
@@ -258,7 +258,7 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
             }
 
             public void onResult(ExecutionResult result) {
-                if (command.getStatus() == CommandStatus.InProcess) {
+                if (command.getStatus() == CommandStatus.InProgress) {
                     try {
                         if (result.getResultType() == ExecutionResult.ResultType.Fault) {
                             command.getResponse().setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -275,9 +275,9 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
     }
 
     @Override
-    protected void writeErrorResponse(HttpCommand command, ExecutionContextWithTokens context, CougarException e) {
+    protected void writeErrorResponse(HttpCommand command, ExecutionContextWithTokens context, CougarException e, boolean traceStarted) {
         incrementErrorsWritten();
-        if (command.getStatus() == CommandStatus.InProcess) {
+        if (command.getStatus() == CommandStatus.InProgress) {
             try {
                 // if we have a fault, then for SOAP we must return a 500: http://www.w3.org/TR/2000/NOTE-SOAP-20000508/#_Toc478383529
                 command.getResponse().setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -368,7 +368,7 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
                 error = ce;
             } else if (error == null) {
                 // It was a normal response, so write an error instead
-                writeErrorResponse(command, context, ce);
+                writeErrorResponse(command, context, ce, true);
                 logAccess = false; // We're coming back in here, so log the access then.
             } else {
                 // Not much to do here - it's already an error and it's failed to send
@@ -376,13 +376,16 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
             }
         } finally {
             closeStream(out);
-        }
-        if (logAccess) {
-            logAccess(command,
-                    context, bytesRead,
-                    bytesWritten, mediaType,
-                    mediaType,
-                    error != null ? error.getResponseCode() : ResponseCode.Ok);
+            if (logAccess) {
+                logAccess(command,
+                        context, bytesRead,
+                        bytesWritten, mediaType,
+                        mediaType,
+                        error != null ? error.getResponseCode() : ResponseCode.Ok);
+                if (context != null) {
+                    tracer.end(context.getRequestUUID());
+                }
+            }
         }
     }
 

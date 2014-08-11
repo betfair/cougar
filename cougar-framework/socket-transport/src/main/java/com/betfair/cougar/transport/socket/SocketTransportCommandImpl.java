@@ -20,7 +20,6 @@ import com.betfair.cougar.core.api.RequestTimer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.betfair.cougar.transport.api.protocol.CougarObjectInput;
-import com.betfair.cougar.transport.api.protocol.CougarObjectOutput;
 import org.apache.mina.common.IoSession;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -31,7 +30,7 @@ public class SocketTransportCommandImpl implements SocketTransportCommand {
 
 	private final CougarObjectInput input;
     private final String remoteAddress;
-	private AtomicReference<CommandStatus> status = new AtomicReference<CommandStatus>(CommandStatus.InProcess);
+	private AtomicReference<CommandStatus> status = new AtomicReference<CommandStatus>(CommandStatus.InProgress);
 
     private RequestTimer timer = new RequestTimer();
     private IoSession session;

@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,6 +36,7 @@ import com.betfair.cougar.core.api.ev.OperationDefinition;
 import com.betfair.cougar.core.api.ev.OperationKey;
 import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.core.api.exception.*;
+import com.betfair.cougar.core.api.tracing.Tracer;
 import com.betfair.cougar.core.api.transcription.EnumUtils;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import org.slf4j.Logger;
@@ -111,12 +111,12 @@ public class RescriptTransportCommandProcessor extends AbstractTerminateableHttp
 
 
 	@Override
-	protected CommandResolver<HttpCommand> createCommandResolver(final HttpCommand command) {
+	protected CommandResolver<HttpCommand> createCommandResolver(final HttpCommand command, final Tracer tracer) {
         String uri = stripMinorVersionFromUri(command.getOperationPath());
 
 		final RescriptOperationBinding binding = bindings.get(uri);
 
-		return new SingleExecutionCommandResolver<HttpCommand>() {
+		return new SingleExecutionCommandResolver<HttpCommand>(tracer) {
 
 			private ExecutionContextWithTokens context;
 			private ExecutionCommand executionCommand;
@@ -131,13 +131,14 @@ public class RescriptTransportCommandProcessor extends AbstractTerminateableHttp
 			}
 
 			@Override
-			public ExecutionCommand resolveExecutionCommand() {
+			public ExecutionCommand resolveExecutionCommand(Tracer tracer) {
 				if (binding!=null) {
 					if (executionCommand == null) {
 						executionCommand = RescriptTransportCommandProcessor.this.resolveExecutionCommand(
 								binding,
 								command,
-								resolveExecutionContext());
+								resolveExecutionContext(),
+                                tracer);
 					}
 					return executionCommand;
 				}
@@ -148,7 +149,7 @@ public class RescriptTransportCommandProcessor extends AbstractTerminateableHttp
 
 	}
 
-	private ExecutionCommand resolveExecutionCommand(final RescriptOperationBinding binding, final HttpCommand command, final ExecutionContextWithTokens context) {
+	private ExecutionCommand resolveExecutionCommand(final RescriptOperationBinding binding, final HttpCommand command, final ExecutionContextWithTokens context, final Tracer tracer) {
 		final MediaType requestMediaType = getContentTypeNormaliser().getNormalisedRequestMediaType(command.getRequest());
 		final String encoding = getContentTypeNormaliser().getNormalisedEncoding(command.getRequest());
 		ByteCountingInputStream iStream = null;
@@ -186,132 +187,144 @@ public class RescriptTransportCommandProcessor extends AbstractTerminateableHttp
             }
 
             public void onResult(ExecutionResult executionResult) {
-                    if (executionResult.getResultType() == ExecutionResult.ResultType.Success) {
-                        writeResponse(command, binding, executionResult.getResult(), context, requestMediaType, bytesRead);
-                    } else if (executionResult.getResultType() == ExecutionResult.ResultType.Fault) {
-                        writeErrorResponse(command, executionResult.getFault(), context, requestMediaType, bytesRead);
-				    }
+                if (executionResult.getResultType() == ExecutionResult.ResultType.Success) {
+                    writeResponse(command, binding, executionResult.getResult(), context, requestMediaType, bytesRead);
+                } else if (executionResult.getResultType() == ExecutionResult.ResultType.Fault) {
+                    writeErrorResponse(command, executionResult.getFault(), context, requestMediaType, bytesRead, true);
                 }
+            }
         };
 	}
 
 	@Override
-	protected void writeErrorResponse(HttpCommand command, ExecutionContextWithTokens context, CougarException error) {
-		writeErrorResponse(command, error, context, null, 0);
+	protected void writeErrorResponse(HttpCommand command, ExecutionContextWithTokens context, CougarException error, boolean traceStarted) {
+		writeErrorResponse(command, error, context, null, 0, traceStarted);
 	}
 
 	protected final void writeErrorResponse(HttpCommand command, CougarException error,
-			ExecutionContextWithTokens context, MediaType requestMediaType, long bytesRead) {
-        incrementErrorsWritten();
-		final HttpServletRequest request = command.getRequest();
-		final HttpServletResponse response = command.getResponse();
-		if (command.getStatus() == TransportCommand.CommandStatus.InProcess) {
-			try {
-                MediaType responseMediaType = null;
-                long bytesWritten = 0;
-                if(error.getResponseCode() != ResponseCode.CantWriteToSocket) {
+			ExecutionContextWithTokens context, MediaType requestMediaType, long bytesRead, boolean traceStarted) {
+        try {
+            incrementErrorsWritten();
+            final HttpServletRequest request = command.getRequest();
+            final HttpServletResponse response = command.getResponse();
+            if (command.getStatus() == TransportCommand.CommandStatus.InProgress) {
+                try {
+                    MediaType responseMediaType = null;
+                    long bytesWritten = 0;
+                    if(error.getResponseCode() != ResponseCode.CantWriteToSocket) {
 
-                    ResponseCodeMapper.setResponseStatus(response, error.getResponseCode());
-                    try {
-                        responseMediaType = getContentTypeNormaliser().getNormalisedResponseMediaType(request);
-                    } catch (CougarValidationException e) {
-                        responseMediaType = MediaType.APPLICATION_XML_TYPE;
+                        ResponseCodeMapper.setResponseStatus(response, error.getResponseCode());
+                        try {
+                            responseMediaType = getContentTypeNormaliser().getNormalisedResponseMediaType(request);
+                        } catch (CougarValidationException e) {
+                            responseMediaType = MediaType.APPLICATION_XML_TYPE;
+                        }
+                        response.setContentType(responseMediaType.toString());
+                        DataBindingFactory dataBindingFactory = DataBindingManager.getInstance().getFactory(responseMediaType);
+                        FaultMarshaller marshaller = dataBindingFactory.getFaultMarshaller();
+                        ByteCountingOutputStream out = null;
+                        try {
+                            out = new ByteCountingOutputStream(response.getOutputStream());
+                            marshaller.marshallFault(out, error.getFault(), getContentTypeNormaliser().getNormalisedEncoding(request));
+                            bytesWritten = out.getCount();
+                        } catch (IOException e) {
+                            handleResponseWritingIOException(e, error.getClass());
+                        } finally {
+                            closeStream(out);
+                        }
+                    } else {
+                        LOGGER.debug("Skipping error handling for a request where the output channel/socket has been prematurely closed");
                     }
-                    response.setContentType(responseMediaType.toString());
-                    DataBindingFactory dataBindingFactory = DataBindingManager.getInstance().getFactory(responseMediaType);
-                    FaultMarshaller marshaller = dataBindingFactory.getFaultMarshaller();
-                    ByteCountingOutputStream out = null;
-                    try {
-                        out = new ByteCountingOutputStream(response.getOutputStream());
-                        marshaller.marshallFault(out, error.getFault(), getContentTypeNormaliser().getNormalisedEncoding(request));
-                        bytesWritten = out.getCount();
-                    } catch (IOException e) {
-                        handleResponseWritingIOException(e, error.getClass());
-                    } finally {
-                        closeStream(out);
-                    }
-                } else {
-                    LOGGER.debug("Skipping error handling for a request where the output channel/socket has been prematurely closed");
+                    logAccess(command,
+                            resolveContextForErrorHandling(context, command), bytesRead,
+                            bytesWritten, requestMediaType,
+                            responseMediaType, error.getResponseCode());
+
+                } finally {
+                    command.onComplete();
                 }
-                logAccess(command,
-                        resolveContextForErrorHandling(context, command), bytesRead,
-                        bytesWritten, requestMediaType,
-                        responseMediaType, error.getResponseCode());
-
-			} finally {
-				command.onComplete();
-			}
-		}
-	}
+            }
+        }
+        finally {
+            if (context != null && traceStarted) {
+                tracer.end(context.getRequestUUID());
+            }
+        }
+    }
 
 
 	protected int writeResponse(HttpCommand command, RescriptOperationBinding binding,
 			Object result, ExecutionContextWithTokens context, MediaType requestMediaType, long bytesRead) {
-		final HttpServletRequest request = command.getRequest();
-		final HttpServletResponse response = command.getResponse();
-        final RescriptIdentityTokenResolver tokenResolver = (RescriptIdentityTokenResolver)command.getIdentityTokenResolver();
-		if (command.getStatus() == TransportCommand.CommandStatus.InProcess) {
-			try {
-				if (result instanceof ResponseCode) {
-					ResponseCodeMapper.setResponseStatus(response, ((ResponseCode)result));
-	                logAccess(command,
-							context, bytesRead,
-							0, requestMediaType,
-							null, (ResponseCode)result);
-				} else {
-                    if (context != null && context.getIdentity() != null && tokenResolver != null) {
-                        writeIdentity(context.getIdentityTokens(), new IdentityTokenIOAdapter() {
-
-                            @Override
-                            public void rewriteIdentityTokens(List<IdentityToken> identityTokens) {
-                                tokenResolver.rewrite(identityTokens, response);
-                            }
-
-                            @Override
-                            public boolean isRewriteSupported() {
-                                return tokenResolver.isRewriteSupported();
-                            }
-                        });
-                    }
-
-                    //If the operation returns void, then return 200
-                    if (binding.getBindingDescriptor().voidReturnType()) {
-                        ResponseCodeMapper.setResponseStatus(response, ResponseCode.Ok);
+        try {
+            final HttpServletRequest request = command.getRequest();
+            final HttpServletResponse response = command.getResponse();
+            final RescriptIdentityTokenResolver tokenResolver = (RescriptIdentityTokenResolver)command.getIdentityTokenResolver();
+            if (command.getStatus() == TransportCommand.CommandStatus.InProgress) {
+                try {
+                    if (result instanceof ResponseCode) {
+                        ResponseCodeMapper.setResponseStatus(response, ((ResponseCode)result));
                         logAccess(command,
                                 context, bytesRead,
                                 0, requestMediaType,
-                                null, ResponseCode.Ok);
+                                null, (ResponseCode)result);
                     } else {
-                        RescriptResponse responseWrapper = binding.getBindingDescriptor().getResponseClass().newInstance();
-                        responseWrapper.setResult(result);
-                        MediaType responseMediaType = getContentTypeNormaliser().getNormalisedResponseMediaType(request);
-                        DataBindingFactory dataBindingFactory = DataBindingManager.getInstance().getFactory(responseMediaType);
-                        Marshaller marshaller = dataBindingFactory.getMarshaller();
-                        String encoding = getContentTypeNormaliser().getNormalisedEncoding(request);
-                        response.setContentType(responseMediaType.toString());
-                        ByteCountingOutputStream out = null;
-                        try {
-                            out = new ByteCountingOutputStream(response.getOutputStream());
-                            Object toMarshall = responseWrapper;
-                            if (responseMediaType.getSubtype().equals("json")) {
-                                toMarshall = responseWrapper.getResult();
-                            }
-                            marshaller.marshall(out, toMarshall, encoding, false);
+                        if (context != null && context.getIdentity() != null && tokenResolver != null) {
+                            writeIdentity(context.getIdentityTokens(), new IdentityTokenIOAdapter() {
+
+                                @Override
+                                public void rewriteIdentityTokens(List<IdentityToken> identityTokens) {
+                                    tokenResolver.rewrite(identityTokens, response);
+                                }
+
+                                @Override
+                                public boolean isRewriteSupported() {
+                                    return tokenResolver.isRewriteSupported();
+                                }
+                            });
+                        }
+
+                        //If the operation returns void, then return 200
+                        if (binding.getBindingDescriptor().voidReturnType()) {
+                            ResponseCodeMapper.setResponseStatus(response, ResponseCode.Ok);
                             logAccess(command,
                                     context, bytesRead,
-                                    out.getCount(), requestMediaType,
-                                    responseMediaType, ResponseCode.Ok);
-                        } finally {
-                            closeStream(out);
+                                    0, requestMediaType,
+                                    null, ResponseCode.Ok);
+                        } else {
+                            RescriptResponse responseWrapper = binding.getBindingDescriptor().getResponseClass().newInstance();
+                            responseWrapper.setResult(result);
+                            MediaType responseMediaType = getContentTypeNormaliser().getNormalisedResponseMediaType(request);
+                            DataBindingFactory dataBindingFactory = DataBindingManager.getInstance().getFactory(responseMediaType);
+                            Marshaller marshaller = dataBindingFactory.getMarshaller();
+                            String encoding = getContentTypeNormaliser().getNormalisedEncoding(request);
+                            response.setContentType(responseMediaType.toString());
+                            ByteCountingOutputStream out = null;
+                            try {
+                                out = new ByteCountingOutputStream(response.getOutputStream());
+                                Object toMarshall = responseWrapper;
+                                if (responseMediaType.getSubtype().equals("json")) {
+                                    toMarshall = responseWrapper.getResult();
+                                }
+                                marshaller.marshall(out, toMarshall, encoding, false);
+                                logAccess(command,
+                                        context, bytesRead,
+                                        out.getCount(), requestMediaType,
+                                        responseMediaType, ResponseCode.Ok);
+                            } finally {
+                                closeStream(out);
+                            }
                         }
                     }
-				}
-			} catch (Exception e) {
-                writeErrorResponse(command, context, handleResponseWritingIOException(e, result.getClass()));
-            } finally {
-				command.onComplete();
-			}
-		}
-		return 0;
-	}
+                } catch (Exception e) {
+                    writeErrorResponse(command, context, handleResponseWritingIOException(e, result.getClass()), false); // it has been written, but we'll end in finally block below
+                } finally {
+                    command.onComplete();
+                }
+            }
+            return 0;
+        }
+        finally {
+            tracer.end(context.getRequestUUID());
+        }
+    }
 }

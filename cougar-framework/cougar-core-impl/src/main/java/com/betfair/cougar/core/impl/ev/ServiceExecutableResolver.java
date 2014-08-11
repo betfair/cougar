@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
 
 import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.LogExtension;
@@ -36,8 +35,8 @@ import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.logging.EventLogger;
+import com.betfair.cougar.core.api.tracing.Tracer;
 import com.betfair.cougar.core.impl.logging.RequestLogEvent;
-import com.betfair.cougar.logging.CougarLoggingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +66,7 @@ public class ServiceExecutableResolver extends CompoundExecutableResolverImpl {
         ServiceLogManager manager = srev.getServiceLogManager(operationKey.getNamespace(), operationKey.getServiceName(), operationKey.getVersion());
 		Executable executable = super.resolveExecutable(operationKey, ev);
 		if (executable != null) {
-			return new RequestContextExecutable(executable, manager);
+			return new RequestContextExecutable(executable, manager, srev.getTracer());
 		}
 		return null;
 	}
@@ -75,11 +74,13 @@ public class ServiceExecutableResolver extends CompoundExecutableResolverImpl {
 	private class RequestContextExecutable implements ExecutableWrapper {
 		private final Executable executable;
 		private final ServiceLogManager manager;
+        private Tracer tracer;
 
-		public RequestContextExecutable(Executable executable, ServiceLogManager manager) {
+        public RequestContextExecutable(Executable executable, ServiceLogManager manager, Tracer tracer) {
 			this.executable = executable;
 			this.manager = manager;
-		}
+            this.tracer = tracer;
+        }
 
         @Override
         public void execute(final ExecutionContext ctx,
@@ -88,7 +89,7 @@ public class ServiceExecutableResolver extends CompoundExecutableResolverImpl {
                             final ExecutionObserver observer,
                             final ExecutionVenue executionVenue,
                             final TimeConstraints timeConstraints) {
-            final ExecutionContextAdapter ctxAdapter = new ExecutionContextAdapter(key, ctx, observer, manager);
+            final ExecutionContextAdapter ctxAdapter = new ExecutionContextAdapter(key, ctx, observer, manager, tracer);
             try {
                 executable.execute(ctxAdapter, key, args, ctxAdapter, executionVenue, timeConstraints);
             } catch (CougarException e) {
@@ -125,10 +126,13 @@ public class ServiceExecutableResolver extends CompoundExecutableResolverImpl {
         private LogExtension connectedObjectLogExtension;
 		private AtomicBoolean complete = new AtomicBoolean(false);
         private RequestContext originalRequestContext;
+        private Tracer tracer;
 
-        public ExecutionContextAdapter(final OperationKey key, final ExecutionContext original, final ExecutionObserver observer, ServiceLogManager manager) {
+
+        public ExecutionContextAdapter(final OperationKey key, final ExecutionContext original, final ExecutionObserver observer, ServiceLogManager manager, Tracer tracer) {
 			this.key = key;
 			this.original = original;
+            this.tracer = tracer;
             if (original instanceof RequestContext) {
 			    this.originalRequestContext = (RequestContext) original;
             }
@@ -243,13 +247,7 @@ public class ServiceExecutableResolver extends CompoundExecutableResolverImpl {
 
         @Override
 		public void trace(String msg, Object... args) {
-            if (original.traceLoggingEnabled()) {
-                if (original.getRequestUUID() == null) {
-                    LOGGER.error("You need to set a RequestUUID on the ExecutionContext to see trace messages!");
-                } else {
-                    CougarLoggingUtils.getTraceLogger().info(original.getRequestUUID().toString()+": "+ msg, args);
-                }
-            }
+            tracer.trace(this, msg, args);
 		}
 
 		@Override

@@ -18,6 +18,7 @@ package com.betfair.cougar.transport.impl.protocol.http.jsonrpc;
 
 import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.ExecutionContextWithTokens;
+import com.betfair.cougar.api.RequestUUID;
 import com.betfair.cougar.api.ResponseCode;
 import com.betfair.cougar.api.export.Protocol;
 import com.betfair.cougar.api.geolocation.GeoLocationDetails;
@@ -41,6 +42,7 @@ import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.CougarValidationException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
+import com.betfair.cougar.core.api.tracing.Tracer;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
 import com.betfair.cougar.core.impl.ev.BaseExecutionVenue;
@@ -69,9 +71,13 @@ import com.betfair.cougar.util.UUIDGeneratorImpl;
 import com.betfair.cougar.util.geolocation.GeoIPLocator;
 import com.betfair.cougar.util.geolocation.RemoteAddressUtils;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import javax.servlet.ServletInputStream;
@@ -119,6 +125,25 @@ public class JsonRpcTransportCommandProcessorTest  {
     protected CommandValidatorRegistry<HttpCommand> validatorRegistry = new CommandValidatorRegistry<HttpCommand>();
     private ExecutionVenue ev;
     private RequestTimeResolver requestTimeResolver;
+    private Tracer tracer;
+
+    protected void verifyTracerCalls() {
+        final ArgumentCaptor<RequestUUID> captor = ArgumentCaptor.forClass(RequestUUID.class);
+
+        InOrder inOrder = inOrder(tracer);
+        inOrder.verify(tracer).start(captor.capture());
+        inOrder.verify(tracer).end(argThat(new BaseMatcher<RequestUUID>() {
+            @Override
+            public boolean matches(Object o) {
+                return o.equals(captor.getValue());
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+        }));
+    }
 
     @BeforeClass
     public static void setupStatic() {
@@ -134,6 +159,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         EventLoggingRegistry mockEventLoggingRegistry = mock(EventLoggingRegistry.class);
         EventLogDefinition logDef = mock(EventLogDefinition.class);
         logger = mock(RequestLogger.class);
+        tracer = mock(Tracer.class);
 
         when(ctn.getNormalisedRequestMediaType(any(HttpServletRequest.class))).thenReturn(MediaType.APPLICATION_JSON_TYPE);
         when(ctn.getNormalisedResponseMediaType(any(HttpServletRequest.class))).thenReturn(MediaType.APPLICATION_JSON_TYPE);
@@ -153,6 +179,7 @@ public class JsonRpcTransportCommandProcessorTest  {
             }
         });
         commandProcessor.setExecutionVenue(ev = mock(ExecutionVenue.class));
+        commandProcessor.setTracer(tracer);
 
 
         objectMapper = new ObjectMapper();
@@ -301,6 +328,8 @@ public class JsonRpcTransportCommandProcessorTest  {
         ExecutionRequest req2 = realEv.requests.get(1);
         assertFalse(ExecutionContextWithTokens.class.isAssignableFrom(req2.ctx.getClass()));
         assertEquals(TEST_OP_KEY, req2.key);
+
+        verifyTracerCalls();
     }
 
     @Test
@@ -317,7 +346,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         when(mockedCommand.getRequest()).thenReturn(request);
         when(mockedCommand.getResponse()).thenReturn(response);
         when(mockedCommand.getIdentityTokenResolver()).thenReturn(tokenResolver);
-        when(mockedCommand.getStatus()).thenReturn(TransportCommand.CommandStatus.InProcess);
+        when(mockedCommand.getStatus()).thenReturn(TransportCommand.CommandStatus.InProgress);
         when(mockedCommand.getTimer()).thenReturn(mockTimer);
 
         String body="{ \"method\": \"" + SERVICE_NAME + "/v1.0/" + OP_NAME + "\", \"params\": [\"Hello\", 333], \"id\": 1}";
@@ -327,7 +356,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         TestOutputStream tos = new TestOutputStream();
         when(response.getOutputStream()).thenReturn(tos);
 
-        CommandResolver<HttpCommand> resolver = commandProcessor.createCommandResolver(mockedCommand);
+        CommandResolver<HttpCommand> resolver = commandProcessor.createCommandResolver(mockedCommand, tracer);
         verify(mockedCommand).getIdentityTokenResolver();
         verify(tokenResolver).resolve(request, null);
         assertNotNull(resolver);
@@ -355,6 +384,8 @@ public class JsonRpcTransportCommandProcessorTest  {
         verify(response).getOutputStream();
         verify(logger).logAccess(eq(mockedCommand), isA(ExecutionContext.class), anyLong(), anyLong(),
                 any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+
+        verifyTracerCalls();
     }
 
     @Test
@@ -371,7 +402,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         when(mockedCommand.getRequest()).thenReturn(request);
         when(mockedCommand.getResponse()).thenReturn(response);
         when(mockedCommand.getIdentityTokenResolver()).thenReturn(tokenResolver);
-        when(mockedCommand.getStatus()).thenReturn(TransportCommand.CommandStatus.InProcess);
+        when(mockedCommand.getStatus()).thenReturn(TransportCommand.CommandStatus.InProgress);
         when(mockedCommand.getTimer()).thenReturn(mockTimer);
 
         String body="[{ \"method\": \"" + SERVICE_NAME + "/v1.0/" + OP_NAME  + "\", \"params\": [\"Hello\", 333], \"id\": \"1\"}," +
@@ -382,7 +413,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         TestOutputStream tos = new TestOutputStream();
         when(response.getOutputStream()).thenReturn(tos);
 
-        CommandResolver<HttpCommand> resolver = commandProcessor.createCommandResolver(mockedCommand);
+        CommandResolver<HttpCommand> resolver = commandProcessor.createCommandResolver(mockedCommand, tracer);
         assertNotNull(resolver);
         Iterable<ExecutionCommand> cmds = resolver.resolveExecutionCommands();
         assertNotNull(cmds);
@@ -433,6 +464,8 @@ public class JsonRpcTransportCommandProcessorTest  {
 
         verify(logger).logAccess(eq(mockedCommand), isA(ExecutionContext.class), anyLong(), anyLong(),
                 any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+
+        verifyTracerCalls();
     }
 
     @Test
@@ -449,7 +482,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         when(mockedCommand.getRequest()).thenReturn(request);
         when(mockedCommand.getResponse()).thenReturn(response);
         when(mockedCommand.getIdentityTokenResolver()).thenReturn(tokenResolver);
-        when(mockedCommand.getStatus()).thenReturn(TransportCommand.CommandStatus.InProcess);
+        when(mockedCommand.getStatus()).thenReturn(TransportCommand.CommandStatus.InProgress);
         when(mockedCommand.getTimer()).thenReturn(mockTimer);
 
         String body="{ \"method\": \"" + SERVICE_NAME + "/v1.0/" + OP_NAME  + "\", \"params\": [\"Hello\", 333], \"id\": \"fail\"}";
@@ -459,7 +492,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         TestOutputStream tos = new TestOutputStream();
         when(response.getOutputStream()).thenReturn(tos);
 
-        CommandResolver<HttpCommand> resolver = commandProcessor.createCommandResolver(mockedCommand);
+        CommandResolver<HttpCommand> resolver = commandProcessor.createCommandResolver(mockedCommand, tracer);
         assertNotNull(resolver);
         Iterable<ExecutionCommand> cmds = resolver.resolveExecutionCommands();
         assertNotNull(cmds);
@@ -485,6 +518,8 @@ public class JsonRpcTransportCommandProcessorTest  {
 
         verify(logger).logAccess(eq(mockedCommand), isA(ExecutionContext.class), anyLong(), anyLong(),
                 any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+
+        verifyTracerCalls();
     }
 
     @Test
@@ -503,7 +538,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         when(mockedCommand.getRequest()).thenReturn(request);
         when(mockedCommand.getResponse()).thenReturn(response);
         when(mockedCommand.getIdentityTokenResolver()).thenReturn(tokenResolver);
-        when(mockedCommand.getStatus()).thenReturn(TransportCommand.CommandStatus.InProcess);
+        when(mockedCommand.getStatus()).thenReturn(TransportCommand.CommandStatus.InProgress);
         when(mockedCommand.getTimer()).thenReturn(mockTimer);
 
         //Also note that we're mixing the case of the method call up - JSON rpc implementation
@@ -518,7 +553,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         TestOutputStream tos = new TestOutputStream();
         when(response.getOutputStream()).thenReturn(tos);
 
-        CommandResolver<HttpCommand> resolver = commandProcessor.createCommandResolver(mockedCommand);
+        CommandResolver<HttpCommand> resolver = commandProcessor.createCommandResolver(mockedCommand, tracer);
         assertNotNull(resolver);
         Iterable<ExecutionCommand> cmds = resolver.resolveExecutionCommands();
         assertNotNull(cmds);
@@ -585,6 +620,8 @@ public class JsonRpcTransportCommandProcessorTest  {
 
         verify(logger).logAccess(eq(mockedCommand), isA(ExecutionContext.class), anyLong(), anyLong(),
                 any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+
+        verifyTracerCalls();
     }
 
 
@@ -602,7 +639,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         when(mockedCommand.getRequest()).thenReturn(request);
         when(mockedCommand.getResponse()).thenReturn(response);
         when(mockedCommand.getIdentityTokenResolver()).thenReturn(tokenResolver);
-        when(mockedCommand.getStatus()).thenReturn(TransportCommand.CommandStatus.InProcess);
+        when(mockedCommand.getStatus()).thenReturn(TransportCommand.CommandStatus.InProgress);
         when(mockedCommand.getTimer()).thenReturn(mockTimer);
 
         String body="[{ \"this is never gonna parse\"}]";
@@ -613,7 +650,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         TestOutputStream tos = new TestOutputStream();
         when(response.getOutputStream()).thenReturn(tos);
 
-        commandProcessor.createCommandResolver(mockedCommand);
+        commandProcessor.createCommandResolver(mockedCommand, tracer);
 
         //What should happen is a total parse failure and something should be written with parse error -32700
         String written = tos.getCapturedOutputStream();
@@ -625,6 +662,8 @@ public class JsonRpcTransportCommandProcessorTest  {
 
         verify(logger).logAccess(eq(mockedCommand), isA(ExecutionContext.class), anyLong(), anyLong(),
                 any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+
+        verifyTracerCalls();
     }
 
     @Test
@@ -739,6 +778,8 @@ public class JsonRpcTransportCommandProcessorTest  {
         commandProcessor.process(command);
         assertFalse(commandProcessor.errorCalled);
         verify(validator).validate(any(HttpCommand.class));
+
+        //verifyTracerCalls(); // doesn't call a real command, so doesn't callback to observer for tracer hook
     }
 
     @Test
@@ -794,6 +835,8 @@ public class JsonRpcTransportCommandProcessorTest  {
         assertTrue(commandProcessor.errorCalled);
         verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
                 any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+
+        verifyTracerCalls();
     }
 
     @Test
@@ -821,6 +864,8 @@ public class JsonRpcTransportCommandProcessorTest  {
         assertTrue(commandProcessor.errorCalled);
         verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
                 any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+
+        verifyTracerCalls();
     }
 
     @Test
@@ -839,7 +884,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         when(mockedCommand.getRequest()).thenReturn(request);
         when(mockedCommand.getResponse()).thenReturn(response);
         when(mockedCommand.getIdentityTokenResolver()).thenReturn(tokenResolver);
-        when(mockedCommand.getStatus()).thenReturn(TransportCommand.CommandStatus.InProcess);
+        when(mockedCommand.getStatus()).thenReturn(TransportCommand.CommandStatus.InProgress);
         when(mockedCommand.getTimer()).thenReturn(mockTimer);
 
         Executor executor = new Executor() {
@@ -871,6 +916,8 @@ public class JsonRpcTransportCommandProcessorTest  {
 
         verify(logger).logAccess(eq(mockedCommand), isA(ExecutionContext.class), anyLong(), anyLong(),
                 any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+
+        verifyTracerCalls();
     }
 
     /**
@@ -947,7 +994,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         when(mockedCommand.getResponse()).thenReturn(response);
 
         when(mockedCommand.getIdentityTokenResolver()).thenReturn(tokenResolver);
-        when(mockedCommand.getStatus()).thenReturn(TransportCommand.CommandStatus.InProcess);
+        when(mockedCommand.getStatus()).thenReturn(TransportCommand.CommandStatus.InProgress);
         when(mockedCommand.getTimer()).thenReturn(mockTimer);
         String body="{ \"method\": \"" + SERVICE_NAME + "/v1.0/" + OP_NAME + "\", \"params\": [\"Hello\", 333], \"id\": 1}";
         TestInputStream tis = new TestInputStream(new ByteArrayInputStream(body.getBytes("UTF-8")));
@@ -956,7 +1003,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         TestOutputStream tos = new TestOutputStream();
         when(response.getOutputStream()).thenReturn(tos);
         // resolve the command
-        CommandResolver<HttpCommand> cr = commandProcessor.createCommandResolver(mockedCommand);
+        CommandResolver<HttpCommand> cr = commandProcessor.createCommandResolver(mockedCommand, tracer);
         Iterable<ExecutionCommand> executionCommands = cr.resolveExecutionCommands();
 
         // check the output
@@ -979,7 +1026,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         when(mockedCommand.getResponse()).thenReturn(response);
 
         when(mockedCommand.getIdentityTokenResolver()).thenReturn(tokenResolver);
-        when(mockedCommand.getStatus()).thenReturn(TransportCommand.CommandStatus.InProcess);
+        when(mockedCommand.getStatus()).thenReturn(TransportCommand.CommandStatus.InProgress);
         when(mockedCommand.getTimer()).thenReturn(mockTimer);
         String body="{ \"method\": \"" + SERVICE_NAME + "/v1.0/" + OP_NAME + "\", \"params\": [\"Hello\", 333], \"id\": 1}";
         TestInputStream tis = new TestInputStream(new ByteArrayInputStream(body.getBytes("UTF-8")));
@@ -990,7 +1037,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         // resolve the command
         when(request.getHeader("X-RequestTimeout")).thenReturn("10000");
         when(requestTimeResolver.resolveRequestTime(any())).thenReturn(new Date());
-        CommandResolver<HttpCommand> cr = commandProcessor.createCommandResolver(mockedCommand);
+        CommandResolver<HttpCommand> cr = commandProcessor.createCommandResolver(mockedCommand, tracer);
         Iterable<ExecutionCommand> executionCommands = cr.resolveExecutionCommands();
 
         // check the output
@@ -1013,7 +1060,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         when(mockedCommand.getResponse()).thenReturn(response);
 
         when(mockedCommand.getIdentityTokenResolver()).thenReturn(tokenResolver);
-        when(mockedCommand.getStatus()).thenReturn(TransportCommand.CommandStatus.InProcess);
+        when(mockedCommand.getStatus()).thenReturn(TransportCommand.CommandStatus.InProgress);
         when(mockedCommand.getTimer()).thenReturn(mockTimer);
         String body="{ \"method\": \"" + SERVICE_NAME + "/v1.0/" + OP_NAME + "\", \"params\": [\"Hello\", 333], \"id\": 1}";
         TestInputStream tis = new TestInputStream(new ByteArrayInputStream(body.getBytes("UTF-8")));
@@ -1025,7 +1072,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         // resolve the command
         when(request.getHeader("X-RequestTimeout")).thenReturn("10000");
         when(requestTimeResolver.resolveRequestTime(any())).thenReturn(new Date(System.currentTimeMillis() - 10001));
-        CommandResolver<HttpCommand> cr = commandProcessor.createCommandResolver(mockedCommand);
+        CommandResolver<HttpCommand> cr = commandProcessor.createCommandResolver(mockedCommand, tracer);
         Iterable<ExecutionCommand> executionCommands = cr.resolveExecutionCommands();
 
         // check the output
@@ -1117,12 +1164,12 @@ public class JsonRpcTransportCommandProcessorTest  {
 
     private static class NonsenseTCP extends AbstractCommandProcessor {
         @Override
-        protected CommandResolver createCommandResolver(TransportCommand command) {
+        protected CommandResolver createCommandResolver(TransportCommand command, Tracer tracer) {
             return null;
         }
 
         @Override
-        protected void writeErrorResponse(TransportCommand command, ExecutionContextWithTokens context, CougarException e) {
+        protected void writeErrorResponse(TransportCommand command, ExecutionContextWithTokens context, CougarException e, boolean traceStarted) {
         }
 
         @Override
@@ -1183,9 +1230,9 @@ public class JsonRpcTransportCommandProcessorTest  {
         }
 
         @Override
-        public void writeErrorResponse(HttpCommand command, ExecutionContextWithTokens context, CougarException e) {
+        public void writeErrorResponse(HttpCommand command, ExecutionContextWithTokens context, CougarException e, boolean traceStarted) {
             errorCalled = true;
-            super.writeErrorResponse(command, context, e);
+            super.writeErrorResponse(command, context, e, traceStarted);
         }
 
         @Override

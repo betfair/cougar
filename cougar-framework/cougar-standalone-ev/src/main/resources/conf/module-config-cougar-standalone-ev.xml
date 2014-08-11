@@ -33,6 +33,7 @@
         <property name="preProcessors" ref="preProcessorInterceptors"/>
         <property name="postProcessors" ref="postProcessorInterceptors"/>
         <property name="identityResolverFactory" ref="cougar.core.IdentityResolverFactory"/>
+        <property name="tracer" ref="cougar.core.Tracer"/>
     </bean>
 
     <bean id="cougarIntroductionService" class="com.betfair.cougar.core.impl.CougarIntroductionService" init-method="performIntroductions" lazy-init="false">

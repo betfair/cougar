@@ -25,6 +25,7 @@ import com.betfair.cougar.core.api.ServiceRegistrar;
 import com.betfair.cougar.core.api.ServiceVersion;
 import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.security.IdentityResolverFactory;
+import com.betfair.cougar.core.api.tracing.Tracer;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +51,7 @@ public class ServiceRegisterableExecutionVenue extends BaseExecutionVenue implem
     private ServiceLogManagerFactory serviceLogManagerFactory;
     private IdentityResolverFactory identityResolverFactory;
     protected MonitorRegistry monitorRegistry;
+    private Tracer tracer;
 
     public void setIdentityResolverFactory(IdentityResolverFactory identityResolverFactory) {
         this.identityResolverFactory = identityResolverFactory;
@@ -65,6 +67,14 @@ public class ServiceRegisterableExecutionVenue extends BaseExecutionVenue implem
 
     public void setMonitorRegistry(MonitorRegistry monitorRegistry) {
         this.monitorRegistry = monitorRegistry;
+    }
+
+    public void setTracer(Tracer tracer) {
+        this.tracer = tracer;
+    }
+
+    public Tracer getTracer() {
+        return tracer;
     }
 
     private void registerServiceDefinition(String namespace, ServiceDefinition serviceDefinition, ExecutableResolver resolver) {

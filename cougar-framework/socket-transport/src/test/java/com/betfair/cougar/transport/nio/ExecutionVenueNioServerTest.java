@@ -30,10 +30,12 @@ import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.security.IdentityResolverFactory;
+import com.betfair.cougar.core.api.tracing.Tracer;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.core.impl.security.CommonNameCertInfoExtractor;
+import com.betfair.cougar.core.impl.tracing.CompoundTracer;
 import com.betfair.cougar.core.impl.transports.TransportRegistryImpl;
 import org.slf4j.LoggerFactory;
 import com.betfair.cougar.netutil.nio.marshalling.DefaultSocketTimeResolver;
@@ -169,6 +171,7 @@ public class ExecutionVenueNioServerTest {
     TlsNioConfig cfg;
     private ExecutionVenueNioServer server;
     private Executor executor;
+    private Tracer tracer;
     private SocketRMIMarshaller marshaller;
     private ExecutionVenue ev;
     private SocketTransportCommandProcessor cmdProcessor;
@@ -191,6 +194,8 @@ public class ExecutionVenueNioServerTest {
     public void startDummyEchoSocketServer() throws IOException {
 
     	ioFactory = new HessianObjectIOFactory(false);
+
+        tracer = new CompoundTracer();
 
 		cfg = new TlsNioConfig();
         final NioLogger logger = new NioLogger("ALL");
@@ -270,6 +275,7 @@ public class ExecutionVenueNioServerTest {
         cmdProcessor.setExecutor(executor);
         cmdProcessor.setMarshaller(marshaller);
         cmdProcessor.setExecutionVenue(ev);
+        cmdProcessor.setTracer(tracer);
         ServiceBindingDescriptor desc = new SocketBindingDescriptor() {
             @Override
             public OperationBindingDescriptor[] getOperationBindings() {

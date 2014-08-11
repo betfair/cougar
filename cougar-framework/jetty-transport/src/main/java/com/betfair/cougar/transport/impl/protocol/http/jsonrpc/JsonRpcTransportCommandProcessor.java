@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,6 +34,7 @@ import com.betfair.cougar.core.api.ServiceBindingDescriptor;
 import com.betfair.cougar.core.api.ServiceVersion;
 import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.exception.*;
+import com.betfair.cougar.core.api.tracing.Tracer;
 import com.betfair.cougar.core.api.transcription.EnumDerialisationException;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
@@ -146,8 +146,9 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
 	}
 
 	@Override
-	protected CommandResolver<HttpCommand> createCommandResolver(final HttpCommand http) {
+	protected CommandResolver<HttpCommand> createCommandResolver(final HttpCommand http, final Tracer tracer) {
         final ExecutionContextWithTokens context = resolveExecutionContext(http, http.getRequest(), http.getClientX509CertificateChain(), true);
+        tracer.start(context.getRequestUUID());
 
 
 		final List<JsonRpcRequest> requests = new ArrayList<JsonRpcRequest>();
@@ -171,7 +172,7 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
                 }
 
                 if (requests.isEmpty()) {
-                    writeErrorResponse(http, context, new CougarValidationException(ServerFaultCode.NoRequestsFound, "No Requests found in rpc call"));
+                    writeErrorResponse(http, context, new CougarValidationException(ServerFaultCode.NoRequestsFound, "No Requests found in rpc call"), true);
                 } else {
                     final TimeConstraints realTimeConstraints = DefaultTimeConstraints.rebaseFromNewStartTime(context.getRequestTime(), readRawTimeConstraints(http.getRequest()));
                     for (final JsonRpcRequest rpc : requests) {
@@ -195,7 +196,7 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
                                         JsonRpcResponse response = buildExecutionResultResponse(rpc, executionResult);
                                         synchronized(responses) {
                                             responses.add(response);
-                                            writeResponseIfComplete(http, context, isBatch, requests, responses, bytesRead);
+                                            writeResponseIfComplete(http, context, isBatch, requests, responses, bytesRead, tracer);
                                         }
                                     }
                                     @Override
@@ -219,18 +220,18 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
                                 else {
                                     responses.add(JsonRpcErrorResponse.buildErrorResponse(rpc, new JsonRpcError(INVALID_PARAMS, ServerFaultCode.MandatoryNotDefined.getDetail(), null)));
                                 }
-                                writeResponseIfComplete(http, context, isBatch, requests, responses, bytesRead);
+                                writeResponseIfComplete(http, context, isBatch, requests, responses, bytesRead, tracer);
                             }
                         } else {
                             responses.add(JsonRpcErrorResponse.buildErrorResponse(rpc, new JsonRpcError(METHOD_NOT_FOUND, ServerFaultCode.NoSuchOperation.getDetail(), null)));
-                            writeResponseIfComplete(http, context, isBatch, requests, responses, bytesRead);
+                            writeResponseIfComplete(http, context, isBatch, requests, responses, bytesRead, tracer);
                         }
                     }
                 }
             } catch (Exception ex) {
                 //This happens when there was a problem reading
                 //deal with case where every request was bad
-                writeErrorResponse(http, context, CougarMarshallingException.unmarshallingException("json",ex,false));
+                writeErrorResponse(http, context, CougarMarshallingException.unmarshallingException("json",ex,false), true);
                 commands.clear();
             }
 
@@ -260,11 +261,13 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
 
     @Override
     public void process(HttpCommand command) {
+        boolean traceStarted = false;
         incrementCommandsProcessed();
         ExecutionContextWithTokens ctx = null;
         try {
             validateCommand(command);
-            final CommandResolver<HttpCommand> resolver = createCommandResolver(command);
+            final CommandResolver<HttpCommand> resolver = createCommandResolver(command, tracer);
+            traceStarted = true;
             ctx = resolver.resolveExecutionContext();
 
             final TimeConstraints realTimeConstraints = DefaultTimeConstraints.rebaseFromNewStartTime(ctx.getRequestTime(), readRawTimeConstraints(command.getRequest()));
@@ -309,11 +312,11 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
             //this indicates an exception beyond the normal flow occurred
             //We can only deal with this by sending a batch fail message
             //Normal business thrown exceptions should not be handled by this call
-            writeErrorResponse(command, ctx, ex);
+            writeErrorResponse(command, ctx, ex, traceStarted);
         } catch (Throwable ex) {
             //We cannot let any exception percolate beyond this point as the conventional error response
             //publication mechanism doesn't work cleanly for JSON-RPC
-            writeErrorResponse(command, ctx, new CougarServiceException(ServerFaultCode.ServiceRuntimeException, ex.getMessage()));
+            writeErrorResponse(command, ctx, new CougarServiceException(ServerFaultCode.ServiceRuntimeException, ex.getMessage()), traceStarted);
         }
     }
 
@@ -325,88 +328,102 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
      * @param command the command that caused the error
      * @param context
      * @param error
+     * @param traceStarted
      */
 	@Override
-	public void writeErrorResponse(HttpCommand command, ExecutionContextWithTokens context, CougarException error) {
-        incrementErrorsWritten();
-		final HttpServletResponse response = command.getResponse();
-		try {
-            long bytesWritten = 0;
-            if(error.getResponseCode() != ResponseCode.CantWriteToSocket) {
+	public void writeErrorResponse(HttpCommand command, ExecutionContextWithTokens context, CougarException error, boolean traceStarted) {
+        try {
+            incrementErrorsWritten();
+            final HttpServletResponse response = command.getResponse();
+            try {
+                long bytesWritten = 0;
+                if(error.getResponseCode() != ResponseCode.CantWriteToSocket) {
 
-                ResponseCodeMapper.setResponseStatus(response, error.getResponseCode());
-                ByteCountingOutputStream out = null;
-                try {
-                    int jsonErrorCode = mapServerFaultCodeToJsonErrorCode(error.getServerFaultCode());
-                    JsonRpcError rpcError = new JsonRpcError(jsonErrorCode, error.getFault().getErrorCode(), null);
-                    JsonRpcErrorResponse jsonRpcErrorResponse = JsonRpcErrorResponse.buildErrorResponse(null, rpcError);
+                    ResponseCodeMapper.setResponseStatus(response, error.getResponseCode());
+                    ByteCountingOutputStream out = null;
+                    try {
+                        int jsonErrorCode = mapServerFaultCodeToJsonErrorCode(error.getServerFaultCode());
+                        JsonRpcError rpcError = new JsonRpcError(jsonErrorCode, error.getFault().getErrorCode(), null);
+                        JsonRpcErrorResponse jsonRpcErrorResponse = JsonRpcErrorResponse.buildErrorResponse(null, rpcError);
 
-                    out = new ByteCountingOutputStream(response.getOutputStream());
-                    mapper.writeValue(out, jsonRpcErrorResponse);
-                    bytesWritten = out.getCount();
-                } catch (IOException ex) {
-                    handleResponseWritingIOException(ex, error.getClass());
-                } finally {
-                    closeStream(out);
-                }
-            } else {
-                LOGGER.debug("Skipping error handling for a request where the output channel/socket has been prematurely closed");
-            }
-            logAccess(command,
-                    resolveContextForErrorHandling(context, command), -1,
-                    bytesWritten, MediaType.APPLICATION_JSON_TYPE,
-                    MediaType.APPLICATION_JSON_TYPE, error.getResponseCode());
-		} finally {
-			command.onComplete();
-		}
-	}
-
- 	public boolean writeResponseIfComplete(HttpCommand command, ExecutionContextWithTokens context, boolean isBatch, List<JsonRpcRequest> requests, List<JsonRpcResponse> responses, long bytesRead) {
-		if (requests.size()==responses.size()) {
-			final HttpServletResponse response = command.getResponse();
-            final IdentityTokenResolver<HttpServletRequest,HttpServletResponse, X509Certificate[]> tokenResolver =
-                    (IdentityTokenResolver<HttpServletRequest,HttpServletResponse, X509Certificate[]>) command.getIdentityTokenResolver();
-			if (command.getStatus() == TransportCommand.CommandStatus.InProcess) {
-                try {
-					ResponseCodeMapper.setResponseStatus(response, ResponseCode.Ok);
-					if (context != null && context.getIdentity() != null && tokenResolver != null) {
-	                    writeIdentity(context.getIdentityTokens(), new IdentityTokenIOAdapter() {
-                            @Override
-                            public void rewriteIdentityTokens(List<IdentityToken> identityTokens) {
-                                tokenResolver.rewrite(identityTokens, response);
-                            }
-
-                            @Override
-                            public boolean isRewriteSupported() {
-                                return tokenResolver.isRewriteSupported();
-                            }
-                        });
-	                }
-					response.setContentType(MediaType.APPLICATION_JSON);
-	                ByteCountingOutputStream out = null;
-	                try {
-	                    out = new ByteCountingOutputStream(response.getOutputStream());
-	                    mapper.writeValue(out, isBatch ? responses : responses.get(0));
-	                } finally {
+                        out = new ByteCountingOutputStream(response.getOutputStream());
+                        mapper.writeValue(out, jsonRpcErrorResponse);
+                        bytesWritten = out.getCount();
+                    } catch (IOException ex) {
+                        handleResponseWritingIOException(ex, error.getClass());
+                    } finally {
                         closeStream(out);
-	                }
+                    }
+                } else {
+                    LOGGER.debug("Skipping error handling for a request where the output channel/socket has been prematurely closed");
+                }
+                logAccess(command,
+                        resolveContextForErrorHandling(context, command), -1,
+                        bytesWritten, MediaType.APPLICATION_JSON_TYPE,
+                        MediaType.APPLICATION_JSON_TYPE, error.getResponseCode());
+            } finally {
+                command.onComplete();
+            }
+        }
+        finally {
+            if (context != null && traceStarted) {
+                tracer.end(context.getRequestUUID());
+            }
+        }
+    }
 
-                    logAccess(command,
-                            context, bytesRead,
-                            out.getCount(), MediaType.APPLICATION_JSON_TYPE,
-                            MediaType.APPLICATION_JSON_TYPE, ResponseCode.Ok);
+ 	public boolean writeResponseIfComplete(HttpCommand command, ExecutionContextWithTokens context, boolean isBatch, List<JsonRpcRequest> requests, List<JsonRpcResponse> responses, long bytesRead, Tracer tracer) {
+        if (requests.size()==responses.size()) {
+            try {
+                final HttpServletResponse response = command.getResponse();
+                final IdentityTokenResolver<HttpServletRequest,HttpServletResponse, X509Certificate[]> tokenResolver =
+                        (IdentityTokenResolver<HttpServletRequest,HttpServletResponse, X509Certificate[]>) command.getIdentityTokenResolver();
+                if (command.getStatus() == TransportCommand.CommandStatus.InProgress) {
+                    try {
+                        ResponseCodeMapper.setResponseStatus(response, ResponseCode.Ok);
+                        if (context != null && context.getIdentity() != null && tokenResolver != null) {
+                            writeIdentity(context.getIdentityTokens(), new IdentityTokenIOAdapter() {
+                                @Override
+                                public void rewriteIdentityTokens(List<IdentityToken> identityTokens) {
+                                    tokenResolver.rewrite(identityTokens, response);
+                                }
 
-				} catch (Exception e) {
-                    writeErrorResponse(command, context, handleResponseWritingIOException(e, JsonRpcResponse.class));
-				} finally {
-					command.onComplete();
-				}
-			}
-			return true;
-		} else {
-			return false;
-		}
-	}
+                                @Override
+                                public boolean isRewriteSupported() {
+                                    return tokenResolver.isRewriteSupported();
+                                }
+                            });
+                        }
+                        response.setContentType(MediaType.APPLICATION_JSON);
+                        ByteCountingOutputStream out = null;
+                        try {
+                            out = new ByteCountingOutputStream(response.getOutputStream());
+                            mapper.writeValue(out, isBatch ? responses : responses.get(0));
+                        } finally {
+                            closeStream(out);
+                        }
+
+                        logAccess(command,
+                                context, bytesRead,
+                                out.getCount(), MediaType.APPLICATION_JSON_TYPE,
+                                MediaType.APPLICATION_JSON_TYPE, ResponseCode.Ok);
+
+                    } catch (Exception e) {
+                        writeErrorResponse(command, context, handleResponseWritingIOException(e, JsonRpcResponse.class), false); // it has been started but we'll call end below
+                    } finally {
+                        command.onComplete();
+                    }
+                }
+                return true;
+            }
+            finally {
+                tracer.end(context.getRequestUUID());
+            }
+        }
+        else {
+            return false;
+        }
+    }
 
     private JsonRpcResponse buildExecutionResultResponse(JsonRpcRequest rpc, ExecutionResult executionResult) {
         JsonRpcResponse response = null;
