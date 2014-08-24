@@ -70,11 +70,10 @@ import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.core.api.events.EventTransportIdentity;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
-import com.betfair.cougar.core.api.transcription.SetBuilder;
+import com.betfair.cougar.core.api.builder.SetBuilder;
 import com.betfair.cougar.core.impl.ev.ConnectedResponseImpl;
 import com.betfair.cougar.core.impl.ev.DefaultSubscription;
 import com.betfair.cougar.core.impl.logging.AbstractLoggingControl;
-import com.betfair.cougar.core.impl.logging.Log4jLoggingControl;
 import com.betfair.cougar.core.impl.security.SSLAwareTokenResolver;
 import org.apache.log4j.Level;
 import org.slf4j.Logger;
@@ -813,7 +812,7 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
         LOGGER.info("Bulk calls complete");
         try { latch.await(); } catch (InterruptedException e) {}
         long timeTaken = System.nanoTime() - startTime;
-        LOGGER.info("All Latches returned in %,d ms", timeTaken/1000000);
+        LOGGER.info("All Latches returned in %,d ms", timeTaken / 1000000);
         return timeTaken;
     }
 
@@ -834,7 +833,7 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
 		}
 
         LOGGER.warn("A warning message");
-        LOGGER.info( "A warning message");
+        LOGGER.info("A warning message");
 
 		return response;
 	}

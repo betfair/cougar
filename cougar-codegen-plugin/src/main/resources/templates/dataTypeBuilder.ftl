@@ -38,6 +38,7 @@ import com.betfair.cougar.api.Validatable;
 import com.betfair.cougar.core.api.transcription.*;
 import com.betfair.cougar.core.api.ServiceVersion;
 import com.betfair.cougar.core.api.transcription.EnumUtils;
+import com.betfair.cougar.core.api.builder.*;
 import com.betfair.cougar.util.ValidationUtils;
 import ${package}.${majorVersion}.enumerations.*;
 

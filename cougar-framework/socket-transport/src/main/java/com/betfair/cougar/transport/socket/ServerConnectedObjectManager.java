@@ -16,12 +16,10 @@
 
 package com.betfair.cougar.transport.socket;
 
-import com.betfair.cougar.api.ExecutionContextWithTokens;
+import com.betfair.cougar.api.DehydratedExecutionContext;
 import com.betfair.cougar.api.LogExtension;
-import com.betfair.cougar.api.RequestContext;
 import com.betfair.cougar.core.api.ev.ConnectedResponse;
 import com.betfair.cougar.core.api.ev.OperationDefinition;
-import com.betfair.cougar.core.api.ev.Subscription;
 import com.betfair.cougar.netutil.nio.NioLogger;
 import com.betfair.cougar.netutil.nio.TerminateSubscription;
 import com.betfair.cougar.netutil.nio.HandlerListener;
@@ -34,7 +32,7 @@ public interface ServerConnectedObjectManager extends HandlerListener {
 
     public void setNioLogger(NioLogger nioLogger);
 
-    public void addSubscription(final SocketTransportCommandProcessor commandProcessor, final SocketTransportRPCCommand command, final ConnectedResponse result, final OperationDefinition operationDefinition, final ExecutionContextWithTokens context, final LogExtension connectedObjectLogExtension);
+    public void addSubscription(final SocketTransportCommandProcessor commandProcessor, final SocketTransportRPCCommand command, final ConnectedResponse result, final OperationDefinition operationDefinition, final DehydratedExecutionContext context, final LogExtension connectedObjectLogExtension);
 
     void terminateSubscription(IoSession session, TerminateSubscription subscription);
 }

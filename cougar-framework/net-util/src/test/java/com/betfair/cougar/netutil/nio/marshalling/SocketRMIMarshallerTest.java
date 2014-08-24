@@ -32,7 +32,7 @@ import java.security.cert.X509Certificate;
 import java.util.*;
 import java.util.Map.Entry;
 
-import com.betfair.cougar.api.ExecutionContextWithTokens;
+import com.betfair.cougar.api.DehydratedExecutionContext;
 import com.betfair.cougar.api.security.IdentityResolver;
 import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.core.api.exception.CougarException;
@@ -175,7 +175,7 @@ public class SocketRMIMarshallerTest {
         }
 
         @Override
-        public void resolve(IdentityChain chain, ExecutionContextWithTokens ctx) throws InvalidCredentialsException {
+        public void resolve(IdentityChain chain, DehydratedExecutionContext ctx) throws InvalidCredentialsException {
             for (final IdentityToken token : ctx.getIdentityTokens()) {
                 Principal principal = new PrincipalImpl(token.getName());
                 Scanner scanner = new Scanner(token.getValue()).useDelimiter(",");
@@ -397,7 +397,7 @@ public class SocketRMIMarshallerTest {
         String resolvedAddresses = RemoteAddressUtils.externaliseWithLocalAddresses(ctx.getLocation().getResolvedAddresses());
         Mockito.when(geoIpLocator.getGeoLocation("10.20.30.40", RemoteAddressUtils.parse("10.20.30.40", resolvedAddresses), null)).thenReturn(ctx.getLocation());
         CougarObjectInput in = ioFactory.newCougarObjectInput(new ByteArrayInputStream(outputStream.toByteArray()), protocolVersion);
-        ExecutionContextWithTokens actualContext = cut.readExecutionContext(in, "10.20.30.40", new X509Certificate[0], 0, protocolVersion);
+        DehydratedExecutionContext actualContext = cut.readExecutionContext(in, "10.20.30.40", new X509Certificate[0], 0, protocolVersion);
         OperationKey actualKey = cut.readOperationKey(in);
         Object[] actualArgs = cut.readArgs(params, in);
 
@@ -594,7 +594,7 @@ public class SocketRMIMarshallerTest {
         cougarObjectOutput.writeBoolean(false); // traceEnabled
         cut.writeRequestTime(cougarObjectOutput, protocolVersion);
         cougarObjectOutput.flush();
-        ExecutionContextWithTokens ctx = cut.readExecutionContext(ioFactory.newCougarObjectInput(new ByteArrayInputStream(outputStream.toByteArray()), protocolVersion), "127.0.0.1", new X509Certificate[0], 0, protocolVersion);
+        DehydratedExecutionContext ctx = cut.readExecutionContext(ioFactory.newCougarObjectInput(new ByteArrayInputStream(outputStream.toByteArray()), protocolVersion), "127.0.0.1", new X509Certificate[0], 0, protocolVersion);
         assertEquals(0, ctx.getIdentityTokens().size());
         assertNull(ctx.getIdentity());
     }
@@ -615,7 +615,7 @@ public class SocketRMIMarshallerTest {
         cougarObjectOutput.writeBoolean(false); // traceEnabled
         cut.writeRequestTime(cougarObjectOutput, protocolVersion);
         cougarObjectOutput.flush();
-        ExecutionContextWithTokens ctx = cut.readExecutionContext(ioFactory.newCougarObjectInput(new ByteArrayInputStream(outputStream.toByteArray()), protocolVersion), "127.0.0.1", new X509Certificate[0], 0, protocolVersion);
+        DehydratedExecutionContext ctx = cut.readExecutionContext(ioFactory.newCougarObjectInput(new ByteArrayInputStream(outputStream.toByteArray()), protocolVersion), "127.0.0.1", new X509Certificate[0], 0, protocolVersion);
         assertEquals(1, ctx.getIdentityTokens().size());
         assertNull(ctx.getIdentity());
     }
@@ -637,7 +637,7 @@ public class SocketRMIMarshallerTest {
         cougarObjectOutput.writeBoolean(false); // traceEnabled
         cut.writeRequestTime(cougarObjectOutput, protocolVersion);
         cougarObjectOutput.flush();
-        ExecutionContextWithTokens ctx = cut.readExecutionContext(ioFactory.newCougarObjectInput(new ByteArrayInputStream(outputStream.toByteArray()), protocolVersion), "127.0.0.1", new X509Certificate[0], 0, protocolVersion);
+        DehydratedExecutionContext ctx = cut.readExecutionContext(ioFactory.newCougarObjectInput(new ByteArrayInputStream(outputStream.toByteArray()), protocolVersion), "127.0.0.1", new X509Certificate[0], 0, protocolVersion);
         assertEquals(2, ctx.getIdentityTokens().size());
         assertNull(ctx.getIdentity());
     }

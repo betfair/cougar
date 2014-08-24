@@ -17,7 +17,7 @@
 package com.betfair.cougar.transport.impl.protocol.http.jsonrpc;
 
 import com.betfair.cougar.api.ExecutionContext;
-import com.betfair.cougar.api.ExecutionContextWithTokens;
+import com.betfair.cougar.api.DehydratedExecutionContext;
 import com.betfair.cougar.api.RequestUUID;
 import com.betfair.cougar.api.ResponseCode;
 import com.betfair.cougar.api.export.Protocol;
@@ -47,6 +47,7 @@ import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
 import com.betfair.cougar.core.impl.ev.BaseExecutionVenue;
 import com.betfair.cougar.logging.CougarLoggingUtils;
+import com.betfair.cougar.transport.api.DehydratedExecutionContextResolution;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.betfair.cougar.logging.EventLogDefinition;
@@ -59,13 +60,11 @@ import com.betfair.cougar.transport.api.ExecutionCommand;
 import com.betfair.cougar.transport.api.RequestLogger;
 import com.betfair.cougar.transport.api.RequestTimeResolver;
 import com.betfair.cougar.transport.api.TransportCommand;
-import com.betfair.cougar.transport.api.protocol.http.GeoLocationDeserializer;
 import com.betfair.cougar.transport.api.protocol.http.HttpCommand;
 import com.betfair.cougar.transport.api.protocol.http.jsonrpc.JsonRpcOperationBindingDescriptor;
 import com.betfair.cougar.transport.impl.AbstractCommandProcessor;
 import com.betfair.cougar.transport.impl.CommandValidatorRegistry;
 import com.betfair.cougar.transport.impl.protocol.http.ContentTypeNormaliser;
-import com.betfair.cougar.transport.impl.protocol.http.DefaultGeoLocationDeserializer;
 import com.betfair.cougar.util.RequestUUIDImpl;
 import com.betfair.cougar.util.UUIDGeneratorImpl;
 import com.betfair.cougar.util.geolocation.GeoIPLocator;
@@ -124,8 +123,10 @@ public class JsonRpcTransportCommandProcessorTest  {
     GeoIPLocator geoIPLocator;
     protected CommandValidatorRegistry<HttpCommand> validatorRegistry = new CommandValidatorRegistry<HttpCommand>();
     private ExecutionVenue ev;
-    private RequestTimeResolver requestTimeResolver;
+    //private RequestTimeResolver requestTimeResolver;
     private Tracer tracer;
+    private DehydratedExecutionContextResolution contextResolution;
+    private DehydratedExecutionContext context;
 
     protected void verifyTracerCalls() {
         final ArgumentCaptor<RequestUUID> captor = ArgumentCaptor.forClass(RequestUUID.class);
@@ -161,14 +162,20 @@ public class JsonRpcTransportCommandProcessorTest  {
         logger = mock(RequestLogger.class);
         tracer = mock(Tracer.class);
 
+        contextResolution = mock(DehydratedExecutionContextResolution.class);
+        context = mock(DehydratedExecutionContext.class);
+        when(contextResolution.resolveExecutionContext(eq(Protocol.JSON_RPC),any(HttpCommand.class),isNull())).thenReturn(context);
+        RequestUUID uuid = new RequestUUIDImpl();
+        when(context.getRequestUUID()).thenReturn(uuid);
+
         when(ctn.getNormalisedRequestMediaType(any(HttpServletRequest.class))).thenReturn(MediaType.APPLICATION_JSON_TYPE);
         when(ctn.getNormalisedResponseMediaType(any(HttpServletRequest.class))).thenReturn(MediaType.APPLICATION_JSON_TYPE);
         when(mockEventLoggingRegistry.getInvokableLogger(anyString())).thenReturn(logDef);
         when(logDef.getLogName()).thenReturn("");
 
-        requestTimeResolver = mock(RequestTimeResolver.class);
+        //requestTimeResolver = mock(RequestTimeResolver.class);
 
-        commandProcessor = new LocalJsonRpcCommandProcessor(requestTimeResolver, new JSONBindingFactory());
+        commandProcessor = new LocalJsonRpcCommandProcessor(contextResolution, new JSONBindingFactory());
         commandProcessor.setContentTypeNormaliser(ctn);
         commandProcessor.setRequestLogger(logger);
         commandProcessor.setValidatorRegistry(validatorRegistry);
@@ -281,7 +288,7 @@ public class JsonRpcTransportCommandProcessorTest  {
                                                JsonRpcTransportCommandProcessor.IDENTITY_RESOLUTION_OPDEF,
                                                JsonRpcTransportCommandProcessor.IDENTITY_RESOLUTION_EXEC,
                                                JsonRpcTransportCommandProcessor.IDENTITY_RESOLUTION_TIMING_RECORDER, 0);
-//        verify(ev, times(1)).execute(any(ExecutionContextWithTokens.class), eq(JsonRpcTransportCommandProcessor.IDENTITY_RESOLUTION_OPDEF.getOperationKey()), eq(new Object[0]), any(ExecutionObserver.class));
+//        verify(ev, times(1)).execute(any(DehydratedExecutionContext.class), eq(JsonRpcTransportCommandProcessor.IDENTITY_RESOLUTION_OPDEF.getOperationKey()), eq(new Object[0]), any(ExecutionObserver.class));
     }
 
     @Test
@@ -292,7 +299,7 @@ public class JsonRpcTransportCommandProcessorTest  {
                 JsonRpcTransportCommandProcessor.IDENTITY_RESOLUTION_OPDEF,
                 JsonRpcTransportCommandProcessor.IDENTITY_RESOLUTION_EXEC,
                 JsonRpcTransportCommandProcessor.IDENTITY_RESOLUTION_TIMING_RECORDER, 0);
-//        verify(ev, times(0)).execute(any(ExecutionContextWithTokens.class), eq(JsonRpcTransportCommandProcessor.IDENTITY_RESOLUTION_OPDEF.getOperationKey()), eq(new Object[0]), any(ExecutionObserver.class));
+//        verify(ev, times(0)).execute(any(DehydratedExecutionContext.class), eq(JsonRpcTransportCommandProcessor.IDENTITY_RESOLUTION_OPDEF.getOperationKey()), eq(new Object[0]), any(ExecutionObserver.class));
     }
 
     @Test
@@ -322,11 +329,11 @@ public class JsonRpcTransportCommandProcessorTest  {
 
         assertEquals(2, realEv.requests.size());
         ExecutionRequest req1 = realEv.requests.get(0);
-        assertTrue(ExecutionContextWithTokens.class.isAssignableFrom(req1.ctx.getClass()));
+        assertTrue(DehydratedExecutionContext.class.isAssignableFrom(req1.ctx.getClass()));
         assertEquals(JsonRpcTransportCommandProcessor.IDENTITY_RESOLUTION_OPDEF.getOperationKey(), req1.key);
         assertEquals(0, req1.args.length);
         ExecutionRequest req2 = realEv.requests.get(1);
-        assertFalse(ExecutionContextWithTokens.class.isAssignableFrom(req2.ctx.getClass()));
+        assertFalse(DehydratedExecutionContext.class.isAssignableFrom(req2.ctx.getClass()));
         assertEquals(TEST_OP_KEY, req2.key);
 
         verifyTracerCalls();
@@ -357,8 +364,6 @@ public class JsonRpcTransportCommandProcessorTest  {
         when(response.getOutputStream()).thenReturn(tos);
 
         CommandResolver<HttpCommand> resolver = commandProcessor.createCommandResolver(mockedCommand, tracer);
-        verify(mockedCommand).getIdentityTokenResolver();
-        verify(tokenResolver).resolve(request, null);
         assertNotNull(resolver);
         Iterable<ExecutionCommand> cmds = resolver.resolveExecutionCommands();
         assertNotNull(cmds);
@@ -666,90 +671,6 @@ public class JsonRpcTransportCommandProcessorTest  {
         verifyTracerCalls();
     }
 
-    @Test
-    public void testResolveExecutionContext() throws Exception {
-        bindOperations();
-
-        HttpCommand command = mock(HttpCommand.class);
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getScheme()).thenReturn("http");
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        when(command.getRequest()).thenReturn(request);
-        when(command.getResponse()).thenReturn(response);
-
-        GeoLocationDetails gld = Mockito.mock(GeoLocationDetails.class);
-        //test an empty request
-        List resolvedAddresses = Collections.emptyList();
-        when(geoIPLocator.getGeoLocation(null, resolvedAddresses, AZ)).thenReturn(gld);
-        ExecutionContext context = commandProcessor.resolveExecutionContext(command, null, null);
-        assertNotNull(context);
-        assertNotNull(context.getRequestUUID());
-        assertNotNull(context.getReceivedTime());
-        assertNotNull(context.getLocation());
-
-        //Test request contains uuid, id and remote address
-        RequestUUIDImpl uuid = new RequestUUIDImpl();
-        when(request.getHeader("X-UUID")).thenReturn(uuid.toString());
-        when(request.getRemoteAddr()).thenReturn("1.2.3.4");
-        when(geoIPLocator.getGeoLocation("1.2.3.4", RemoteAddressUtils.parse("1.2.3.4", "1.2.3.4"), AZ)).thenReturn(gld);
-        context = commandProcessor.resolveExecutionContext(command, null, null);
-        assertNotNull(context);
-        assertEquals(uuid, context.getRequestUUID());
-        assertEquals(gld, context.getLocation());
-
-        //Test request contains X-Forwarded-For header and resolves geo-location correctly
-        when(request.getHeader("X-Forwarded-For")).thenReturn("10.20.30.40");
-        when(geoIPLocator.getGeoLocation("1.2.3.4", RemoteAddressUtils.parse("10.20.30.40", "10.20.30.40"), AZ)).thenReturn(gld);
-        context = commandProcessor.resolveExecutionContext(command, null, null);
-        assertNotNull(context);
-        assertEquals(gld, context.getLocation());
-    }
-
-    @Test
-    public void testResolveExecutionContextWithoutCountryResolver() throws Exception {
-        bindOperations();
-
-        LocalJsonRpcCommandProcessor commandProcessorWithoutCountryResolver =
-                new LocalJsonRpcCommandProcessor(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID", "X-UUID-Parents", requestTimeResolver, new JSONBindingFactory());
-
-        HttpCommand command = mock(HttpCommand.class);
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getScheme()).thenReturn("http");
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        when(command.getRequest()).thenReturn(request);
-        when(command.getResponse()).thenReturn(response);
-
-        GeoLocationDetails gld = Mockito.mock(GeoLocationDetails.class);
-        //test an empty request
-        List resolvedAddresses = Collections.emptyList();
-        when(geoIPLocator.getGeoLocation(null, resolvedAddresses, null)).thenReturn(gld);
-        ExecutionContext context = commandProcessorWithoutCountryResolver.resolveExecutionContext(command, null, null);
-        assertNotNull(context);
-        assertNotNull(context.getRequestUUID());
-        assertNotNull(context.getReceivedTime());
-        assertNotNull(context.getLocation());
-        assertNull(context.getLocation().getInferredCountry());
-
-        //Test request contains uuid, id and remote address
-        RequestUUIDImpl uuid = new RequestUUIDImpl();
-        when(request.getHeader("X-UUID")).thenReturn(uuid.toString());
-        when(request.getRemoteAddr()).thenReturn("1.2.3.4");
-        when(geoIPLocator.getGeoLocation("1.2.3.4", RemoteAddressUtils.parse("1.2.3.4", "1.2.3.4"), null)).thenReturn(gld);
-        context = commandProcessorWithoutCountryResolver.resolveExecutionContext(command, null, null);
-        assertNotNull(context);
-        assertEquals(uuid, context.getRequestUUID());
-        assertEquals(gld, context.getLocation());
-        assertNull(context.getLocation().getInferredCountry());
-
-        //Test request contains X-Forwarded-For header and resolves geo-location correctly
-        when(request.getHeader("X-Forwarded-For")).thenReturn("10.20.30.40");
-        when(geoIPLocator.getGeoLocation("1.2.3.4", RemoteAddressUtils.parse("10.20.30.40", "10.20.30.40"), null)).thenReturn(gld);
-        context = commandProcessorWithoutCountryResolver.resolveExecutionContext(command, null, null);
-        assertNotNull(context);
-        assertEquals(gld, context.getLocation());
-        assertNull(context.getLocation().getInferredCountry());
-    }
-
 
     @Test
     public void testCallsValidators() throws Exception {
@@ -1036,7 +957,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         when(response.getOutputStream()).thenReturn(tos);
         // resolve the command
         when(request.getHeader("X-RequestTimeout")).thenReturn("10000");
-        when(requestTimeResolver.resolveRequestTime(any())).thenReturn(new Date());
+        when(context.getRequestTime()).thenReturn(new Date());
         CommandResolver<HttpCommand> cr = commandProcessor.createCommandResolver(mockedCommand, tracer);
         Iterable<ExecutionCommand> executionCommands = cr.resolveExecutionCommands();
 
@@ -1071,7 +992,7 @@ public class JsonRpcTransportCommandProcessorTest  {
 
         // resolve the command
         when(request.getHeader("X-RequestTimeout")).thenReturn("10000");
-        when(requestTimeResolver.resolveRequestTime(any())).thenReturn(new Date(System.currentTimeMillis() - 10001));
+        when(context.getRequestTime()).thenReturn(new Date(System.currentTimeMillis() - 10001));
         CommandResolver<HttpCommand> cr = commandProcessor.createCommandResolver(mockedCommand, tracer);
         Iterable<ExecutionCommand> executionCommands = cr.resolveExecutionCommands();
 
@@ -1169,7 +1090,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         }
 
         @Override
-        protected void writeErrorResponse(TransportCommand command, ExecutionContextWithTokens context, CougarException e, boolean traceStarted) {
+        protected void writeErrorResponse(TransportCommand command, DehydratedExecutionContext context, CougarException e, boolean traceStarted) {
         }
 
         @Override
@@ -1219,6 +1140,12 @@ public class JsonRpcTransportCommandProcessorTest  {
 
     private class LocalJsonRpcCommandProcessor extends JsonRpcTransportCommandProcessor {
         private boolean errorCalled;
+
+        private LocalJsonRpcCommandProcessor(DehydratedExecutionContextResolution contextResolution, JSONBindingFactory jsonBindingFactory) {
+            super(contextResolution, "X-RequestTimeout", jsonBindingFactory.createBaseObjectMapper());
+        }
+
+        /*
         public LocalJsonRpcCommandProcessor(RequestTimeResolver requestTimeResolver, JSONBindingFactory jsonBindingFactory) {
             super(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID", "X-UUID-Parents", "X-RequestTimeout", requestTimeResolver, new InferredCountryResolver<HttpServletRequest>() {
                 public String inferCountry(HttpServletRequest input) { return AZ;}
@@ -1228,16 +1155,17 @@ public class JsonRpcTransportCommandProcessorTest  {
         public LocalJsonRpcCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, String uuidParentsHeader, RequestTimeResolver requestTimeResolver, JSONBindingFactory jsonBindingFactory) {
             super(geoIPLocator, deserializer, uuidHeader, uuidParentsHeader, "X-RequestTimeout", requestTimeResolver, jsonBindingFactory);
         }
+        */
 
         @Override
-        public void writeErrorResponse(HttpCommand command, ExecutionContextWithTokens context, CougarException e, boolean traceStarted) {
+        public void writeErrorResponse(HttpCommand command, DehydratedExecutionContext context, CougarException e, boolean traceStarted) {
             errorCalled = true;
             super.writeErrorResponse(command, context, e, traceStarted);
         }
 
-        @Override
-        public  <Req, Cert> ExecutionContextWithTokens resolveExecutionContext(HttpCommand http, Req req, Cert certs) {
-            return super.resolveExecutionContext(http, req, certs);    //To change body of overridden methods use File | Settings | File Templates.
+        @Override // only to make it public
+        public DehydratedExecutionContext resolveExecutionContext(HttpCommand http, Void cc) {
+            return super.resolveExecutionContext(http, null);
         }
     }
 

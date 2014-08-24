@@ -21,7 +21,7 @@ import com.betfair.baseline.v2.enumerations.PreOrPostInterceptorException;
 import com.betfair.baseline.v2.exception.SimpleException;
 import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.ExecutionContextImpl;
-import com.betfair.cougar.api.ExecutionContextWithTokens;
+import com.betfair.cougar.api.DehydratedExecutionContext;
 import com.betfair.cougar.api.RequestUUID;
 import com.betfair.cougar.api.geolocation.GeoLocationDetails;
 import com.betfair.cougar.api.security.IdentityResolver;
@@ -29,12 +29,9 @@ import com.betfair.cougar.api.security.IdentityChain;
 import com.betfair.cougar.api.security.IdentityToken;
 import com.betfair.cougar.api.security.InvalidCredentialsException;
 import com.betfair.cougar.baseline.security.GeneralIdentityResolver;
-import com.betfair.cougar.client.query.QueryStringGeneratorFactory;
 import com.betfair.cougar.core.impl.CougarSpringCtxFactoryImpl;
-import com.betfair.cougar.core.impl.logging.AbstractLoggingControl;
 import com.betfair.cougar.core.impl.security.IdentityChainImpl;
 import com.betfair.cougar.logging.CougarLoggingUtils;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.net.InetAddress;
@@ -45,7 +42,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 
 public class CougarClientWrapper {
 
@@ -165,7 +161,7 @@ public class CougarClientWrapper {
     	}
     	try {
     		IdentityChain idChain = new IdentityChainImpl();
-            IDENTITY_RESOLVER.resolve(idChain, new ExecutionContextWithTokens() {
+            IDENTITY_RESOLVER.resolve(idChain, new DehydratedExecutionContext() {
                 @Override
                 public List<IdentityToken> getIdentityTokens() {
                     return tokens;

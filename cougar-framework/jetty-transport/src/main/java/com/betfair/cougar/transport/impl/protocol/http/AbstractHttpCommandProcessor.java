@@ -16,9 +16,10 @@
 
 package com.betfair.cougar.transport.impl.protocol.http;
 
+import com.betfair.cougar.api.DehydratedExecutionContext;
 import com.betfair.cougar.api.ExecutionContext;
-import com.betfair.cougar.api.ExecutionContextWithTokens;
 import com.betfair.cougar.api.ResponseCode;
+import com.betfair.cougar.api.export.Protocol;
 import com.betfair.cougar.api.security.*;
 import com.betfair.cougar.core.api.CougarStartingGate;
 import com.betfair.cougar.core.api.GateListener;
@@ -27,19 +28,15 @@ import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.core.api.exception.*;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
+import com.betfair.cougar.transport.api.DehydratedExecutionContextResolution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.betfair.cougar.transport.api.CommandValidator;
 import com.betfair.cougar.transport.api.RequestLogger;
-import com.betfair.cougar.transport.api.RequestTimeResolver;
-import com.betfair.cougar.transport.api.protocol.http.ExecutionContextFactory;
-import com.betfair.cougar.transport.api.protocol.http.GeoLocationDeserializer;
 import com.betfair.cougar.transport.api.protocol.http.HttpCommand;
 import com.betfair.cougar.transport.api.protocol.http.HttpCommandProcessor;
 import com.betfair.cougar.transport.impl.AbstractCommandProcessor;
 import com.betfair.cougar.transport.impl.CommandValidatorRegistry;
-import com.betfair.cougar.transport.jetty.SSLRequestUtils;
-import com.betfair.cougar.util.geolocation.GeoIPLocator;
 import com.betfair.cougar.util.stream.ByteCountingInputStream;
 import com.betfair.cougar.util.stream.LimitedByteCountingInputStream;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
@@ -50,7 +47,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,7 +56,7 @@ import java.util.regex.Pattern;
  * GateListener.
  *
  */
-public abstract class AbstractHttpCommandProcessor extends
+public abstract class AbstractHttpCommandProcessor<CredentialsContainer> extends
 		AbstractCommandProcessor<HttpCommand> implements HttpCommandProcessor,
 		GateListener {
     private static Logger LOGGER = LoggerFactory.getLogger(AbstractHttpCommandProcessor.class);
@@ -72,18 +68,14 @@ public abstract class AbstractHttpCommandProcessor extends
         boolean isRewriteSupported();
     }
 
-	private final GeoIPLocator geoIPLocator;
+    private DehydratedExecutionContextResolution contextResolution;
+    private Protocol protocol;
 
-    private final GeoLocationDeserializer geoLocationDeserializer;
 
-    private final String uuidHeader;
-    private final String uuidParentsHeader;
 
     private final String requestTimeoutHeader;
 
-    private InferredCountryResolver<HttpServletRequest> inferredCountryResolver;
 
-    private RequestTimeResolver requestTimeResolver;
 
 	private String name;
 
@@ -101,44 +93,17 @@ public abstract class AbstractHttpCommandProcessor extends
 
     private CommandValidatorRegistry<HttpCommand> validatorRegistry;
 
-    private int unknownCipherKeyLength;
-
     protected boolean hardFailEnumDeserialisation;
 
     protected long maxPostBodyLength;
 
-    /**
-     *
-     * @param geoIPLocator
-     *            Used for resolving the GeoLocationDetails
-     * @param geoLocationDeserializer
-     * @param uuidHeader
-     *            the key of the Http Header containing the unique id for a request
-     */
-    public AbstractHttpCommandProcessor(GeoIPLocator geoIPLocator,
-                                        GeoLocationDeserializer geoLocationDeserializer, String uuidHeader, String uuidParentsHeader,
-                                        String requestTimeoutHeader, RequestTimeResolver requestTimeResolver){
-        this(geoIPLocator, geoLocationDeserializer, uuidHeader, uuidParentsHeader, requestTimeoutHeader, requestTimeResolver, null);
-    }
-
 	/**
 	 *
-     * @param geoIPLocator
-     *            Used for resolving the GeoLocationDetails
-     * @param uuidHeader
-     *            the key of the Http Header containing the unique id for a request
-     * @param inferredCountryResolver
      */
-	public AbstractHttpCommandProcessor(GeoIPLocator geoIPLocator,
-                                        GeoLocationDeserializer geoLocationDeserializer, String uuidHeader, String uuidParentsHeader,
-                                        String requestTimeoutHeader, RequestTimeResolver requestTimeResolver, InferredCountryResolver<HttpServletRequest> inferredCountryResolver) {
-		this.geoIPLocator = geoIPLocator;
-        this.geoLocationDeserializer = geoLocationDeserializer;
-		this.uuidHeader = uuidHeader;
-        this.uuidParentsHeader = uuidParentsHeader;
-        this.inferredCountryResolver = inferredCountryResolver;
+	protected AbstractHttpCommandProcessor(Protocol protocol, DehydratedExecutionContextResolution contextResolution, String requestTimeoutHeader) {
+        this.protocol = protocol;
+        this.contextResolution = contextResolution;
         this.requestTimeoutHeader = requestTimeoutHeader;
-        this.requestTimeResolver = requestTimeResolver;
 	}
 
 	/**
@@ -247,10 +212,10 @@ public abstract class AbstractHttpCommandProcessor extends
      * @return the ExecutionContext, populated with information from the
      *         HttpCommend
      */
-    protected ExecutionContextWithTokens resolveContextForErrorHandling(ExecutionContextWithTokens ctx, HttpCommand command) {
+    protected DehydratedExecutionContext resolveContextForErrorHandling(DehydratedExecutionContext ctx, HttpCommand command) {
         if (ctx != null) return ctx;
         try {
-            return resolveExecutionContextWithTokensAndRequestTime(command, null, false, new Date());
+            return contextResolution.resolveExecutionContext(protocol, command.getRequest(), null);
         } catch (RuntimeException e) {
             // Well that failed too... nothing to do but return null
             LOGGER.debug("Failed to resolve error execution context", e);
@@ -275,19 +240,6 @@ public abstract class AbstractHttpCommandProcessor extends
         return DefaultTimeConstraints.fromTimeout(timeout);
     }
 
-    /**
-   	 * Resolves an HttpCommand to an ExecutionContext, which provides contextual
-   	 * information to the ExecutionVenue that the command will be executed in.
-   	 *
-   	 * @param http
-   	 *            contains the HttpServletRequest from which the contextual
-   	 *            information is derived
-   	 * @return the ExecutionContext, populated with information from the
-   	 *         HttpCommend
-   	 */
-    protected <Req, Cert> ExecutionContextWithTokens resolveExecutionContext(HttpCommand http, Req req, Cert certs) {
-        return resolveExecutionContext(http, req, certs, false);
-    }
 
     /**
    	 * Resolves an HttpCommand to an ExecutionContext, which provides contextual
@@ -299,29 +251,14 @@ public abstract class AbstractHttpCommandProcessor extends
    	 * @return the ExecutionContext, populated with information from the
    	 *         HttpCommend
    	 */
-    protected <Req, Cert> ExecutionContextWithTokens resolveExecutionContext(HttpCommand http, Req req, Cert certs, boolean ignoreSubsequentWritesOfIdentity) {
-        IdentityTokenResolver<Req, ?, Cert> identityTokenResolver = (IdentityTokenResolver<Req, ?, Cert>) http.getIdentityTokenResolver();
-
-        List<IdentityToken> tokens = new ArrayList<IdentityToken>();
-        if (identityTokenResolver != null) {
-            tokens = identityTokenResolver.resolve(req, certs);
-        }
-        RequestTimeResolver<Req> localRTR = (RequestTimeResolver<Req>) requestTimeResolver;
-        Date requestTime = localRTR.resolveRequestTime(req);
-		return resolveExecutionContextWithTokensAndRequestTime(http, tokens, ignoreSubsequentWritesOfIdentity, requestTime);
+    protected DehydratedExecutionContext resolveExecutionContext(HttpCommand http, CredentialsContainer cc) {
+        return contextResolution.resolveExecutionContext(protocol, http, cc);
     }
 
-    private ExecutionContextWithTokens resolveExecutionContextWithTokensAndRequestTime(HttpCommand command, List<IdentityToken> tokens, boolean ignoreSubsequentWritesOfIdentity, Date requestTime) {
-           String inferredCountry = null;
-           if (inferredCountryResolver != null) {
-               inferredCountry = inferredCountryResolver.inferCountry(command.getRequest());
-           }
-            int keyLength = 0;
-            if (command.getRequest().getScheme().equals("https")) {
-                keyLength = SSLRequestUtils.getTransportSecurityStrengthFactor(command.getRequest(), unknownCipherKeyLength);
-            }
-           return ExecutionContextFactory.resolveExecutionContext(command, tokens, uuidHeader, uuidParentsHeader, geoLocationDeserializer, geoIPLocator, inferredCountry, keyLength, ignoreSubsequentWritesOfIdentity, requestTime);
-   	}
+//    private DehydratedExecutionContext resolveExecutionContextWithTokensAndRequestTime(HttpCommand command, List<IdentityToken> tokens, boolean ignoreSubsequentWritesOfIdentity, Date requestTime) {
+//            int keyLength = 0;
+//           return ExecutionContextFactory.resolveExecutionContext(command, tokens, uuidHeader, uuidParentsHeader, geoLocationDeserializer, geoIPLocator, inferredCountry, keyLength, ignoreSubsequentWritesOfIdentity, requestTime);
+//   	}
 
     /**
      * Rewrites the caller's credentials back into the HTTP response. The main use case for this is
@@ -426,32 +363,9 @@ public abstract class AbstractHttpCommandProcessor extends
         this.validatorRegistry = validatorRegistry;
     }
 
-    public void setInferredCountryResolver(InferredCountryResolver<HttpServletRequest> inferredCountryResolver) {
-        this.inferredCountryResolver = inferredCountryResolver;
-    }
-
     // for test usage only
     CommandValidatorRegistry<HttpCommand> getValidatorRegistry() {
         return validatorRegistry;
-    }
-
-    @ManagedAttribute
-    public String getUuidHeader() {
-        return uuidHeader;
-    }
-
-    @ManagedAttribute
-    public String getUuidParentsHeader() {
-        return uuidParentsHeader;
-    }
-
-    @ManagedAttribute
-    public int getUnknownCipherKeyLength() {
-        return unknownCipherKeyLength;
-    }
-
-    public void setUnknownCipherKeyLength(int unknownCipherKeyLength) {
-        this.unknownCipherKeyLength = unknownCipherKeyLength;
     }
 
     @ManagedAttribute

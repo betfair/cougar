@@ -16,10 +16,10 @@
 
 package com.betfair.cougar.transport.impl.protocol.http.soap;
 
-import com.betfair.cougar.api.ExecutionContextWithTokens;
+import com.betfair.cougar.api.DehydratedExecutionContext;
 import com.betfair.cougar.api.ResponseCode;
+import com.betfair.cougar.api.export.Protocol;
 import com.betfair.cougar.api.security.IdentityToken;
-import com.betfair.cougar.api.security.InferredCountryResolver;
 import com.betfair.cougar.core.api.OperationBindingDescriptor;
 import com.betfair.cougar.core.api.ServiceBindingDescriptor;
 import com.betfair.cougar.core.api.ev.ExecutionResult;
@@ -33,20 +33,18 @@ import com.betfair.cougar.core.api.fault.FaultDetail;
 import com.betfair.cougar.core.api.tracing.Tracer;
 import com.betfair.cougar.core.api.transcription.*;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
+import com.betfair.cougar.transport.api.DehydratedExecutionContextResolution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.betfair.cougar.marshalling.impl.databinding.xml.SchemaValidationFailureParser;
 import com.betfair.cougar.transport.api.CommandResolver;
 import com.betfair.cougar.transport.api.ExecutionCommand;
-import com.betfair.cougar.transport.api.RequestTimeResolver;
 import com.betfair.cougar.transport.api.TransportCommand.CommandStatus;
-import com.betfair.cougar.transport.api.protocol.http.GeoLocationDeserializer;
 import com.betfair.cougar.transport.api.protocol.http.HttpCommand;
 import com.betfair.cougar.transport.api.protocol.http.soap.SoapIdentityTokenResolver;
 import com.betfair.cougar.transport.api.protocol.http.soap.SoapOperationBindingDescriptor;
 import com.betfair.cougar.transport.api.protocol.http.soap.SoapServiceBindingDescriptor;
 import com.betfair.cougar.transport.impl.protocol.http.AbstractTerminateableHttpCommandProcessor;
-import com.betfair.cougar.util.geolocation.GeoIPLocator;
 import com.betfair.cougar.util.stream.ByteCountingInputStream;
 import com.betfair.cougar.util.stream.ByteCountingOutputStream;
 import org.apache.axiom.om.OMAbstractFactory;
@@ -62,7 +60,6 @@ import org.springframework.util.StreamUtils;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 import javax.xml.XMLConstants;
@@ -88,7 +85,7 @@ import java.util.*;
  * and for writing the result or exception from the operation to the response.
  */
 @ManagedResource
-public class SoapTransportCommandProcessor extends AbstractTerminateableHttpCommandProcessor {
+public class SoapTransportCommandProcessor extends AbstractTerminateableHttpCommandProcessor<OMElement> {
     private static final String SECURITY_PREFIX = "sec";
     private static final String SECURITY_NAMESPACE = "http://www.betfair.com/security/";
     private static final String SECURITY_CREDENTIALS = "Credentials";
@@ -100,16 +97,8 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
     private boolean schemaValidationEnabled;
     private SchemaValidationFailureParser schemaValidationFailureParser;
 
-    public SoapTransportCommandProcessor(GeoIPLocator geoIPLocator,
-                                         GeoLocationDeserializer deserializer, String uuidHeader, String uuidParentsHeader, String requestTimeoutHeader, RequestTimeResolver requestTimeResolver, SchemaValidationFailureParser schemaValidationFailureParser) {
-        this(geoIPLocator, deserializer, uuidHeader, uuidParentsHeader, requestTimeoutHeader, requestTimeResolver, schemaValidationFailureParser, null);
-    }
-
-    // for testing only
-    SoapTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, String uuidParentsHeader,
-                                  String requestTimeoutHeader, RequestTimeResolver requestTimeResolver, SchemaValidationFailureParser schemaValidationFailureParser,
-                                  InferredCountryResolver<HttpServletRequest> countryResolver) {
-        super(geoIPLocator, deserializer, uuidHeader, uuidParentsHeader, countryResolver, requestTimeoutHeader, requestTimeResolver);
+    public SoapTransportCommandProcessor(DehydratedExecutionContextResolution contextResolution, String requestTimeoutHeader, SchemaValidationFailureParser schemaValidationFailureParser) {
+        super(Protocol.SOAP, contextResolution, requestTimeoutHeader);
         setName("SoapTransportCommandProcessor");
         this.schemaValidationFailureParser = schemaValidationFailureParser;
     }
@@ -184,13 +173,13 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
                 final ByteCountingInputStream finalIn = in;
                 return new SingleExecutionCommandResolver<HttpCommand>(tracer) {
 
-                    private ExecutionContextWithTokens context;
+                    private DehydratedExecutionContext context;
                     private ExecutionCommand exec;
 
                     @Override
-                    public ExecutionContextWithTokens resolveExecutionContext() {
+                    public DehydratedExecutionContext resolveExecutionContext() {
                         if (context == null) {
-                            context = SoapTransportCommandProcessor.this.resolveExecutionContext(command, credentialElement, command.getClientX509CertificateChain());
+                            context = SoapTransportCommandProcessor.this.resolveExecutionContext(command, credentialElement);
                         }
                         return context;
                     }
@@ -238,7 +227,7 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
 
     private ExecutionCommand resolveExecutionCommand(
             final SoapOperationBinding operationBinding,
-            final HttpCommand command, final ExecutionContextWithTokens context,
+            final HttpCommand command, final DehydratedExecutionContext context,
             OMElement requestNode, ByteCountingInputStream in, final Tracer tracer) {
         final Object[] args = readArgs(operationBinding, requestNode);
         final long bytesRead = in.getCount();
@@ -275,7 +264,7 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
     }
 
     @Override
-    protected void writeErrorResponse(HttpCommand command, ExecutionContextWithTokens context, CougarException e, boolean traceStarted) {
+    protected void writeErrorResponse(HttpCommand command, DehydratedExecutionContext context, CougarException e, boolean traceStarted) {
         incrementErrorsWritten();
         if (command.getStatus() == CommandStatus.InProgress) {
             try {
@@ -343,7 +332,7 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
     }
 
     private void writeResponse(HttpCommand command, SoapOperationBinding binding, Object result, CougarException error,
-                               ExecutionContextWithTokens context, long bytesRead) {
+                               DehydratedExecutionContext context, long bytesRead) {
         MediaType mediaType = MediaType.TEXT_XML_TYPE;
         ByteCountingOutputStream out = null;
         long bytesWritten = 0;
@@ -389,7 +378,7 @@ public class SoapTransportCommandProcessor extends AbstractTerminateableHttpComm
         }
     }
 
-    private void writeHeaders(final SOAPFactory factory, final SOAPHeader header, HttpCommand command, ExecutionContextWithTokens context)
+    private void writeHeaders(final SOAPFactory factory, final SOAPHeader header, HttpCommand command, DehydratedExecutionContext context)
             throws Exception {
         final SoapIdentityTokenResolver identityTokenResolver = (SoapIdentityTokenResolver) command.getIdentityTokenResolver();
         if (context != null && context.getIdentity() != null && identityTokenResolver != null) {

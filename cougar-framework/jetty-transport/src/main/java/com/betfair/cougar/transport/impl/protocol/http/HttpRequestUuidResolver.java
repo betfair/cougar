@@ -1,0 +1,44 @@
+package com.betfair.cougar.transport.impl.protocol.http;
+
+import com.betfair.cougar.api.RequestUUID;
+import com.betfair.cougar.api.UUIDGenerator;
+import com.betfair.cougar.core.api.builder.DehydratedExecutionContextBuilder;
+import com.betfair.cougar.transport.api.DehydratedExecutionContextComponent;
+import com.betfair.cougar.transport.api.SingleComponentResolver;
+import com.betfair.cougar.transport.api.protocol.http.HttpCommand;
+import com.betfair.cougar.util.RequestUUIDImpl;
+import org.apache.commons.lang.StringUtils;
+
+import javax.servlet.http.HttpServletRequest;
+
+/**
+ * Default HTTP UUID resolver. Uses the uuid and uuidParents headers to resolve uuids.
+ */
+public class HttpRequestUuidResolver<Ignore> extends SingleComponentResolver<HttpCommand, Ignore> {
+    private final String uuidHeader;
+    private final String uuidParentsHeader;
+
+    public HttpRequestUuidResolver(String uuidHeader, String uuidParentsHeader) {
+        super(DehydratedExecutionContextComponent.RequestUuid);
+        this.uuidHeader = uuidHeader;
+        this.uuidParentsHeader = uuidParentsHeader;
+    }
+
+    @Override
+    public void resolve(HttpCommand httpCommand, Ignore ignore, DehydratedExecutionContextBuilder builder) {
+        String uuidString = httpCommand.getRequest().getHeader(uuidHeader);
+        String uuidParentsString = httpCommand.getRequest().getHeader(uuidParentsHeader);
+        final RequestUUID requestUUID;
+        if (StringUtils.isNotBlank(uuidString)) {
+            if (StringUtils.isNotBlank(uuidParentsString)) {
+                requestUUID = new RequestUUIDImpl(uuidParentsString + UUIDGenerator.COMPONENT_SEPARATOR + uuidString);
+            }
+            else {
+                requestUUID = new RequestUUIDImpl(uuidString);
+            }
+        } else {
+            requestUUID = new RequestUUIDImpl();
+        }
+        builder.setRequestUUID(requestUUID);
+    }
+}

@@ -18,10 +18,10 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
 						http://www.springframework.org/schema/beans/spring-beans.xsd
 						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
-	 
+
 	<bean class="com.betfair.cougar.util.configuration.PropertyConfigurer">
         <constructor-arg index="0" ref="cougar.core.EncryptorRegistry"/>
 		<property name="defaultConfig" value="classpath:conf/cougar-transport-defaults.properties"/>
@@ -43,7 +43,21 @@
         <property name="registry" ref="protocolBindingRegistry"/>
     </bean>
 
+    <bean id="dehydratedExecutionContextResolution" class="com.betfair.cougar.transport.impl.DehydratedExecutionContextResolutionImpl">
+    </bean>
+
+    <bean id="contextResolutionRegisterer" parent="cougar.core.OptionalGateRegisterer" lazy-init="false" scope="singleton">
+        <constructor-arg index="1" ref="dehydratedExecutionContextResolution"/>
+    </bean>
+
+    <bean id="dehydratedExecutionContextFactoryRegisterer" class="com.betfair.cougar.transport.impl.DehydratedExecutionContextFactoryRegisterer"
+          abstract="true" init-method="init" lazy-init="false">
+        <constructor-arg index="0" ref="cougar.transport.ContextResolution"/>
+    </bean>
+
     <alias name="protocolBindingRegistry" alias="cougar.transport.ProtocolBindingRegistry"/>
     <alias name="abstractProtocolBinding" alias="cougar.transport.AbstractProtocolBinding"/>
+    <alias name="dehydratedExecutionContextResolution" alias="cougar.transport.ContextResolution"/>
+    <alias name="dehydratedExecutionContextFactoryRegisterer" alias="cougar.transport.ContextRegisterer"/>
 
 </beans>

@@ -245,11 +245,6 @@ public class StaticContentServiceHandler extends ContextHandler {
         }
 
         @Override
-        public X509Certificate[] getClientX509CertificateChain() {
-            return new X509Certificate[0]; // Not interested in this.
-        }
-
-        @Override
         public void onComplete() {
             // Errr, nope.
         }

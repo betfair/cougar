@@ -59,7 +59,6 @@ public class JettyHttpTransport extends AbstractRegisterableTransport implements
 
     private StaticContentServiceHandler wsdlStaticHandler;
     private StaticContentServiceHandler htmlStaticHandler;
-    private AliasHandler aliasHandler;
     private ContextHandlerCollection handlerCollection = new ContextHandlerCollection();
 
     private TransportCommandProcessorFactory<HttpCommandProcessor> commandProcessorFactory;
@@ -204,8 +203,6 @@ public class JettyHttpTransport extends AbstractRegisterableTransport implements
                 requestLogger,
                 suppressCommasInAccessLogForStaticHtml);
         htmlStaticHandler.setUnknownCipherKeyLength(unknownCipherKeyLength);
-
-//        aliasHandler = new AliasHandler(pathAliases);
 
         StatisticsHandler statisticsHandler = new StatisticsHandler();
         statisticsHandler.setServer(server.getJettyServer());
@@ -597,15 +594,6 @@ public class JettyHttpTransport extends AbstractRegisterableTransport implements
     @ManagedAttribute
     public int getMaxFormContentSize() {
         return getServerWrapper().getMaxFormContentSize();
-    }
-
-    @ManagedAttribute
-    public int getUnknownCipherKeyLength() {
-        return unknownCipherKeyLength;
-    }
-
-    public void setUnknownCipherKeyLength(int unknownCipherKeyLength) {
-        this.unknownCipherKeyLength = unknownCipherKeyLength;
     }
 
     @ManagedAttribute

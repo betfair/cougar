@@ -27,10 +27,10 @@ import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.fault.FaultController;
-import com.betfair.cougar.core.api.tracing.Tracer;
 import com.betfair.cougar.marshalling.impl.databinding.xml.JdkEmbeddedXercesSchemaValidationFailureParser;
 import com.betfair.cougar.transport.api.CommandResolver;
 import com.betfair.cougar.transport.api.ExecutionCommand;
+import com.betfair.cougar.transport.api.TransportCommand;
 import com.betfair.cougar.transport.api.TransportCommand.CommandStatus;
 import com.betfair.cougar.transport.api.protocol.http.HttpCommand;
 import com.betfair.cougar.transport.api.protocol.http.soap.SoapIdentityTokenResolver;
@@ -38,7 +38,6 @@ import com.betfair.cougar.transport.api.protocol.http.soap.SoapOperationBindingD
 import com.betfair.cougar.transport.api.protocol.http.soap.SoapServiceBindingDescriptor;
 import com.betfair.cougar.transport.impl.protocol.http.AbstractHttpCommandProcessorTest;
 import com.betfair.cougar.transport.impl.protocol.http.ContentTypeNormaliser;
-import com.betfair.cougar.transport.impl.protocol.http.DefaultGeoLocationDeserializer;
 import junit.framework.AssertionFailedError;
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
@@ -50,7 +49,6 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
-import org.mockito.Matchers;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -71,10 +69,11 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProcessorTest {
+public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProcessorTest<OMElement> {
     public static final String       AZ            = "Azerbaijan";
 
 	private static final String soapEnvStart = "<?xml version='1.0' encoding='utf-8'?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">";
@@ -162,10 +161,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
     @Before
 	public void init() throws Exception {
 		super.init();
-		soapCommandProcessor = new SoapTransportCommandProcessor(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID", "X-UUID-Parents",
-                "X-RequestTimeout", requestTimeResolver, new JdkEmbeddedXercesSchemaValidationFailureParser(), new InferredCountryResolver<HttpServletRequest>() {
-            public String inferCountry(HttpServletRequest input) { return AZ;}
-        });
+		soapCommandProcessor = new SoapTransportCommandProcessor(contextResolution, "X-RequestTimeout", new JdkEmbeddedXercesSchemaValidationFailureParser());
 		init(soapCommandProcessor);
 		ContentTypeNormaliser ctn = mock(ContentTypeNormaliser.class);
 		when(ctn.getNormalisedResponseMediaType(any(HttpServletRequest.class))).thenReturn(MediaType.APPLICATION_XML_TYPE);
@@ -179,6 +175,16 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         command=super.createCommand(identityTokenResolver, Protocol.SOAP);
 
 	}
+
+    @Override
+    protected OMElement isCredentialContainer() {
+        return any(OMElement.class);
+    }
+
+    @Override
+    protected Protocol getProtocol() {
+        return Protocol.SOAP;
+    }
 
     /**
      * Basic test with string parameters
@@ -362,7 +368,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
 		// Assert that the expected exception is sent
 		ev.getObserver().onResult(new ExecutionResult(new CougarServiceException(
 					ServerFaultCode.ServiceCheckedException, "Error in App",
-					new TestApplicationException(ResponseCode.Forbidden, "TestError-123"))));
+					new TestApplicationException(ResponseCode.Forbidden, "TestError-123",faultMessages))));
 		assertEquals(CommandStatus.Complete, command.getStatus());
 		assertSoapyEquals(buildSoapMessage(null, null, firstOpError, firstOpErrorDetail), testOut.getOutput());
 		verify(response).setContentType(MediaType.TEXT_XML);
@@ -392,7 +398,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
             soapCommandProcessor.process(command);
 
             // Assert that the expected exception is sent
-            TestApplicationException tae = new TestApplicationException(ResponseCode.Forbidden, "TestError-123");
+            TestApplicationException tae = new TestApplicationException(ResponseCode.Forbidden, "TestError-123", faultMessages);
             ev.getObserver().onResult(new ExecutionResult(new CougarServiceException(
                         ServerFaultCode.ServiceCheckedException, "Error in App",
                         tae)));
@@ -534,86 +540,6 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
 
         verifyTracerCalls();
 	}
-
-    /**
-     * DE5417
-     * @throws Exception
-     */
-    @Test
-    public void testCredentialsNotFirstHeaderElement() throws Exception {
-
-        // Set up the input
-        when(request.getInputStream()).thenReturn(
-                new TestServletInputStream("<soapenv:Envelope xmlns:a=\"http://www.w3.org/2005/08/addressing\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:sec=\"http://www.betfair.com/security/\" xmlns:usac=\"http://www.betfair.com/servicetypes/v1/USAccount/\">\n" +
-                        "   <soapenv:Header>\n" +
-                        "      <a:Action>retrieveAccount</a:Action>\n" +
-                        "      <sec:Credentials>\n" +
-                        "         <sec:X-Application>1001</sec:X-Application>\n" +
-                        "         <sec:X-Authentication>vpIt3Zu38ZWppNBKYnbX7Uhno9zOwAydXvIwknGEdTc=</sec:X-Authentication>\n" +
-                        "      </sec:Credentials>\n" +
-                        "      \n" +
-                        "\n" +
-                        "      <a:MessageID>urn:uuid:2c4364e6-81e2-4ade-a507-620fd4d75b06</a:MessageID>\n" +
-                        "\n" +
-                        "       <a:ReplyTo><a:Address>http://www.w3.org/2005/08/addressing/anonymous</a:Address></a:ReplyTo>\n" +
-                        "\n" +
-                        "        <VsDebuggerCausalityData xmlns=\"http://schemas.microsoft.com/vstudio/diagnostics/servicemodelsink\">uIDPozjxUVEEdSJJhzx3knx8ugoAAAAAi/9uTcBBVUWS2bFa1TmSWXHtuzkndd9Gj4MOMliiOqcACQAA</VsDebuggerCausalityData>\n" +
-                        "\n" +
-                        "        <a:To soapenv:mustUnderstand=\"1\">http://localhost/SomeService/v1.0</a:To>\n" +
-                        "   </soapenv:Header>\n" +
-                        "   <soapenv:Body>\n" +
-                        firstOpIn +
-                        "   </soapenv:Body>\n" +
-                        "</soapenv:Envelope>"));
-        when(request.getScheme()).thenReturn("http");
-        ArgumentMatcher<OMElement> credsMatcher = new ArgumentMatcher<OMElement>() {
-            @Override
-            public boolean matches(Object argument) {
-                if (!(argument instanceof OMElement)) {
-                    return false;
-                }
-                OMElement element = (OMElement) argument;
-                List<IdentityToken> allTokensFound = new ArrayList<IdentityToken>();
-                Iterator it = element.getChildElements();
-                while (it.hasNext()) {
-                    OMElement next = (OMElement) it.next();
-                    allTokensFound.add(new IdentityToken(next.getLocalName(), next.getText().trim()));
-                }
-
-                if (!allTokensFound.remove(new IdentityToken("X-Application","1001"))) {
-                    return false;
-                }
-                if (!allTokensFound.remove(new IdentityToken("X-Authentication","vpIt3Zu38ZWppNBKYnbX7Uhno9zOwAydXvIwknGEdTc="))) {
-                    return false;
-                }
-                return allTokensFound.isEmpty();
-            }
-        };
-
-
-        // Resolve the input command
-        soapCommandProcessor.process(command);
-        assertEquals(1, ev.getInvokedCount());
-        verify(identityTokenResolver).resolve(argThat(credsMatcher), Matchers.<X509Certificate[]>any(X509Certificate[].class));
-
-
-        // Assert that we resolved the expected arguments
-        Object[] args = ev.getArgs();
-        assertNotNull(args);
-        assertEquals(1, args.length);
-        assertEquals("hello", args[0]);
-
-        // Assert that the expected result is sent
-        assertNotNull(ev.getObserver());
-        ev.getObserver().onResult(new ExecutionResult("goodbye"));
-        assertEquals(CommandStatus.Complete, command.getStatus());
-        assertSoapyEquals(buildSoapMessage(null, firstOpOut, null, null), testOut.getOutput());
-        verify(response).setContentType(MediaType.TEXT_XML);
-        verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
-                                            any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
-
-        verifyTracerCalls();
-    }
 
 
     /**
@@ -795,7 +721,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
 
         // resolve the command
         when(request.getHeader("X-RequestTimeout")).thenReturn("10000");
-        when(requestTimeResolver.resolveRequestTime(any())).thenReturn(new Date());
+        when(context.getRequestTime()).thenReturn(new Date());
         CommandResolver<HttpCommand> cr = soapCommandProcessor.createCommandResolver(command, tracer);
         Iterable<ExecutionCommand> executionCommands = cr.resolveExecutionCommands();
 
@@ -815,7 +741,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
 
         // resolve the command
         when(request.getHeader("X-RequestTimeout")).thenReturn("10000");
-        when(requestTimeResolver.resolveRequestTime(any())).thenReturn(new Date(System.currentTimeMillis() - 10001));
+        when(context.getRequestTime()).thenReturn(new Date(System.currentTimeMillis() - 10001));
         CommandResolver<HttpCommand> cr = soapCommandProcessor.createCommandResolver(command, tracer);
         Iterable<ExecutionCommand> executionCommands = cr.resolveExecutionCommands();
 
@@ -823,6 +749,85 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         ExecutionCommand executionCommand = executionCommands.iterator().next();
         TimeConstraints constraints = executionCommand.getTimeConstraints();
         assertTrue(constraints.getExpiryTime() < System.currentTimeMillis());
+    }
+
+    /**
+     * DE5417
+     * @throws Exception
+     */
+    @Test
+    public void testCredentialsNotFirstHeaderElement() throws Exception {
+
+        // Set up the input
+        when(request.getInputStream()).thenReturn(
+                new AbstractHttpCommandProcessorTest.TestServletInputStream("<soapenv:Envelope xmlns:a=\"http://www.w3.org/2005/08/addressing\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:sec=\"http://www.betfair.com/security/\" xmlns:usac=\"http://www.betfair.com/servicetypes/v1/USAccount/\">\n" +
+                        "   <soapenv:Header>\n" +
+                        "      <a:Action>retrieveAccount</a:Action>\n" +
+                        "      <sec:Credentials>\n" +
+                        "         <sec:X-Application>1001</sec:X-Application>\n" +
+                        "         <sec:X-Authentication>vpIt3Zu38ZWppNBKYnbX7Uhno9zOwAydXvIwknGEdTc=</sec:X-Authentication>\n" +
+                        "      </sec:Credentials>\n" +
+                        "      \n" +
+                        "\n" +
+                        "      <a:MessageID>urn:uuid:2c4364e6-81e2-4ade-a507-620fd4d75b06</a:MessageID>\n" +
+                        "\n" +
+                        "       <a:ReplyTo><a:Address>http://www.w3.org/2005/08/addressing/anonymous</a:Address></a:ReplyTo>\n" +
+                        "\n" +
+                        "        <VsDebuggerCausalityData xmlns=\"http://schemas.microsoft.com/vstudio/diagnostics/servicemodelsink\">uIDPozjxUVEEdSJJhzx3knx8ugoAAAAAi/9uTcBBVUWS2bFa1TmSWXHtuzkndd9Gj4MOMliiOqcACQAA</VsDebuggerCausalityData>\n" +
+                        "\n" +
+                        "        <a:To soapenv:mustUnderstand=\"1\">http://localhost/SomeService/v1.0</a:To>\n" +
+                        "   </soapenv:Header>\n" +
+                        "   <soapenv:Body>\n" +
+                        firstOpIn +
+                        "   </soapenv:Body>\n" +
+                        "</soapenv:Envelope>"));
+        when(request.getScheme()).thenReturn("http");
+        ArgumentMatcher<OMElement> credsMatcher = new ArgumentMatcher<OMElement>() {
+            @Override
+            public boolean matches(Object argument) {
+                if (!(argument instanceof OMElement)) {
+                    return false;
+                }
+                OMElement element = (OMElement) argument;
+                List<IdentityToken> allTokensFound = new ArrayList<IdentityToken>();
+                Iterator it = element.getChildElements();
+                while (it.hasNext()) {
+                    OMElement next = (OMElement) it.next();
+                    allTokensFound.add(new IdentityToken(next.getLocalName(), next.getText().trim()));
+                }
+
+                if (!allTokensFound.remove(new IdentityToken("X-Application","1001"))) {
+                    return false;
+                }
+                if (!allTokensFound.remove(new IdentityToken("X-Authentication","vpIt3Zu38ZWppNBKYnbX7Uhno9zOwAydXvIwknGEdTc="))) {
+                    return false;
+                }
+                return allTokensFound.isEmpty();
+            }
+        };
+
+
+        // Resolve the input command
+        soapCommandProcessor.process(command);
+        assertEquals(1, ev.getInvokedCount());
+
+
+        // Assert that we resolved the expected arguments
+        Object[] args = ev.getArgs();
+        assertNotNull(args);
+        assertEquals(1, args.length);
+        assertEquals("hello", args[0]);
+
+        // Assert that the expected result is sent
+        assertNotNull(ev.getObserver());
+        ev.getObserver().onResult(new ExecutionResult("goodbye"));
+        assertEquals(TransportCommand.CommandStatus.Complete, command.getStatus());
+        assertSoapyEquals(buildSoapMessage(null, firstOpOut, null, null), testOut.getOutput());
+        verify(response).setContentType(MediaType.TEXT_XML);
+        verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
+                any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
+
+        verifyTracerCalls();
     }
 
     private String buildSoapMessage(String header, String body, String fault, String faultDetail) {

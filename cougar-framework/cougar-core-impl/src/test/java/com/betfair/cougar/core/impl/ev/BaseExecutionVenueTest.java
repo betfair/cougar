@@ -22,8 +22,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executor;
 
+import com.betfair.cougar.api.DehydratedExecutionContext;
 import com.betfair.cougar.api.ExecutionContext;
-import com.betfair.cougar.api.ExecutionContextWithTokens;
 import com.betfair.cougar.api.RequestUUID;
 import com.betfair.cougar.api.ResponseCode;
 import com.betfair.cougar.api.fault.CougarApplicationException;
@@ -40,7 +40,6 @@ import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
-import org.slf4j.LoggerFactory;
 import com.betfair.cougar.util.RequestUUIDImpl;
 import com.betfair.cougar.util.UUIDGeneratorImpl;
 import org.junit.Before;
@@ -265,7 +264,7 @@ public class BaseExecutionVenueTest {
 
     private IdentityResolver newIdentityResolver = new IdentityResolver() {
         @Override
-        public void resolve(IdentityChain chain, ExecutionContextWithTokens ctx) throws InvalidCredentialsException {
+        public void resolve(IdentityChain chain, DehydratedExecutionContext ctx) throws InvalidCredentialsException {
         }
 
         @Override
@@ -276,7 +275,7 @@ public class BaseExecutionVenueTest {
 
     private IdentityResolver newIdentityResolverWithToken = new IdentityResolver() {
         @Override
-        public void resolve(IdentityChain chain, ExecutionContextWithTokens ctx) throws InvalidCredentialsException {
+        public void resolve(IdentityChain chain, DehydratedExecutionContext ctx) throws InvalidCredentialsException {
         }
 
         @Override
@@ -289,7 +288,7 @@ public class BaseExecutionVenueTest {
         final InvalidCredentialsException ice = cfc != null ? new InvalidCredentialsException("", cfc) : new InvalidCredentialsException("");
         return  new IdentityResolver() {
             @Override
-            public void resolve(IdentityChain chain, ExecutionContextWithTokens ctx) throws InvalidCredentialsException {
+            public void resolve(IdentityChain chain, DehydratedExecutionContext ctx) throws InvalidCredentialsException {
                 throw ice;
             }
 
@@ -303,7 +302,7 @@ public class BaseExecutionVenueTest {
 	private BaseExecutionVenue bev;
 	private List<ExecutionPreProcessor> preProcessorList;
 	private List<ExecutionPostProcessor> postProcessorList;
-	private ExecutionContextWithTokens mockExecutionContext;
+	private DehydratedExecutionContext mockExecutionContext;
 	private OperationKey mockOperationKey;
 	private Object[] args = new Object[0];
 	private OperationDefinition mockOperationDef;
@@ -318,7 +317,7 @@ public class BaseExecutionVenueTest {
         postProcessorList = new ArrayList<ExecutionPostProcessor>();
 		bev.setPreProcessors(preProcessorList);
 		bev.setPostProcessors(postProcessorList);
-        mockExecutionContext = mock(ExecutionContextWithTokens.class);
+        mockExecutionContext = mock(DehydratedExecutionContext.class);
 
         mockOperationKey = new OperationKey(new ServiceVersion(1,0), "SomeService", "someOperation");
 		mockOperationDef = new SimpleOperationDefinition(mockOperationKey, new Parameter[0], new ParameterType(Void.class, new ParameterType[0]));
@@ -545,7 +544,7 @@ public class BaseExecutionVenueTest {
         bev.setIdentityResolver(newIdentityResolver);
 
 
-        ExecutionContextWithTokens context = new ExecutionContextWithTokens() {
+        DehydratedExecutionContext context = new DehydratedExecutionContext() {
             private List<IdentityToken> tokens = new ArrayList<IdentityToken>();
             private IdentityChain chain;
             @Override
@@ -614,7 +613,7 @@ public class BaseExecutionVenueTest {
         bev.registerOperation(null, mockOperationDef, succeedingExecutable, mockTimingRecorder, 0);
         bev.setIdentityResolver(newIdentityResolverWithToken);
 
-        ExecutionContextWithTokens context = new ExecutionContextWithTokens() {
+        DehydratedExecutionContext context = new DehydratedExecutionContext() {
             private List<IdentityToken> tokens = new ArrayList<IdentityToken>();
             private IdentityChain chain;
             @Override

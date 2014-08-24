@@ -16,10 +16,7 @@
 
 package com.betfair.cougar.transport.api;
 
-import com.betfair.cougar.api.ExecutionContext;
-import com.betfair.cougar.api.ExecutionContextWithTokens;
-import com.betfair.cougar.transport.api.ExecutionCommand;
-import com.betfair.cougar.transport.api.TransportCommand;
+import com.betfair.cougar.api.DehydratedExecutionContext;
 
 /**
  * Resolves a TransportCommand to ExecutionCommand (or batch of ExecutionCommands) and
@@ -27,7 +24,7 @@ import com.betfair.cougar.transport.api.TransportCommand;
  * @param <C> The type of Command that the CommandResolver implementation can resolve
  */
 public interface CommandResolver<C extends TransportCommand> {
-    public ExecutionContextWithTokens resolveExecutionContext();
+    public DehydratedExecutionContext resolveExecutionContext();
     public Iterable<ExecutionCommand> resolveExecutionCommands();
 }
 

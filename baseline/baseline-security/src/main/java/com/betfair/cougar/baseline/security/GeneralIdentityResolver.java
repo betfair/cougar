@@ -16,7 +16,7 @@
 
 package com.betfair.cougar.baseline.security;
 
-import com.betfair.cougar.api.ExecutionContextWithTokens;
+import com.betfair.cougar.api.DehydratedExecutionContext;
 import com.betfair.cougar.api.security.*;
 
 import java.security.Principal;
@@ -26,7 +26,7 @@ import java.util.List;
 public class GeneralIdentityResolver implements IdentityResolver {
 
     @Override
-    public void resolve(IdentityChain chain, ExecutionContextWithTokens ctx) throws InvalidCredentialsException {
+    public void resolve(IdentityChain chain, DehydratedExecutionContext ctx) throws InvalidCredentialsException {
         if (ctx.getIdentityTokens() != null && ctx.getIdentityTokens().size() > 0) {
             for (final IdentityToken tk: ctx.getIdentityTokens()) {
                 String tokenValue = tk.getValue();

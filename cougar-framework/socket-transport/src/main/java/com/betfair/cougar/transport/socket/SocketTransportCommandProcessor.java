@@ -16,7 +16,7 @@
 
 package com.betfair.cougar.transport.socket;
 
-import com.betfair.cougar.api.ExecutionContextWithTokens;
+import com.betfair.cougar.api.DehydratedExecutionContext;
 import com.betfair.cougar.core.api.*;
 import com.betfair.cougar.core.api.ev.ConnectedResponse;
 import com.betfair.cougar.core.api.ev.ExecutionResult;
@@ -165,7 +165,7 @@ public class SocketTransportCommandProcessor extends AbstractCommandProcessor<So
                     }
                 }
                 byte protocolVersion = CougarProtocol.getProtocolVersion(command.getSession());
-                final ExecutionContextWithTokens context = marshaller.readExecutionContext(in, command.getRemoteAddress(), clientCertChain, transportSecurityStrengthFactor, protocolVersion);
+                final DehydratedExecutionContext context = marshaller.readExecutionContext(in, command.getRemoteAddress(), clientCertChain, transportSecurityStrengthFactor, protocolVersion);
                 final SocketRequestContextImpl requestContext = new SocketRequestContextImpl(context);
                 OperationKey remoteOperationKey = marshaller.readOperationKey(in);
                 OperationDefinition opDef = findCompatibleBinding(remoteOperationKey);
@@ -216,7 +216,7 @@ public class SocketTransportCommandProcessor extends AbstractCommandProcessor<So
                     }
 
                     @Override
-                    public ExecutionContextWithTokens resolveExecutionContext() {
+                    public DehydratedExecutionContext resolveExecutionContext() {
                         return requestContext;
                     }
                 };
@@ -263,7 +263,7 @@ public class SocketTransportCommandProcessor extends AbstractCommandProcessor<So
         return null;
     }
 
-    protected boolean writeSuccessResponse(SocketTransportRPCCommand command, ExecutionResult result, ExecutionContextWithTokens context) {
+    protected boolean writeSuccessResponse(SocketTransportRPCCommand command, ExecutionResult result, DehydratedExecutionContext context) {
         CougarObjectOutput out = command.getOutput();
         try {
             synchronized (out) {
@@ -282,7 +282,7 @@ public class SocketTransportCommandProcessor extends AbstractCommandProcessor<So
     }
 
     @Override
-    protected void writeErrorResponse(SocketTransportCommand command, ExecutionContextWithTokens context, CougarException e, boolean traceStarted) {
+    protected void writeErrorResponse(SocketTransportCommand command, DehydratedExecutionContext context, CougarException e, boolean traceStarted) {
         if (command instanceof SocketTransportRPCCommand) {
             SocketTransportRPCCommand rpcCommand = (SocketTransportRPCCommand) command;
             incrementErrorsWritten();

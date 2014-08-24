@@ -16,8 +16,8 @@
 
 package com.betfair.cougar.transport.api.protocol.http;
 
+import com.betfair.cougar.api.DehydratedExecutionContext;
 import com.betfair.cougar.api.ExecutionContext;
-import com.betfair.cougar.api.ExecutionContextWithTokens;
 import com.betfair.cougar.api.RequestUUID;
 import com.betfair.cougar.api.UUIDGenerator;
 import com.betfair.cougar.api.geolocation.GeoLocationDetails;
@@ -34,13 +34,15 @@ import java.util.List;
 
 /**
  * Generate an execution context
+ * @deprecated In favour of ExecutionContextBuilder
  */
+@Deprecated
 public class ExecutionContextFactory {
 
     public static final String TRACE_ME_HEADER_PARAM = "X-Trace-Me";
 
 
-    public static ExecutionContextWithTokens resolveExecutionContext(final HttpCommand command, final List<IdentityToken> tokens,
+    public static DehydratedExecutionContext resolveExecutionContext(final HttpCommand command, final List<IdentityToken> tokens,
                                                        final String uuidHeader, final String uuidParentsHeader, GeoLocationDeserializer geoLocationDeserializer,
                                                        final GeoIPLocator geoIPLocator,
                                                        final String inferredCountry,
@@ -52,7 +54,7 @@ public class ExecutionContextFactory {
         return resolveExecutionContext(tokens, uuidString, uuidParentsString, request.getRemoteAddr(), geoLocationDeserializer.deserialize(request, request.getRemoteAddr()), geoIPLocator, inferredCountry, request.getHeader(TRACE_ME_HEADER_PARAM), transportSecurityStrengthFactor, ignoreSubsequentWritesOfIdentity, requestTime);
     }
 
-    private static ExecutionContextWithTokens resolveExecutionContext(List<IdentityToken> tokens,
+    private static DehydratedExecutionContext resolveExecutionContext(List<IdentityToken> tokens,
                                                        final String uuidString,
                                                        final String uuidParentsString,
                                                        final String remoteAddress,
@@ -85,12 +87,12 @@ public class ExecutionContextFactory {
         return resolveExecutionContext(tokens, requestUUID, geoDetails, receivedTime, traceEnabled, transportSecurityStrengthFactor, requestTime, ignoreSubsequentWritesOfIdentity);
     }
 
-    public static ExecutionContextWithTokens resolveExecutionContext(final List<IdentityToken> tokens, final RequestUUID requestUUID, final GeoLocationDetails geoDetails, final Date receivedTime, final boolean traceEnabled, final int transportSecurityStrengthFactor, final Date requestTime, final boolean ignoreSubsequentWritesOfIdentity) {
+    public static DehydratedExecutionContext resolveExecutionContext(final List<IdentityToken> tokens, final RequestUUID requestUUID, final GeoLocationDetails geoDetails, final Date receivedTime, final boolean traceEnabled, final int transportSecurityStrengthFactor, final Date requestTime, final boolean ignoreSubsequentWritesOfIdentity) {
         if (tokens == null) {
             throw new IllegalArgumentException("Tokens must not be null");
         }
 
-        return new ExecutionContextWithTokens() {
+        return new DehydratedExecutionContext() {
 
             private IdentityChain identityChain;
 
@@ -162,7 +164,7 @@ public class ExecutionContextFactory {
         };
     }
 
-    public static ExecutionContext resolveExecutionContext(final ExecutionContextWithTokens tokenContext, final IdentityChain chain) {
+    public static ExecutionContext resolveExecutionContext(final DehydratedExecutionContext tokenContext, final IdentityChain chain) {
         return new ExecutionContext() {
             @Override
             public GeoLocationDetails getLocation() {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.betfair.cougar.core.api.transcription;
+package com.betfair.cougar.core.api.builder;
 
 import java.util.*;
 

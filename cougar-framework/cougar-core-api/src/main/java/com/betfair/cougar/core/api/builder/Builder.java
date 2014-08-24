@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.betfair.cougar.core.api.transcription;
+package com.betfair.cougar.core.api.builder;
 
 /**
  * Defines a class which can build other classes. Used to construct bound data types using the builder pattern.

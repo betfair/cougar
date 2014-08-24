@@ -110,8 +110,6 @@
 
         <property name="serverWrapper.maxFormContentSize" value="$COUGAR-JETTY{cougar.maxFormContentSize}"/>
 
-        <property name="unknownCipherKeyLength" value="$COUGAR-JETTY{jetty.https.unknownCipherKeyLength}"/>
-
         <property name="pathAliases" ref="pathAliasMap"/>
     </bean>
 
@@ -140,12 +138,8 @@
     <bean id="httpCommandValidatorRegistry" class="com.betfair.cougar.transport.impl.CommandValidatorRegistry"/>
 
     <bean id="httpCommandProcessor" abstract="true" scope="prototype">
-        <constructor-arg ref="cougar.core.GeoIPLocator" index="0"/>
-        <constructor-arg ref="$COUGAR-JETTY{cougar.http.geoLocationDeserializerBean}" index="1"/>
-        <constructor-arg value="$COUGAR-JETTY{cougar.http.uuidheader}" index="2"/>
-        <constructor-arg value="$COUGAR-JETTY{cougar.http.uuidparentsheader}" index="3"/>
-        <constructor-arg value="$COUGAR-JETTY{cougar.http.requestTimeoutHeader}" index="4"/>
-        <constructor-arg ref="$COUGAR-JETTY{cougar.http.requestTimeResolver}" index="5"/>
+        <constructor-arg ref="cougar.transport.ContextResolution" index="0"/>
+        <constructor-arg value="$COUGAR-JETTY{cougar.http.requestTimeoutHeader}" index="1"/>
         <property name="executionVenue" ref="cougar.core.ExecutionVenue"/>
         <property name="startingGate" ref="cougar.core.StartingGate"/>
         <property name="executor" ref="cougar.core.CommandProcessorExecutor"/>
@@ -166,7 +160,7 @@
     </bean>
 
     <bean id="soapCommandProcessor" class="com.betfair.cougar.transport.impl.protocol.http.soap.SoapTransportCommandProcessor" parent="httpCommandProcessor" scope="singleton">
-        <constructor-arg index="6" ref="$COUGAR-JETTY{cougar.http.soap.schemaValidationFailureParserBean}"/>
+        <constructor-arg index="2" ref="$COUGAR-JETTY{cougar.http.soap.schemaValidationFailureParserBean}"/>
         <property name="contentTypeNormaliser" ref="contentTypeNormaliser"/>
         <property name="hardFailEnumDeserialisation" value="$COUGAR-JETTY{cougar.http.enums.hardFailure}"/>
         <property name="schemaValidationEnabled" value="$COUGAR-JETTY{cougar.http.soap.schemaValidationEnabled}"/>
@@ -174,7 +168,7 @@
     </bean>
 
     <bean id="jsonRpcCommandProcessor" class="com.betfair.cougar.transport.impl.protocol.http.jsonrpc.JsonRpcTransportCommandProcessor" parent="httpCommandProcessor" scope="singleton">
-        <constructor-arg index="6" ref="rawJsonBindingFactory"/>
+        <constructor-arg index="2" ref="rawJsonBindingFactory"/>
         <property name="contentTypeNormaliser" ref="contentTypeNormaliser"/>
         <property name="hardFailEnumDeserialisation" value="$COUGAR-JETTY{cougar.http.enums.hardFailure}"/>
         <property name="maxPostBodyLength" value="$COUGAR-JETTY{cougar.http.jsonrpc.maxPostBodyLength}"/>
@@ -230,6 +224,18 @@
 
     <bean class="com.betfair.cougar.transport.impl.protocol.http.InferredCountryResolverHelper"/>
 
+    <bean id="httpExecutionContextResolverFactory" class="com.betfair.cougar.transport.impl.protocol.http.DefaultExecutionContextResolverFactory">
+        <property name="unknownCipherKeyLength" value="$COUGAR-JETTY{jetty.https.unknownCipherKeyLength}"/>
+        <property name="geoIPLocator" ref="cougar.core.GeoIPLocator"/>
+        <property name="requestTimeResolver" ref="$COUGAR-JETTY{cougar.http.requestTimeResolver}" />
+        <property name="geoLocationDeserializer" ref="$COUGAR-JETTY{cougar.http.geoLocationDeserializerBean}"/>
+        <property name="uuidHeader" value="$COUGAR-JETTY{cougar.http.uuidheader}"/>
+        <property name="uuidParentsHeader" value="$COUGAR-JETTY{cougar.http.uuidparentsheader}"/>
+    </bean>
+
+    <bean parent="cougar.transport.ContextRegisterer" lazy-init="false">
+        <constructor-arg index="1" ref="httpExecutionContextResolverFactory"/>
+    </bean>
 
     <alias name="rescriptCommandProcessor" alias="cougar.transport.RescriptCommandProcessor"/>
     <alias name="soapCommandProcessor" alias="cougar.transport.SoapCommandProcessor"/>
@@ -259,7 +265,7 @@
                 <entry key="com.betfair.cougar.transport:type=soapCommandProcessor" value-ref="soapCommandProcessor"/>
                 <entry key="com.betfair.cougar.transport:type=jsonRpcCommandProcessor" value-ref="jsonRpcCommandProcessor"/>
                 <entry key="com.betfair.cougar.transport:type=notFoundCommandProcessor" value-ref="notFoundCommandProcessor"/>
-                <entry key="CoUGAR:type=commandProcessorExecutor" value-ref="commandProcessorExecutor"/>
+                <entry key="CoUGAR:type=commandProcessorExecutor" value-ref="cougar.core.CommandProcessorExecutor"/>
 			</map>
 		</property>
 

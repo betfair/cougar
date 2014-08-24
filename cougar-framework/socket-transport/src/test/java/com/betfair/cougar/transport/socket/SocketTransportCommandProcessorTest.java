@@ -17,7 +17,7 @@
 package com.betfair.cougar.transport.socket;
 
 import com.betfair.cougar.api.ExecutionContext;
-import com.betfair.cougar.api.ExecutionContextWithTokens;
+import com.betfair.cougar.api.DehydratedExecutionContext;
 import com.betfair.cougar.api.RequestUUID;
 import com.betfair.cougar.api.geolocation.GeoLocationDetails;
 import com.betfair.cougar.api.security.IdentityChain;
@@ -86,7 +86,7 @@ public class SocketTransportCommandProcessorTest {
     private Date receivedTime = new Date();
     private Date requestTime = new Date();
 
-    private final ExecutionContextWithTokens ctx = new ExecutionContextWithTokens() {
+    private final DehydratedExecutionContext ctx = new DehydratedExecutionContext() {
 
         @Override
         public GeoLocationDetails getLocation() {
@@ -294,7 +294,7 @@ public class SocketTransportCommandProcessorTest {
         }
 
         @Override
-        public void writeErrorResponse(SocketTransportCommand command, ExecutionContextWithTokens context, CougarException e, boolean traceStarted) {
+        public void writeErrorResponse(SocketTransportCommand command, DehydratedExecutionContext context, CougarException e, boolean traceStarted) {
         }
 
         @Override

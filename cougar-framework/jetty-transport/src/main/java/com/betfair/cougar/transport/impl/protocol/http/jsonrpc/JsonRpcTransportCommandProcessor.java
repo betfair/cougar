@@ -27,7 +27,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 
-import com.betfair.cougar.api.ExecutionContextWithTokens;
+import com.betfair.cougar.api.DehydratedExecutionContext;
+import com.betfair.cougar.api.export.Protocol;
 import com.betfair.cougar.api.security.*;
 import com.betfair.cougar.core.api.OperationBindingDescriptor;
 import com.betfair.cougar.core.api.ServiceBindingDescriptor;
@@ -39,6 +40,8 @@ import com.betfair.cougar.core.api.transcription.EnumDerialisationException;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
+import com.betfair.cougar.marshalling.impl.databinding.json.JSONBindingFactory;
+import com.betfair.cougar.transport.api.DehydratedExecutionContextResolution;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,9 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.betfair.cougar.transport.api.CommandResolver;
 import com.betfair.cougar.core.api.transcription.EnumUtils;
-import com.betfair.cougar.transport.api.RequestTimeResolver;
 import com.betfair.cougar.transport.api.protocol.http.ExecutionContextFactory;
-import com.betfair.cougar.transport.api.protocol.http.GeoLocationDeserializer;
 import com.betfair.cougar.transport.impl.protocol.http.AbstractHttpCommandProcessor;
 
 import com.betfair.cougar.api.ExecutionContext;
@@ -58,19 +59,17 @@ import com.betfair.cougar.core.api.ev.OperationKey.Type;
 import com.betfair.cougar.core.api.fault.Fault;
 import com.betfair.cougar.core.api.fault.FaultController;
 import com.betfair.cougar.core.api.fault.FaultDetail;
-import com.betfair.cougar.marshalling.impl.databinding.json.JSONBindingFactory;
 import com.betfair.cougar.transport.api.ExecutionCommand;
 import com.betfair.cougar.transport.api.TransportCommand;
 import com.betfair.cougar.transport.api.protocol.http.HttpCommand;
 import com.betfair.cougar.transport.api.protocol.http.ResponseCodeMapper;
 import com.betfair.cougar.transport.impl.protocol.http.jsonrpc.JsonRpcOperationBinding.JsonRpcParam;
-import com.betfair.cougar.util.geolocation.GeoIPLocator;
 import com.betfair.cougar.util.stream.ByteCountingInputStream;
 import com.betfair.cougar.util.stream.ByteCountingOutputStream;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 @ManagedResource
-public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcessor {
+public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcessor<Void> {
     private static Logger LOGGER = LoggerFactory.getLogger(JsonRpcTransportCommandProcessor.class);
 
 	private static final int PARSE_ERROR = -32700;
@@ -104,14 +103,15 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
     // package private for testing
     static final ExecutionTimingRecorder IDENTITY_RESOLUTION_TIMING_RECORDER = new NullExecutionTimingRecorder();
 
-    public JsonRpcTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, String uuidParentsHeader, String requestTimeoutHeader, RequestTimeResolver requestTimeResolver, JSONBindingFactory jsonBindingFactory) {
-        this(geoIPLocator, deserializer, uuidHeader, uuidParentsHeader, requestTimeoutHeader, requestTimeResolver, null, jsonBindingFactory);
+
+    public JsonRpcTransportCommandProcessor(DehydratedExecutionContextResolution contextResolution, String requestTimeoutHeader, ObjectMapper mapper) {
+        super(Protocol.JSON_RPC, contextResolution, requestTimeoutHeader);
+        setName("JsonRpcTransportCommandProcessor");
+        this.mapper = mapper;
     }
 
-	public JsonRpcTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, String uuidParentsHeader, String requestTimeoutHeader, RequestTimeResolver requestTimeResolver, InferredCountryResolver<HttpServletRequest> countryResolver, JSONBindingFactory jsonBindingFactory) {
-		super(geoIPLocator, deserializer, uuidHeader, uuidParentsHeader, requestTimeoutHeader, requestTimeResolver, countryResolver);
-		setName("JsonRpcTransportCommandProcessor");
-        mapper = jsonBindingFactory.createBaseObjectMapper();
+	public JsonRpcTransportCommandProcessor(DehydratedExecutionContextResolution contextResolution, String requestTimeoutHeader, JSONBindingFactory jsonBindingFactory) {
+		this(contextResolution,requestTimeoutHeader,jsonBindingFactory.createBaseObjectMapper());
 	}
 
 	@Override
@@ -147,7 +147,7 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
 
 	@Override
 	protected CommandResolver<HttpCommand> createCommandResolver(final HttpCommand http, final Tracer tracer) {
-        final ExecutionContextWithTokens context = resolveExecutionContext(http, http.getRequest(), http.getClientX509CertificateChain(), true);
+        final DehydratedExecutionContext context = resolveExecutionContext(http, null);
         tracer.start(context.getRequestUUID());
 
 
@@ -238,7 +238,7 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
 			//return command resolver irrespective of whether it is empty so the top level processor doesn't error
 			return new CommandResolver<HttpCommand>() {
 				@Override
-				public ExecutionContextWithTokens resolveExecutionContext() {
+				public DehydratedExecutionContext resolveExecutionContext() {
 					return context;
 				}
 				@Override
@@ -263,7 +263,7 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
     public void process(HttpCommand command) {
         boolean traceStarted = false;
         incrementCommandsProcessed();
-        ExecutionContextWithTokens ctx = null;
+        DehydratedExecutionContext ctx = null;
         try {
             validateCommand(command);
             final CommandResolver<HttpCommand> resolver = createCommandResolver(command, tracer);
@@ -271,7 +271,7 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
             ctx = resolver.resolveExecutionContext();
 
             final TimeConstraints realTimeConstraints = DefaultTimeConstraints.rebaseFromNewStartTime(ctx.getRequestTime(), readRawTimeConstraints(command.getRequest()));
-            final ExecutionContextWithTokens finalCtx = ctx;
+            final DehydratedExecutionContext finalCtx = ctx;
             ExecutionCommand resolveCommand = new ExecutionCommand() {
                 @Override
                 public OperationKey getOperationKey() {
@@ -293,7 +293,7 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
                     }
                     // now we have an ExecutionContext that's correctly filled..
                     else {
-                        // this has to be an ExecutionContext and not a ExecutionContextWithTokens to ensure that
+                        // this has to be an ExecutionContext and not a DehydratedExecutionContext to ensure that
                         // BaseExecutionVenue doesn't try to re-resolve
                         ExecutionContext context = ExecutionContextFactory.resolveExecutionContext(finalCtx, finalCtx.getIdentity());
                         for (ExecutionCommand exec : resolver.resolveExecutionCommands()) {
@@ -331,7 +331,7 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
      * @param traceStarted
      */
 	@Override
-	public void writeErrorResponse(HttpCommand command, ExecutionContextWithTokens context, CougarException error, boolean traceStarted) {
+	public void writeErrorResponse(HttpCommand command, DehydratedExecutionContext context, CougarException error, boolean traceStarted) {
         try {
             incrementErrorsWritten();
             final HttpServletResponse response = command.getResponse();
@@ -372,7 +372,7 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
         }
     }
 
- 	public boolean writeResponseIfComplete(HttpCommand command, ExecutionContextWithTokens context, boolean isBatch, List<JsonRpcRequest> requests, List<JsonRpcResponse> responses, long bytesRead, Tracer tracer) {
+ 	public boolean writeResponseIfComplete(HttpCommand command, DehydratedExecutionContext context, boolean isBatch, List<JsonRpcRequest> requests, List<JsonRpcResponse> responses, long bytesRead, Tracer tracer) {
         if (requests.size()==responses.size()) {
             try {
                 final HttpServletResponse response = command.getResponse();

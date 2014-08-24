@@ -17,24 +17,32 @@
 package com.betfair.cougar.api.export;
 
 public enum Protocol {
-    RESCRIPT,
-    SOAP,
-    JMS(false),
-    JSON_RPC,
+    RESCRIPT(ProtocolParadigm.Rpc),
+    SOAP(ProtocolParadigm.Rpc),
+    JMS(false, ProtocolParadigm.Event),
+    JSON_RPC(ProtocolParadigm.Rpc),
     EPN(false),
-    SOCKET(false);
+    SOCKET(false, ProtocolParadigm.Rpc, ProtocolParadigm.Push),
+    IN_PROCESS(false, ProtocolParadigm.Rpc, ProtocolParadigm.Push, ProtocolParadigm.Event);
+    private Class bodyClass;
 
-    Protocol() {
-       this(true);
+    Protocol(ProtocolParadigm... paradigms) {
+       this(true, paradigms);
     }
 
-    Protocol(boolean httpIsUnderlyingTransport) {
+    Protocol(boolean httpIsUnderlyingTransport, ProtocolParadigm... paradigms) {
+        this.paradigms = paradigms;
         this.httpIsUnderlyingTransport = httpIsUnderlyingTransport;
     }
 
-    private boolean httpIsUnderlyingTransport = true;
+    private final ProtocolParadigm[] paradigms;
+    private final boolean httpIsUnderlyingTransport;
 
     public boolean underlyingTransportIsHttp() {
         return httpIsUnderlyingTransport;
+    }
+
+    public ProtocolParadigm[] getParadigms() {
+        return paradigms;
     }
 }

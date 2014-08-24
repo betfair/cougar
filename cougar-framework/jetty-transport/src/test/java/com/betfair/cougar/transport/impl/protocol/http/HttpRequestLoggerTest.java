@@ -246,11 +246,6 @@ public class HttpRequestLoggerTest {
         public String getOperationPath() {
             return "/foo"+ getFullPath();
         }
-
-        @Override
-        public X509Certificate[] getClientX509CertificateChain() {
-            return null;
-        }
     };
 
 }

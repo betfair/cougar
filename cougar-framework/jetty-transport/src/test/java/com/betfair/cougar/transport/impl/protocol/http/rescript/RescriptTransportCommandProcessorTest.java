@@ -25,18 +25,13 @@ import com.betfair.cougar.api.security.InvalidCredentialsException;
 import com.betfair.cougar.core.api.OperationBindingDescriptor;
 import com.betfair.cougar.core.api.ServiceBindingDescriptor;
 import com.betfair.cougar.core.api.ServiceVersion;
-import com.betfair.cougar.core.api.ev.ExecutionResult;
-import com.betfair.cougar.core.api.ev.ExecutionVenue;
-import com.betfair.cougar.core.api.ev.OperationDefinition;
-import com.betfair.cougar.core.api.ev.OperationKey;
-import com.betfair.cougar.core.api.ev.TimeConstraints;
+import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.CougarValidationException;
 import com.betfair.cougar.core.api.exception.PanicInTheCougar;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.fault.CougarFault;
 import com.betfair.cougar.core.api.fault.Fault;
-import com.betfair.cougar.core.api.tracing.Tracer;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.marshalling.api.databinding.DataBindingFactory;
 import com.betfair.cougar.marshalling.api.databinding.FaultMarshaller;
@@ -45,19 +40,15 @@ import com.betfair.cougar.marshalling.api.databinding.UnMarshaller;
 import com.betfair.cougar.marshalling.impl.databinding.DataBindingManager;
 import com.betfair.cougar.marshalling.impl.databinding.DataBindingMap;
 import com.betfair.cougar.transport.api.CommandResolver;
+import com.betfair.cougar.transport.api.DehydratedExecutionContextResolution;
 import com.betfair.cougar.transport.api.ExecutionCommand;
 import com.betfair.cougar.transport.api.TransportCommand.CommandStatus;
 import com.betfair.cougar.transport.api.protocol.http.HttpCommand;
 import com.betfair.cougar.transport.api.protocol.http.HttpServiceBindingDescriptor;
-import com.betfair.cougar.transport.api.protocol.http.rescript.RescriptBody;
-import com.betfair.cougar.transport.api.protocol.http.rescript.RescriptIdentityTokenResolver;
-import com.betfair.cougar.transport.api.protocol.http.rescript.RescriptOperationBindingDescriptor;
-import com.betfair.cougar.transport.api.protocol.http.rescript.RescriptParamBindingDescriptor;
+import com.betfair.cougar.transport.api.protocol.http.rescript.*;
 import com.betfair.cougar.transport.api.protocol.http.rescript.RescriptParamBindingDescriptor.ParamSource;
-import com.betfair.cougar.transport.api.protocol.http.rescript.RescriptResponse;
 import com.betfair.cougar.transport.impl.protocol.http.AbstractHttpCommandProcessorTest;
 import com.betfair.cougar.transport.impl.protocol.http.ContentTypeNormaliser;
-import com.betfair.cougar.transport.impl.protocol.http.DefaultGeoLocationDeserializer;
 import com.betfair.cougar.util.RequestUUIDImpl;
 import com.betfair.cougar.util.UUIDGeneratorImpl;
 import org.junit.Before;
@@ -74,12 +65,7 @@ import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -92,7 +78,7 @@ import static org.mockito.Mockito.*;
  * Unit test for @see RescriptTransportCommandProcessor
  *
  */
-public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandProcessorTest {
+public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandProcessorTest<Void> {
 
 	private OperationBindingDescriptor[] operationBindings;
 
@@ -160,7 +146,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
 				new RescriptOperationBindingDescriptor(invalidOpKey, "/InvalidOp", "GET", invalidOpParamBindings, TestResponse.class),
                 new RescriptOperationBindingDescriptor(voidReturnOpKey, "/VoidReturnOp", "GET", voidReturnOpParamBindings, null)};
 
-		rescriptCommandProcessor = new RescriptTransportCommandProcessor(geoIPLocator, new DefaultGeoLocationDeserializer(), "X-UUID","X-UUID-Parents","X-RequestTimeout",requestTimeResolver);
+		rescriptCommandProcessor = new RescriptTransportCommandProcessor(contextResolution,"X-RequestTimeout");
 		init(rescriptCommandProcessor);
 		ctn = mock(ContentTypeNormaliser.class);
 		when(ctn.getNormalisedRequestMediaType(any(HttpServletRequest.class))).thenReturn(MediaType.APPLICATION_XML_TYPE);
@@ -195,7 +181,17 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
 
 	}
 
-	/**
+    @Override
+    protected Void isCredentialContainer() {
+        return (Void) isNull();
+    }
+
+    @Override
+    protected Protocol getProtocol() {
+        return Protocol.RESCRIPT;
+    }
+
+    /**
 	 * Basic test with string parameters
 	 * @throws Exception
 	 */
@@ -252,7 +248,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
 		// Assert that the expected exception is sent
 		ev.getObserver().onResult(new ExecutionResult(new CougarServiceException(
 					ServerFaultCode.ServiceCheckedException, "Error in App",
-					new TestApplicationException(ResponseCode.Forbidden, "TestError-123"))));
+					new TestApplicationException(ResponseCode.Forbidden, "TestError-123",faultMessages))));
 		assertEquals(CommandStatus.Complete, command.getStatus());
 		verify(response).setContentType(MediaType.APPLICATION_XML);
 		ArgumentCaptor<Fault> faultCaptor = ArgumentCaptor.forClass(Fault.class);
@@ -405,7 +401,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
         RescriptOperationBindingDescriptor op1 = new RescriptOperationBindingDescriptor(key, "url1", "GET", Collections.<RescriptParamBindingDescriptor>emptyList(), null);
         RescriptOperationBindingDescriptor op2 = new RescriptOperationBindingDescriptor(key, "url2", "POST", Collections.<RescriptParamBindingDescriptor>emptyList(), null);
 
-        RescriptTransportCommandProcessor sut = new RescriptTransportCommandProcessor(null, null, null, null, "X-RequestTimeout",requestTimeResolver);
+        RescriptTransportCommandProcessor sut = new RescriptTransportCommandProcessor(contextResolution, "X-RequestTimeout");
         sut.setExecutionVenue(ev);
         sut.bindOperation(serviceDescriptor, op1);
         sut.bindOperation(serviceDescriptor, op2);
@@ -474,11 +470,10 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
             }
         };
         RescriptOperationBindingDescriptor op1 = new RescriptOperationBindingDescriptor(key, "url1", "GET", Collections.<RescriptParamBindingDescriptor>emptyList(), null);
-        RescriptTransportCommandProcessor sut = new RescriptTransportCommandProcessor(null, null, null, null, null, null);
+        RescriptTransportCommandProcessor sut = new RescriptTransportCommandProcessor(contextResolution, null);
         sut.setExecutionVenue(ev);
         sut.bindOperation(serviceDescriptorV1, op1);
         sut.bindOperation(serviceDescriptorV2, op1);
-        // todo: not sure of the purpose of this test - it has no assertions..
     }
 
     @Test
@@ -507,7 +502,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
 
         // resolve the command
         when(request.getHeader("X-RequestTimeout")).thenReturn("10000");
-        when(requestTimeResolver.resolveRequestTime(any())).thenReturn(new Date());
+        when(context.getRequestTime()).thenReturn(new Date());
         CommandResolver<HttpCommand> cr = rescriptCommandProcessor.createCommandResolver(command, tracer);
         Iterable<ExecutionCommand> executionCommands = cr.resolveExecutionCommands();
 
@@ -526,7 +521,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
 
         // resolve the command
         when(request.getHeader("X-RequestTimeout")).thenReturn("10000");
-        when(requestTimeResolver.resolveRequestTime(any())).thenReturn(new Date(System.currentTimeMillis()-10001));
+        when(context.getRequestTime()).thenReturn(new Date(System.currentTimeMillis()-10001));
         CommandResolver<HttpCommand> cr = rescriptCommandProcessor.createCommandResolver(command, tracer);
         Iterable<ExecutionCommand> executionCommands = cr.resolveExecutionCommands();
 

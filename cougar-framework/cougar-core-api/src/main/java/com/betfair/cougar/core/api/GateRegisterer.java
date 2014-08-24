@@ -23,7 +23,7 @@ import org.springframework.util.Assert;
  * instances with a given {@link CougarStartingGate}. Use these to save listeners having to
  * register themselves programmatically.
  * <p>
- * You can control ordering of listeners in Spring config by having different registerers 
+ * You can control ordering of listeners in Spring config by having different registerers
  * {@code depend-on} each other.
  * <p>
  * TODO think of a better name than 'registererererer'
@@ -31,19 +31,19 @@ import org.springframework.util.Assert;
 public class GateRegisterer {
 
 	/**
-	 * Construct with one or more listeners. 
+	 * Construct with one or more listeners.
 	 * <p>
-	 * <strong>A note on wiring</strong>: you can pass a constructor-arg with a {@code list} of 
+	 * <strong>A note on wiring</strong>: you can pass a constructor-arg with a {@code list} of
 	 * listeners, or a single listener, but you can't init with a (comma-separated) array.
-	 * 
+	 *
 	 * @param gate
 	 * @param listeners listeners to register with the gate (see note about wiring, above)
 	 */
 	public GateRegisterer(CougarStartingGate gate, GateListener... listeners) {
-		
+
 		Assert.notEmpty(listeners, "GateRegisterer has no listeners.");
-		Assert.notNull(gate, "GateRegister has not had a CougarStartingGate set.");
-	
+		Assert.notNull(gate, "GateRegisterer has not had a CougarStartingGate set.");
+
 		for (GateListener listener : listeners) {
 			gate.registerStartingListener(listener);
 		}

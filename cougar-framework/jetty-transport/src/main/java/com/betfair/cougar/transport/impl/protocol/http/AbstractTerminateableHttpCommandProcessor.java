@@ -16,30 +16,16 @@
 
 package com.betfair.cougar.transport.impl.protocol.http;
 
-import com.betfair.cougar.api.security.InferredCountryResolver;
-import com.betfair.cougar.transport.api.RequestTimeResolver;
-import com.betfair.cougar.transport.api.protocol.http.GeoLocationDeserializer;
-import com.betfair.cougar.util.geolocation.GeoIPLocator;
-
-import javax.servlet.http.HttpServletRequest;
+import com.betfair.cougar.api.export.Protocol;
+import com.betfair.cougar.transport.api.DehydratedExecutionContextResolution;
 
 /**
  * Used to form the abstract base of a command processor that will cease execution
  * of commands as soon as an error condition is encountered.
  */
-public abstract class AbstractTerminateableHttpCommandProcessor extends AbstractHttpCommandProcessor {
-    /**
-	 *
-	 * @param geoIPLocator
-	 *            Used for resolving the GeoLocationDetails
-	 * @param deserializer
-	 *            the bean to extract the Http Header(s) containing the users's IP address(es)
-	 * @param uuidHeader
-	 *            the key of the Http Header containing the unique id for a request
-	 */
-	public AbstractTerminateableHttpCommandProcessor(GeoIPLocator geoIPLocator,
-                                                     GeoLocationDeserializer deserializer, String uuidHeader, String uuidParentsHeader, InferredCountryResolver<HttpServletRequest> countryResolver,
-                                                     String requestTimeoutHeader, RequestTimeResolver requestTimeResolver) {
-        super(geoIPLocator, deserializer, uuidHeader, uuidParentsHeader, requestTimeoutHeader, requestTimeResolver, countryResolver);
-	}
+public abstract class AbstractTerminateableHttpCommandProcessor<Body> extends AbstractHttpCommandProcessor<Body> {
+
+    protected AbstractTerminateableHttpCommandProcessor(Protocol protocol, DehydratedExecutionContextResolution contextResolution, String requestTimeoutHeader) {
+        super(protocol, contextResolution, requestTimeoutHeader);
+    }
 }

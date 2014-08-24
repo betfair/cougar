@@ -16,14 +16,12 @@
 
 package com.betfair.cougar.core.api.security;
 
-import com.betfair.cougar.api.ExecutionContextWithTokens;
+import com.betfair.cougar.api.DehydratedExecutionContext;
 import com.betfair.cougar.api.security.IdentityResolver;
 import com.betfair.cougar.api.security.IdentityChain;
 import com.betfair.cougar.api.security.IdentityToken;
 import com.betfair.cougar.api.security.InvalidCredentialsException;
 import com.betfair.cougar.core.api.exception.CougarFrameworkException;
-import org.slf4j.LoggerFactory;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.List;
@@ -36,7 +34,7 @@ import static org.junit.Assert.assertNotNull;
 public class IdentityResolverFactoryTest {
     private class TestIdentityResolver implements IdentityResolver {
         @Override
-        public void resolve(IdentityChain chain, ExecutionContextWithTokens ctx) throws InvalidCredentialsException {
+        public void resolve(IdentityChain chain, DehydratedExecutionContext ctx) throws InvalidCredentialsException {
             //To change body of implemented methods use File | Settings | File Templates.
         }
 

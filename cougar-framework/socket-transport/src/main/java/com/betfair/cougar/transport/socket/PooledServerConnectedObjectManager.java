@@ -16,7 +16,7 @@
 
 package com.betfair.cougar.transport.socket;
 
-import com.betfair.cougar.api.ExecutionContextWithTokens;
+import com.betfair.cougar.api.DehydratedExecutionContext;
 import com.betfair.cougar.api.LogExtension;
 import com.betfair.cougar.api.UUIDGenerator;
 import com.betfair.cougar.core.api.ev.ConnectedResponse;
@@ -213,7 +213,7 @@ public class PooledServerConnectedObjectManager implements ServerConnectedObject
     }
 
     @Override
-    public void addSubscription(final SocketTransportCommandProcessor commandProcessor, final SocketTransportRPCCommand command, final ConnectedResponse result, final OperationDefinition operationDefinition, final ExecutionContextWithTokens context, final LogExtension connectedObjectLogExtension) {
+    public void addSubscription(final SocketTransportCommandProcessor commandProcessor, final SocketTransportRPCCommand command, final ConnectedResponse result, final OperationDefinition operationDefinition, final DehydratedExecutionContext context, final LogExtension connectedObjectLogExtension) {
         final String heapUri = result.getHeap().getUri();
         HeapState heapState = null;
         try {

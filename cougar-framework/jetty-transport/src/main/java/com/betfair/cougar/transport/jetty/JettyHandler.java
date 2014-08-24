@@ -125,7 +125,6 @@ public class JettyHandler extends AbstractHandler {
 		private final Continuation continuation;
 		private AtomicReference<CommandStatus> status;
 		private RequestTimer timer = new RequestTimer();
-        private X509Certificate[] clientX509CertificateChain;
 
 		public JettyTransportCommand(final HttpServletRequest request, final HttpServletResponse response) {
             this(request, response, null);
@@ -137,11 +136,6 @@ public class JettyHandler extends AbstractHandler {
 			this.response = response;
             this.identityTokenResolver = identityTokenResolver;
 
-            Object o = request.getAttribute(CERTIFICATE_ATTRIBUTE_NAME);
-            if (o != null && o instanceof X509Certificate[]) {
-                clientX509CertificateChain = (X509Certificate[])o;
-            }
-
 			HeaderUtils.setNoCache(response);
 			continuation = ContinuationSupport.getContinuation(request);
 			if (continuation.isInitial()) {
@@ -152,14 +146,6 @@ public class JettyHandler extends AbstractHandler {
 
 			buildPathInfo(request);
 		}
-
-        @Override
-        public X509Certificate[] getClientX509CertificateChain() {
-            return clientX509CertificateChain;
-        }
-
-
-
 
 		/**
 		 * @see HttpCommand

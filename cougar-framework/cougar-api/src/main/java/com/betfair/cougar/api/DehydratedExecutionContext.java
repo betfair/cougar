@@ -24,7 +24,7 @@ import java.util.List;
 /**
  *
  */
-public interface ExecutionContextWithTokens extends ExecutionContext {
+public interface DehydratedExecutionContext extends ExecutionContext {
 
     List<IdentityToken> getIdentityTokens();
 

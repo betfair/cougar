@@ -16,13 +16,13 @@
 
 package com.betfair.cougar.api.security;
 
-import com.betfair.cougar.api.ExecutionContextWithTokens;
+import com.betfair.cougar.api.DehydratedExecutionContext;
 
 import java.util.List;
 
 /**
  * The IdentityResolver resolves a set of credentials into an IdentityChain.
- * 
+ *
  * @see IdentityChain
  *
  */
@@ -35,7 +35,7 @@ public interface IdentityResolver {
      * @param ctx the execution context resolved so far including identity tokens resolved by the {@link IdentityTokenResolver} (IdentityChain on this context will be null).
      * @throws InvalidCredentialsException
      */
-    public void resolve(IdentityChain chain, ExecutionContextWithTokens ctx) throws InvalidCredentialsException;
+    public void resolve(IdentityChain chain, DehydratedExecutionContext ctx) throws InvalidCredentialsException;
 
     /**
      * Given an identity chain, resolve back into a set of writable tokens

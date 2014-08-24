@@ -16,51 +16,38 @@
 
 package com.betfair.cougar.transport.impl.protocol.http;
 
-import com.betfair.cougar.api.ExecutionContextWithTokens;
+import com.betfair.cougar.api.DehydratedExecutionContext;
 import com.betfair.cougar.api.ResponseCode;
-import com.betfair.cougar.api.security.InferredCountryResolver;
+import com.betfair.cougar.api.export.Protocol;
+import com.betfair.cougar.core.api.ServiceBindingDescriptor;
 import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
-import com.betfair.cougar.core.api.ServiceBindingDescriptor;
 import com.betfair.cougar.core.api.tracing.Tracer;
+import com.betfair.cougar.transport.api.CommandResolver;
+import com.betfair.cougar.transport.api.TransportCommand.CommandStatus;
+import com.betfair.cougar.transport.api.protocol.http.HttpCommand;
+import com.betfair.cougar.transport.api.DehydratedExecutionContextResolution;
+import com.betfair.cougar.util.ServletResponseFileStreamer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.betfair.cougar.transport.api.CommandResolver;
-import com.betfair.cougar.transport.api.RequestTimeResolver;
-import com.betfair.cougar.transport.api.TransportCommand.CommandStatus;
-import com.betfair.cougar.transport.api.protocol.http.GeoLocationDeserializer;
-import com.betfair.cougar.transport.api.protocol.http.HttpCommand;
-import com.betfair.cougar.util.ServletResponseFileStreamer;
-import com.betfair.cougar.util.geolocation.GeoIPLocator;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 /**
  * Command processor handles invalid service context path. Sends a 404 status and logs the request.
- *
  */
 @ManagedResource
-
-public class ServiceNotFoundHttpCommandProcessor extends AbstractHttpCommandProcessor {
-    public static final String FILE_NOT_FOUND_PAGE = "/errorpages/404.html";
+public class ServiceNotFoundHttpCommandProcessor extends AbstractHttpCommandProcessor<Void> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceNotFoundHttpCommandProcessor.class);
 
-
-	public ServiceNotFoundHttpCommandProcessor(GeoIPLocator geoIPLocator,
-                                               GeoLocationDeserializer deserializer, String uuidHeader, String uuidParentsHeader, String requestTimeoutHeader, RequestTimeResolver requestTimeResolver) {
-		this(geoIPLocator, deserializer, uuidHeader, uuidParentsHeader, requestTimeoutHeader, requestTimeResolver, null);
-	}
-
-    public ServiceNotFoundHttpCommandProcessor(GeoIPLocator geoIPLocator,
-			GeoLocationDeserializer deserializer, String uuidHeader, String uuidParentsHeader, String requestTimeoutHeader, RequestTimeResolver requestTimeResolver, InferredCountryResolver<HttpServletRequest> resolver) {
-		super(geoIPLocator, deserializer, uuidHeader, uuidParentsHeader, requestTimeoutHeader, requestTimeResolver, resolver);
-		setName("ServiceNotFoundHttpCommandProcessor");
-		setPriority(0);
-	}
+    public ServiceNotFoundHttpCommandProcessor(DehydratedExecutionContextResolution contextResolution, String requestTimeoutHeader) {
+        super(Protocol.RESCRIPT, contextResolution, requestTimeoutHeader);
+        setName("ServiceNotFoundHttpCommandProcessor");
+        setPriority(0);
+    }
 
 	@Override
 	protected CommandResolver<HttpCommand> createCommandResolver(
@@ -70,7 +57,7 @@ public class ServiceNotFoundHttpCommandProcessor extends AbstractHttpCommandProc
 
 	@Override
 	protected void writeErrorResponse(HttpCommand command,
-                                      ExecutionContextWithTokens context, CougarException e, boolean traceStarted) {
+                                      DehydratedExecutionContext context, CougarException e, boolean traceStarted) {
         try {
             if (command.getStatus() == CommandStatus.InProgress) {
                 try {

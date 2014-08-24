@@ -17,7 +17,7 @@
 package com.betfair.cougar.netutil.nio.marshalling;
 
 import com.betfair.cougar.api.ExecutionContext;
-import com.betfair.cougar.api.ExecutionContextWithTokens;
+import com.betfair.cougar.api.DehydratedExecutionContext;
 import com.betfair.cougar.api.RequestUUID;
 import com.betfair.cougar.api.fault.CougarApplicationException;
 import com.betfair.cougar.api.fault.FaultCode;
@@ -306,7 +306,7 @@ public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller 
         }
     }
 
-    private ExecutionContextWithTokens resolveExecutionContext(CougarObjectInput in, GeoLocationDetails geo, List<IdentityToken> tokens, int transportSecurityStrengthFactor, byte protocolVersion) throws IOException {
+    private DehydratedExecutionContext resolveExecutionContext(CougarObjectInput in, GeoLocationDetails geo, List<IdentityToken> tokens, int transportSecurityStrengthFactor, byte protocolVersion) throws IOException {
 
 
         final RequestUUID uuid = readRequestUUID(in);
@@ -322,7 +322,7 @@ public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller 
     }
 
     @Override
-    public ExecutionContextWithTokens readExecutionContext(CougarObjectInput in, String remoteAddress, X509Certificate[] clientCertChain, int transportSecurityStrengthFactor, byte protocolVersion) throws IOException {
+    public DehydratedExecutionContext readExecutionContext(CougarObjectInput in, String remoteAddress, X509Certificate[] clientCertChain, int transportSecurityStrengthFactor, byte protocolVersion) throws IOException {
         EnumUtils.setHardFailureForThisThread(hardFailEnumDeserialisation);
         // this has to be first as the protocol requires it
         final GeoLocationDetails geo = readGeoLocation(in, remoteAddress, protocolVersion);

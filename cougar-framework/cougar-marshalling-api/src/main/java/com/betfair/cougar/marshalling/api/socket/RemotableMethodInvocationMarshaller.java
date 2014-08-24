@@ -16,7 +16,7 @@
 
 package com.betfair.cougar.marshalling.api.socket;
 
-import com.betfair.cougar.api.ExecutionContextWithTokens;
+import com.betfair.cougar.api.DehydratedExecutionContext;
 import com.betfair.cougar.api.security.IdentityResolver;
 import com.betfair.cougar.core.api.ev.OperationKey;
 import com.betfair.cougar.core.api.ev.TimeConstraints;
@@ -45,7 +45,7 @@ public interface RemotableMethodInvocationMarshaller {
 
     public Object [] readArgs(Parameter[] argTypes, CougarObjectInput in) throws IOException;
 
-    public ExecutionContextWithTokens readExecutionContext(CougarObjectInput in, String remoteAddress, java.security.cert.X509Certificate[] clientCertChain, int transportSecurityStrengthFactor, byte protocolVersion) throws IOException;
+    public DehydratedExecutionContext readExecutionContext(CougarObjectInput in, String remoteAddress, java.security.cert.X509Certificate[] clientCertChain, int transportSecurityStrengthFactor, byte protocolVersion) throws IOException;
 
     TimeConstraints readTimeConstraintsIfPresent(CougarObjectInput in, byte protocolVersion) throws IOException;
 }

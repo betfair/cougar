@@ -1,0 +1,87 @@
+package com.betfair.cougar.core.api.builder;
+
+import com.betfair.cougar.api.RequestUUID;
+import com.betfair.cougar.api.geolocation.GeoLocationDetails;
+
+import java.util.BitSet;
+import java.util.Date;
+import java.util.List;
+
+/**
+ * Base utils for building ExecutionContexts
+ */
+public abstract class BaseExecutionContextBuilder<T extends BaseExecutionContextBuilder> {
+
+    private BitSet whatsSet = new BitSet(MAX_BASE_BITS+getNumSpecificComponents());
+
+    protected GeoLocationDetails location;
+    protected RequestUUID uuid;
+    protected Date receivedTime;
+    protected Date requestTime;
+    protected boolean traceLoggingEnabled;
+    protected int transportSecurityStrengthFactor;
+
+    protected abstract int getNumSpecificComponents();
+    protected final static int MAX_BASE_BITS = 6;
+
+    public T setLocation(GeoLocationDetails location) {
+        this.location = location;
+        set(0);
+        return (T) this;
+    }
+
+    public T setRequestUUID(RequestUUID uuid) {
+        this.uuid = uuid;
+        set(1);
+        return (T) this;
+    }
+
+    public T setReceivedTime(Date receivedTime) {
+        this.receivedTime = receivedTime;
+        set(2);
+        return (T) this;
+    }
+
+    public T setRequestTime(Date requestTime) {
+        this.requestTime = requestTime;
+        set(3);
+        return (T) this;
+    }
+
+    public T setTraceLoggingEnabled(boolean traceLoggingEnabled) {
+        this.traceLoggingEnabled = traceLoggingEnabled;
+        set(4);
+        return (T) this;
+    }
+
+    public T setTransportSecurityStrengthFactor(int factor) {
+        transportSecurityStrengthFactor = factor;
+        set(5);
+        return (T) this;
+    }
+
+    protected void beenSet(int subComponent) {
+        set(MAX_BASE_BITS + subComponent);
+    }
+
+    private void set(int bit) {
+        if (whatsSet.get(bit)) {
+            throw new IllegalStateException("Component has already been set");
+        }
+        whatsSet.set(bit);
+    }
+
+    protected void checkReady() {
+        if (whatsSet.nextClearBit(0) <= getNumSpecificComponents()) {
+            throw new IllegalStateException("Not all components have been set on this execution context");
+        }
+    }
+
+    public Date getRequestTime() {
+        return requestTime;
+    }
+
+    public Object getRequestUUID() {
+        return uuid;
+    }
+}

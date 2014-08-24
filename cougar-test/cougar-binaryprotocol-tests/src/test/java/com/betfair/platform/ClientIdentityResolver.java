@@ -16,7 +16,7 @@
 
 package com.betfair.platform;
 
-import com.betfair.cougar.api.ExecutionContextWithTokens;
+import com.betfair.cougar.api.DehydratedExecutionContext;
 import com.betfair.cougar.api.security.*;
 
 import java.util.LinkedList;
@@ -28,7 +28,7 @@ import java.util.List;
 public class ClientIdentityResolver implements IdentityResolver {
 
     @Override
-    public void resolve(IdentityChain chain, ExecutionContextWithTokens ctx) throws InvalidCredentialsException {
+    public void resolve(IdentityChain chain, DehydratedExecutionContext ctx) throws InvalidCredentialsException {
     }
 
     @Override

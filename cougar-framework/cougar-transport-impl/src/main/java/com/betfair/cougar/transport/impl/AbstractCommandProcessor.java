@@ -16,8 +16,8 @@
 
 package com.betfair.cougar.transport.impl;
 
+import com.betfair.cougar.api.DehydratedExecutionContext;
 import com.betfair.cougar.api.ExecutionContext;
-import com.betfair.cougar.api.ExecutionContextWithTokens;
 import com.betfair.cougar.core.api.ev.ExecutionVenue;
 import com.betfair.cougar.core.api.ev.OperationDefinition;
 import com.betfair.cougar.core.api.ev.OperationKey;
@@ -87,7 +87,7 @@ public abstract class AbstractCommandProcessor<T extends TransportCommand> imple
 	public void process(final T command) {
         boolean traceStarted = false;
         incrementCommandsProcessed();
-		ExecutionContextWithTokens ctx = null;
+		DehydratedExecutionContext ctx = null;
 		try {
             validateCommand(command);
 			CommandResolver<T> resolver = createCommandResolver(command, tracer);
@@ -134,7 +134,7 @@ public abstract class AbstractCommandProcessor<T extends TransportCommand> imple
                    finalExec.getTimeConstraints());
     }
 
-    protected void executeError(final T finalExec, final ExecutionContextWithTokens finalCtx, final CougarException finalError, final boolean traceStarted) {
+    protected void executeError(final T finalExec, final DehydratedExecutionContext finalCtx, final CougarException finalError, final boolean traceStarted) {
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -159,7 +159,7 @@ public abstract class AbstractCommandProcessor<T extends TransportCommand> imple
      * @param e the exception that was thrown
      * @param traceStarted
      */
-	protected abstract void writeErrorResponse(T command, ExecutionContextWithTokens context, CougarException e, boolean traceStarted);
+	protected abstract void writeErrorResponse(T command, DehydratedExecutionContext context, CougarException e, boolean traceStarted);
 
 	protected final OperationDefinition getOperationDefinition(OperationKey key) {
 		return ev.getOperationDefinition(key);

@@ -25,10 +25,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 
-import com.betfair.cougar.api.ExecutionContextWithTokens;
+import com.betfair.cougar.api.DehydratedExecutionContext;
 import com.betfair.cougar.api.ResponseCode;
+import com.betfair.cougar.api.export.Protocol;
 import com.betfair.cougar.api.security.IdentityToken;
-import com.betfair.cougar.api.security.InferredCountryResolver;
 import com.betfair.cougar.core.api.OperationBindingDescriptor;
 import com.betfair.cougar.core.api.ServiceBindingDescriptor;
 import com.betfair.cougar.core.api.ev.ExecutionResult;
@@ -39,6 +39,7 @@ import com.betfair.cougar.core.api.exception.*;
 import com.betfair.cougar.core.api.tracing.Tracer;
 import com.betfair.cougar.core.api.transcription.EnumUtils;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
+import com.betfair.cougar.transport.api.DehydratedExecutionContextResolution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.betfair.cougar.marshalling.api.databinding.DataBindingFactory;
@@ -47,9 +48,7 @@ import com.betfair.cougar.marshalling.api.databinding.Marshaller;
 import com.betfair.cougar.marshalling.impl.databinding.DataBindingManager;
 import com.betfair.cougar.transport.api.CommandResolver;
 import com.betfair.cougar.transport.api.ExecutionCommand;
-import com.betfair.cougar.transport.api.RequestTimeResolver;
 import com.betfair.cougar.transport.api.TransportCommand;
-import com.betfair.cougar.transport.api.protocol.http.GeoLocationDeserializer;
 import com.betfair.cougar.transport.api.protocol.http.HttpCommand;
 import com.betfair.cougar.transport.api.protocol.http.HttpServiceBindingDescriptor;
 import com.betfair.cougar.transport.api.protocol.http.ResponseCodeMapper;
@@ -57,7 +56,6 @@ import com.betfair.cougar.transport.api.protocol.http.rescript.RescriptIdentityT
 import com.betfair.cougar.transport.api.protocol.http.rescript.RescriptOperationBindingDescriptor;
 import com.betfair.cougar.transport.api.protocol.http.rescript.RescriptResponse;
 import com.betfair.cougar.transport.impl.protocol.http.AbstractTerminateableHttpCommandProcessor;
-import com.betfair.cougar.util.geolocation.GeoIPLocator;
 import com.betfair.cougar.util.stream.ByteCountingInputStream;
 import com.betfair.cougar.util.stream.ByteCountingOutputStream;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -68,20 +66,14 @@ import org.springframework.jmx.export.annotation.ManagedResource;
  * and for writing the result or exception from the operation to the response.
  */
 @ManagedResource
-public class RescriptTransportCommandProcessor extends AbstractTerminateableHttpCommandProcessor {
+public class RescriptTransportCommandProcessor extends AbstractTerminateableHttpCommandProcessor<Void> {
     final static Logger LOGGER = LoggerFactory.getLogger(RescriptTransportCommandProcessor.class);
 	private Map<String, RescriptOperationBinding> bindings = new HashMap<String, RescriptOperationBinding>();
 
-    public RescriptTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, String uuidParentsHeader,
-                                             String requestTimeoutHeader, RequestTimeResolver requestTimeResolver) {
-        this(geoIPLocator, deserializer, uuidHeader, uuidParentsHeader, requestTimeoutHeader, requestTimeResolver, null);
+    public RescriptTransportCommandProcessor(DehydratedExecutionContextResolution contextResolution, String requestTimeoutHeader) {
+        super(Protocol.RESCRIPT, contextResolution, requestTimeoutHeader);
+        setName("RescriptTransportCommandProcessor");
     }
-
-	public RescriptTransportCommandProcessor(GeoIPLocator geoIPLocator, GeoLocationDeserializer deserializer, String uuidHeader, String uuidParentsHeader,
-                                             String requestTimeoutHeader, RequestTimeResolver requestTimeResolver, InferredCountryResolver<HttpServletRequest> countryResolver) {
-		super(geoIPLocator, deserializer, uuidHeader, uuidParentsHeader, countryResolver, requestTimeoutHeader, requestTimeResolver);
-		setName("RescriptTransportCommandProcessor");
-	}
 
     @Override
 	public void onCougarStart() {
@@ -118,14 +110,14 @@ public class RescriptTransportCommandProcessor extends AbstractTerminateableHttp
 
 		return new SingleExecutionCommandResolver<HttpCommand>(tracer) {
 
-			private ExecutionContextWithTokens context;
+			private DehydratedExecutionContext context;
 			private ExecutionCommand executionCommand;
 
 			@Override
-			public ExecutionContextWithTokens resolveExecutionContext() {
+			public DehydratedExecutionContext resolveExecutionContext() {
 
 				if (context == null) {
-                    context = RescriptTransportCommandProcessor.this.resolveExecutionContext(command, command.getRequest(), command.getClientX509CertificateChain());
+                    context = RescriptTransportCommandProcessor.this.resolveExecutionContext(command, null);
 				}
 				return context;
 			}
@@ -149,7 +141,7 @@ public class RescriptTransportCommandProcessor extends AbstractTerminateableHttp
 
 	}
 
-	private ExecutionCommand resolveExecutionCommand(final RescriptOperationBinding binding, final HttpCommand command, final ExecutionContextWithTokens context, final Tracer tracer) {
+	private ExecutionCommand resolveExecutionCommand(final RescriptOperationBinding binding, final HttpCommand command, final DehydratedExecutionContext context, final Tracer tracer) {
 		final MediaType requestMediaType = getContentTypeNormaliser().getNormalisedRequestMediaType(command.getRequest());
 		final String encoding = getContentTypeNormaliser().getNormalisedEncoding(command.getRequest());
 		ByteCountingInputStream iStream = null;
@@ -197,12 +189,12 @@ public class RescriptTransportCommandProcessor extends AbstractTerminateableHttp
 	}
 
 	@Override
-	protected void writeErrorResponse(HttpCommand command, ExecutionContextWithTokens context, CougarException error, boolean traceStarted) {
+	protected void writeErrorResponse(HttpCommand command, DehydratedExecutionContext context, CougarException error, boolean traceStarted) {
 		writeErrorResponse(command, error, context, null, 0, traceStarted);
 	}
 
 	protected final void writeErrorResponse(HttpCommand command, CougarException error,
-			ExecutionContextWithTokens context, MediaType requestMediaType, long bytesRead, boolean traceStarted) {
+			DehydratedExecutionContext context, MediaType requestMediaType, long bytesRead, boolean traceStarted) {
         try {
             incrementErrorsWritten();
             final HttpServletRequest request = command.getRequest();
@@ -254,7 +246,7 @@ public class RescriptTransportCommandProcessor extends AbstractTerminateableHttp
 
 
 	protected int writeResponse(HttpCommand command, RescriptOperationBinding binding,
-			Object result, ExecutionContextWithTokens context, MediaType requestMediaType, long bytesRead) {
+			Object result, DehydratedExecutionContext context, MediaType requestMediaType, long bytesRead) {
         try {
             final HttpServletRequest request = command.getRequest();
             final HttpServletResponse response = command.getResponse();

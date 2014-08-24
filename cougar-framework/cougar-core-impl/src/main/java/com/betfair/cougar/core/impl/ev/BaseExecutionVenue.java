@@ -16,19 +16,15 @@
 
 package com.betfair.cougar.core.impl.ev;
 
+import com.betfair.cougar.api.DehydratedExecutionContext;
 import com.betfair.cougar.api.ExecutionContext;
-import com.betfair.cougar.api.ExecutionContextWithTokens;
 import com.betfair.cougar.api.security.*;
 import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarFrameworkException;
-import com.betfair.cougar.core.api.exception.CougarServiceException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
-import com.betfair.cougar.core.api.tracing.Tracer;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.core.impl.security.IdentityChainImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
@@ -39,7 +35,6 @@ import java.util.concurrent.Delayed;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
 
 
 /**
@@ -101,8 +96,8 @@ public class BaseExecutionVenue implements ExecutionVenue {
     }
 
     private ExecutionContext resolveIdentitiesIfRequired(final ExecutionContext ctx) {
-        if (ctx instanceof ExecutionContextWithTokens) {
-            ExecutionContextWithTokens contextWithTokens = (ExecutionContextWithTokens) ctx;
+        if (ctx instanceof DehydratedExecutionContext) {
+            DehydratedExecutionContext contextWithTokens = (DehydratedExecutionContext) ctx;
             if (identityResolver == null) {
                 contextWithTokens.setIdentityChain(new IdentityChainImpl(new ArrayList<Identity>()));
                 // if there's no identity resolver then it can't tokenise any tokens back to the transport..

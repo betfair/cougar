@@ -30,13 +30,13 @@ import java.security.cert.X509Certificate;
  *
  */
 public interface HttpCommand<A, B, C> extends TransportCommand {
-	
+
 	/**
 	 * Gets the underlying request for this command.
 	 * @return
 	 */
 	public HttpServletRequest getRequest();
-	
+
 	/**
 	 * Gets the underlying response for this command.
 	 * @return
@@ -49,20 +49,15 @@ public interface HttpCommand<A, B, C> extends TransportCommand {
      */
     public IdentityTokenResolver<A, B, C> getIdentityTokenResolver();
 
-    
+
     /**
      * Returns the full path for this command.
      * @return
-     */    
+     */
 	public String getFullPath();
 
     /**
      * Returns the operation path for this command (the full path minus the context binding, if any)
      */
     public String getOperationPath();
-
-    /**
-     * @return - Returns the X509 certificate chain for this request, if present, otherwise null
-     */
-    public X509Certificate[] getClientX509CertificateChain();
 }

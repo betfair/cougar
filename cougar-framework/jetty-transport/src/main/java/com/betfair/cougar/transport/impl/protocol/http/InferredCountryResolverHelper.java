@@ -31,14 +31,15 @@ public class InferredCountryResolverHelper implements ApplicationContextAware, I
 
     private ApplicationContext applicationContext;
 
+
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        Map<String, AbstractHttpCommandProcessor> httpCommandProcessors =
-                applicationContext.getBeansOfType(AbstractHttpCommandProcessor.class);
+        Map<String, DefaultExecutionContextResolverFactory> resolverFactories =
+                applicationContext.getBeansOfType(DefaultExecutionContextResolverFactory.class);
 
         Map<String, InferredCountryResolver> inferredCountryResolvers =
                 applicationContext.getBeansOfType(InferredCountryResolver.class);
@@ -47,6 +48,7 @@ public class InferredCountryResolverHelper implements ApplicationContextAware, I
             return;
         }
 
+        // todo: sml: something not right here, you can only have 1 of these, but they're tied to the transport of the protocol..
         if (inferredCountryResolvers.size() > 1) {
             throw new RuntimeException("Invalid configuration. Found more than one inferred country resolvers.");
         }
@@ -54,8 +56,8 @@ public class InferredCountryResolverHelper implements ApplicationContextAware, I
         if(inferredCountryResolvers.size() > 0) {
             InferredCountryResolver resolver = inferredCountryResolvers.values().iterator().next();
 
-            for ( AbstractHttpCommandProcessor cmdProcessor : httpCommandProcessors.values()) {
-                cmdProcessor.setInferredCountryResolver(resolver);
+            for ( DefaultExecutionContextResolverFactory factory : resolverFactories.values()) {
+                factory.setInferredCountryResolver(resolver);
             }
         }
     }

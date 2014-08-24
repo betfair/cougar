@@ -147,6 +147,11 @@
         <constructor-arg index="2" value="$COUGAR{cougar.trace.enableLoggingTracer}"/>
     </bean>
 
+    <bean name="optionalGateRegisterer" class="com.betfair.cougar.core.impl.OptionalGateRegisterer"
+          abstract="true">
+        <constructor-arg index="0" value="cougar.core.StartingGate"/>
+    </bean>
+
     <!-- Now set up the core set of loggers, server, trace and console -->
     <import resource="classpath:conf/remote/logging-handlers.xml"/>
 	<alias name="identityResolverRegistry"           alias="cougar.core.IdentityResolverRegistry"/>
@@ -163,4 +168,5 @@
 
     <alias name="compoundTracer" alias="cougar.core.Tracer"/>
     <alias name="compoundTracerRegistrationHelper" alias="cougar.core.TracerRegistrationHelper"/>
+    <alias name="optionalGateRegisterer" alias="cougar.core.OptionalGateRegisterer"/>
 </beans>
