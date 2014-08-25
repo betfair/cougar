@@ -215,7 +215,7 @@ public abstract class AbstractHttpCommandProcessor<CredentialsContainer> extends
     protected DehydratedExecutionContext resolveContextForErrorHandling(DehydratedExecutionContext ctx, HttpCommand command) {
         if (ctx != null) return ctx;
         try {
-            return contextResolution.resolveExecutionContext(protocol, command.getRequest(), null);
+            return contextResolution.resolveExecutionContext(protocol, command, null);
         } catch (RuntimeException e) {
             // Well that failed too... nothing to do but return null
             LOGGER.debug("Failed to resolve error execution context", e);
