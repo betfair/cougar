@@ -22,6 +22,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -44,6 +46,9 @@ import com.betfair.cougar.marshalling.impl.SimpleApplicationException;
 import com.betfair.cougar.marshalling.impl.SimpleExecutionContext;
 import com.betfair.cougar.marshalling.impl.SimpleGeoLocationDetails;
 import com.betfair.cougar.netutil.nio.CougarProtocol;
+import com.betfair.cougar.transport.api.DehydratedExecutionContextResolution;
+import com.betfair.cougar.transport.api.RequestTimeResolver;
+import com.betfair.cougar.transport.impl.DehydratedExecutionContextResolutionImpl;
 import com.betfair.cougar.util.RequestUUIDImpl;
 import com.betfair.cougar.util.UUIDGeneratorImpl;
 import com.betfair.cougar.util.geolocation.RemoteAddressUtils;
@@ -188,9 +193,14 @@ public class SocketRMIMarshallerTest {
 
 	private static HessianObjectIOFactory ioFactory;
 
-    private GeoIPLocator geoIpLocator = Mockito.mock(GeoIPLocator.class);
-    private SocketRMIMarshaller cut = new SocketRMIMarshaller(geoIpLocator,new CommonNameCertInfoExtractor(),new DefaultSocketTimeResolver(true));
+    private static DehydratedExecutionContextResolutionImpl contextResolution = new DehydratedExecutionContextResolutionImpl();
+    private SocketRMIMarshaller cut = new SocketRMIMarshaller(new CommonNameCertInfoExtractor(), contextResolution);
 
+    @BeforeClass
+    public static void staticBefore() {
+        contextResolution.registerFactory(new DefaultExecutionContextResolverFactory(mock(GeoIPLocator.class), mock(RequestTimeResolver.class)));
+        contextResolution.init(false);
+    }
 
     @Before
     public void before() {
@@ -200,13 +210,6 @@ public class SocketRMIMarshallerTest {
 
     @Test
     public void testGeoLocationMarshalling() throws IOException {
-        CougarObjectOutput mockedcougarObjectOutput = Mockito.mock(CougarObjectOutput.class);
-
-
-        final String jamaica = "Jamaica";
-        final String loopBackAddress = "127.0.0.1";
-
-
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         CougarObjectOutput cougarObjectOutput = ioFactory.newCougarObjectOutput(outputStream, protocolVersion);
 
@@ -218,21 +221,15 @@ public class SocketRMIMarshallerTest {
         byte[] theBytes = outputStream.toByteArray();
         assertNotNull(theBytes);
 
-        final GeoLocationDetails gld = Mockito.mock(GeoLocationDetails.class);
-        Mockito.when(geoIpLocator.getGeoLocation("10.20.30.40", RemoteAddressUtils.parse("1.2.3.4", "1.2.3.4," + RemoteAddressUtils.localAddressList), null)).thenReturn(gld);
-        GeoLocationDetails unMarshalled = cut.readGeoLocation(ioFactory.newCougarObjectInput(new ByteArrayInputStream(theBytes), protocolVersion), "10.20.30.40", protocolVersion);
-
-        Assert.assertEquals(gld,unMarshalled);
+        GeoLocationParameters unMarshalled = cut.readGeoLocation(ioFactory.newCougarObjectInput(new ByteArrayInputStream(theBytes), protocolVersion), "10.20.30.40", protocolVersion);
+        assertEquals("10.20.30.40", unMarshalled.getRemoteAddress());
+        assertEquals(RemoteAddressUtils.parse("1.2.3.4", "1.2.3.4," + RemoteAddressUtils.localAddressList), unMarshalled.getAddressList());
+        assertNull(unMarshalled.getInferredCountry());
     }
 
 
     @Test
     public void testGeoLocationMarshallingWithInferredCountry() throws IOException {
-        CougarObjectOutput mockedcougarObjectOutput = Mockito.mock(CougarObjectOutput.class);
-
-
-        final String jamaica = "Jamaica";
-        final String loopBackAddress = "127.0.0.1";
         String inferredCountry = null;
         if (protocolVersion >= CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS) {
             inferredCountry = "JM";
@@ -250,22 +247,19 @@ public class SocketRMIMarshallerTest {
         byte[] theBytes = outputStream.toByteArray();
         assertNotNull(theBytes);
 
-        final GeoLocationDetails gld = Mockito.mock(GeoLocationDetails.class);
-        Mockito.when(geoIpLocator.getGeoLocation("10.20.30.40", RemoteAddressUtils.parse("1.2.3.4", "1.2.3.4," + RemoteAddressUtils.localAddressList), inferredCountry)).thenReturn(gld);
-        GeoLocationDetails unMarshalled = cut.readGeoLocation(ioFactory.newCougarObjectInput(new ByteArrayInputStream(theBytes), protocolVersion), "10.20.30.40", protocolVersion);
-
-        Assert.assertEquals(gld,unMarshalled);
+        GeoLocationParameters unMarshalled = cut.readGeoLocation(ioFactory.newCougarObjectInput(new ByteArrayInputStream(theBytes), protocolVersion), "10.20.30.40", protocolVersion);
+        assertEquals("10.20.30.40", unMarshalled.getRemoteAddress());
+        assertEquals(RemoteAddressUtils.parse("1.2.3.4", "1.2.3.4," + RemoteAddressUtils.localAddressList), unMarshalled.getAddressList());
+        if (protocolVersion >= CougarProtocol.TRANSPORT_PROTOCOL_VERSION_START_TLS) {
+            assertEquals("JM",unMarshalled.getInferredCountry());
+        }
+        else {
+            assertNull(unMarshalled.getInferredCountry());
+        }
     }
 
     @Test
     public void testGeoLocationMarshallingWithNullResolvedIP() throws IOException {
-        CougarObjectOutput mockedcougarObjectOutput = Mockito.mock(CougarObjectOutput.class);
-
-
-        final String jamaica = "Jamaica";
-        final String loopBackAddress = "127.0.0.1";
-
-
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         CougarObjectOutput cougarObjectOutput = ioFactory.newCougarObjectOutput(outputStream, protocolVersion);
 
@@ -277,22 +271,14 @@ public class SocketRMIMarshallerTest {
         byte[] theBytes = outputStream.toByteArray();
         assertNotNull(theBytes);
 
-        final GeoLocationDetails gld = Mockito.mock(GeoLocationDetails.class);
-        Mockito.when(geoIpLocator.getGeoLocation("10.20.30.40", RemoteAddressUtils.parse(RemoteAddressUtils.localAddressList, RemoteAddressUtils.localAddressList), null)).thenReturn(gld);
-        GeoLocationDetails unMarshalled = cut.readGeoLocation(ioFactory.newCougarObjectInput(new ByteArrayInputStream(theBytes), protocolVersion), "10.20.30.40", protocolVersion);
-
-        Assert.assertEquals(gld,unMarshalled);
+        GeoLocationParameters unMarshalled = cut.readGeoLocation(ioFactory.newCougarObjectInput(new ByteArrayInputStream(theBytes), protocolVersion), "10.20.30.40", protocolVersion);
+        assertEquals("10.20.30.40", unMarshalled.getRemoteAddress());
+        assertEquals(RemoteAddressUtils.parse(RemoteAddressUtils.localAddressList, RemoteAddressUtils.localAddressList), unMarshalled.getAddressList());
+        assertNull(unMarshalled.getInferredCountry());
     }
 
     @Test
     public void testGeoLocationMarshallingWithEmptyResolvedIP() throws IOException {
-        CougarObjectOutput mockedcougarObjectOutput = Mockito.mock(CougarObjectOutput.class);
-
-
-        final String jamaica = "Jamaica";
-        final String loopBackAddress = "127.0.0.1";
-
-
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         CougarObjectOutput cougarObjectOutput = ioFactory.newCougarObjectOutput(outputStream, protocolVersion);
 
@@ -305,22 +291,14 @@ public class SocketRMIMarshallerTest {
         byte[] theBytes = outputStream.toByteArray();
         assertNotNull(theBytes);
 
-        final GeoLocationDetails gld = Mockito.mock(GeoLocationDetails.class);
-        Mockito.when(geoIpLocator.getGeoLocation("10.20.30.40", RemoteAddressUtils.parse(RemoteAddressUtils.localAddressList, RemoteAddressUtils.localAddressList), null)).thenReturn(gld);
-        GeoLocationDetails unMarshalled = cut.readGeoLocation(ioFactory.newCougarObjectInput(new ByteArrayInputStream(theBytes), protocolVersion), "10.20.30.40", protocolVersion);
-
-        Assert.assertEquals(gld,unMarshalled);
+        GeoLocationParameters unMarshalled = cut.readGeoLocation(ioFactory.newCougarObjectInput(new ByteArrayInputStream(theBytes), protocolVersion), "10.20.30.40", protocolVersion);
+        assertEquals("10.20.30.40", unMarshalled.getRemoteAddress());
+        assertEquals(RemoteAddressUtils.parse(RemoteAddressUtils.localAddressList, RemoteAddressUtils.localAddressList), unMarshalled.getAddressList());
+        assertNull(unMarshalled.getInferredCountry());
     }
 
     @Test
     public void testGeoLocationMarshallingWithMultipleResolvedIP() throws IOException {
-        CougarObjectOutput mockedcougarObjectOutput = Mockito.mock(CougarObjectOutput.class);
-
-
-        final String jamaica = "Jamaica";
-        final String loopBackAddress = "127.0.0.1";
-
-
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         CougarObjectOutput cougarObjectOutput = ioFactory.newCougarObjectOutput(outputStream, protocolVersion);
 
@@ -333,11 +311,11 @@ public class SocketRMIMarshallerTest {
         byte[] theBytes = outputStream.toByteArray();
         assertNotNull(theBytes);
 
-        final GeoLocationDetails gld = Mockito.mock(GeoLocationDetails.class);
-        Mockito.when(geoIpLocator.getGeoLocation("10.20.30.40", RemoteAddressUtils.parse("127.0.0.1", "127.0.0.1,128.0.0.1," + RemoteAddressUtils.localAddressList), null)).thenReturn(gld);
-        GeoLocationDetails unMarshalled = cut.readGeoLocation(ioFactory.newCougarObjectInput(new ByteArrayInputStream(theBytes), protocolVersion), "10.20.30.40", protocolVersion);
-
-        Assert.assertEquals(gld,unMarshalled);
+        final GeoLocationDetails gld = mock(GeoLocationDetails.class);
+        GeoLocationParameters unMarshalled = cut.readGeoLocation(ioFactory.newCougarObjectInput(new ByteArrayInputStream(theBytes), protocolVersion), "10.20.30.40", protocolVersion);
+        assertEquals("10.20.30.40", unMarshalled.getRemoteAddress());
+        assertEquals(RemoteAddressUtils.parse("127.0.0.1", "127.0.0.1,128.0.0.1," + RemoteAddressUtils.localAddressList), unMarshalled.getAddressList());
+        assertNull(unMarshalled.getInferredCountry());
     }
 
 
@@ -394,8 +372,8 @@ public class SocketRMIMarshallerTest {
         cut.writeInvocationRequest(request, cougarObjectOutput, identityResolver, protocolVersion);
         cougarObjectOutput.flush();
         cougarObjectOutput.close();
-        String resolvedAddresses = RemoteAddressUtils.externaliseWithLocalAddresses(ctx.getLocation().getResolvedAddresses());
-        Mockito.when(geoIpLocator.getGeoLocation("10.20.30.40", RemoteAddressUtils.parse("10.20.30.40", resolvedAddresses), null)).thenReturn(ctx.getLocation());
+        //String resolvedAddresses = RemoteAddressUtils.externaliseWithLocalAddresses(ctx.getLocation().getResolvedAddresses());
+        //when(geoIpLocator.getGeoLocation("10.20.30.40", RemoteAddressUtils.parse("10.20.30.40", resolvedAddresses), null)).thenReturn(ctx.getLocation());
         CougarObjectInput in = ioFactory.newCougarObjectInput(new ByteArrayInputStream(outputStream.toByteArray()), protocolVersion);
         DehydratedExecutionContext actualContext = cut.readExecutionContext(in, "10.20.30.40", new X509Certificate[0], 0, protocolVersion);
         OperationKey actualKey = cut.readOperationKey(in);
@@ -593,6 +571,7 @@ public class SocketRMIMarshallerTest {
         cut.writeReceivedTime(new Date(), cougarObjectOutput);
         cougarObjectOutput.writeBoolean(false); // traceEnabled
         cut.writeRequestTime(cougarObjectOutput, protocolVersion);
+        cut.writeAdditionalParams(null, cougarObjectOutput, protocolVersion);
         cougarObjectOutput.flush();
         DehydratedExecutionContext ctx = cut.readExecutionContext(ioFactory.newCougarObjectInput(new ByteArrayInputStream(outputStream.toByteArray()), protocolVersion), "127.0.0.1", new X509Certificate[0], 0, protocolVersion);
         assertEquals(0, ctx.getIdentityTokens().size());
@@ -614,6 +593,7 @@ public class SocketRMIMarshallerTest {
         cut.writeReceivedTime(new Date(), cougarObjectOutput);
         cougarObjectOutput.writeBoolean(false); // traceEnabled
         cut.writeRequestTime(cougarObjectOutput, protocolVersion);
+        cut.writeAdditionalParams(null, cougarObjectOutput, protocolVersion);
         cougarObjectOutput.flush();
         DehydratedExecutionContext ctx = cut.readExecutionContext(ioFactory.newCougarObjectInput(new ByteArrayInputStream(outputStream.toByteArray()), protocolVersion), "127.0.0.1", new X509Certificate[0], 0, protocolVersion);
         assertEquals(1, ctx.getIdentityTokens().size());
@@ -636,6 +616,7 @@ public class SocketRMIMarshallerTest {
         cut.writeReceivedTime(new Date(), cougarObjectOutput);
         cougarObjectOutput.writeBoolean(false); // traceEnabled
         cut.writeRequestTime(cougarObjectOutput, protocolVersion);
+        cut.writeAdditionalParams(null, cougarObjectOutput, protocolVersion);
         cougarObjectOutput.flush();
         DehydratedExecutionContext ctx = cut.readExecutionContext(ioFactory.newCougarObjectInput(new ByteArrayInputStream(outputStream.toByteArray()), protocolVersion), "127.0.0.1", new X509Certificate[0], 0, protocolVersion);
         assertEquals(2, ctx.getIdentityTokens().size());

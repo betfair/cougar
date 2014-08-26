@@ -37,6 +37,10 @@ import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.core.impl.security.CommonNameCertInfoExtractor;
 import com.betfair.cougar.core.impl.tracing.CompoundTracer;
 import com.betfair.cougar.core.impl.transports.TransportRegistryImpl;
+import com.betfair.cougar.netutil.nio.marshalling.DefaultExecutionContextResolverFactory;
+import com.betfair.cougar.transport.api.DehydratedExecutionContextResolution;
+import com.betfair.cougar.transport.api.RequestTimeResolver;
+import com.betfair.cougar.transport.impl.DehydratedExecutionContextResolutionImpl;
 import org.slf4j.LoggerFactory;
 import com.betfair.cougar.netutil.nio.marshalling.DefaultSocketTimeResolver;
 import com.betfair.cougar.netutil.nio.marshalling.SocketRMIMarshaller;
@@ -72,6 +76,8 @@ import java.util.concurrent.Executors;
 
 import static com.betfair.cougar.netutil.nio.message.ProtocolMessage.ProtocolMessageType;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+
 @RunWith(value = Parameterized.class)
 public class ExecutionVenueNioServerTest {
 
@@ -223,10 +229,12 @@ public class ExecutionVenueNioServerTest {
             }
         };
 
-        GeoIPLocator geo = Mockito.mock(GeoIPLocator.class);
-        marshaller = new SocketRMIMarshaller(geo, new CommonNameCertInfoExtractor(), new DefaultSocketTimeResolver(true));
+        DehydratedExecutionContextResolutionImpl contextResolution = new DehydratedExecutionContextResolutionImpl();
+        contextResolution.registerFactory(new DefaultExecutionContextResolverFactory(mock(GeoIPLocator.class), mock(RequestTimeResolver.class)));
+        contextResolution.init(false);
+        marshaller = new SocketRMIMarshaller(new CommonNameCertInfoExtractor(), contextResolution);
         IdentityResolverFactory identityResolverFactory = new IdentityResolverFactory();
-        identityResolverFactory.setIdentityResolver(Mockito.mock(IdentityResolver.class));
+        identityResolverFactory.setIdentityResolver(mock(IdentityResolver.class));
 
 
         ev = new ExecutionVenue() {

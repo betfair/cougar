@@ -43,7 +43,7 @@ public class ClientPostPostBodyStringBlankTest {
         MandatoryParamsRequest mandatoryParamsRequest2 = new MandatoryParamsRequest();
         mandatoryParamsRequest2.setBodyParameter1("");
         MandatoryParamsRequest bodyParam = mandatoryParamsRequest2;
-        
+
         bodyParam.setBodyParameter2("postBodyParamString2");
         // Make call to the method via client and validate the response is as expected
         MandatoryParamsOperationResponseObject response3 = client.mandatoryParamsOperation(context, "headerParamString", "queryParamString", bodyParam);

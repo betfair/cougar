@@ -16,27 +16,31 @@
 
 package com.betfair.cougar.netutil.nio.marshalling;
 
-import com.betfair.cougar.transport.api.protocol.CougarObjectOutput;
-import com.betfair.cougar.transport.impl.SimpleRequestTimeResolver;
-
-import java.io.IOException;
-import java.util.Date;
+import java.util.List;
 
 /**
  *
  */
-public class DefaultSocketTimeResolver extends SimpleRequestTimeResolver<Long> {
+public class GeoLocationParameters {
+    private final String remoteAddress;
+    private final List<String> addressList;
+    private final String inferredCountry;
 
-    public DefaultSocketTimeResolver() {
-        super(false);
+    public GeoLocationParameters(String remoteAddress, List<String> addressList, String inferredCountry) {
+        this.remoteAddress = remoteAddress;
+        this.addressList = addressList;
+        this.inferredCountry = inferredCountry;
     }
 
-    public DefaultSocketTimeResolver(boolean clientTimeSynchronizedWithServer) {
-        super(clientTimeSynchronizedWithServer);
+    public String getRemoteAddress() {
+        return remoteAddress;
     }
 
-    @Override
-    protected Date readRequestTime(Long input) {
-        return new Date(input);
+    public List<String> getAddressList() {
+        return addressList;
+    }
+
+    public String getInferredCountry() {
+        return inferredCountry;
     }
 }

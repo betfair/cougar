@@ -65,7 +65,7 @@ public abstract class AbstractHttpContextResolutionTest {
 
         contextResolution = new DehydratedExecutionContextResolutionImpl();
         contextResolution.registerFactory(resolverFactory);
-        contextResolution.onCougarStart();
+        contextResolution.init(false);
     }
 
     protected abstract Protocol getProtocol();

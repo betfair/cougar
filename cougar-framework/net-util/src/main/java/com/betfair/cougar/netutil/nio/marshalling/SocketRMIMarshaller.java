@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package com.betfair.cougar.netutil.nio.marshalling;
 import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.DehydratedExecutionContext;
 import com.betfair.cougar.api.RequestUUID;
+import com.betfair.cougar.api.export.Protocol;
 import com.betfair.cougar.api.fault.CougarApplicationException;
 import com.betfair.cougar.api.fault.FaultCode;
 import com.betfair.cougar.api.geolocation.GeoLocationDetails;
@@ -44,23 +45,19 @@ import com.betfair.cougar.core.impl.security.CommonNameCertInfoExtractor;
 import com.betfair.cougar.core.impl.security.SSLAwareTokenResolver;
 import com.betfair.cougar.marshalling.api.socket.RemotableMethodInvocationMarshaller;
 import com.betfair.cougar.netutil.nio.CougarProtocol;
-import com.betfair.cougar.transport.api.RequestTimeResolver;
+import com.betfair.cougar.transport.api.DehydratedExecutionContextResolution;
 import com.betfair.cougar.transport.api.protocol.CougarObjectInput;
 import com.betfair.cougar.transport.api.protocol.CougarObjectOutput;
-import com.betfair.cougar.transport.api.protocol.http.ExecutionContextFactory;
 import com.betfair.cougar.transport.api.protocol.socket.InvocationRequest;
 import com.betfair.cougar.transport.api.protocol.socket.InvocationResponse;
 import com.betfair.cougar.util.RequestUUIDImpl;
-import com.betfair.cougar.util.geolocation.GeoIPLocator;
 import com.betfair.cougar.util.geolocation.RemoteAddressUtils;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 
 import javax.naming.NamingException;
 import java.io.IOException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Concrete implementation of @See RemotableMethodInvocationMarshaller class to
@@ -68,19 +65,16 @@ import java.util.List;
  */
 public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller {
 
-    private final GeoIPLocator geoIpLocator;
     private final IdentityTokenResolver<CougarObjectInput, CougarObjectOutput, X509Certificate[]> identityTokenResolver;
-    private final RequestTimeResolver<Long> requestTimeResolver;
     private boolean hardFailEnumDeserialisation;
+    private DehydratedExecutionContextResolution contextResolution;
 
     // For client side, as the GeoIpLocator/cert regex & request time resolver is only necessary server side.
     public SocketRMIMarshaller() {
-    	this(null,new CommonNameCertInfoExtractor(),null);
+    	this(new CommonNameCertInfoExtractor(), null);
     }
 
-    public SocketRMIMarshaller(GeoIPLocator geoIpLocator, CertInfoExtractor certInfoExtractor, RequestTimeResolver<Long> requestTimeResolver) {
-        this.geoIpLocator = geoIpLocator;
-        this.requestTimeResolver = requestTimeResolver;
+    public SocketRMIMarshaller(CertInfoExtractor certInfoExtractor, DehydratedExecutionContextResolution contextResolution) {
         this.identityTokenResolver = new SSLAwareTokenResolver<CougarObjectInput, CougarObjectOutput, X509Certificate[]>(certInfoExtractor) {
                 @Override
                 public List<IdentityToken> resolve(CougarObjectInput input, X509Certificate[] certificateChain) {
@@ -123,6 +117,7 @@ public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller 
                     return true;
                 }
             };
+        this.contextResolution = contextResolution;
     }
 
     public static class InvocationResponseImpl implements InvocationResponse {
@@ -298,6 +293,14 @@ public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller 
         writeReceivedTime(ctx.getReceivedTime(), out);
         out.writeBoolean(ctx.traceLoggingEnabled());
         writeRequestTime(out, protocolVersion);
+        writeAdditionalParams(ctx, out, protocolVersion);
+    }
+
+    void writeAdditionalParams(ExecutionContext ctx, CougarObjectOutput out, byte protocolVersion) throws IOException {
+        if (protocolVersion >= CougarProtocol.TRANSPORT_PROTOCOL_VERSION_COMPOUND_REQUEST_UUID) {
+            // todo: #82: when we have some additional params, this will send num keys and then key followed by value for each (as strings)
+            out.writeInt(0);
+        }
     }
 
     void writeRequestTime(CougarObjectOutput out, byte protocolVersion) throws IOException {
@@ -306,18 +309,27 @@ public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller 
         }
     }
 
-    private DehydratedExecutionContext resolveExecutionContext(CougarObjectInput in, GeoLocationDetails geo, List<IdentityToken> tokens, int transportSecurityStrengthFactor, byte protocolVersion) throws IOException {
+    private DehydratedExecutionContext resolveExecutionContext(CougarObjectInput in, GeoLocationParameters geo, List<IdentityToken> tokens, int transportSecurityStrengthFactor, byte protocolVersion) throws IOException {
 
 
-        final RequestUUID uuid = readRequestUUID(in);
+        final String uuid = readRequestUuidString(in);
         final Date receivedTime = readReceivedTime(in);
 
         final boolean traceEnabled = in.readBoolean();
 
         final Long requestTime = protocolVersion >= CougarProtocol.TRANSPORT_PROTOCOL_VERSION_TIME_CONSTRAINTS ? in.readLong() : System.currentTimeMillis();
-        Date requestDate = requestTimeResolver.resolveRequestTime(requestTime);
 
-        return ExecutionContextFactory.resolveExecutionContext(tokens, uuid, geo, receivedTime, traceEnabled, transportSecurityStrengthFactor, requestDate, false);
+        Map<String,String> additionalParams = new HashMap<>();
+        if (protocolVersion >= CougarProtocol.TRANSPORT_PROTOCOL_VERSION_COMPOUND_REQUEST_UUID) {
+            int numExtraParams = in.readInt();
+            for (int i=0; i<numExtraParams; i++) {
+                additionalParams.put(in.readString(),in.readString());
+            }
+        }
+
+        SocketContextResolutionParams params = new SocketContextResolutionParams(tokens, uuid, geo, receivedTime, traceEnabled, transportSecurityStrengthFactor, requestTime, additionalParams);
+
+        return contextResolution.resolveExecutionContext(Protocol.SOCKET, params, null);
 
     }
 
@@ -325,7 +337,7 @@ public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller 
     public DehydratedExecutionContext readExecutionContext(CougarObjectInput in, String remoteAddress, X509Certificate[] clientCertChain, int transportSecurityStrengthFactor, byte protocolVersion) throws IOException {
         EnumUtils.setHardFailureForThisThread(hardFailEnumDeserialisation);
         // this has to be first as the protocol requires it
-        final GeoLocationDetails geo = readGeoLocation(in, remoteAddress, protocolVersion);
+        final GeoLocationParameters geo = readGeoLocation(in, remoteAddress, protocolVersion);
 
         List<IdentityToken> tokens = identityTokenResolver.resolve(in, clientCertChain);
 
@@ -353,7 +365,7 @@ public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller 
 		identityTokenResolver.rewrite(identityTokens, out);
 	}
 
-	GeoLocationDetails readGeoLocation(CougarObjectInput in, String remoteAddress, byte protocolVersion) throws IOException {
+    GeoLocationParameters readGeoLocation(CougarObjectInput in, String remoteAddress, byte protocolVersion) throws IOException {
         // The current implementation is analogous to an http connection, so the IP
         // must be provided, but everything else is created on the server. This might
         // become a problem if non-IP based clients are required, but there are no
@@ -366,7 +378,7 @@ public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller 
         }
 
         // no remote address for socket protocol.
-        return geoIpLocator.getGeoLocation(remoteAddress, addressList, inferredCountry);
+        return new GeoLocationParameters(remoteAddress, addressList, inferredCountry);
 	}
 
 	void writeGeoLocation(GeoLocationDetails geo, CougarObjectOutput out, byte protocolVersion) throws IOException {
@@ -378,12 +390,11 @@ public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller 
         }
 	}
 
-    private RequestUUID readRequestUUID(CougarObjectInput in) throws IOException {
+    private String readRequestUuidString(CougarObjectInput in) throws IOException {
         if (in.readBoolean()) {
-            String uuidString = in.readString();
-            return new RequestUUIDImpl(uuidString);
+            return in.readString();
         } else {
-            return new RequestUUIDImpl();
+            return null;
         }
     }
 

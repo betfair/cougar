@@ -35,6 +35,10 @@ public class DehydratedExecutionContextResolutionImpl implements GateListener, D
 
     @Override
     public void onCougarStart() {
+        init(true);
+    }
+
+    public void init(boolean failIfNotComplete) {
         for (ProtocolParadigm paradigm : ProtocolParadigm.values()) {
             Set<Protocol> protocols = ProtocolRegistry.protocols(paradigm);
 
@@ -55,11 +59,11 @@ public class DehydratedExecutionContextResolutionImpl implements GateListener, D
                                 }
                             }
                             // notify the resolver what they will be resolving
-                            resolver.resolving(handling);
+                            resolver.resolving(Collections.unmodifiableSet(handling));
                         }
                     }
                 }
-                //todo: #82: this needs to go back once all protocols have been built..
+                //todo: #82: this needs to go back once all protocols have been built.. && failIfNotComplete
 //                if (!remainingComponents.isEmpty()) {
 //                    throw new IllegalStateException("I have unhandled components: "+remainingComponents);
 //                }

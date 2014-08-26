@@ -39,14 +39,22 @@
     <bean id="defaultSocketCertInfoExtractor" class="com.betfair.cougar.core.impl.security.CommonNameCertInfoExtractor"/>
 
     <bean id="socketMarshaller" class="com.betfair.cougar.netutil.nio.marshalling.SocketRMIMarshaller">
+        <constructor-arg index="0" ref="$COUGAR-SOCKET-TRANSPORT{cougar.socket.tokenResolver.certInfoExtractor}"/>
+        <constructor-arg index="1" ref="cougar.transport.ContextResolution"/>
+        <property name="hardFailEnumDeserialisation" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.enums.hardFailure}"/>
+    </bean>
+
+    <bean id="socketExecutionContextResolverFactory" class="com.betfair.cougar.netutil.nio.marshalling.DefaultExecutionContextResolverFactory">
         <constructor-arg index="0" ref="cougar.core.GeoIPLocator"/>
-        <constructor-arg index="1" ref="$COUGAR-SOCKET-TRANSPORT{cougar.socket.tokenResolver.certInfoExtractor}"/>
-        <constructor-arg index="2">
+        <constructor-arg index="1">
             <bean class="com.betfair.cougar.netutil.nio.marshalling.DefaultSocketTimeResolver">
                 <constructor-arg index="0" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.timeResolver.clientSynchronized}"/>
             </bean>
         </constructor-arg>
-        <property name="hardFailEnumDeserialisation" value="$COUGAR-SOCKET-TRANSPORT{cougar.socket.enums.hardFailure}"/>
+    </bean>
+
+    <bean parent="cougar.transport.ContextRegisterer" lazy-init="false">
+        <constructor-arg index="1" ref="socketExecutionContextResolverFactory"/>
     </bean>
 
     <bean id="socketCommandProcessor" class="com.betfair.cougar.transport.socket.SocketTransportCommandProcessor" lazy-init="false" scope="singleton">

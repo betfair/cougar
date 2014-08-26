@@ -33,6 +33,10 @@ import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.impl.security.CommonNameCertInfoExtractor;
 import com.betfair.cougar.core.impl.tracing.CompoundTracer;
+import com.betfair.cougar.netutil.nio.marshalling.DefaultExecutionContextResolverFactory;
+import com.betfair.cougar.transport.api.DehydratedExecutionContextResolution;
+import com.betfair.cougar.transport.api.RequestTimeResolver;
+import com.betfair.cougar.transport.impl.DehydratedExecutionContextResolutionImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.betfair.cougar.netutil.nio.CougarProtocol;
@@ -67,6 +71,8 @@ import com.betfair.cougar.transport.nio.ExecutionVenueServerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.mockito.Mockito.mock;
+
 /**
  * This class is used as a stub to facilitate NIO unit testing
  */
@@ -98,10 +104,12 @@ public class ServerClientFactory {
         };
 
 
-        GeoIPLocator geo = Mockito.mock(GeoIPLocator.class);
-        SocketRMIMarshaller marshaller = new SocketRMIMarshaller(geo, new CommonNameCertInfoExtractor(), new DefaultSocketTimeResolver(true));
+        DehydratedExecutionContextResolutionImpl contextResolution = new DehydratedExecutionContextResolutionImpl();
+        contextResolution.registerFactory(new DefaultExecutionContextResolverFactory(mock(GeoIPLocator.class),mock(RequestTimeResolver.class)));
+        contextResolution.init(false);
+        SocketRMIMarshaller marshaller = new SocketRMIMarshaller(new CommonNameCertInfoExtractor(), contextResolution);
         IdentityResolverFactory identityResolverFactory = new IdentityResolverFactory();
-        identityResolverFactory.setIdentityResolver(Mockito.mock(IdentityResolver.class));
+        identityResolverFactory.setIdentityResolver(mock(IdentityResolver.class));
 
 
 
@@ -221,10 +229,10 @@ public class ServerClientFactory {
 
 
 	public static ExecutionVenueNioClient createClient (String connectionString, NioConfig cfg) {
-        GeoIPLocator geo = Mockito.mock(GeoIPLocator.class);
-        SocketRMIMarshaller marshaller = new SocketRMIMarshaller(geo, new CommonNameCertInfoExtractor(), new DefaultSocketTimeResolver());
+        DehydratedExecutionContextResolution contextResolution = mock(DehydratedExecutionContextResolution.class);
+        SocketRMIMarshaller marshaller = new SocketRMIMarshaller(new CommonNameCertInfoExtractor(), contextResolution);
         IdentityResolverFactory factory = new IdentityResolverFactory();
-        factory.setIdentityResolver(Mockito.mock(IdentityResolver.class));
+        factory.setIdentityResolver(mock(IdentityResolver.class));
 
         NioLogger logger = new NioLogger("ALL");
 		ExecutionVenueNioClient client = new ExecutionVenueNioClient(logger,  cfg, new HessianObjectIOFactory(true), new ClientConnectedObjectManager(), null, connectionString,
