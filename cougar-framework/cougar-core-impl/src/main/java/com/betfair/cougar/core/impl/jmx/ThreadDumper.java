@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,10 +32,10 @@ import com.betfair.cougar.core.api.jmx.JMXHttpParser;
 /**
  * Borrowed from Joe's dodgy JSP. Totally uncleaned for posterity so everyone
  * can see some original Stapleton hackery...
- * 
+ *
  */
 public class ThreadDumper implements JMXHttpParser {
-    
+
 
     @Override
     public String getPath() {
@@ -44,7 +44,7 @@ public class ThreadDumper implements JMXHttpParser {
 
     @Override
     public String process(Map<String, String> params) {
-        ThreadMXBean mx = ManagementFactory.getThreadMXBean(); 
+        ThreadMXBean mx = ManagementFactory.getThreadMXBean();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream out = new PrintStream(baos);
 
@@ -125,7 +125,7 @@ public class ThreadDumper implements JMXHttpParser {
         out.println(buf.toString());
 
         out.println("</pre>");
-        
+
         return new String(baos.toByteArray());
 
     }

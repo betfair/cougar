@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import com.betfair.cougar.core.api.OperationBindingDescriptor;
  *
  */
 public class RescriptOperationBindingDescriptor implements OperationBindingDescriptor {
-	
+
 	private final String uri;
 	private final OperationKey operationKey;
 	private final String httpMethod;
@@ -47,25 +47,25 @@ public class RescriptOperationBindingDescriptor implements OperationBindingDescr
 	public RescriptOperationBindingDescriptor(final OperationKey operationKey, final String uri, final String httpMethod, final List<RescriptParamBindingDescriptor> paramBindings) {
 		this(operationKey, uri, httpMethod, paramBindings, null, null);
 	}
-	
+
 	/**
 	 * @param operationKey Defines the operation that is to be bound
 	 * @param uri The http uri that will invoke this operation
 	 * @param httpMethod GET or POST
 	 * @param paramBindings Defines the list of arguments to the operation, and how they map to the request
-     * @param responseClass the class that the response will be wrapped in for unmarshalling  
+     * @param responseClass the class that the response will be wrapped in for unmarshalling
 	 */
 	public RescriptOperationBindingDescriptor(final OperationKey operationKey, final String uri, final String httpMethod, final List<RescriptParamBindingDescriptor> paramBindings, Class<? extends RescriptResponse> responseClass) {
 		this(operationKey, uri, httpMethod, paramBindings, responseClass, null);
 	}
-	
+
 	/**
 	 * @param operationKey Defines the operation that is to be bound
 	 * @param uri The http uri that will invoke this operation
 	 * @param httpMethod GET or POST
 	 * @param paramBindings Defines the list of arguments to the operation, and how they map to the request
-     * @param responseClass the class that the response will be wrapped in for unmarshalling  
-     * @param bodyClass the class that the request's body will be marshalled into  
+     * @param responseClass the class that the response will be wrapped in for unmarshalling
+     * @param bodyClass the class that the request's body will be marshalled into
 	 */
 	public RescriptOperationBindingDescriptor(final OperationKey operationKey, final String uri, final String httpMethod, final List<RescriptParamBindingDescriptor> paramBindings, Class<? extends RescriptResponse> responseClass, Class<? extends RescriptBody> bodyClass) {
 		this.operationKey = operationKey;
@@ -87,11 +87,11 @@ public class RescriptOperationBindingDescriptor implements OperationBindingDescr
         this.responseClass = responseClass;
 		this.bodyClass = bodyClass;
 	}
-	
+
 	public String getHttpMethod() {
 		return httpMethod;
 	}
-	
+
 	public String getURI() {
 		return uri;
 	}

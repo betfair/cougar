@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +22,11 @@ import junit.framework.TestCase;
 
 public class ByteCountingOutputStreamTest extends TestCase {
     private byte[] source = "ABCDESGHIJKLMNOPQRSTUVWXYZ".getBytes();
-    private ByteArrayOutputStream destination = new ByteArrayOutputStream(); 
+    private ByteArrayOutputStream destination = new ByteArrayOutputStream();
 
     public void testWriteSingleCount() throws Exception {
         ByteCountingOutputStream bcos = new ByteCountingOutputStream(destination);
-        
+
         int bytesWritten = 0;
         for (int i = 0; i < source.length; i++) {
             bcos.write(source[i]);
@@ -41,9 +41,9 @@ public class ByteCountingOutputStreamTest extends TestCase {
 
     public void testWriteFullArray() throws Exception {
         ByteCountingOutputStream bcos = new ByteCountingOutputStream(destination);
-        
+
         int bytesWritten = 0;
-        int numberToCopy = 8; 
+        int numberToCopy = 8;
         for (int i = 0; i < source.length; i+=numberToCopy) {
             if (numberToCopy  + i > source.length) {
                 numberToCopy = source.length - i;
@@ -61,10 +61,10 @@ public class ByteCountingOutputStreamTest extends TestCase {
             assertEquals(destination.toByteArray()[count++], b);
         }
     }
-    
+
     public void testWritePartArray() throws Exception {
         ByteCountingOutputStream bcos = new ByteCountingOutputStream(destination);
-        
+
         int bytesWritten = 0;
         int numberToCopy = 5;
         for (int i = 0; i < source.length; i+=numberToCopy) {

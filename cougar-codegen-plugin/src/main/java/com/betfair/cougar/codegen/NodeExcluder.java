@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ public interface NodeExcluder {
     /**
      * Implement this method to return true if a node SHOULD be omitted
      * from having a transformation run against it.
-     * @param xp an instanciated XPath instance 
+     * @param xp an instanciated XPath instance
      * @param node to use to determine whether this transformation should be run or not
      * @return returns true if the transformation should be omitted
      */

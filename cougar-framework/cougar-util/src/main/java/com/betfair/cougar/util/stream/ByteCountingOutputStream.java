@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ public class ByteCountingOutputStream extends OutputStream {
     public ByteCountingOutputStream(OutputStream out) {
         os = out;
     }
-    
+
     // Delegate all methods to the underlying stream
     public long getCount() {
         return count;

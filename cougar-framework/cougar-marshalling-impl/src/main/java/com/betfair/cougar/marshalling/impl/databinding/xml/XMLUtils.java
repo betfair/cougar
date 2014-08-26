@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -110,8 +110,8 @@ public class XMLUtils {
         }
         return null;
     }
-    
-    
+
+
     private static final class SchemaOutputResolverImpl extends SchemaOutputResolver {
         private final Result result;
 
@@ -126,7 +126,7 @@ public class XMLUtils {
             result.setSystemId(schemaFile.toURI().toString());
             return result;
         }
-    }    
+    }
 
     private static final class ResultImplementation extends StreamResult implements Result {
         private String systemId;
@@ -140,6 +140,6 @@ public class XMLUtils {
         public void setSystemId(String systemId) {
             this.systemId = systemId;
         }
-    }    
-    
+    }
+
 }

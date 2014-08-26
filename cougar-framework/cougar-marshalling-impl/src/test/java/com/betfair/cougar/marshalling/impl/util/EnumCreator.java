@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ private String[] enums;
     InstructionList il = new InstructionList();
     MethodGen method = new MethodGen(ACC_STATIC, Type.VOID, Type.NO_ARGS, new String[] {  }, "<clinit>", enumType, il, _cp);
 
-    
+
     int code = 0;
     for (String anEnum : enums) {
         InstructionHandle ih_0 = il.append(_factory.createNew(enumType));
@@ -87,8 +87,8 @@ private String[] enums;
 	    il.append(_factory.createFieldAccess(enumType, anEnum, new ObjectType(enumType), Constants.GETSTATIC));
 	    il.append(InstructionConstants.AASTORE);
     }
-    
-    
+
+
     il.append(_factory.createFieldAccess(enumType, "ENUM$VALUES", new ArrayType(new ObjectType(enumType), 1), Constants.PUTSTATIC));
     il.append(_factory.createReturn(Type.VOID));
     method.setMaxStack();

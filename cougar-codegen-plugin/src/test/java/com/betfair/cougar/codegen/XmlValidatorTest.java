@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,13 +40,13 @@ public class XmlValidatorTest {
 	public void setUp() {
     	resolver = Files.initResolver(mock(Log.class));
 	}
-	
+
     @Test
     public void testValidFile() {
-        
+
         File xmlFile = Files.fromResource("SomeService.xml");
         Document xml = XmlUtil.parse(xmlFile, resolver);
-        
+
         new XmlValidator(resolver).validate(xml);
     }
 
@@ -58,10 +58,10 @@ public class XmlValidatorTest {
 
         new XmlValidator(resolver).validate(xml);
     }
-    
+
     @Test
     public void testInvalidFile() {
-    
+
         File xmlFile = Files.fromResource("BrokenService.xml");
         Document xml = XmlUtil.parse(xmlFile, resolver);
         try {
@@ -69,7 +69,7 @@ public class XmlValidatorTest {
             fail("Should have thrown an exception");
         }
         catch (Exception e) {
-            assertTrue("Should have validation error about invalid element, instead got: " + e, 
+            assertTrue("Should have validation error about invalid element, instead got: " + e,
                             e.getMessage().contains("AnInvalidElement"));
         }
     }

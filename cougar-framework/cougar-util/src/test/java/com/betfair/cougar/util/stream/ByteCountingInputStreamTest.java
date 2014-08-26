@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,10 @@ import junit.framework.TestCase;
 
 public class ByteCountingInputStreamTest extends TestCase {
     private byte[] source = "ABCDESGHIJKLMNOPQRSTUVWXYZ".getBytes();
-    
+
     public void testReadSingleCount() throws Exception {
         ByteCountingInputStream bcis = new ByteCountingInputStream(new ByteArrayInputStream(source));
-        
+
         int bytesRead = 0;
         while (bcis.read() > 0) {
             assertEquals(++bytesRead, bcis.getCount());
@@ -35,7 +35,7 @@ public class ByteCountingInputStreamTest extends TestCase {
 
     public void testReadFullArray() throws Exception {
         ByteCountingInputStream bcis = new ByteCountingInputStream(new ByteArrayInputStream(source));
-        
+
         int bytesRead = 0;
         byte[] dst = new byte[8];
         int c = 0;
@@ -45,10 +45,10 @@ public class ByteCountingInputStreamTest extends TestCase {
         }
         assertEquals(source.length, bcis.getCount());
     }
-    
+
     public void testReadPartArray() throws Exception {
         ByteCountingInputStream bcis = new ByteCountingInputStream(new ByteArrayInputStream(source));
-        
+
         int bytesRead = 0;
         byte[] dst = new byte[8];
         int c = 0;
@@ -61,7 +61,7 @@ public class ByteCountingInputStreamTest extends TestCase {
 
     public void testSkipPart() throws Exception {
         ByteCountingInputStream bcis = new ByteCountingInputStream(new ByteArrayInputStream(source));
-        
+
         int bytesRead = 0;
         byte[] dst = new byte[8];
         int c = 0;

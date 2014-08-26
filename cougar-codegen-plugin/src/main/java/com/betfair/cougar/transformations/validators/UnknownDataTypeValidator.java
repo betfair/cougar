@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import org.w3c.dom.NodeList;
 
 public class UnknownDataTypeValidator extends AbstractValidator{
 	private Set<String> dataTypesDefined = new HashSet<String>();
-	
+
 	public UnknownDataTypeValidator() {
 		// Add common data types
 		dataTypesDefined.add("bool");
@@ -94,17 +94,17 @@ public class UnknownDataTypeValidator extends AbstractValidator{
 
 	}
 
-	
+
 	private void validateDataType(String type, Node n)  throws ValidationException {
     	if (!dataTypesDefined.contains(type)) {
     		throw new ValidationException("Data type "+type+" is not valid in this IDL", n);
     	}
 	}
-	
+
 	private boolean checkComposite(String type, Node n)  throws ValidationException {
 		String[] composites = getComposites(type);
 			for (String composite: composites) {
-				validateDataType(composite, n);	
+				validateDataType(composite, n);
 			}
         return composites.length>0;
 	}

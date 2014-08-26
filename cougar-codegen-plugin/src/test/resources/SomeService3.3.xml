@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
-  ~ Copyright 2013, The Sporting Exchange Limited
+  ~ Copyright 2014, The Sporting Exchange Limited
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -100,7 +100,7 @@
             </exceptions>
         </parameters>
     </operation>
-    
+
     <operation name="testMapsNameClash" since="1.0.0">
         <description>
         </description>
@@ -120,8 +120,8 @@
             </exceptions>
         </parameters>
     </operation>
-    
-    
+
+
     <operation name="testSimpleAsyncGet" since="1.0.0">
         <description>test of an idempotent service. Takes a single arg and echos it back</description>
         <parameters>
@@ -204,7 +204,7 @@
             </exceptions>
         </parameters>
     </operation>
-    
+
     <operation name="testDateRetrieval" since="1.0.0">
         <description>Return some date information</description>
         <parameters>
@@ -223,8 +223,8 @@
             </exceptions>
         </parameters>
     </operation>
-    
-    
+
+
     <operation name="testComplexMutator" since="1.0.0">
         <description>test of a service that takes a complex object and returns a complex object</description>
         <parameters>
@@ -243,10 +243,10 @@
             </exceptions>
         </parameters>
     </operation>
- 
+
     <operation name="testLargePost" since="1.0.0">
         <description>
-            Takes a list of complex objects and returns the number of values in the list. 
+            Takes a list of complex objects and returns the number of values in the list.
             Used to test input parsing speed.
         </description>
         <parameters>
@@ -290,14 +290,14 @@
             </exceptions>
         </parameters>
     </operation>
-    
+
     <operation name="testSecureService" since="1.0.0">
         <description>
             a service with a security attribute - cannot be called without an Authorisation token.
             Models placing a bet on an Australian exchange
             use CoUGARAUS as the token you should have permission to call the service
             use CoUGARUK as the token and the call will be rejected
-            no token and the call will be rejected 
+            no token and the call will be rejected
         </description>
         <parameters>
             <request>
@@ -396,10 +396,10 @@
                   </exceptions>
             </parameters>
       </operation>
-    
+
 
 <!--
-          
+
     *** START INCLUDE
 -->
 <!--
@@ -437,7 +437,7 @@
             <description>The dates passed as strings</description>
         </parameter>
     </dataType>
-    
+
     <dataType name="LargeRequest">
         <description>A list of complex objects from a request</description>
         <parameter name="size" type="i32" mandatory="false">
@@ -459,7 +459,7 @@
         </parameter>
     </dataType>
 
-    
+
     <dataType name="MapDataType">
         <description>A map of simple types to complex objects from a request</description>
         <parameter name="cache" type="map(i32,ComplexObject)" mandatory="true">
@@ -504,12 +504,12 @@
         <parameter name="enums" type="set(SimpleValidValue)">
             <description>A simple value</description>
         </parameter>
-    </dataType> 
-   
+    </dataType>
+
 
     *** END INCLUDE
 -->
-     
+
       <dataType name="NoParamsResponse">
             <description>Status info</description>
             <parameter name="version" type="string">
@@ -519,7 +519,7 @@
                   <description>the application status</description>
             </parameter>
       </dataType>
-    
+
 
     <dataType name="SimpleResponse">
         <description>The simplest response type possible</description>
@@ -527,7 +527,7 @@
             <description>message</description>
         </parameter>
     </dataType>
-        
+
     <dataType name="SimpleResponseMap">
         <description>A map of simple types to complex objects from a request</description>
         <parameter name="cache" type="map(string,string)" mandatory="true">
@@ -536,9 +536,9 @@
     </dataType>
 
     <exceptionType name="SimpleException" prefix="SEX">
-        <!-- 
+        <!--
             Cougar currently requires that all Exceptions have a first parameter
-            that is defined by its valid values, all defined by an incrementing id 
+            that is defined by its valid values, all defined by an incrementing id
         -->
         <description>This exception is thrown when an operation fails</description>
         <parameter name="errorCode" type="string">
@@ -560,12 +560,12 @@
         </parameter>
         <parameter name="reason" type="string">
             <description>A human readable description of this error</description>
-        </parameter>        
+        </parameter>
     </exceptionType>
     <exceptionType name="WotsitException" prefix="WEX">
-        <!-- 
+        <!--
             Cougar currently requires that all Exceptions have a first parameter
-            that is defined by its valid values, all defined by an incrementing id 
+            that is defined by its valid values, all defined by an incrementing id
         -->
         <description>This exception might be thrown when an operation fails</description>
         <parameter name="errorCode" type="string">
@@ -594,12 +594,12 @@
             </validValues>
         </parameter>
     </exceptionType>
-    
+
 <!--
         <xi:include href="baseline-simpletypes.inc" />
     *** START INCLUDE
 
-     
+
 
     <simpleType name="SimpleDouble" type="double"/>
     <simpleType name="SimpleString" type="string"/>
@@ -617,9 +617,9 @@
                 <description>Stoatally different</description>
             </value>
         </validValues>
-    </simpleType>   
+    </simpleType>
 
-    <xi:include href="SimpleTypes.inc" />    
+    <xi:include href="SimpleTypes.inc" />
     <xi:include href="DataTypes.inc" />
-        
+
 </interface>

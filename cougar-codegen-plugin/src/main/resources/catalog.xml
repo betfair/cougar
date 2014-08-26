@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2013, The Sporting Exchange Limited
+  ~ Copyright 2014, The Sporting Exchange Limited
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@
 		systemId="http://www.betfair.com/BSIDL/4.0.xsd"
 		uri="bsidl/v4_0/Interface.xsd" />
 
-	<system 
-		systemId="http://www.w3.org/2001/03/xml.xsd" 
+	<system
+		systemId="http://www.w3.org/2001/03/xml.xsd"
 		uri="w3/xml.xsd" />
 
 </catalog>

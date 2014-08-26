@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MediaTypeHeaderProvider implements HeaderDelegate<MediaType> {
 	private Map<String, MediaType> cacheParse =  new ConcurrentHashMap<String, MediaType>();
 	private Map<MediaType, String> cacheFormat =  new ConcurrentHashMap<MediaType, String>();
-	
+
     public MediaType fromString(String mType) {
     	mType = mType.trim().toLowerCase();
     	MediaType mediaType = cacheParse.get(mType);
@@ -43,8 +43,8 @@ public class MediaTypeHeaderProvider implements HeaderDelegate<MediaType> {
 		        }
 		        type = noParamPart.substring(0, i).trim();
 		        subtype = noParamPart.substring(i + 1, noParamPart.length()).trim();
-	        }	
-	
+	        }
+
 	        Map<String, String> parameters = Collections.emptyMap();
 	        if (paramsStart != -1) {
 	            parameters = new HashMap<String, String>();
@@ -57,7 +57,7 @@ public class MediaTypeHeaderProvider implements HeaderDelegate<MediaType> {
 	                }
 	                parameters.put(token.substring(0, equalSign).trim(), token.substring(equalSign + 1).trim());
 	            }
-	
+
 	        }
 	        mediaType = new MediaType(type, subtype, parameters);
 	        cacheParse.put(mType, mediaType);
@@ -70,12 +70,12 @@ public class MediaTypeHeaderProvider implements HeaderDelegate<MediaType> {
     	if (mType == null) {
 	        StringBuilder sb = new StringBuilder();
 	        sb.append(type.getType()).append('/').append(type.getSubtype());
-	
+
 	        Map<String, String> params = type.getParameters();
 	        for (Map.Entry<String, String> entry : params.entrySet()) {
 	            sb.append(';').append(entry.getKey()).append('=').append(entry.getValue());
 	        }
-	
+
 	        mType = sb.toString().toLowerCase();
 	        cacheFormat.put(type, mType);
     	}

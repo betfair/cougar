@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,8 @@ import com.betfair.cougar.api.Result;
 public class WrappedSetTest extends TestCase {
 	WrappedSet<String> ws = new WrappedSet<String>(new HashSet<String>());
 	Set<String> anotherSet = new HashSet<String>();
-	
-	
+
+
 	@Override
 	protected void setUp() throws Exception {
 		anotherSet.add("foo");
@@ -39,10 +39,10 @@ public class WrappedSetTest extends TestCase {
 		assertTrue(ws.add("foo"));
 		assertTrue(ws.contains("foo"));
 		assertFalse(ws.add("foo"));
-		
+
 		assertFalse(ws.containsAll(anotherSet));
 		assertTrue(ws.addAll(anotherSet));
-		
+
 		assertFalse(ws.isEmpty());
 		ws.clear();
 		assertTrue(ws.isEmpty());
@@ -60,18 +60,18 @@ public class WrappedSetTest extends TestCase {
 		ws.retainAll(anotherSet);
 		assertFalse(ws.contains("pie"));
 		assertEquals(2, ws.size());
-		
+
 		Iterator<String> it = ws.iterator();
 		assertTrue(it.hasNext());
 		it.next();
 		assertTrue(it.hasNext());
 		it.next();
 		assertFalse(it.hasNext());
-		
+
 		Object[] o = ws.toArray();
 		String[] s = ws.toArray(new String[ws.size()]);
 		assertEquals(o.length, s.length);
-		
+
 		for (int i = 0; i < s.length; i++) {
 			assertTrue(o[i] == s[i]);
 		}

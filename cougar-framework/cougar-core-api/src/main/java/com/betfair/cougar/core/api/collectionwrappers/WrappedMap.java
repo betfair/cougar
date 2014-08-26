@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import com.betfair.cougar.api.Result;
  */
 public class WrappedMap<K,V> implements Map<K,V>, Result{
     private final Map<K,V> underlyingMap;
-    
+
     public WrappedMap(Map<K,V> toBeWrapped) {
         underlyingMap = toBeWrapped;
     }

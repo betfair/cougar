@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,13 +73,13 @@ public class EventTransportIdentityImpl implements EventTransportIdentity {
     public Credential getCredential() {
         return null;
     }
-    
+
     public String toString() {
         StringBuffer sb = new StringBuffer("EventTransportIdentityImpl_");
-        
+
         sb.append("transportIdentifier=").append(transportIdentifier).append("|");
         sb.append("eventTransportName=").append(eventTransportName);
-        
+
         return sb.toString();
     }
 }

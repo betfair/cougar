@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,11 +27,11 @@ public class FaultController {
 
 	private FaultController() {
 	}
-	
+
 	public static FaultController getInstance() {
 		return instance;
 	}
-	
+
 	@ManagedAttribute
 	public boolean isDetailedFaults() {
 		return detailedFaults;
@@ -43,5 +43,5 @@ public class FaultController {
 	}
 
 
-	
+
 }

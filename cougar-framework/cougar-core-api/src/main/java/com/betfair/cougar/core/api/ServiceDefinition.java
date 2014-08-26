@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,21 +29,21 @@ import com.betfair.cougar.core.api.ev.OperationKey;
  *
  */
 public abstract class ServiceDefinition {
-		
+
 	private final Map<OperationKey, OperationDefinition> operationDefinitionMap;
-	
+
 	public ServiceDefinition() {
 		operationDefinitionMap = new HashMap<OperationKey, OperationDefinition>();
 	}
-	
+
 	protected void init() {
 		for (OperationDefinition def : getOperationDefinitions()) {
 			operationDefinitionMap.put(def.getOperationKey(), def);
 		}
 	}
-	
+
 	public abstract String getServiceName();
-	
+
 	public abstract ServiceVersion getServiceVersion();
 
 	public abstract OperationDefinition [] getOperationDefinitions();
@@ -58,10 +58,10 @@ public abstract class ServiceDefinition {
         }
         return filteredOpList.toArray(new OperationDefinition[0]);
     }
-	
+
 	public final OperationDefinition getOperationDefinition(OperationKey key) {
 		return operationDefinitionMap.get(key);
 	}
 
-	
+
 }

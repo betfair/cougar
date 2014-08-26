@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,26 +35,26 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception {
-	    
+
 		Transformations transform = new CougarTransformations();
 		IDLReader reader = new IDLReader();
 		Log log = new SystemStreamLog();
-		
+
 		File idd = new File("src\\main\\resources\\BaselineService.xml");
 		InterceptingResolver resolver = new InterceptingResolver();
-		
+
 		Document iddDoc = XmlUtil.parse(idd, resolver);
-		
+
 		File ext = new File("src\\main\\resources\\BaselineService-Extensions.xml");
 		Document extDoc = null;
 		if (ext.exists()) {
 			extDoc = XmlUtil.parse(ext, resolver);
 		}
-		
-		reader.init(iddDoc, extDoc, "BaselineService", 
-						"com.betfair.baseline", ".", "/target/generated-sources", log, 
+
+		reader.init(iddDoc, extDoc, "BaselineService",
+						"com.betfair.baseline", ".", "/target/generated-sources", log,
 						new Service().getOutputDir(), true, true);
-		
+
         // First let's mangle the document if need be.
         if (transform.getManglers() != null) {
         	log.debug("mangling IDL using "+transform.getManglers().size()+" pre validations");
@@ -64,15 +64,15 @@ public class Main {
             }
     		log.debug(reader.serialize());
         }
-       	
+
 		for (Validator v: transform.getPreValidations()) {
 			reader.validate(v);
 		}
 		log.debug(reader.serialize());
 		reader.runMerge(transform.getTransformations());
-		
+
 		reader.writeResult();
-		
+
 	}
 
 }

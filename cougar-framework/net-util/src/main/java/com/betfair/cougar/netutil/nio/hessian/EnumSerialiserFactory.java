@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,13 +37,13 @@ public class EnumSerialiserFactory extends AbstractSerializerFactory {
 
     @Override
 	public Deserializer getDeserializer(Class cls) throws HessianProtocolException {
-		
+
 		Deserializer deserializer = null;
         if (cls != null && TranscribableEnum.class.isAssignableFrom(cls)) {
             deserializer = new TranscribableEnumDeserializer(cls, transcriptionParams);
         }
-		
-			
+
+
 		return deserializer;
 	}
 

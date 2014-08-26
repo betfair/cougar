@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright 2013, The Sporting Exchange Limited
+  ~ Copyright 2014, The Sporting Exchange Limited
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@
 			</plugin>
 		</plugins>
 	</reporting>
-	
+
 	<modules>
 		<module>cougar-api</module>
 		<module>cougar-core-api</module>
@@ -65,7 +65,7 @@
         <module>cougar-marshalling-impl</module>
         <module>cougar-standalone-ev</module>
 		<module>cougar-test-mocks</module>
-		<module>cougar-transport-api</module>        
+		<module>cougar-transport-api</module>
 		<module>cougar-transport-impl</module>
 		<module>cougar-util</module>
         <module>net-util</module>
@@ -74,5 +74,5 @@
         <module>jms-transport</module>
         <module>activemq-transport</module>
 	</modules>
-	
+
 </project>

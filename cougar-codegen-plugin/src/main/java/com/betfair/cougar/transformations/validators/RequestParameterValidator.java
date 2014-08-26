@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ public class RequestParameterValidator extends AbstractValidator {
 	@Override
 	public void validate(Node node) throws ValidationException {
 		Set<String> namesUsed = new HashSet<String>();
-		
+
 		List<Node> values = getChildrenWithName(getName(), node, "parameter");
 		for (Node val: values) {
 			String name = getAttribute(getName(), val, "name");
@@ -70,7 +70,7 @@ public class RequestParameterValidator extends AbstractValidator {
 
 		}
 	}
-	
+
 	private void validateExtensions(Node node) throws ValidationException {
 		getAndValidateAttribute(getName(), node, "name");
 		String type = getAndValidateAttribute(getName(), node, "type");
@@ -94,7 +94,7 @@ public class RequestParameterValidator extends AbstractValidator {
 		if (style == null || style.length() == 0) {
 			throw new ValidationException(getName() + " - style not defined", node);
 		}
-		
+
 		if (style.equals("body")) {
             // body style params must be in a POST method
             try {

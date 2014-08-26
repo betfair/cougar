@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 /**
- * 
+ *
  */
 package com.betfair.cougar.core.api.transcription;
 
@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class ParameterType {
-	
+
 	public enum Type {
 		INT(false),
 		DOUBLE(false),
@@ -42,7 +42,7 @@ public class ParameterType {
 		LIST(true),
 		OBJECT(false),
 		ENUM(false);
-		
+
 		private boolean collection;
 		Type(boolean collection) {
 			this.collection = collection;
@@ -51,11 +51,11 @@ public class ParameterType {
 			return collection;
 		}
 	}
-	
+
 	private final Type type;
 	private final Class implementationClass;
 	private final ParameterType [] componentTypes;
-	
+
 	public static Type getType(final Class clazz) {
 		if (Map.class.isAssignableFrom(clazz)) {
 			return Type.MAP;
@@ -64,42 +64,42 @@ public class ParameterType {
 		} else if (Set.class.isAssignableFrom(clazz)) {
 			return Type.SET;
 		} else if (clazz==Integer.class || clazz==int.class) {
-			return Type.INT; 
+			return Type.INT;
 		} else if (clazz==Double.class || clazz==double.class) {
-			return Type.DOUBLE; 
+			return Type.DOUBLE;
 		} else if (clazz==String.class) {
-			return Type.STRING; 
+			return Type.STRING;
 		} else if (clazz==Boolean.class || clazz==boolean.class) {
-			return Type.BOOLEAN; 
+			return Type.BOOLEAN;
 		} else if (clazz==Long.class || clazz==long.class) {
-			return Type.LONG; 
+			return Type.LONG;
 		} else if (clazz==Date.class) {
-			return Type.DATE; 
+			return Type.DATE;
 		} else if (clazz==Float.class || clazz==float.class) {
-			return Type.FLOAT; 
+			return Type.FLOAT;
 		} else if (clazz==Byte.class || clazz==byte.class) {
-			return Type.BYTE; 
+			return Type.BYTE;
 		} else if (clazz.isEnum() || clazz==Enum.class) {
-			return Type.ENUM; 
+			return Type.ENUM;
 		} else {
 			return Type.OBJECT;
 		}
 	}
-	
+
 	public static ParameterType create(final Class clazz, final Class... generics) {
-		
+
 		ParameterType [] subTypes = null;
-		
+
 		if (generics!=null) {
 			subTypes = new ParameterType[generics.length];
 			for (int i=0;i<generics.length;i++) {
 				subTypes[i] = new ParameterType(generics[i], null);
 			}
 		}
-		
+
 		return new ParameterType(clazz, subTypes);
 	}
-	
+
 	public ParameterType(final Class clazz, final ParameterType[] componentTypes) {//NOSONAR
 		this.type = getType(clazz);
 		this.implementationClass = clazz;
@@ -114,7 +114,7 @@ public class ParameterType {
 			this.componentTypes = null;
 		}
 	}
-	
+
 	public Type getType() {
 		return type;
 	}
@@ -133,19 +133,19 @@ public class ParameterType {
 		public T transformSetType(T elemType);
 		public T transformType(Type type, Class implementationClass);
 	}
-	
+
 	public <T> T transform(TransformingVisitor<T> visitor) {
 		switch (getType()) {
-		case SET: 
+		case SET:
 			return visitor.transformSetType(getComponentTypes()[0].transform(visitor));
-		case LIST: 
+		case LIST:
 			return visitor.transformListType(getComponentTypes()[0].transform(visitor));
-		case MAP: 
+		case MAP:
 			return visitor.transformMapType(getComponentTypes()[0].transform(visitor), getComponentTypes()[1].transform(visitor));
 		default:
 			return visitor.transformType(getType(), getImplementationClass());
 		}
 	}
-	
-	
+
+
 }

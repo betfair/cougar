@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,12 @@ import com.betfair.cougar.core.api.ServiceVersion;
 import com.betfair.cougar.core.api.ev.OperationKey;
 
 public class OperationLogEvent implements LoggableEvent {
-	
+
 	private final String logName;
 	private final ServiceVersion version;
 	private final String operation;
 	private final RequestUUID uuid;
-	
+
 	public OperationLogEvent(String logName, RequestUUID uuid, OperationKey key) {
 		this.logName = logName;
 
@@ -42,7 +42,7 @@ public class OperationLogEvent implements LoggableEvent {
 	public Object[] getFieldsToLog() {
 		return new Object[] {
 				uuid,
-				version, 
+				version,
 				operation
 			};
 	}

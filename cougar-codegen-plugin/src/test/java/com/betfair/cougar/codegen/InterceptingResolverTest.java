@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import com.betfair.cougar.codegen.resolver.InterceptingResolver;
 /**
  * Unit test {@link InterceptingResolver}.
  * <p>
- * NOTE this class tests only some corner case(s); the resolver itself is also tested indirectly via 
+ * NOTE this class tests only some corner case(s); the resolver itself is also tested indirectly via
  * other classes which rely on it.
  */
 public class InterceptingResolverTest {
@@ -40,10 +40,10 @@ public class InterceptingResolverTest {
      */
     @Test
     public void testNonexistentCatalogFailsExplicitly() {
-    
+
     	File badCatalog = new File("nonexistentcatalog.file");
     	assertFalse("This file shouldn't exist", badCatalog.exists());
-    	
+
     	try {
         	new InterceptingResolver(null, null, new String[] { badCatalog.getAbsolutePath() });
         	fail("Should have thrown an exception");

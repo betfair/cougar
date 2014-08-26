@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ public class ContainerAwareExecutionVenueTest {
         when(statusAggregator.getStatus()).thenReturn(Status.OK);
         when(monitorRegistry.getStatusAggregator()).thenReturn(statusAggregator);
 	}
-	
+
 	@Test
 	public void testOnApplicationEvent() {
 		//Set up dependencies
@@ -64,19 +64,19 @@ public class ContainerAwareExecutionVenueTest {
 		when(appContext.getBean(JMXControl.BEAN_JMX_CONTROL)).thenReturn(jmxControl);
 		setupExportables();
 		setupGateListeners();
-		
+
 		//raise the event
 		ev.onApplicationEvent(new ContextRefreshedEvent(appContext));
-		
+
 		//Verify that all exportables were exported
 		verify(exportable1).export(jmxControl);
 		verify(exportable2).export(jmxControl);
-		
+
 		//Verify that all registered gate listeners have been notified
 		verify(gateListener1).onCougarStart();
 		verify(gateListener2).onCougarStart();
 	}
-	
+
 	private void setupGateListeners() {
 		gateListener1 = mock(GateListener.class);
 		gateListener2 = mock(GateListener.class);
@@ -85,12 +85,12 @@ public class ContainerAwareExecutionVenueTest {
 		ev.registerStartingListener(gateListener1);
 		ev.registerStartingListener(gateListener2);
 	}
-	
+
 	private void setupExportables() {
 		exportable1 = mock(Exportable.class);
 		exportable2 = mock(Exportable.class);
 		ev.registerExportable(exportable1);
 		ev.registerExportable(exportable2);
 	}
-	
+
 }

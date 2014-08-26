@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ public class ByteArrayClassLoader extends ClassLoader {
 	public ByteArrayClassLoader(String className, byte[] classBytes) {
 		  this(ByteArrayClassLoader.class.getClassLoader(), className, classBytes);
 	}
-	
+
 	public ByteArrayClassLoader(ClassLoader parent, String className, byte[] classBytes) {
 		super(parent);
 		this.className = className;
@@ -55,6 +55,6 @@ public class ByteArrayClassLoader extends ClassLoader {
 		}
 		return super.loadClass(name, resolve);
 	}
-	  
-}	
+
+}
 

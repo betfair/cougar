@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ public class NameClashValidator extends AbstractValidator{
 	private Set<String> classNamesUsed = new HashSet<String>();
 
     private static final String NAME="name";
-	
+
 	@Override
 	public boolean nodeMustExist() {
 		return true;
@@ -74,9 +74,9 @@ public class NameClashValidator extends AbstractValidator{
 			String name = getAttribute(getName(), ex,NAME);
 			addName(ex, name);
 		}
-		
+
 	}
-	
+
 	private void addName(Node node, String className) throws ValidationException {
 		if (!classNamesUsed.add(className)) {
 			throw new ValidationException("The class name "+className+" is already used", node);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 /**
- * 
+ *
  */
 package com.betfair.cougar.transport.api.protocol.http.rescript;
 
@@ -24,17 +24,17 @@ package com.betfair.cougar.transport.api.protocol.http.rescript;
  *
  */
 public class RescriptParamBindingDescriptor {
-	
+
 	public enum ParamSource {
 		HEADER,
 		QUERY,
 		COOKIE,
 		BODY
 	}
-	
+
 	private final String name;
 	private final ParamSource source;
-	
+
 	/**
 	 * @param name name of the parameter
 	 * @param source specifies the source of the parameter value
@@ -51,6 +51,6 @@ public class RescriptParamBindingDescriptor {
 	public ParamSource getSource() {
 		return source;
 	}
-	
+
 }
 

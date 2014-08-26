@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import com.betfair.tornjak.monitor.StatusChangeEvent;
 import com.betfair.tornjak.monitor.StatusChangeListener;
 
 /**
- * Actively monitors the state of the host application to inform interested parties (via a configurable strategy) of the host's health 
+ * Actively monitors the state of the host application to inform interested parties (via a configurable strategy) of the host's health
  * Can be configured to either actively or passively monitor the application health.  If passive then subscribes to updates from StatusAggregators, this assumes
  * an external party (such as netscalers) are causing status updates.  If active monitoring then a thread is started to periodically poll application health.
  * </p>
@@ -48,8 +48,8 @@ import com.betfair.tornjak.monitor.StatusChangeListener;
  * passive monitoring, CountingHealthMonitorStrategy suites active monitoring.
  */
 public class ApplicationHealthMonitor  implements ServiceAware {
-	
-	private static final Logger log = LoggerFactory.getLogger(ApplicationHealthMonitor.class); 				
+
+	private static final Logger log = LoggerFactory.getLogger(ApplicationHealthMonitor.class);
 
 	private final long 					monitorInterval;
 	private final HealthMonitorStrategy strategy;
@@ -63,21 +63,21 @@ public class ApplicationHealthMonitor  implements ServiceAware {
         this.monitorInterval = monitorInterval;
         this.strategy = strategy;
         this.strategy.registerListener(new HealthMonitorStrategyListener() {
-			
+
 			@Override
 			public void onUpdate(boolean isHealthy) {
 				if (log.isDebugEnabled()) {
 					log.debug("updating health state to " + isHealthy);
 				}
 				nioServer.setHealthState(isHealthy);
-				
+
 			}
 		});
         this.monitorRegistry = monitorRegistry;
 
         log.info("socket health monitor using strategy " + strategy.getClass().getName());
     }
-    
+
 	@Override
 	public void setServices(Set<Service> services) {
 		if (monitorInterval > 0) {
@@ -86,9 +86,9 @@ public class ApplicationHealthMonitor  implements ServiceAware {
 		else {
 			startPassiveMonitoring(monitorRegistry.getStatusAggregator());
 		}
-		
+
 	}
-    
+
 
 	/**
 	 * Add listeners to all status aggregators to be advised when status of the aggregator changes
@@ -98,7 +98,7 @@ public class ApplicationHealthMonitor  implements ServiceAware {
 	 * advise strategy only if the overall status has changed
 	 */
     private void startPassiveMonitoring(final StatusAggregator aggregator) {
-    	
+
     	log.info("Starting application health monitoring in PASSIVE mode");
 
         final AtomicBoolean health = new AtomicBoolean();
@@ -130,11 +130,11 @@ public class ApplicationHealthMonitor  implements ServiceAware {
      * Calculate a new status where newStatus = healthy if all aggregator's status = healthy
      */
 	private void startActiveMonitoring(final StatusAggregator aggregator) {
-		
+
     	log.info("Starting application health monitoring in ACTIVE mode");
-    	
+
     	ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
-			
+
 			@Override
 			public Thread newThread(Runnable r) {
 				Thread t = new Thread(r,"SocketTransport App Health Monitor");
@@ -142,9 +142,9 @@ public class ApplicationHealthMonitor  implements ServiceAware {
 				return t;
 			}
 		});
-    	
+
     	executor.scheduleWithFixedDelay(new Runnable() {
-			
+
 			@Override
 			public void run() {
                 try {

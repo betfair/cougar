@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ public class EventLogDefinition {
 	private String logName;
 	private EventLoggingRegistry registry;
 	private boolean abstractDefinition;
-	
-	
+
+
 	public void setHandler(AbstractLogHandler handler) {
 		this.handler = handler;
 	}
@@ -47,7 +47,7 @@ public class EventLogDefinition {
 	public String getLogName() {
 		return logName;
 	}
-	
+
 	public boolean isAbstract() {
 		return abstractDefinition;
 	}
@@ -63,7 +63,7 @@ public class EventLogDefinition {
 		if (!isAbstract()) {
 			throw new IllegalArgumentException("Cannot create concrete version of non abstract logger");
 		}
-		
+
 		try {
 			EventLogDefinition result = new EventLogDefinition();
             String concreteLogName = deriveConcreteLogName(namespace, serviceName);

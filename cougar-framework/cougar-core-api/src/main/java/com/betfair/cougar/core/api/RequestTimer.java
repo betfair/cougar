@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ public class RequestTimer {
 	long end;
 	Date endTime;
 	boolean complete;
-	
+
 	public void requestComplete() {
 		if (!complete) {
 			end=System.nanoTime();
@@ -41,7 +41,7 @@ public class RequestTimer {
 	public long  getReceivedNano() {
 		return start;
 	}
-	
+
 	public Date getResponseTime() {
 		checkComplete();
 		return endTime;
@@ -51,7 +51,7 @@ public class RequestTimer {
 		checkComplete();
 		return end-start;
 	}
-	
+
 	private void checkComplete() {
 		if (!complete) {
 			throw new IllegalStateException("Request timer has not been flagged as complete");

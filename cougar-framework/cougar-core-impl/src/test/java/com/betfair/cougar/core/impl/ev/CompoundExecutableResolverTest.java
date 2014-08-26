@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public class CompoundExecutableResolverTest {
 		public void execute(ExecutionContext ctx, OperationKey key,
 				Object[] args, ExecutionObserver observer,
 				ExecutionVenue executionVenue, TimeConstraints timeConstraints) {
-			
+
 		}};
 	private Executable ex2 = new Executable() {
 
@@ -50,7 +50,7 @@ public class CompoundExecutableResolverTest {
 		public void execute(ExecutionContext ctx, OperationKey key,
 				Object[] args, ExecutionObserver observer,
 				ExecutionVenue executionVenue, TimeConstraints timeConstraints) {
-			
+
 		}};
 
 	@Test
@@ -58,25 +58,25 @@ public class CompoundExecutableResolverTest {
 		ExecutableResolver simpleResolver1 = mock(ExecutableResolver.class);
 		ExecutableResolver simpleResolver2 = mock(ExecutableResolver.class);
 		CompoundExecutableResolverImpl compoundResolver = new CompoundExecutableResolverImpl();
-		
+
 		//Set up the resolver behaviour
 		when(simpleResolver1.resolveExecutable(op1Key, ev)).thenReturn(ex1);
 		when(simpleResolver2.resolveExecutable(op2Key, ev)).thenReturn(ex2);
-		
+
 		//register the resolvers
 		compoundResolver.registerExecutableResolver(simpleResolver1);
 		compoundResolver.registerExecutableResolver(simpleResolver2);
-		
+
 		//assert that we get the expected response from resolver 1
 		Executable actualEx = compoundResolver.resolveExecutable(op1Key, ev);
 		assertNotNull(actualEx);
 		assertEquals(ex1, actualEx);
-		
+
 		//assert that we get the expected response from resolver 2
 		actualEx = compoundResolver.resolveExecutable(op2Key, ev);
 		assertNotNull(actualEx);
 		assertEquals(ex2, actualEx);
-		
+
 		//assert that we get a null response for an unregistered key
 		actualEx = compoundResolver.resolveExecutable(op3Key, ev);
 		assertNull(actualEx);

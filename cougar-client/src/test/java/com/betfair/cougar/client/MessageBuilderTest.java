@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,9 +35,9 @@ public class MessageBuilderTest {
 	MessageBuilder mb;
 	Parameter[] mockParameters;
 	Parameter mockParameter;
-	RescriptParamBindingDescriptor mockParamBindingDescriptor; 
+	RescriptParamBindingDescriptor mockParamBindingDescriptor;
 	RescriptOperationBindingDescriptor mockOperationBinding;
-	
+
 	@Before
 	public void setup() {
 		mb = new MessageBuilder();
@@ -52,10 +52,10 @@ public class MessageBuilderTest {
 
 	@Test
 	public void testQueryParmConstruction() {
-				
+
 		when(mockParamBindingDescriptor.getSource()).thenReturn(ParamSource.QUERY);
 		when(mockOperationBinding.getHttpParamBindingDescriptor("PARAMETER")).thenReturn(mockParamBindingDescriptor);
-		
+
 		Message message = mb.build(new Object[] {"test"}, mockParameters, mockOperationBinding);
 		assertNotNull(message);
 		assertEquals(0, message.getHeaderMap().size());
@@ -76,12 +76,12 @@ public class MessageBuilderTest {
         assertEquals(0, message.getQueryParmMap().size());
     }
 
-	
+
 	@Test
 	public void testBodyConstruction() {
 		when(mockParamBindingDescriptor.getSource()).thenReturn(ParamSource.BODY);
 		when(mockOperationBinding.getHttpParamBindingDescriptor("PARAMETER")).thenReturn(mockParamBindingDescriptor);
-		
+
 		Message message = mb.build(new Object[] {"test"}, mockParameters, mockOperationBinding);
 		assertNotNull(message);
 		assertEquals(0, message.getHeaderMap().size());
@@ -103,13 +103,13 @@ public class MessageBuilderTest {
         assertEquals(null, message.getRequestBodyMap().entrySet().iterator().next().getValue());
     }
 
-	
+
 	@Test
 	public void testHeaderConstruction() {
 
 		when(mockParamBindingDescriptor.getSource()).thenReturn(ParamSource.HEADER);
 		when(mockOperationBinding.getHttpParamBindingDescriptor("PARAMETER")).thenReturn(mockParamBindingDescriptor);
-		
+
 		Message message = mb.build(new Object[] {"test"}, mockParameters, mockOperationBinding);
 		assertNotNull(message);
 		assertEquals(1, message.getHeaderMap().size());
@@ -130,21 +130,21 @@ public class MessageBuilderTest {
         assertEquals(0, message.getQueryParmMap().size());
     }
 
-	
+
 	@Test
 	public void testMandatoryCheck() {
 		when(mockParameter.isMandatory()).thenReturn(true);
 
 		when(mockParamBindingDescriptor.getSource()).thenReturn(ParamSource.HEADER);
 		when(mockOperationBinding.getHttpParamBindingDescriptor("PARAMETER")).thenReturn(mockParamBindingDescriptor);
-		
+
 		try {
 			mb.build(new Object[] {null}, mockParameters, mockOperationBinding);
 			fail();
-			
+
 		} catch (CougarValidationException a) {
 			//pass
 		}
 	}
-	
+
 }

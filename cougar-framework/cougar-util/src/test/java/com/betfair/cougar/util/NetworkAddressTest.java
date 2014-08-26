@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,28 +29,28 @@ import static junit.framework.Assert.assertTrue;
 
 
 public class NetworkAddressTest {
-	
+
 	@Test
 	public void testInNetwork() throws UnknownHostException {
 		NetworkAddress networkAddress = NetworkAddress.parse("64.12.96.0/255.255.224.0");
-		
+
 		assertTrue("should be in network", networkAddress.isAddressInNetwork("64.12.96.0"));
 		assertTrue("should be in network", networkAddress.isAddressInNetwork("64.12.96.1"));
 		assertTrue("should be in network", networkAddress.isAddressInNetwork("64.12.127.254"));
 		assertTrue("should be in network", networkAddress.isAddressInNetwork("64.12.127.255"));
 	}
-	
+
 	@Test
 	public void testNotInNetwork() throws UnknownHostException {
 		NetworkAddress networkAddress = NetworkAddress.parse("64.12.96.0/255.255.224.0");
-		
+
 		assertFalse("should not be in network", networkAddress.isAddressInNetwork("64.12.64.0"));
 		assertFalse("should not be in network", networkAddress.isAddressInNetwork("64.12.255.254"));
-	}	
-	
+	}
+
 	@Test
 	public void testInvalidFormat() {
-		
+
 		try {
 			NetworkAddress networkAddress = NetworkAddress.parse("64.12.96.0|255.255.224.0");
 			Assert.fail("expected Illegal arguement exception");
@@ -59,10 +59,10 @@ public class NetworkAddressTest {
 			//expected
 		}
 	}
-	
+
 	@Test
 	public void testInvalidAddressFormat() {
-		
+
 		try {
 			NetworkAddress networkAddress = NetworkAddress.parse("12.96.0/255.255.224.0");
 			Assert.fail("expected Illegal arguement exception");
@@ -71,8 +71,8 @@ public class NetworkAddressTest {
 			//expected
 		}
 	}
-	
-	
+
+
 	@Test
 	public void testInvalidAddressValue() {
 		try {
@@ -90,7 +90,7 @@ public class NetworkAddressTest {
 		catch (IllegalArgumentException e) {
 			//expected
 		}
-		
+
 	}
 
 	@Test
@@ -109,9 +109,9 @@ public class NetworkAddressTest {
 		catch (IllegalArgumentException e) {
 			//expected
 		}
-		
+
 	}
-	
+
 	@Test
 	public void testIPAddressFormatValidation() {
 		assertFalse("Invalid characters in IP address", NetworkAddress.isValidIPAddress("10.10.1.a"));

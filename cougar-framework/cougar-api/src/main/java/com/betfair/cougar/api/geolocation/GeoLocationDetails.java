@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,19 +33,19 @@ public interface GeoLocationDetails {
 	List<String> getResolvedAddresses();
 
 	/**
-	 * The country in which the resolved address has been located  
+	 * The country in which the resolved address has been located
 	 */
 	String getCountry();
-	
+
 	/**
 	 * @return true if we don't have much confidence in the geoLocated Country.  This can
 	 * happen due to ISPs such as AOL that span countries, or if we can't resolve the remote address
 	 */
 	boolean isLowConfidenceGeoLocation();
-	
-	
+
+
 	/**
-	 * The accurate location in which the resolved address has been located  
+	 * The accurate location in which the resolved address has been located
 	 */
 	String getLocation();
 

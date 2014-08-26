@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,8 @@ import com.betfair.cougar.api.Result;
 public class WrappedListTest extends TestCase {
 	WrappedList<String> wl = new WrappedList<String>(new ArrayList<String>());
 	List<String> anotherList = new ArrayList<String>();
-	
-	
+
+
 	@Override
 	protected void setUp() throws Exception {
 		anotherList.add("foo");
@@ -41,11 +41,11 @@ public class WrappedListTest extends TestCase {
 		assertTrue(wl.add("foo"));
 		assertTrue(wl.contains("foo"));
 		wl.add(0, "foo");
-		
+
 		assertFalse(wl.containsAll(anotherList));
 		assertTrue(wl.addAll(anotherList));
 		assertTrue(wl.addAll(2, anotherList));
-		
+
 		assertFalse(wl.isEmpty());
 		wl.clear();
 		assertTrue(wl.isEmpty());
@@ -53,9 +53,9 @@ public class WrappedListTest extends TestCase {
 
 		assertTrue(wl.addAll(anotherList));
 		assertTrue(wl.add("pie"));
-		
+
 		assertEquals(2, wl.subList(1, 3).size());
-		
+
 		assertTrue(wl.removeAll(anotherList));
 		assertEquals(1, wl.size());
 		assertTrue(wl.remove("pie"));
@@ -66,7 +66,7 @@ public class WrappedListTest extends TestCase {
 		wl.retainAll(anotherList);
 		assertFalse(wl.contains("pie"));
 		assertEquals(2, wl.size());
-		
+
 		assertEquals("foo", wl.get(0));
 		assertEquals(0, wl.indexOf("foo"));
 		assertTrue(wl.add("foo"));
@@ -74,14 +74,14 @@ public class WrappedListTest extends TestCase {
 		wl.set(2, "pie");
 		assertEquals("pie", wl.get(2));
 		wl.remove(2);
-		
+
 		Iterator<String> it = wl.iterator();
 		assertTrue(it.hasNext());
 		it.next();
 		assertTrue(it.hasNext());
 		it.next();
 		assertFalse(it.hasNext());
-		
+
 		ListIterator<String> lit = wl.listIterator();
 		assertTrue(lit.hasNext());
 		lit.next();
@@ -97,7 +97,7 @@ public class WrappedListTest extends TestCase {
 		Object[] o = wl.toArray();
 		String[] s = wl.toArray(new String[wl.size()]);
 		assertEquals(o.length, s.length);
-		
+
 		for (int i = 0; i < s.length; i++) {
 			assertTrue(o[i] == s[i]);
 		}
@@ -106,5 +106,5 @@ public class WrappedListTest extends TestCase {
 	public void testIsResult() {
 		assertTrue(wl instanceof Result);
 	}
-	
+
 }

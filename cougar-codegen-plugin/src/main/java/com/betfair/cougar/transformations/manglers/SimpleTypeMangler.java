@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * remove all simple types defined (except for valid values ones) and
- * replace all references to them with their result. 
+ * replace all references to them with their result.
  */
 public class SimpleTypeMangler extends AbstractMangler {
 
@@ -43,21 +43,21 @@ public class SimpleTypeMangler extends AbstractMangler {
 		try {
 			// First thing to is to get all simple types defined in the IDL
 			List<Node> simpleTypes = getChildrenWithName(getName(), doc, "simpleType");
-			// a container for checking if a simple type is already defined 
+			// a container for checking if a simple type is already defined
 			Set<String> definedSimpleTypes = new HashSet<String>();
 			for (Node st: simpleTypes) {
 				List<Node> children = getChildrenWithName(getName(), st, "validValues");
 				if (children.isEmpty()) {
 					String name = getAttribute(getName(), st, "name");
 					String type = getAttribute(getName(), st, "type");
-					
+
 					// check for simpleType duplicates
 					if(definedSimpleTypes.contains(name)){
 						throw new ValidationException("The data type " + name + " is already defined", st);
 					}else{
 						definedSimpleTypes.add(name);
 					}
-					
+
 					replaceSimpleType(doc, name, type);
 					st.getParentNode().removeChild(st);
 				}
@@ -67,13 +67,13 @@ public class SimpleTypeMangler extends AbstractMangler {
 		}
 
 	}
-	
+
 	private void replaceSimpleType(Node doc, String simpleTypeName, String simpleTypePrimitive) throws ValidationException {
 		replaceViaXPath(doc, simpleTypeName, simpleTypePrimitive, "//parameter");
 		replaceViaXPath(doc, simpleTypeName, simpleTypePrimitive, "//simpleResponse");
 		replaceViaXPath(doc, simpleTypeName, simpleTypePrimitive, "//response");
 	}
-	
+
 	private void replaceViaXPath(Node doc, String simpleTypeName, String simpleTypePrimitive, String xPath)  throws ValidationException {
 		// Need to zap through the entire document and replace anything that has a type
 		// of the "name" parameter, and replace it's value with the "type" parameter.
@@ -90,7 +90,7 @@ public class SimpleTypeMangler extends AbstractMangler {
         	String content = attrNode.getTextContent();
         	if (content.equals(simpleTypeName)) {
         		attrNode.setTextContent(simpleTypePrimitive);
-        		
+
         	} else {
         		// Need to check if it's a composite type and replace there.
         		String[] composites = getComposites(content);
@@ -101,7 +101,7 @@ public class SimpleTypeMangler extends AbstractMangler {
         	        	if (composite.equals(simpleTypeName)) {
         	        		content = content.replace(simpleTypeName, simpleTypePrimitive);
         	        		contentChanged = true;
-        	        	}        				
+        	        	}
         			}
         			if (contentChanged) {
         				attrNode.setTextContent(content);

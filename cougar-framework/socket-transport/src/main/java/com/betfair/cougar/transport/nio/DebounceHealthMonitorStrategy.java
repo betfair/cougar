@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,10 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
- * Strategy that fires the update only if the status does not change again for a period of time 
+ * Strategy that fires the update only if the status does not change again for a period of time
  */
 public class DebounceHealthMonitorStrategy extends AbstractHealthMonitorStrategy {
-	
+
 	private final long debouncePeriod;
 	private ScheduledExecutorService scheduledExecutor;
 	private ScheduledFuture scheduledFuture;
@@ -40,17 +40,17 @@ public class DebounceHealthMonitorStrategy extends AbstractHealthMonitorStrategy
 
 	@Override
 	public synchronized void update(final boolean isHealthy) {
-		
+
 		if (scheduledExecutor == null) {
 			scheduledExecutor = Executors.newSingleThreadScheduledExecutor(createThreadFactory());
 			adviseListeners(isHealthy);
 			currentState = isHealthy;
 		}
-		
+
 		if (scheduledFuture == null) {
 			if (isHealthy != currentState) {
 				scheduledFuture = scheduledExecutor.schedule(new Runnable() {
-					
+
 					@Override
 					public void run() {
 						boolean update = false;
@@ -64,8 +64,8 @@ public class DebounceHealthMonitorStrategy extends AbstractHealthMonitorStrategy
 						if (update) {
 							adviseListeners(isHealthy);
 						}
-						
-						
+
+
 					}
 				}, debouncePeriod, TimeUnit.MILLISECONDS);
 			}
@@ -80,7 +80,7 @@ public class DebounceHealthMonitorStrategy extends AbstractHealthMonitorStrategy
 
 	private ThreadFactory createThreadFactory() {
 		return new ThreadFactory() {
-			
+
 			@Override
 			public Thread newThread(Runnable r) {
 				Thread t = new Thread(r,"Debounce health monitor");

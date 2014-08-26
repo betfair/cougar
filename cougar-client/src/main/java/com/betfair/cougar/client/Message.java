@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,11 @@ import java.util.Map;
  *
  */
 public class Message {
-	
+
 	private LinkedHashMap<String, Object> queryParmMap;
 	private LinkedHashMap<String, Object> headerParmMap;
 	private LinkedHashMap<String, Object> requestBodyMap;
-	
+
 	public Message() {
 		this.queryParmMap = new LinkedHashMap<String, Object>();
 		this.headerParmMap = new LinkedHashMap<String, Object>();
@@ -37,22 +37,22 @@ public class Message {
 	public Map<String, Object> getQueryParmMap() {
 		return queryParmMap;
 	}
-	
+
 	public Map<String, Object> getHeaderMap() {
 		return headerParmMap;
 	}
 	public Map<String, Object> getRequestBodyMap() {
 		return requestBodyMap;
 	}
-	
+
 	public Object addQueryParm(String key, Object value) {
 		return queryParmMap.put(key, value);
 	}
-	
+
 	public Object addHeaderParm(String key, Object value) {
 		return headerParmMap.put(key, value);
 	}
-	
+
 	public Object addRequestBody(String key, Object value) {
 		return requestBodyMap.put(key, value);
 	}

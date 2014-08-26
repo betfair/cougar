@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,13 +29,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class DefaultServiceLogManagerFactoryTest {
-	
+
 	private final ServiceVersion serviceVersion = new ServiceVersion("v1.0");
 	private final String serviceName = "Service1";
 	private final String loggerName = "testLogger";
 	private final OperationKey op1Key = new OperationKey(serviceVersion, serviceName, "Operation1");
 	private final OperationKey op2Key = new OperationKey(serviceVersion, serviceName, "Operation2");
-	
+
 	private DefaultServiceLogManagerFactory factory;
 	private EventLoggingRegistry loggingRegistry;
 
@@ -48,7 +48,7 @@ public class DefaultServiceLogManagerFactoryTest {
         when(loggingRegistry.registerConcreteLogger("bar", serviceName)).thenReturn("bar" + loggerName);
 	}
 
-	
+
 	@Test
 	public void create() {
 		//Test a service and operation that aren't registered

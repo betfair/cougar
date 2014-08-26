@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,11 @@ package com.betfair.cougar.transport.api;
 import com.betfair.cougar.core.api.ServiceBindingDescriptor;
 
 /**
- * 
+ *
  * @param <T> The type of Command that the TransportCommandProcessor implementation can process
  */
 public interface TransportCommandProcessor <T extends TransportCommand>{
 	public void process(T command) throws Exception ;
-	
+
 	public void bind(ServiceBindingDescriptor serviceBindingDescriptor);
 }

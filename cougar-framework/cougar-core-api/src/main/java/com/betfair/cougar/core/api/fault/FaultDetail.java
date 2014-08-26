@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,10 +35,10 @@ public class FaultDetail {
 
 	public static final Parameter faultClassNameParam = new Parameter("faultClassName",new ParameterType(String.class, null), false);
     public static final Parameter detailMessageParam = new Parameter("detailMessage",new ParameterType(String.class, null), false);
-			
+
 	public FaultDetail() {
 	}
-	
+
 	public FaultDetail(String detailMessage, Throwable exception) {
         this(detailMessage,
             ((exception != null && (exception instanceof CougarApplicationException)) ?
@@ -69,19 +69,19 @@ public class FaultDetail {
 	public List<String[]> getFaultMessages() {
         return faultMessages;
 	}
-	
+
 	public String getFaultName() {
-		return exception == null || !(exception instanceof CougarApplicationException) 
-			? null 
+		return exception == null || !(exception instanceof CougarApplicationException)
+			? null
 			: exception.getClass().getSimpleName();
 	}
 
 	public String getFaultNamespace() {
-		return exception == null || !(exception instanceof CougarApplicationException) 
-			? null 
+		return exception == null || !(exception instanceof CougarApplicationException)
+			? null
 			: ((CougarApplicationException)exception).getApplicationFaultNamespace();
 	}
-	
+
 	public Throwable getCause() {
 		return exception;
 	}
@@ -96,7 +96,7 @@ public class FaultDetail {
                     .append(getFaultName(), theOther.getFaultName())
                     .append(getFaultMessages(), theOther.getFaultMessages())
                     .append(getDetailMessage(), theOther.getDetailMessage())
-                    .isEquals();                          
+                    .isEquals();
         }
         return equal;
     }

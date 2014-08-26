@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ public class MockJettyRequest extends org.eclipse.jetty.server.Request {
 
     public MockJettyRequest() {
         super(null, null);
-	
+
 		// Stick some defaults in
 		overrides.put("Content-Type", "text/xml");
 		overrides.put("Accept", "text/xml");
@@ -45,13 +45,13 @@ public class MockJettyRequest extends org.eclipse.jetty.server.Request {
 	public void setHandled(boolean handled) {
 		this.handled = handled;
 	}
-	
+
 	@Override
 	public String getContentType() {
 		return getHeader("Content-Type");
 	}
 
-	
+
 	@Override
 	public String getMethod() {
 		String result = overrides.get("Method");
@@ -72,7 +72,7 @@ public class MockJettyRequest extends org.eclipse.jetty.server.Request {
 	public String getHeader(String name) {
 		if (overrides.containsKey(name))
 			return overrides.get(name);
-		
+
 		return null;
 	}
 
@@ -89,6 +89,6 @@ public class MockJettyRequest extends org.eclipse.jetty.server.Request {
 	public String getPathInfo() {
 		return "/";
 	}
-	
-	
+
+
 }

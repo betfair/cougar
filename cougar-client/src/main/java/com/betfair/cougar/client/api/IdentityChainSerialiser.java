@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,11 @@ import com.betfair.cougar.api.security.IdentityChain;
 
 /**
  *	a mechanism for applications using cougar client to serialise the identity chain.  Cougar client cannot know the concrete types of the Identities within
- *  the IdentityChain nor the appropriate wire format.  Applications must therefore supply their own serialiser.  Specialised interfaces are available for the 
- *  various transport types    
+ *  the IdentityChain nor the appropriate wire format.  Applications must therefore supply their own serialiser.  Specialised interfaces are available for the
+ *  various transport types
  */
 public interface IdentityChainSerialiser<O> {
 
 	public void writeIdentity(IdentityChain identityChain, O output);
-	
+
 }

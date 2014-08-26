@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package com.betfair.cougar.transport.api.protocol.http;
 import com.betfair.cougar.core.api.ServiceBindingDescriptor;
 
 public interface HttpServiceBindingDescriptor extends ServiceBindingDescriptor {
-    
+
 	public String getServiceContextPath();
-    
+
 }

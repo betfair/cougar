@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,9 +34,9 @@ public class CougarErrorHandlerTest  {
         CougarErrorHandler err = new CougarErrorHandler();
         final HttpServletRequest request = mock(HttpServletRequest.class);
         Writer writer = new StringWriter();
-        
+
         err.writeErrorPage(request, writer, 100, null, false);
-        
+
         assertEquals("<html><head><title>foo</title></head><body>bar</body></html>", writer.toString());
     }
 
@@ -45,9 +45,9 @@ public class CougarErrorHandlerTest  {
         CougarErrorHandler err = new CougarErrorHandler();
         final HttpServletRequest request = mock(HttpServletRequest.class);
         Writer writer = new StringWriter();
-        
+
         err.writeErrorPage(request, writer, 1, null, false);
-        
+
         assertEquals("", writer.toString());
     }
 }

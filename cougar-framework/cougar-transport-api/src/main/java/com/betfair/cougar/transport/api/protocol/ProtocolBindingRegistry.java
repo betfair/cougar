@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import java.util.Set;
  * Maintains a set of ProtocolBindings .
  * The means of resolving IdentityTokens may differ from channel to channel, so this interface
  * exists to document the bindings between each protocol, uri and identityTokenResolver
- * 
+ *
  * @see com.betfair.cougar.api.security.IdentityTokenResolver
  *
  */

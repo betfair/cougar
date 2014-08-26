@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,15 +42,15 @@ import com.betfair.cougar.codegen.resolver.InterceptingResolver;
 public class XmlValidator {
 
 	private final InterceptingResolver resolver;
-		
-	
+
+
     public XmlValidator(InterceptingResolver resolver) {
     	this.resolver = resolver;
 	}
 
 	/**
      * Validate the given xmlDocument, using any schemas specified in the document itself.
-     * 
+     *
      * @throws PluginException for any validation or IO errors.
      */
     public void validate(Document doc) {
@@ -59,19 +59,19 @@ public class XmlValidator {
     	}
         catch (Exception e) {
             throw new PluginException("Error validating document: " + e, e);
-        }    	
+        }
     }
-    
+
     private void doValidate(Document doc) throws Exception {
-        
-        // preparsed schema seems to be the only way to get xi:include working, 
+
+        // preparsed schema seems to be the only way to get xi:include working,
         // see http://www.xml.com/lpt/a/1597
         DOMSource source = new DOMSource(doc);
-        
+
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema schema = factory.newSchema();
         javax.xml.validation.Validator validator = schema.newValidator();
-        
+
         // see notes in javadoc above
         validator.setResourceResolver(resolver);
 

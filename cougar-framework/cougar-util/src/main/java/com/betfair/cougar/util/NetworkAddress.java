@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,12 @@ public class NetworkAddress {
 	 * The address of this network
 	 */
 	private final byte[] network;
-	
+
 	/**
 	 * mask to apply to an address to obtain the network identifier
 	 */
 	private final byte[] netmask;
-	
+
 	/**
 	 * For private use only, clients should use the static factory method
 	 */
@@ -69,7 +69,7 @@ public class NetworkAddress {
     }
 
     /**
-	 * 
+	 *
 	 * @param address
 	 * @return true if address is a member of this network
 	 */
@@ -77,21 +77,21 @@ public class NetworkAddress {
 		boolean inNetwork = false;
 		if (address != null) {
 			byte[] addressBytes = parseDottedQuad(address);
-			
+
 			byte[] networkPart = new byte[4];
 			for (int i=0; i<4; i++) {
 				networkPart[i] = (byte) (addressBytes[i] & netmask[i]);
 			}
-			
+
 			inNetwork = network[0] == networkPart[0] &&
 						network[1] == networkPart[1] &&
 						network[2] == networkPart[2] &&
 						network[3] == networkPart[3] ;
-			
+
 		}
 		return inNetwork;
 	}
-	
+
 	/**
 	 * parse a network address identifier, consisting of an ip4Address/netMask, where both ip4Address and netMask are
 	 * presented in dotted quad notation.  e.g. 92.6.4.0/255.255.255.0
@@ -205,8 +205,8 @@ public class NetworkAddress {
     }
 
     /**
-	 * Verify if a given string is a valid dotted quad notation IP Address 
-	 * @param networkAddress The address string 
+	 * Verify if a given string is a valid dotted quad notation IP Address
+	 * @param networkAddress The address string
 	 * @return true if its valid, false otherwise
 	 */
 	public static boolean isValidIPAddress(String networkAddress) {
@@ -225,11 +225,11 @@ public class NetworkAddress {
 					}
 				}
 				return true;
-			}			
+			}
 		}
 		return false;
 	}
-	
+
 	/**
 	 * parse ip4 address as dotted quad notation into bytes
 	 * @param address
@@ -239,7 +239,7 @@ public class NetworkAddress {
 		String[] splitString = address.split("\\.");
 
 		if (splitString.length == 4) {
-	
+
 			int[] ints = new int[4];
 			byte[] bytes = new byte[4];
 			for (int i=0; i<4; i++) {
@@ -249,12 +249,12 @@ public class NetworkAddress {
 				}
 				bytes[i] = toByte(ints[i]); //a pox on java and it's signed bytes
 			}
-					
+
 			return bytes;
 		}
 		else {
 			throw new IllegalArgumentException("Address must be in dotted quad notation");
 		}
 	}
-	
+
 }

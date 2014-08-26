@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
-  ~ Copyright 2013, The Sporting Exchange Limited
+  ~ Copyright 2014, The Sporting Exchange Limited
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:noNamespaceSchemaLocation="http://www.betfair.com/BSIDL/4.0.xsd"
 			xmlns:xi="http://www.w3.org/2001/XInclude">
-                  
+
 	<authors><author name="Fred Flinstone" email="fred@flinstone.com"/></authors>
 	<description>A Broken (Invalid) Service</description>
 	<operation name="testSimpleGet" since="1.0.0">
@@ -40,9 +40,9 @@
 			</exceptions>
 		</parameters>
 	</operation>
-	
+
     <!-- should cause a validation error -->
-    
+
     <AnInvalidElement>99.3</AnInvalidElement>
-    	
+
 </interface>

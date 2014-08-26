@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ public class ParameterTypeTest {
 		assertNotNull(type);
 		assertEquals(ParameterType.Type.LONG, type.getType());
 	}
-	
+
 	@Test
 	public void testCollection() {
 		ParameterType type = ParameterType.create(ArrayList.class, new Class[] {Double.class});
@@ -40,7 +40,7 @@ public class ParameterTypeTest {
 		assertEquals(1, type.getComponentTypes().length);
 		assertEquals(ParameterType.Type.DOUBLE, type.getComponentTypes()[0].getType());
 	}
-	
+
 	@Test
 	public void testArray() {
 		ParameterType type = ParameterType.create(byte[].class, null);

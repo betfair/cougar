@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
-  ~ Copyright 2013, The Sporting Exchange Limited
+  ~ Copyright 2014, The Sporting Exchange Limited
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@
                 <xsl:value-of select="interface/@name"/>.wsdl v<xsl:value-of select="$majorMinorVersion"/>
             </wsdl:documentation>
 			<wsdl:types>
-      			<xsd:schema targetNamespace="http://www.betfair.com/security/" 
+      			<xsd:schema targetNamespace="http://www.betfair.com/security/"
                   elementFormDefault="qualified" >
 					<xsd:element name="Authentication" type="xsd:string"/>
                   </xsd:schema>
@@ -162,7 +162,7 @@
 					<xsl:call-template name="capitaliseFirst">
 						<xsl:with-param name="string" select="@name"/>
 					</xsl:call-template>
-				</xsl:variable>				
+				</xsl:variable>
 				<wsdl:message name="{$elementName}In">
 					<wsdl:part name="parameters" element="tns:{$elementName}Request"/>
 				</wsdl:message>
@@ -170,13 +170,13 @@
 					<wsdl:part name="parameters" element="tns:{$elementName}Response"/>
 				</wsdl:message>
 			</xsl:for-each>
-			
+
 			<xsl:for-each select="interface/exceptionType">
 				<xsl:variable name="elementName">
 					<xsl:call-template name="capitaliseFirst">
 						<xsl:with-param name="string" select="@name"/>
 					</xsl:call-template>
-				</xsl:variable>				
+				</xsl:variable>
 				<wsdl:message name="{$elementName}Fault">
 					<wsdl:part name="fault" element="tns:{$elementName}"/>
 				</wsdl:message>
@@ -188,7 +188,7 @@
 						<xsl:call-template name="capitaliseFirst">
 							<xsl:with-param name="string" select="@name"/>
 						</xsl:call-template>
-					</xsl:variable>	
+					</xsl:variable>
 					<wsdl:operation name="{@name}">
 						<wsdl:input message="wns:{$elementName}In"/>
 						<wsdl:output message="wns:{$elementName}Out"/>
@@ -203,7 +203,7 @@
 					</wsdl:operation>
 				</xsl:for-each>
 			</wsdl:portType>
-	
+
 			<wsdl:binding name="{interface/@name}Service" type="wns:{interface/@name}Service">
 				<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
 				<xsl:for-each select="interface/operation">
@@ -243,7 +243,7 @@
 		<xsl:param name="string"/>
 		<xsl:call-template name="uppercase"><xsl:with-param name="string" select="substring($string, 1, 1)"/></xsl:call-template><xsl:value-of select="substring($string, 2)"/>
 	</xsl:template>
-	
+
 	<xsl:template name="lowercaseFirst">
 		<xsl:param name="string"/>
 		<xsl:call-template name="lowercase"><xsl:with-param name="string" select="substring($string, 1, 1)"/></xsl:call-template><xsl:value-of select="substring($string, 2)"/>
@@ -253,17 +253,17 @@
 		<xsl:param name="string"/>
 		<xsl:value-of select="translate($string,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/>
 	</xsl:template>
-	
+
 	<xsl:template name="lowercase">
 		<xsl:param name="string"/>
 		<xsl:value-of select="translate($string,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')"/>
 	</xsl:template>
-	
+
 	<xsl:template name="majorVersion">
 		<xsl:param name="version"/>
 		<xsl:value-of select="substring-before($version,'.')"/>
 	</xsl:template>
-	
+
 	<xsl:template name="majorMinorVersion">
 		<xsl:param name="version"/>
 		<xsl:variable name="major"><xsl:value-of select="substring-before($version,'.')"/></xsl:variable>
@@ -277,7 +277,7 @@
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
-	
+
 	<xsl:template name="mapType">
 		<xsl:param name="nativeType"/>
 		<xsl:choose>
@@ -293,7 +293,7 @@
 					<xsl:with-param name="nativeType" select="$nativeType"/>
 				</xsl:call-template>
 			</xsl:otherwise>
-		</xsl:choose>	
+		</xsl:choose>
 	</xsl:template>
 
 	<xsl:template name="mapTypeIgnoreEnum">
@@ -311,9 +311,9 @@
 					<xsl:with-param name="nativeType" select="$nativeType"/>
 				</xsl:call-template>
 			</xsl:otherwise>
-		</xsl:choose>	
+		</xsl:choose>
 	</xsl:template>
-	
+
 	<xsl:template name="mapTypeDirect">
 		<xsl:param name="nativeType"/>
 		<xsl:choose>
@@ -427,7 +427,7 @@
 					<xsd:complexType>
 						   <xsd:sequence>
                                 <xsd:element name="entry" minOccurs="0" maxOccurs="unbounded">
-					                <xsd:complexType >            
+					                <xsd:complexType >
 					                    <xsd:sequence>
 					                      <xsd:element name="{$mapValueName}" type="{$valueType}" minOccurs="0"/>
 					                    </xsd:sequence>

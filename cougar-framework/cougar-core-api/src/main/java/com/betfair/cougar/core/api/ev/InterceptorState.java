@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,13 @@
 package com.betfair.cougar.core.api.ev;
 
 public enum InterceptorState {
-	CONTINUE(true, false), 	  	 
+	CONTINUE(true, false),
 	FORCE_ON_EXCEPTION (false, true),
-	FORCE_ON_RESULT(false, true);	
-	
+	FORCE_ON_RESULT(false, true);
+
 	private boolean shouldInvoke;
 	private boolean shouldAbortInterceptorChain;
-	
+
 	private InterceptorState(boolean shouldInvoke, boolean shouldAbortInterceptorChain) {
 		this.shouldInvoke = shouldInvoke;
 		this.shouldAbortInterceptorChain = shouldAbortInterceptorChain;
@@ -37,9 +37,9 @@ public enum InterceptorState {
 	public boolean shouldInvoke() {
 		return shouldInvoke;
 	}
-	
+
 	public boolean shouldAbortInterceptorChain() {
 		return shouldAbortInterceptorChain;
 	}
-	
+
 }

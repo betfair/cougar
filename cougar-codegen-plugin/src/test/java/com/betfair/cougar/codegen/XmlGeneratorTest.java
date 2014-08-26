@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,22 +29,22 @@ import static org.mockito.Mockito.mock;
  * Unit test {@link XmlGenerator}
  */
 public class XmlGeneratorTest {
-	
+
 	/**
 	 * Just tests the mechanics of the generation, not the correctness of the underlying stylesheet,
-	 * which is covered by JETT and .Net tests. 
+	 * which is covered by JETT and .Net tests.
 	 */
     @Test
     public void testGenerateWsdl() throws Exception {
-        
+
         Document iddDoc = XmlUtil.parse(
-        				Files.fromResource("SomeService.xml"), 
+        				Files.fromResource("SomeService.xml"),
         				Files.initResolver(mock(Log.class)));
-        
+
         File xslFile = Files.fromResource("test-wsdl.xsl");
         File outFile = new File(Files.baseDir, "target/wrk/SomeService.wsdl");
         outFile.getParentFile().mkdirs();
-        
+
         XmlGenerator generator = new XmlGenerator();
         generator.transform(iddDoc, xslFile, outFile);
 

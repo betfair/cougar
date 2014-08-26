@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,31 +27,31 @@ public class HeaderUtils {
 	public static final String CONTENT_ENCODING = "Content-Encoding";
 	public static final String USER_AGENT = "User-Agent";
 	public static final String NO_CACHE = "no-cache";
-	
+
 	public static String getAccept(HttpServletRequest request) {
 		return cleanHeaderValue(request.getHeader(ACCEPT));
 	}
-	
+
 	public static String getAcceptEncoding(HttpServletRequest request) {
 		return cleanHeaderValue(request.getHeader(ACCEPT_ENCODING));
 	}
-	
+
 	public static String getCacheControl(HttpServletRequest request) {
 		return cleanHeaderValue(request.getHeader(CACHE_CONTROL));
 	}
-	
+
 	public static String getUserAgent(HttpServletRequest request) {
 		return cleanHeaderValue(request.getHeader(USER_AGENT));
 	}
-		
+
 	public static void setContentEncoding(HttpServletResponse response, String contentEncoding) {
 		response.setHeader(CONTENT_ENCODING, contentEncoding);
 	}
-	
+
 	public static void setCacheControl(HttpServletResponse response, String cacheControl) {
 		response.setHeader(CACHE_CONTROL, cacheControl);
 	}
-	
+
 	public static void setNoCache(HttpServletResponse response) {
 		response.setHeader(CACHE_CONTROL, NO_CACHE);
 	}

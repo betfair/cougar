@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ import com.betfair.cougar.api.ExecutionContext;
 
 /**
  * That which can be executed from an ExecutionVenue.
- * 
+ *
  */
 public interface Executable {
-	
+
 	/**
 	 * Executes an operation
 	 * @param ctx Provides contextual information for execution, such as channel id, user identity, geographical location etc.
@@ -34,5 +34,5 @@ public interface Executable {
      * @param timeConstraints Time constraints affecting this call. If null there are no constraints. This execute call MAY return a timeout fault after any constraints have been violated.
 	 */
 	public void execute(ExecutionContext ctx, OperationKey key, Object [] args, ExecutionObserver observer, ExecutionVenue executionVenue, TimeConstraints timeConstraints);
-	
+
 }

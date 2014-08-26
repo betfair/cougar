@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import com.betfair.cougar.core.api.ServiceVersion;
 public interface EventServiceBindingDescriptor extends BindingDescriptor {
     /**
      * Returns the set of events exposed through this event service
-     * @return returns an array of EventBindingDescriptors exposed by this Service 
+     * @return returns an array of EventBindingDescriptors exposed by this Service
      */
     public EventBindingDescriptor[] getEventBindings();
 

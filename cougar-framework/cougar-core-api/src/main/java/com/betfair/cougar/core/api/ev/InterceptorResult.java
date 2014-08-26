@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,12 @@ public class InterceptorResult {
 
 	private InterceptorState state;
 	private Object result;
-	
+
 	public InterceptorResult(InterceptorState state, Object result) {
 		this.state = state;
 		this.result = result;
 	}
-	
+
 	public InterceptorResult(InterceptorState state) {
 		this(state, null);
 	}
@@ -34,7 +34,7 @@ public class InterceptorResult {
 	public Object getResult() {
 		return result;
 	}
-	
+
 	public InterceptorState getState() {
 		return state;
 	}

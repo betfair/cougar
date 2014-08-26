@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ public class LimitedByteCountingInputStreamTest {
     @Test
     public void testReadFullArray_UnderMaximum() throws Exception {
         LimitedByteCountingInputStream bcis = new LimitedByteCountingInputStream(new ByteArrayInputStream(source), 1000);
-        
+
         int bytesRead = 0;
         byte[] dst = new byte[8];
         int c = 0;

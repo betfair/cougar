@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,11 +70,11 @@ public class Transformation {
         this.excluder = excluder;
     }
 
-    public Transformation(	final String template, 
-    						final String nodePath, 
-    						final String directory, 
-    						final String fileName, 
-    						final boolean isJaxb, 
+    public Transformation(	final String template,
+    						final String nodePath,
+    						final String directory,
+    						final String fileName,
+    						final boolean isJaxb,
     						final boolean compositeName,
                             final OutputDomain outputDomain,
                             final NodeExcluder excluder) {

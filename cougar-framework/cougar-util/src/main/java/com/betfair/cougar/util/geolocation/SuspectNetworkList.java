@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ public class SuspectNetworkList {
 
 	private ArrayList<NetworkAddress> suspectNetworks = new ArrayList<NetworkAddress>();
     private String strVal;
-	
+
 	/**
 	 * @param networkAddresses comma separated list of network address each as ip4Address/netmask, where both ip4Address & netmask
 	 * are in dotted quad notation
@@ -62,5 +62,5 @@ public class SuspectNetworkList {
 		}
 		return false;
 	}
-	
+
 }

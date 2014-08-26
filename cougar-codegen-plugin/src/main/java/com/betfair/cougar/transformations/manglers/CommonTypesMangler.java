@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import org.w3c.dom.Node;
 import com.betfair.cougar.codegen.ValidationException;
 
 /**
- * Scan the document for shared include files and flatten thrir structure 
+ * Scan the document for shared include files and flatten thrir structure
  */
 public class CommonTypesMangler extends AbstractMangler {
 

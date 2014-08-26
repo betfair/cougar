@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,18 @@
 package com.betfair.cougar.transport.nio;
 
 /**
- * 
- * Interface to allow different strategies for dealing with changes in health status.  Implementations may decide to filter updates to ignore transient changes 
+ *
+ * Interface to allow different strategies for dealing with changes in health status.  Implementations may decide to filter updates to ignore transient changes
  *
  */
 public interface HealthMonitorStrategy {
-	
+
 	public interface HealthMonitorStrategyListener {
 		public void onUpdate(boolean isHealthy);
 	}
-	
+
 	public void registerListener(HealthMonitorStrategyListener listener);
-	
+
 	public void update(boolean isHealthy);
 
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ public interface ExecutionContextResolver<T> {
 	 * @return TransportInfo
 	 */
 	public String getSupportedTransport();
-	
+
 	/**
 	 * From the supplied request, resolves this to an ExecutionContext
 	 * @param request

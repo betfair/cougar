@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,14 +42,14 @@ public class ValidationUtilsTest extends CougarUtilTestCase {
 	}
 
 	public void testValidateSimpleList() {
-		List<String> list = new ArrayList<String>(); 
+		List<String> list = new ArrayList<String>();
 		list.add("foo");
 		list.add("bar");
 		ValidationUtils.validateMandatory(list);
 	}
 
 	public void testValidateValidatableList() {
-		List<Validatable> list = new ArrayList<Validatable>(); 
+		List<Validatable> list = new ArrayList<Validatable>();
 		list.add(new MyValidatable());
 		list.add(new MyValidatable());
 		ValidationUtils.validateMandatory(list);
@@ -57,7 +57,7 @@ public class ValidationUtilsTest extends CougarUtilTestCase {
 
 	public void testValidateValidatableListFail() {
 		IllegalArgumentException e = new IllegalArgumentException();
-		List<Validatable> list = new ArrayList<Validatable>(); 
+		List<Validatable> list = new ArrayList<Validatable>();
 		list.add(new MyValidatable());
 		list.add(new MyValidatable(e));
 		try {
@@ -70,7 +70,7 @@ public class ValidationUtilsTest extends CougarUtilTestCase {
 
 	private static class MyValidatable implements Validatable {
 		IllegalArgumentException ex;
-		
+
 		private MyValidatable() {
 		}
 

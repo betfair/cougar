@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,10 +28,10 @@ public interface  FooDelegate  {
 	public Map<Bar, Baz> getBarBazMap();
 	public byte[] getPrimitiveArray();
 	public void setPrimitiveArray(byte[] bytes);
-    
 
-	
-	
+
+
+
 
 }
 

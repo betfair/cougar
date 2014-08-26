@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ public class FooDelegateImpl implements FooDelegate {
 		this.value = value;
 		this.bar = new Bar(new BarDelegateImpl(7));
 	}
-	
+
 	@Override
 	public String getFooName() {
 		return value;
@@ -36,7 +36,7 @@ public class FooDelegateImpl implements FooDelegate {
 
 	@Override
 	public Bar getBar() {
-		return bar; 
+		return bar;
 	}
 
 
@@ -66,7 +66,7 @@ public class FooDelegateImpl implements FooDelegate {
 	@Override
 	public void setBarBazMap(Map<Bar, Baz> barBazMap) {
 		throw new IllegalArgumentException();
-		
+
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public class FooDelegateImpl implements FooDelegate {
 		byte[] bytes = {1, 2, 3};
 		return bytes;
 	}
-	
+
 	@Override
 	public void setPrimitiveArray(byte[] bytes) {
 		throw new IllegalArgumentException();

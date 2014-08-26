@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,10 +28,10 @@ public class ValidationException extends Exception {
 	}
 
 	public static String buffMessage(String message, Node node) {
-		return message 
-		    + (node == null ? "" : "(" + DomUtils.getNameBasedXPath(node, true) + ")") 
+		return message
+		    + (node == null ? "" : "(" + DomUtils.getNameBasedXPath(node, true) + ")")
 ;
 	}
-	
-	
+
+
 }

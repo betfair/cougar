@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ public class MediaTypeUtils {
                             ? usr.getSubtype() : prod.getSubtype();
                     float q = getMediaTypeQualityFactor(usr.getParameters().get("q"));
 
-                    // Ensure that wildcard types are not returned unless absolutely necessary. 
+                    // Ensure that wildcard types are not returned unless absolutely necessary.
                     if (baseType.equals(MediaType.MEDIA_TYPE_WILDCARD)) {
                         q = q - 10000;
                     } else if (subType.equals(MediaType.MEDIA_TYPE_WILDCARD)) {
@@ -99,4 +99,4 @@ public class MediaTypeUtils {
         return 1;
     }
 }
- 
+

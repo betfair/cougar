@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import com.betfair.cougar.api.security.IdentityChain;
  *
  */
 public class IdentityChainImpl implements IdentityChain {
-	
+
 	private final List<Identity> identities;
 
     public IdentityChainImpl() {
@@ -60,7 +60,7 @@ public class IdentityChainImpl implements IdentityChain {
 		}
 		return result;
 	}
-    
+
     public String toString() {
         StringBuffer sb = new StringBuffer();
         for (int i=0; i<identities.size(); i++) {

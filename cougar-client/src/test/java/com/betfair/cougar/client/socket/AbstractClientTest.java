@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -191,7 +191,7 @@ public abstract class AbstractClientTest {
 
         cfg.setNioLogger(new NioLogger("ALL"));
 
-        
+
 
         connectionString = hostAddress + ":" + boundToPort;
 
@@ -204,9 +204,9 @@ public abstract class AbstractClientTest {
         return cfg;
     }
 
-    
+
     public void after() throws Exception {
-    	server.stop();    
+    	server.stop();
     	client.stop();
 
         // reset protocol versions
@@ -219,37 +219,37 @@ public abstract class AbstractClientTest {
     void performRequestAsync(ExecutionVenueNioClient client, ClientTestExecutionObserver observer, Object[] args) throws IOException, InterruptedException {
         client.execute(new SimpleExecutionContext(), OPERATION_DEFINITION, args, observer, DefaultTimeConstraints.NO_CONSTRAINTS);
     }
-    
+
     void performRequest(ExecutionVenueNioClient client, ClientTestExecutionObserver observer, Object[] args) throws IOException, InterruptedException {
         performRequestAsync(client, observer, args);
-        		
+
 		try {
 			observer.getExecutionResultFuture().get(30000000, TimeUnit.MILLISECONDS);
 		}
 		catch (Exception e) {
 			fail("Waiting observer never received a result: " + e.getMessage());
-		}		
+		}
     }
-    
-    
+
+
     void performRequest(ClientTestExecutionObserver observer, Object[] args) throws IOException, InterruptedException {
     	performRequest(client, observer, args);
     }
     void performRequestAsync(ClientTestExecutionObserver observer, Object[] args) throws IOException, InterruptedException {
     	performRequestAsync(client, observer, args);
     }
-    
-    
-    
-    
+
+
+
+
     // ######################################################################
     public class ExceptionCapturingObserver extends ClientTestExecutionObserver {
         public void assertResult() {
-        	assertTrue( "expected a Fault", getExecutionResult() != null && getExecutionResult().getResultType() == ResultType.Fault);        	
+        	assertTrue( "expected a Fault", getExecutionResult() != null && getExecutionResult().getResultType() == ResultType.Fault);
         }
     }
-    
-    
+
+
     // ####################################################################
     public class ClientTestExecutionObserver implements ExecutionObserver {
         private volatile ExecutionResult executionResult;
@@ -258,10 +258,10 @@ public abstract class AbstractClientTest {
         private final Lock lock = new ReentrantLock();
         private Condition hasResult = lock.newCondition();
 
-        public ClientTestExecutionObserver() {        	
+        public ClientTestExecutionObserver() {
         }
-        
-        
+
+
         public ClientTestExecutionObserver(String expected) {
             this.expectedString = expected;
         }
@@ -274,7 +274,7 @@ public abstract class AbstractClientTest {
         public String toString() {
             return "ClientTestExecutionObserver[expected=" + expectedString + "]";
         }
-        
+
         @Override
         public void onResult(ExecutionResult executionResult) {
         	lock.lock();
@@ -297,7 +297,7 @@ public abstract class AbstractClientTest {
                 assertEquals(ExecutionResult.ResultType.Fault, executionResult.getResultType());
                 assertEquals(expectedException.getFault().getDetail().getDetailMessage(),
                     executionResult.getFault().getFault().getDetail().getDetailMessage());
-            } else if (executionResult != null) {            	
+            } else if (executionResult != null) {
             	assertFalse("Unexpected fault" , ExecutionResult.ResultType.Fault == executionResult.getResultType());
             }
             assertTrue(  (executionResult == null) ||  ExecutionResult.ResultType.Subscription != executionResult.getResultType());
@@ -306,17 +306,17 @@ public abstract class AbstractClientTest {
         public boolean hasReceivedResult() {
             return executionResult != null;
         }
-        
+
         public ExecutionResult getExecutionResult() {
 	        return executionResult;
         }
-        
+
         public FutureTask<ExecutionResult> getExecutionResultFuture()  {
-			FutureTask<ExecutionResult> future = new HasResultCallable().asFuture();		
+			FutureTask<ExecutionResult> future = new HasResultCallable().asFuture();
 			new Thread(future, "ExecutionResultFuture").start();
 			return future;
         }
-        
+
         // ###########################################################
         class HasResultCallable implements Callable<ExecutionResult> {
     		@Override
@@ -340,11 +340,11 @@ public abstract class AbstractClientTest {
     			return new FutureTask<ExecutionResult>(this);
     		}
     	}
-        
+
     }
-    
 
 
-    
+
+
 
 }

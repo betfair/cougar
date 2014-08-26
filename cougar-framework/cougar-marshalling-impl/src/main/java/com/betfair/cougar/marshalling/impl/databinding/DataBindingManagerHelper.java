@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,22 +21,22 @@ import org.springframework.beans.factory.InitializingBean;
 import java.util.List;
 
 public class DataBindingManagerHelper implements InitializingBean {
-	
+
 	private DataBindingManager dataBindingManager;
 	private List<DataBindingMap> dataBindingMaps;
-	
+
 	public void afterPropertiesSet() throws Exception {
 		if (dataBindingMaps != null) {
 			for (DataBindingMap dataBindingMap : dataBindingMaps) {
 				dataBindingManager.addBindingMap(dataBindingMap);
 			}
-		} 
+		}
 	}
-	
+
 	public void setDataBindingManager(DataBindingManager mgr) {
 		this.dataBindingManager = mgr;
 	}
-	
+
 	public void setDataBindingMaps(List<DataBindingMap> maps) {
 		this.dataBindingMaps = maps;
 	}

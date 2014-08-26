@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,16 +32,16 @@ import org.springframework.jmx.export.MBeanExporter;
  * race conditions (publishing beans before MBeanServer started up) or circular dependencies.
  * <p>
  * Look at usage of static util methods in this class for examples of how to obtain an instance
- * at run-time (typically via a Spring 
+ * at run-time (typically via a Spring
  * {@link ApplicationListener#onApplicationEvent(ApplicationEvent)} event.
  */
 public class JMXControl {
-    
+
 	/**
 	 * Name of bean in Spring config
 	 */
 	public static final String BEAN_JMX_CONTROL = "jmxControl";
-	
+
 	private final MBeanExporter exporter;
 
     public JMXControl(MBeanExporter exporter) {
@@ -56,7 +56,7 @@ public class JMXControl {
     		throw new IllegalStateException("Unable to register MBean", e);
     	}
     }
-    
+
     /**
      * Utility to retrieve a JMXControl bean from the given application context.
      * <p>
@@ -68,12 +68,12 @@ public class JMXControl {
     	// will throw an RTE if it's not there, which we can live with
     	return (JMXControl) ctx.getBean(BEAN_JMX_CONTROL);
     }
-    
+
     /**
      * Return JMXControl bean from the ApplicationContext *if* the given event is
      * an {@link ApplicationContextEvent} (or null otherwise).
      * <p>
-     * A utility method wrapping one way in which we'd call 
+     * A utility method wrapping one way in which we'd call
      * {@link #getFromContext(ApplicationContext)}.
      */
     public static JMXControl getFromEvent(ApplicationEvent event) {

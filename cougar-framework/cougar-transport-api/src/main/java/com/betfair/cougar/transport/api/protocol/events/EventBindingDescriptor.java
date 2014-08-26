@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ public interface EventBindingDescriptor {
     String getEventName();
 
     /**
-     * @return - returns the class the event will be marshalled to/from 
+     * @return - returns the class the event will be marshalled to/from
      */
     Class<? extends Event> getEventClass();
 }

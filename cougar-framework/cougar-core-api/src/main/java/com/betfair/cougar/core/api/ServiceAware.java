@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import com.betfair.cougar.api.Service;
 /**
  * Interface to be implemented by any object that wishes to be notified
  * of the {@link com.betfair.cougar.api.Service}s hosted in the cougar container
- * 
+ *
  */
 public interface ServiceAware {
 
@@ -32,5 +32,5 @@ public interface ServiceAware {
 	 * Called by the container to advise the list of services hosted in the container
 	 * @param services non modifiable list of services hosted by the container
 	 */
-	public void setServices(Set<Service> services); 
+	public void setServices(Set<Service> services);
 }

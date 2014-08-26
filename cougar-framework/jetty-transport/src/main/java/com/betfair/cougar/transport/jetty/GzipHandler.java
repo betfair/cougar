@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,10 +38,10 @@ public class GzipHandler extends AbstractHandler {
 
 	private GzipFilter gzipFilter ;
 	private Handler wrappedHandler;
-	
-	public GzipHandler(final int bufferSize, 
-					   final int minGzipSize, 
-					   final String excludedAgents, 
+
+	public GzipHandler(final int bufferSize,
+					   final int minGzipSize,
+					   final String excludedAgents,
 					   Handler wrappedHandler) throws ServletException {
 		this.wrappedHandler = wrappedHandler;
 		this.gzipFilter = new GzipFilter();
@@ -70,13 +70,13 @@ public class GzipHandler extends AbstractHandler {
 				return new ContextHandler.NoContext();
 			}});
 	}
-	
+
 	@Override
 	public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		Chain chain = new Chain(target, baseRequest, wrappedHandler);
 		gzipFilter.doFilter(request, response, chain);
 	}
-	
+
 	private static class Chain implements FilterChain {
 
 		private Handler handler;
@@ -93,7 +93,7 @@ public class GzipHandler extends AbstractHandler {
 		public void doFilter(ServletRequest request, ServletResponse response) throws IOException, ServletException {
 			handler.handle(target, baseRequest, (HttpServletRequest)request, (HttpServletResponse)response);
 		}
-		
+
 	}
 
 }

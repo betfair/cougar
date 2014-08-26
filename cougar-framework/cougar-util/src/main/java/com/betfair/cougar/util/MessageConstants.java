@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,15 @@ package com.betfair.cougar.util;
 public final class MessageConstants {
 
 	private static final String PLATFORM = "cougar.";
-	
+
 	// Http Headers
 	public static final String ACCEPT_HEADER = "Accept";
-	
+
 	// Http Headers
     public static final String FORMAT_PARAMETER = "alt";
-    
+
     // Attributes
 	public static final String COUGAR_REQUEST_ATTR = PLATFORM + "request";
 	public static final String COUGAR_RESPONSE_ATTR = PLATFORM + "response";
-	
+
 }

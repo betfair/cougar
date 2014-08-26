@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,12 +47,12 @@ public class InterceptingResolver extends XMLCatalogResolver {
 	/**
 	 * The resource loader can find resources in places a plain ClassLoader couldn't
 	 */
-	private final ResourceLoader resourceLoader;	
+	private final ResourceLoader resourceLoader;
 
 	public InterceptingResolver() {
 		this(new SystemStreamLog(), null, new String[0]);
-	}	
-	
+	}
+
 	/**
 	 * @param log mojo logger
 	 * @param resourceLoader finds resources. If null, means should be used (ie. don't do
@@ -75,16 +75,16 @@ public class InterceptingResolver extends XMLCatalogResolver {
     			    String name,
     			    String publicId,
     			    String baseURI,
-    			    String systemId) 
-	throws SAXException, IOException {	
-	
+    			    String systemId)
+	throws SAXException, IOException {
+
 		try {
 			if (shouldLoadAsResource(systemId)) {
 				log.debug("Loading entity '" + systemId + "' as resource");
 				return resourceToInputSource(publicId, systemId);
 			}
 			else {
-				return super.resolveEntity(publicId, systemId);				
+				return super.resolveEntity(publicId, systemId);
 			}
 		}
 		catch (Exception e) {
@@ -95,16 +95,16 @@ public class InterceptingResolver extends XMLCatalogResolver {
 
 	@Override
 	public LSInput resolveResource(
-					String type, 
-					String namespaceURI, 
-					String publicId, 
-					String systemId, 
+					String type,
+					String namespaceURI,
+					String publicId,
+					String systemId,
 					String baseURI) {
 
 		try {
 			if (shouldLoadAsResource(systemId)) {
 				log.debug("Loading resource '" + systemId + "' as resource");
-				return resourceToLSInput(publicId, systemId);				
+				return resourceToLSInput(publicId, systemId);
 			}
 			else {
                 return super.resolveResource(type, namespaceURI, publicId, systemId, baseURI);
@@ -113,11 +113,11 @@ public class InterceptingResolver extends XMLCatalogResolver {
 		catch (Exception e) {
 			// this is cheating, the spec says allow for an exception, but we don't care
 			throw new PluginException("Error resolving resource: " + systemId + ": " + e, e);
-		}		
+		}
 	}
 
 	private InputStream resourceAsStream(String systemId) {
-		
+
 		String resource = resourceFromId(systemId);
 		InputStream is = resourceLoader.getResourceAsStream(resource);
 		if (is == null) {
@@ -133,14 +133,14 @@ public class InterceptingResolver extends XMLCatalogResolver {
 	}
 
 	private InputSource resourceToInputSource(String publicId, String systemId) {
-		
+
 		InputStream is = resourceAsStream(systemId);
-		
+
 		if (is != null) {
 			InputSource s = new InputSource(is);
 			s.setPublicId(publicId);
 			s.setSystemId(systemId);
-			
+
 			return s;
 		}
 		else {
@@ -149,23 +149,23 @@ public class InterceptingResolver extends XMLCatalogResolver {
 	}
 
 	private LSInput resourceToLSInput(String publicId, String systemId) {
-		
-		InputStream is = resourceAsStream(systemId);			
-		
+
+		InputStream is = resourceAsStream(systemId);
+
 		if (is != null) {
 			DOMInputImpl result = new DOMInputImpl(); // any old impl would do
 			result.setByteStream(is);
 			result.setCharacterStream(null);
 			result.setPublicId(publicId);
 			result.setSystemId(systemId);
-			
+
 			return result;
 		}
 		else {
-			return null;			
+			return null;
 		}
 	}
-	
+
 	private boolean shouldLoadAsResource(String systemId) {
 		return (resourceLoader != null) && systemId != null && systemId.endsWith(".inc");
 	}

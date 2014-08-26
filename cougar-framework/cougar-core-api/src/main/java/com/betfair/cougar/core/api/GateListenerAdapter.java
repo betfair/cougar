@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,14 +27,14 @@ import org.springframework.util.Assert;
  * beans without them having to know anything about the {@link GateListener} interface.
  */
 public class GateListenerAdapter implements GateListener {
-	
+
 	private Object o;
 	private String methodName;
 	private int priority;
-			
+
 	@Override
 	public String getName() {
-		return (o != null ? o.getClass().getName() : "null") 
+		return (o != null ? o.getClass().getName() : "null")
 			+ "#"
 			+ methodName;
 	}
@@ -45,7 +45,7 @@ public class GateListenerAdapter implements GateListener {
 		Assert.notNull(o, "Object to be invoked is null.");
 		Assert.notNull(methodName, "Method name is null.");
 		Assert.isTrue(methodName.length() > 0, "Method name is empty");
-		
+
 		try {
 			Method m = o.getClass().getMethod(methodName);
 			m.invoke(o);
@@ -54,16 +54,16 @@ public class GateListenerAdapter implements GateListener {
 			throw new RuntimeException("Error invoking method for " + getName() + ": " + e, e);
 		}
 	}
-	
+
 	/**
 	 * 'bean' is easier to type than 'object'
-	 * 
+	 *
 	 * @param bean the object on which to invoke the 'init' method.
 	 */
 	public void setBean(Object bean) {
 		this.o = bean;
 	}
-	
+
 	/**
 	 * @param methodName name of method to be invoked
 	 */
@@ -79,6 +79,6 @@ public class GateListenerAdapter implements GateListener {
 	public void setPriority(int priority) {
 		this.priority = priority;
 	}
-	
-	
+
+
 }

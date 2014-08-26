@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ public class DebounceHealthMonitorStrategyTest {
 	@Test
 	public void testInitialUpdate() throws InterruptedException {
 		DebounceHealthMonitorStrategy sut = new DebounceHealthMonitorStrategy(50);
-		
+
 		final boolean[] result = new boolean[1];
 		sut.registerListener(new HealthMonitorStrategyListener() {
 
@@ -40,23 +40,23 @@ public class DebounceHealthMonitorStrategyTest {
 			public void onUpdate(boolean isHealthy) {
 				result[0] = isHealthy;
 			}});
-		
+
 		sut.update(true);
 		Assert.assertEquals(true, result[0]);
-		
+
 	}
-	
+
 	@Test
 	public void testUpdate() throws InterruptedException {
 		DebounceHealthMonitorStrategy sut = new DebounceHealthMonitorStrategy(50);
-		
+
 		final boolean[] result = new boolean[1];
 		sut.registerListener(new HealthMonitorStrategyListener() {
-			
+
 			@Override
 			public void onUpdate(boolean isHealthy) {
 				result[0] = isHealthy;
-				
+
 			}
 		});
 		sut.update(true); //initial update
@@ -66,23 +66,23 @@ public class DebounceHealthMonitorStrategyTest {
 		Assert.assertEquals(true, result[0]); //shouldn't have updated yet
 		Thread.sleep(100);
 		Assert.assertEquals(false, result[0]);//should have updated by now
-		
+
 	}
-	
+
 	@Test
 	public void testUpdateCancelled() throws InterruptedException {
 		DebounceHealthMonitorStrategy sut = new DebounceHealthMonitorStrategy(50);
 		final boolean[] result = new boolean[1];
 		final int[] updateCount = new int[1];
 		sut.registerListener(new HealthMonitorStrategyListener() {
-			
+
 			@Override
 			public void onUpdate(boolean isHealthy) {
 				result[0] = isHealthy;
 				updateCount[0]++;
 			}
 		});
-		
+
 		sut.update(true);
 		Assert.assertEquals(true, result[0]);
 		sut.update(false);
@@ -92,24 +92,24 @@ public class DebounceHealthMonitorStrategyTest {
 		Thread.sleep(100);
 		Assert.assertEquals(true, result[0]);//should still be in inital state
 		Assert.assertEquals(1, updateCount[0]);
-		
+
 	}
-	
+
 	@Test
 	public void testUpdateAfterCancelled() throws InterruptedException {
 		DebounceHealthMonitorStrategy sut = new DebounceHealthMonitorStrategy(50);
 		final boolean[] result = new boolean[1];
 		final int[] updateCount = new int[1];
 		sut.registerListener(new HealthMonitorStrategyListener() {
-			
+
 			@Override
 			public void onUpdate(boolean isHealthy) {
 				result[0] = isHealthy;
 				updateCount[0]++;
-				
+
 			}
 		});
-		
+
 		sut.update(true);
 		Assert.assertEquals(true, result[0]);
 		sut.update(false);
@@ -122,25 +122,25 @@ public class DebounceHealthMonitorStrategyTest {
 		Thread.sleep(100);
 		Assert.assertEquals(false, result[0]);
 		Assert.assertEquals(2, updateCount[0]);
-		
+
 	}
-	
-	
+
+
 	@Test
 	public void testConsecutiveUpdates() throws InterruptedException {
 		DebounceHealthMonitorStrategy sut = new DebounceHealthMonitorStrategy(50);
 		final boolean[] result = new boolean[1];
 		final int[] updateCount = new int[1];
 		sut.registerListener(new HealthMonitorStrategyListener() {
-			
+
 			@Override
 			public void onUpdate(boolean isHealthy) {
 				result[0] = isHealthy;
 				updateCount[0]++;
-				
+
 			}
 		});
-		
+
 		sut.update(true);
 		Assert.assertEquals(true, result[0]);
 		sut.update(false);
@@ -150,22 +150,22 @@ public class DebounceHealthMonitorStrategyTest {
 		Assert.assertEquals(false, result[0]);
 		Assert.assertEquals(2, updateCount[0]);
 	}
-	
+
 	@Test
 	public void testConsecutiveUpdatesExceedDebounce() throws InterruptedException {
 		DebounceHealthMonitorStrategy sut = new DebounceHealthMonitorStrategy(50);
 		final boolean[] result = new boolean[1];
 		final int[] updateCount = new int[1];
 		sut.registerListener(new HealthMonitorStrategyListener() {
-			
+
 			@Override
 			public void onUpdate(boolean isHealthy) {
 				result[0] = isHealthy;
 				updateCount[0]++;
-				
+
 			}
 		});
-		
+
 		sut.update(true);
 		Assert.assertEquals(true, result[0]);
 		sut.update(false);
@@ -191,21 +191,21 @@ public class DebounceHealthMonitorStrategyTest {
 		Assert.assertEquals(false, result[0]);
 		Assert.assertEquals(2, updateCount[0]);
 	}
-	
+
 
 	@Test
 	public void testUpdateToInitial() throws InterruptedException {
 		DebounceHealthMonitorStrategy sut = new DebounceHealthMonitorStrategy(50);
 		final int[] updateCount = new int[1];
 		sut.registerListener(new HealthMonitorStrategyListener() {
-			
+
 			@Override
 			public void onUpdate(boolean isHealthy) {
 				updateCount[0]++;
-				
+
 			}
 		});
-		
+
 		sut.update(true);
 		Assert.assertEquals(1, updateCount[0]);
 		sut.update(true);
@@ -213,23 +213,23 @@ public class DebounceHealthMonitorStrategyTest {
 		Thread.sleep(100);
 		Assert.assertEquals(1, updateCount[0]);
 	}
-	
+
 	@Test
 	public void gremlinTest() throws InterruptedException {
 		DebounceHealthMonitorStrategy sut = new DebounceHealthMonitorStrategy(50);
 		final boolean[] result = new boolean[1];
 		sut.registerListener(new HealthMonitorStrategyListener() {
-			
+
 			@Override
 			public void onUpdate(boolean isHealthy) {
 				result[0] = isHealthy;
-				
+
 			}
 		});
-		
+
 		Random r = new Random();
 		boolean health = r.nextBoolean();
-		
+
 		sut.update(health);
 		int sleep;
 		for (int i=0; i<100; i++) {
@@ -239,8 +239,8 @@ public class DebounceHealthMonitorStrategyTest {
 			Thread.sleep(sleep);
 		}
 		Thread.sleep(100);
-		
+
 		Assert.assertEquals(health, result[0]);
 	}
-	
+
 }

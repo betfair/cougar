@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,131 +50,131 @@ public class ApplicationHealthMonitorTest {
 		monitorRegistry = mock(MonitorRegistry.class);
 		aggregator = mock(StatusAggregator.class);
         when(monitorRegistry.getStatusAggregator()).thenReturn(aggregator);
-		
+
 		statusSource = mock(StatusSource.class);
-		
+
 	}
-	
+
 	@Test
 	public void testActiveMonitoringOK() throws InterruptedException {
 		final boolean[] result = new boolean[1];
 		AbstractHealthMonitorStrategy stategy = new AbstractHealthMonitorStrategy() {
-			
+
 			@Override
 			public void update(boolean isHealthy) {
 				result[0] = isHealthy;
-				
+
 			}
 		};
 		ApplicationHealthMonitor sut = new ApplicationHealthMonitor(executionVenueNioServer, stategy, 50, monitorRegistry);
 		sut.setServices(null);
 		when(aggregator.getStatus()).thenReturn(Status.OK);
-		
+
 		Thread.sleep(100);
 		Assert.assertEquals(true, result[0]);
-		
+
 	}
-	
+
 	@Test
 	public void testActiveMonitoringFAIL() throws InterruptedException {
 		final boolean[] result = new boolean[1];
 		AbstractHealthMonitorStrategy stategy = new AbstractHealthMonitorStrategy() {
-			
+
 			@Override
 			public void update(boolean isHealthy) {
 				result[0] = isHealthy;
-				
+
 			}
 		};
 		ApplicationHealthMonitor sut = new ApplicationHealthMonitor(executionVenueNioServer, stategy, 50, monitorRegistry);
 		sut.setServices(null);
 		when(aggregator.getStatus()).thenReturn(Status.FAIL);
-		
+
 		Thread.sleep(100);
 		Assert.assertEquals(false, result[0]);
-		
+
 	}
-	
+
 	@Test
 	public void testActiveMonitoringWARN() throws InterruptedException {
 		final boolean[] result = new boolean[1];
 		AbstractHealthMonitorStrategy stategy = new AbstractHealthMonitorStrategy() {
-			
+
 			@Override
 			public void update(boolean isHealthy) {
 				result[0] = isHealthy;
-				
+
 			}
 		};
 		ApplicationHealthMonitor sut = new ApplicationHealthMonitor(executionVenueNioServer, stategy, 50, monitorRegistry);
 		sut.setServices(null);
 		when(aggregator.getStatus()).thenReturn(Status.WARN);
-		
+
 		Thread.sleep(100);
 		Assert.assertEquals(true, result[0]);
-		
+
 	}
 
 	@Test
 	public void testPassiveMonitoringUpdateFAIL() {
 		final boolean[] result = new boolean[1];
 		AbstractHealthMonitorStrategy stategy = new AbstractHealthMonitorStrategy() {
-			
+
 			@Override
 			public void update(boolean isHealthy) {
 				result[0] = isHealthy;
-				
+
 			}
 		};
 		ApplicationHealthMonitor sut = new ApplicationHealthMonitor(executionVenueNioServer, stategy, 0, monitorRegistry);
 		sut.setServices(null);
 
 		when(aggregator.getStatus()).thenReturn(Status.OK);
-		
+
 		Assert.assertEquals(true, result[0]);
 
-		
+
 		ArgumentCaptor<StatusChangeListener> captor = ArgumentCaptor.forClass(StatusChangeListener.class);
 		verify(aggregator).addStatusChangeListener(captor.capture());
 		StatusChangeListener listener = captor.getValue();
 		listener.statusChanged(new StatusChangeEvent(statusSource, null, Status.FAIL));
-		
+
 		Assert.assertEquals(false, result[0]);
-		
+
 	}
-	
+
 	@Test
 	public void testPassiveMonitoringUpdateWARN() {
 		final boolean[] result = new boolean[1];
 		AbstractHealthMonitorStrategy stategy = new AbstractHealthMonitorStrategy() {
-			
+
 			@Override
 			public void update(boolean isHealthy) {
 				result[0] = isHealthy;
-				
+
 			}
 		};
 		ApplicationHealthMonitor sut = new ApplicationHealthMonitor(executionVenueNioServer, stategy, 0, monitorRegistry);
 		sut.setServices(null);
 
 		when(aggregator.getStatus()).thenReturn(Status.OK);
-		
+
 		Assert.assertEquals(true, result[0]);
 
-		
+
 		ArgumentCaptor<StatusChangeListener> captor = ArgumentCaptor.forClass(StatusChangeListener.class);
 		verify(aggregator).addStatusChangeListener(captor.capture());
 		StatusChangeListener listener = captor.getValue();
 		listener.statusChanged(new StatusChangeEvent(statusSource, null, Status.WARN));
-		
-		Assert.assertEquals(true, result[0]);
-		
-	}
-	
-	
-	
 
-	
-	
-	
+		Assert.assertEquals(true, result[0]);
+
+	}
+
+
+
+
+
+
+
 }

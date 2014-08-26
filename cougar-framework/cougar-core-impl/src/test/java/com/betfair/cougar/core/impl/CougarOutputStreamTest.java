@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ public class CougarOutputStreamTest extends CougarTestCase {
 	ByteArrayOutputStream underlying = new ByteArrayOutputStream();
 	CougarOutputStream os = new CougarOutputStream(underlying);
 
-	
+
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
@@ -68,7 +68,7 @@ public class CougarOutputStreamTest extends CougarTestCase {
 		os.write(bytes);
 		os.flush();
 		assertEqualsArray(bytes, underlying.toByteArray());
-		
+
 		byte[] content = os.getContent();
 		assertEqualsArray(content, underlying.toByteArray());
 

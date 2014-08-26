@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,11 +58,11 @@ public class MandatoryCheckInterceptorTest {
 	private MandatoryCheckInterceptor interceptor;
 	private OperationKey mockOperationKey1 = mock(OperationKey.class);
     private OperationKey mockOperationKey2 = mock(OperationKey.class);
-	
+
 	@Before
 	public void setup() {
 		BaseExecutionVenue mockEV = mock(BaseExecutionVenue.class);
-		
+
 		OperationDefinition mockOperationDefinition1 = mock(OperationDefinition.class);
 		Parameter[] parameterArray1 = new Parameter[] {
 				new Parameter("1", new ParameterType(String.class,null), true),
@@ -85,7 +85,7 @@ public class MandatoryCheckInterceptorTest {
 
 		interceptor = new MandatoryCheckInterceptor(mockEV);
 	}
-	
+
 	@Test
 	public void testInterceptorWithMissingNullArgument() {
 		InterceptorResult result = interceptor.invoke(null, mockOperationKey1, new Object[] {null} );
@@ -93,7 +93,7 @@ public class MandatoryCheckInterceptorTest {
 		assertEquals(InterceptorState.FORCE_ON_EXCEPTION, result.getState());
 		assertTrue(result.getResult() instanceof CougarValidationException);
 	}
-	
+
 	@Test
 	public void testInterceptorWithCorrectArguments() {
 		InterceptorResult result = interceptor.invoke(null, mockOperationKey1, new Object[] {"1", "2" } );

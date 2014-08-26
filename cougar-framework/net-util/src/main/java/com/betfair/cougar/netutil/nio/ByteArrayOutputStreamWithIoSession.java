@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,18 +24,18 @@ import org.apache.mina.common.IoSession;
 
 
 public class ByteArrayOutputStreamWithIoSession extends ByteArrayOutputStream {
-	
+
 	private final IoSession ioSession;
     private long correlationId;
-	
+
 	public ByteArrayOutputStreamWithIoSession (IoSession ioSession, long correlationId) {
 		this.ioSession = ioSession;
         this.correlationId = correlationId;
     }
-	
-	
+
+
 	@Override
 	public void flush() throws IOException {
         ioSession.write(new ResponseMessage(correlationId, toByteArray()));
-	}		
+	}
 }

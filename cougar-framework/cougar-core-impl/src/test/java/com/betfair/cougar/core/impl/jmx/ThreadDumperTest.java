@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,9 +30,9 @@ public class ThreadDumperTest  extends CougarTestCase {
 	}
 
 	public void testThreadContentionMonitoring() {
-		ThreadMXBean mx = ManagementFactory.getThreadMXBean(); 
+		ThreadMXBean mx = ManagementFactory.getThreadMXBean();
 		mx.setThreadContentionMonitoringEnabled(false);
-		
+
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("command", "toggleCM");
 		String value = new ThreadDumper().process(params);
@@ -43,9 +43,9 @@ public class ThreadDumperTest  extends CougarTestCase {
 	}
 
 	public void testGeneralResponse() {
-		ThreadMXBean mx = ManagementFactory.getThreadMXBean(); 
+		ThreadMXBean mx = ManagementFactory.getThreadMXBean();
 		mx.resetPeakThreadCount();
-		
+
 		Map<String, String> params = new HashMap<String, String>();
 		String value = new ThreadDumper().process(params);
 		assertTrue(value.contains("All threads:"));

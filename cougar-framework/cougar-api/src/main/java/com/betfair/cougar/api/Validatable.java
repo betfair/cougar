@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package com.betfair.cougar.api;
 public interface Validatable {
 	/**
 	 * Validate that the mandatory fields required by the Interface definition are present.
-	 * 
+	 *
 	 * Throw an IllegalArgumentException if not.
 	 */
 	public void validateMandatory();

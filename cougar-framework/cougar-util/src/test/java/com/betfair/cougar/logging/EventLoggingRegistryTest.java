@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,15 +25,15 @@ import org.mockito.Mockito;
 
 public class EventLoggingRegistryTest extends CougarUtilTestCase {
 	private final EventLoggingRegistry registry = new EventLoggingRegistry();
-	
+
 	public void testRegisterLogger() {
 		addHandler("foo", false);
 		EventLogDefinition eld = registry.getInvokableLogger("foo");
 		assertEquals(eld.getLogName(), "foo");
 		assertEquals(eld.isAbstract(), false);
-		
+
 	}
-	
+
 	public void testRegisterAbstractLogger() {
 		addHandler("foo", true);
 		assertNull(registry.getInvokableLogger("foo"));
@@ -60,13 +60,13 @@ public class EventLoggingRegistryTest extends CougarUtilTestCase {
 		eld = registry.getInvokableLogger("nsfoobar");
 		assertEquals(eld.getLogName(), "nsfoobar");
 		assertEquals(eld.isAbstract(), false);
-		
+
 		registry.registerConcreteLogger("ns","foo");
 		eld = registry.getInvokableLogger("nsfoofoo");
 		assertEquals(eld.getLogName(), "nsfoofoo");
 		assertEquals(eld.isAbstract(), false);
 	}
-	
+
 	public void testCreateConcreteLoggerNoAbstract() throws Exception {
 		try {
 			registry.registerConcreteLogger("ns","bar");
@@ -106,7 +106,7 @@ public class EventLoggingRegistryTest extends CougarUtilTestCase {
         eventLoggingRegistry.registerConcreteLogger(myNamespace, myServiceName);
         eventLoggingRegistry.registerConcreteLogger(myNamespace, myServiceName);
     }
-	
+
 	private void addHandler(String name, boolean isAbstract) {
 		EventLogDefinition eld = new EventLogDefinition();
 		eld.setRegistry(registry);

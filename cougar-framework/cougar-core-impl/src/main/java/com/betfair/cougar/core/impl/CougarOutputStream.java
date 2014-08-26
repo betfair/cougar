@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public class CougarOutputStream extends OutputStream {
         cache.write(bytes, off, len);
         actualOutputStream.write(bytes, off, len);
     }
-    
+
     @Override
     public void close() throws IOException {
         super.close();
@@ -57,7 +57,7 @@ public class CougarOutputStream extends OutputStream {
             createBuffer();
         }
     }
-    
+
     @Override
     public void flush() throws IOException {
         super.flush();
@@ -75,5 +75,5 @@ public class CougarOutputStream extends OutputStream {
         buffer = cache.toByteArray();
     }
 
-    
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,23 +28,23 @@ import com.betfair.tornjak.kpi.KPIMonitor;
 public class KPITimingDataBindingFactory implements DataBindingFactory {
 
     private final String kpiMarshallerName;
-    private final String kpiFaultMarshallerName;    
+    private final String kpiFaultMarshallerName;
     private final String kpiUnMarshallerName;
     private final String kpiFaultUnMarshallerName;
 
-        
+
     private final KPIMonitor monitor;
 
     private final DataBindingFactory factory;
-    
+
     private final Marshaller marshaller;
     private final FaultMarshaller faultMarshaller;
     private final UnMarshaller unMarshaller;
     private final FaultUnMarshaller faultUnMarshaller;
-    
+
     /**
      * Constructor
-     * 
+     *
      * @param monitor
      * @param factory (note that we only ever get ONE marshaller, and ONE faultMarshaller from this
      *      factory
@@ -52,11 +52,11 @@ public class KPITimingDataBindingFactory implements DataBindingFactory {
      */
     public KPITimingDataBindingFactory(KPIMonitor monitor, DataBindingFactory factory,
                     String formatType) {
-    
+
         this.monitor = monitor;
-        
+
         this.factory = factory;
-        
+
         kpiMarshallerName         = "Cougar.ws." + formatType + ".marshall";
         kpiFaultMarshallerName    = "Cougar.ws." + formatType + ".marshallFault";
         kpiUnMarshallerName       = "Cougar.ws." + formatType + ".unmarshall";
@@ -67,17 +67,17 @@ public class KPITimingDataBindingFactory implements DataBindingFactory {
         unMarshaller = new KPITimingUnMarshaller(monitor, kpiUnMarshallerName, factory.getUnMarshaller());
         faultUnMarshaller = new KPITimingFaultUnMarshaller(monitor, kpiFaultUnMarshallerName, factory.getFaultUnMarshaller());
     }
-    
+
     @Override
     public Marshaller getMarshaller() {
-        return marshaller; 
+        return marshaller;
     }
 
     @Override
     public FaultMarshaller getFaultMarshaller() {
-        return faultMarshaller; 
+        return faultMarshaller;
     }
-    
+
     @Override
     public UnMarshaller getUnMarshaller() {
         return unMarshaller;

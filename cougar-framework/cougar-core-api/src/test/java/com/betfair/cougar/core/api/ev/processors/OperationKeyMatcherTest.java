@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -164,19 +164,19 @@ public class OperationKeyMatcherTest {
     private void assertInvocation(String message, boolean expected) {
         assertEquals(message, expected, operationKeyMatcher.matches(null, key, new Object[0]));
     }
-    
+
     @Test
     public void toStringTest(){
         OperationKeyMatcher okm = new OperationKeyMatcher();
         //Should not fail with null values
         okm.toString();
-        
+
         okm.setMajorVersion(2);
         okm.setMinorVersion(1);
         okm.setOperationName("op");
         okm.setServiceName("testService");
         okm.setNamespace("ns");
-        
+
         String val = okm.toString();
         assertTrue(val.contains("2"));
         assertTrue(val.contains("1"));

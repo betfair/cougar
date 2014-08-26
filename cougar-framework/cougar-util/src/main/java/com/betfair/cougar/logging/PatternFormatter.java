@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,12 +27,12 @@ import com.betfair.cougar.logging.records.TraceLogRecord;
 /**
  * Format a log record using a <a
  * href="http://java.sun.com/j2se/1.5.0/docs/api/">java format</a> string.
- * parameters passed in are: 
- * 	1. Time of the message (long) 
- * 	2. Log level (String) 
- * 	3. Logger Name (String) 
- * 	4. Message (String) 
- * 	5. sequence number (long) 
+ * parameters passed in are:
+ * 	1. Time of the message (long)
+ * 	2. Log level (String)
+ * 	3. Logger Name (String)
+ * 	4. Message (String)
+ * 	5. sequence number (long)
  * 	6. Thread id (String)
  *  7. Nano Time (long)
  *  8. Request UUID (String)
@@ -52,21 +52,21 @@ public class PatternFormatter extends Formatter {
 			StringWriter sw = new StringWriter();
 			record.getThrown().printStackTrace(new PrintWriter(sw));
 			// Tack the exception on the end...
-			return formatRecord(record, message) + sw.toString() + SEPARATOR; 
+			return formatRecord(record, message) + sw.toString() + SEPARATOR;
 		} else {
 			return formatRecord(record, message);
 		}
 	}
-	
+
 	private String formatRecord(LogRecord record, String message) {
         long nanoTime = (record instanceof CougarLogRecord) ? ((CougarLogRecord)record).getNanoTime() : 0;
         String uUid = (record instanceof TraceLogRecord) ? ((TraceLogRecord)record).getUUID() : "";
-		return String.format(pattern, 
-				record.getMillis(), // 1 
+		return String.format(pattern,
+				record.getMillis(), // 1
 				record.getLevel().getName(), // 2
 				record.getLoggerName(),  // 3
 				message,  // 4
-				record.getSequenceNumber(), // 5 
+				record.getSequenceNumber(), // 5
 				record.getThreadID(), // 6
                 nanoTime, // 7
                 uUid // 8

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,21 +32,21 @@ import org.w3c.dom.Document;
  * Responsible for transforming an IDD into a WSDL.
  * <p>
  * Mimics the {@code transform} functionality of {@code xml-maven-plugin}. This simplified
- * code does just what we need.  
+ * code does just what we need.
  */
 public class XmlGenerator {
 
     /**
      * Transform an IDD into a WSDL
-     * 
+     *
      * @param iddDoc the IDD
      * @param xslFile the stylesheet
      * @param outputFile file to write to
      */
     public void transform(Document iddDoc, File xslFile, File outputFile) throws Exception {
 
-        DOMSource source = new DOMSource(iddDoc);        
-        
+        DOMSource source = new DOMSource(iddDoc);
+
         Source xslSource = new StreamSource(xslFile);
 
         TransformerFactory factory = TransformerFactory.newInstance();

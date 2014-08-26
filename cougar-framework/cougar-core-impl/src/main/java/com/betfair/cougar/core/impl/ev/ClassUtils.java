@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import java.lang.reflect.Type;
 public class ClassUtils {
 	public static Class [] getGenerics(Type t) {
 		Class [] generics = null;
-		
+
 		if (t instanceof ParameterizedType) {
             ParameterizedType type = (ParameterizedType) t;
             Type[] typeArguments = type.getActualTypeArguments();
@@ -30,8 +30,8 @@ public class ClassUtils {
             for(int i=0; i < typeArguments.length; ++i){
             	generics[i] = (Class) typeArguments[i];
             }
-        } 
-		
+        }
+
 		return generics;
 	}
 }

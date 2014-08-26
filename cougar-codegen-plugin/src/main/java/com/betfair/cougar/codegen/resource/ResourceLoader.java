@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,18 +45,18 @@ public class ResourceLoader {
 	private final ClassLoader runtimeClassLoader;
 
 	/**
-	 * Util constructor for a loader which will NOT look at the runtime classpath. 
+	 * Util constructor for a loader which will NOT look at the runtime classpath.
 	 */
 	public ResourceLoader() {
 		this(null);
 	}
-	
+
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param classpath the runtime classpath (obtained from the Mojo). If non-null, this classpath
 	 * 			will be consulted for resources which could not be found under the plugin's
-	 * 			classpath. 
+	 * 			classpath.
 	 */
 	public ResourceLoader(List<String> classpath) {
 		if (classpath != null) {
@@ -70,13 +70,13 @@ public class ResourceLoader {
 			runtimeClassLoader = null;
 		}
 	}
-	
+
 	/**
-	 * Same as {@link ClassLoader#getResourceAsStream(String)} except it will look at the runtime 
+	 * Same as {@link ClassLoader#getResourceAsStream(String)} except it will look at the runtime
 	 * classpath if not in the plugin ClassLoader's classpath.
 	 */
 	public InputStream getResourceAsStream(String resourceName) {
-		
+
 		URL url = getResource(resourceName);
 		try {
 			return url != null ? url.openStream() : null;
@@ -84,7 +84,7 @@ public class ResourceLoader {
 			return null;	// this is what a normal ClassLoader does
 		}
 	}
-	
+
 	private URL getResource(String resourceName) {
 
 		URL url = getClass().getClassLoader().getResource(resourceName);
@@ -94,14 +94,14 @@ public class ResourceLoader {
 		}
 		return url;
 	}
-	
+
     private ClassLoader urlClassLoader(List<String> runtimeClassPath) throws MalformedURLException {
-    	
+
     	URL[] urls = new URL[runtimeClassPath.size()];
     	int i = 0;
     	for(String s : runtimeClassPath) {
     		urls[i++] = new File(s).toURI().toURL();
     	}
     	return new URLClassLoader(urls);
-	}   
+	}
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2013, The Sporting Exchange Limited
+  ~ Copyright 2014, The Sporting Exchange Limited
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -38,13 +38,13 @@
 			</list>
 		</property>
 	</bean>
-	
+
 	<bean id="compositeCacheDAO" class="com.betfair.caching.test.dao.impl.TestCompositeCacheDAOImpl">
 		<property name="simpleDAO">
 			<ref local="simpleDAO" />
 		</property>
 	</bean>
-	
+
 	<bean id="compositeDAO" class="org.springframework.aop.framework.ProxyFactoryBean">
 		<property name="proxyInterfaces">
 			<value>com.betfair.caching.domain.dao.IGenericCacheDAO</value>
@@ -60,9 +60,9 @@
 		</property>
 	</bean>
 
-	
+
 	<!-- ASPECTS -->
-	
+
 	<bean id="cacheDAOBeforeAdvisor"
 		class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
 		<property name="advice">
@@ -93,26 +93,26 @@
 	<bean id="CompositeDOVersioner" class="com.betfair.caching.core.version.impl.ReferenceVersioner" />
 
 
-	
-	
+
+
 
 	<!-- Service Definitions -->
-	
-	
+
+
 	<!--  ************************************************************** -->
 	<!--  ** REMEMBER :-  Wire in the PROXY DAO's, not the actual DAO's! -->
 	<!--  ************************************************************** -->
-	
+
 	<bean id="SimpleService" class="com.betfair.caching.test.service.impl.SimpleServiceImpl">
 		<property name="simpleDAO" ref="simpleDAO"/>
 	</bean>
-	
+
 	<bean id="CompositeService" class="com.betfair.caching.test.service.impl.CompositeServiceImpl">
 		<property name="simpleDAO" ref="simpleDAO"/>
 		<property name="compositeDAO" ref="compositeDAO"/>
 	</bean>
-	
-	
+
+
  	<!--  DAO Properties Configurer -->
 	<bean id="DAOPropertyConfigurer" class="com.betfair.caching.core.config.DAOPropertyConfigurer">
 		<property name="propertiesList">

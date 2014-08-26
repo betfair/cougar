@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -111,19 +111,19 @@ public class EventLogRecordTest {
         mle.setFieldsToLog(new Object[]{new SimpleDateFormat("")});
         assertEquals("", "java.text.SimpleDateFormat@0", elr.getMessage().toString());
     }
-    
+
     @Test
     public void testStringWithLineEndings() throws Exception {
     	mle.setFieldsToLog(new Object[]{"A string"+LS});
     	assertEquals("Line Endings should be removed", "A string ", elr.getMessage());
     }
-    
+
     @Test
     public void testStringWithTabs() throws Exception {
     	mle.setFieldsToLog(new Object[]{"A string\t"});
     	assertEquals("Tabs should be removed", "A string ", elr.getMessage());
     }
-    
+
     @Test
     public void testStringWithCommas() throws Exception {
     	mle.setFieldsToLog(new Object[]{"A string,"});

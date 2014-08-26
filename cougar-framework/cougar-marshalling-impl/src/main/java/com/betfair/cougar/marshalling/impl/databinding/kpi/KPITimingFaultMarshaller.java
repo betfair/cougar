@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,24 +23,24 @@ import com.betfair.cougar.marshalling.api.databinding.FaultMarshaller;
 import com.betfair.tornjak.kpi.KPIMonitor;
 
 /**
- * A wrapper which stores KPI statistics for a {@link FaultMarshaller}. 
+ * A wrapper which stores KPI statistics for a {@link FaultMarshaller}.
  */
 public class KPITimingFaultMarshaller implements FaultMarshaller {
 
     private final KPIMonitor monitor;
     private final String  kpiName;
     private final FaultMarshaller marshaller;
-    
+
     public KPITimingFaultMarshaller(KPIMonitor monitor, String kpiName, FaultMarshaller marshaller) {
         this.monitor = monitor;
         this.kpiName = kpiName;
         this.marshaller = marshaller;
-    }    
-    
+    }
+
     @Override
     public void marshallFault(OutputStream outputStream, CougarFault fault, String encoding) {
         boolean success = false;
-        long start = System.currentTimeMillis();        
+        long start = System.currentTimeMillis();
         try {
             marshaller.marshallFault(outputStream, fault, encoding);
             success = true;

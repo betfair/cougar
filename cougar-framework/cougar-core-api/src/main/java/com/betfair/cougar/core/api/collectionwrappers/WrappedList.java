@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import com.betfair.cougar.api.Result;
 
 public class WrappedList<E> implements List<E>, Result {
     private final List<E> underlyingList;
-    
+
     public WrappedList(List<E> toBeWrapped) {
         underlyingList = toBeWrapped;
     }

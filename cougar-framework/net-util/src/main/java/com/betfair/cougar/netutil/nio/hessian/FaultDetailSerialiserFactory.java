@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,16 +27,16 @@ import com.caucho.hessian.io.Serializer;
 import java.util.Set;
 
 /**
- * classes without a no parameter constructor use the CougarInternalDeserialiser - this serialiser/deserialiser requires the client and server to agree on 
+ * classes without a no parameter constructor use the CougarInternalDeserialiser - this serialiser/deserialiser requires the client and server to agree on
  * the serialisation (same number of properties in the same order)
  * </p>
  * classes with a no parameter constructor use the TranscribableSerialiser/Deserialiser which allows the client and server to vary in number and order of serialised
  * properties
  * </p>
- * classes using the TranscribableSerialiser/deserialiser are constrained in the transcription they can perform.  Namely they must advertise the params they will 
+ * classes using the TranscribableSerialiser/deserialiser are constrained in the transcription they can perform.  Namely they must advertise the params they will
  * transcribe via the getParameters method, and only those parameters in the same order may be transcribel
  * </p>
- * The Cougar class FaultDetail does not conform to the above requirements so must use the InternalSerialiser/Deserialiser 
+ * The Cougar class FaultDetail does not conform to the above requirements so must use the InternalSerialiser/Deserialiser
  */
 public class FaultDetailSerialiserFactory extends AbstractSerializerFactory {
 
@@ -48,20 +48,20 @@ public class FaultDetailSerialiserFactory extends AbstractSerializerFactory {
 
     @Override
 	public Deserializer getDeserializer(Class cls) throws HessianProtocolException {
-		
+
 		Deserializer deserializer = null;
         if (FaultDetail.class.isAssignableFrom(cls)) {
             deserializer = new FaultDetailDeserialiser(cls, transcriptionParams);
         }
-			
+
 		return deserializer;
 	}
 
 	@Override
 	public Serializer getSerializer(Class cls) throws HessianProtocolException {
-		
+
 		Serializer serializer = null;
-		
+
         if (FaultDetail.class.isAssignableFrom(cls)) {
             serializer = new FaultDetailSerialiser(transcriptionParams);
         }

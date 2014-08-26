@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,14 +32,14 @@ public class XmlUtil {
 
     /**
      * Parse an XML document (with appropriate flags for our purposes) from the given stream.
-     * 
+     *
      * @param is input stream containing the document
      * @param resolver resolver to be used for parsing
-     * 
+     *
      * @throws PluginException for all errors
      */
     public static Document parse(InputStream is, EntityResolver resolver) {
-    	
+
         try {
             DocumentBuilder parser = createParser(resolver);
             return parser.parse(is);
@@ -51,13 +51,13 @@ public class XmlUtil {
 
     /**
      * Parse an XML document (with appropriate flags for our purposes) from the file.
-     * 
+     *
      * @param xmlFile file to be parsed.
      * @param resolver resolver to be used for parsing
      * @throws PluginException for all errors
      */
     public static Document parse(File xmlFile, EntityResolver resolver) {
-    	
+
         try {
             DocumentBuilder parser = createParser(resolver);
             return parser.parse(xmlFile);
@@ -68,13 +68,13 @@ public class XmlUtil {
     }
 
     private static DocumentBuilder createParser(EntityResolver resolver) throws Exception {
-    	
+
     	DocumentBuilderFactory dbfactory = DocumentBuilderFactory.newInstance();
 
     	// standard flags needed for our parsing
     	dbfactory.setNamespaceAware(true);
     	dbfactory.setXIncludeAware(true);
-    	
+
     	DocumentBuilder parser = dbfactory.newDocumentBuilder();
     	parser.setEntityResolver(resolver);
     	return parser;

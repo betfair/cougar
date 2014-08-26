@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,21 +24,21 @@ import com.betfair.cougar.api.Result;
 
 
 /**
- * Exception thrown when an error occurs in the business application. 
+ * Exception thrown when an error occurs in the business application.
  *
  */
 @SuppressWarnings("serial")
 public abstract class CougarApplicationException extends Exception implements Result {
-	
+
 	private ResponseCode code = ResponseCode.BadRequest;
     private final String exceptionCode;
-	
+
     public CougarApplicationException(ResponseCode code, String exceptionCode) {
 		super();
 		this.code = code;
         this.exceptionCode = exceptionCode;
 	}
-	
+
     public CougarApplicationException(ResponseCode code, String exceptionCode, Throwable cause) {
 		super(cause);
 		this.code = code;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,11 @@ import java.util.Map;
 public class CougarRemoteFault {
 
 	private LinkedHashMap<String, Object> faultMap;
-	
+
 	public CougarRemoteFault(LinkedHashMap<String, Object> faultMap) {
 		this.faultMap = faultMap;
 	}
-	
+
 	public String toString() {
 		String ec = getErrorCode();
 		return "ErrorCode: " + (ec.equals("") ? "N/A" : ec)  +", faultCode=" + getFaultCode() + ", faultString='" + getFaultString()+ "'" ;
@@ -36,28 +36,28 @@ public class CougarRemoteFault {
 	public String getFaultCode() {
 		return (String)faultMap.get("faultcode");
 	}
-	
+
 	public String getFaultString() {
 		return (String)faultMap.get("faultstring");
 	}
 
 	@SuppressWarnings("unchecked")
 	public String getErrorCode() {
-		
+
 		Map<String,Object> detailMap  = (Map<String, Object>)faultMap.get("detail");
-		if( detailMap != null ) {			
+		if( detailMap != null ) {
 			Collection<Object> detailValues = detailMap.values();
-			
+
 			if( detailValues.isEmpty() ) {
 				return "";
 			}
-			
+
 			Map<String, Object> exceptionMap= (Map<String, Object>) detailValues.iterator().next();
-			
+
 			String error = (String) exceptionMap.get("errorCode")+"";
 			return error;
-		} 
-		
+		}
+
 		throw new IllegalStateException("Unrecognised fault - " + faultMap.toString());
 	}
 }

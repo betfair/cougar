@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,14 +42,14 @@ public class PostMatchingInterceptorTest {
         matcher = mock(Matcher.class);
         matchingInterceptor.setMatcher(matcher);
     }
-    
+
     @Test
     public void invokedWhenMatcherNotSet() {
     	matchingInterceptor.setMatcher(null);
     	matchingInterceptor.invoke(null, key, null, null);
         verify(processor).invoke(null, key, null, null);
     }
-    
+
     @Test
     public void invokedWhenMatcherMatches() {
         when(matcher.matches(Matchers.<ExecutionContext>any(), Matchers.<OperationKey>any(), Matchers.<Object[]>any())).thenReturn(true);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,13 +28,13 @@ public interface ContentTypeNormaliser {
 	/**
 	 * Get the MediaType of the content of the HttpServletRequest.
 	 * This is determined from the Content-Type header for POST requests.
-	 * For POST requests with no Content-Type header, or an invalid value, 
-	 * a CougarValidationException is thrown 
+	 * For POST requests with no Content-Type header, or an invalid value,
+	 * a CougarValidationException is thrown
 	 * For GET requests this method will return null.
      * @throws CougarValidationException
 	 */
 	public MediaType getNormalisedRequestMediaType(HttpServletRequest request);
-	
+
 	/**
 	 * Get the MediaType for the content of the HttpServletResponse for the request.
 	 * MediaType is determined first of all by a MessageConstants.FORMAT_PARAMETER parameter,
@@ -61,4 +61,3 @@ public interface ContentTypeNormaliser {
      */
     public void addValidEncodings(final Set<String> validEncodings);;
 }
- 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,17 +27,17 @@ public class ContentTypeNormaliserHelper implements InitializingBean {
 	private ContentTypeNormaliser contentTypeNormaliser;
 	private List<DataBindingMap> dataBindingMaps;
 	private Set<String> validEncodings;
-	
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (dataBindingMaps != null) {
 			for (DataBindingMap dataBindingMap : dataBindingMaps) {
 				contentTypeNormaliser.addValidContentTypes(dataBindingMap.getContentTypes(), dataBindingMap.getPreferredMediaType());
 			}
-		} 
+		}
 		if (validEncodings != null) {
 			contentTypeNormaliser.addValidEncodings(validEncodings);
-		} 
+		}
 	}
 
 	public void setContentTypeNormaliser(ContentTypeNormaliser contentTypeNormaliser) {

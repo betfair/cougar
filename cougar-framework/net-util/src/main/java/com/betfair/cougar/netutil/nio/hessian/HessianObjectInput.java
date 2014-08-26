@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,19 +25,19 @@ import com.caucho.hessian.io.HessianProtocolException;
 import com.caucho.hessian.io.SerializerFactory;
 
 public class HessianObjectInput implements CougarObjectInput {
-	
+
 	private Hessian2Input hessian2Input;
 
 	HessianObjectInput(InputStream is, SerializerFactory serializerFactory) {
 		hessian2Input = new Hessian2Input(is);
         hessian2Input.setSerializerFactory(serializerFactory);
 	}
-	
-	
+
+
 	@Override
 	public void close() throws IOException {
 		hessian2Input.close();
-			
+
 	}
 
 	@Override

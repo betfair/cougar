@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,37 +25,37 @@ import com.betfair.cougar.transport.nio.HealthMonitorStrategy.HealthMonitorStrat
 
 public class CountingHealthMonitorStrategyTest {
 
-	
+
 	@Test
 	public void testInitialUpdate() {
 		CountingHealthMonitorStrategy sut = new CountingHealthMonitorStrategy(3);
 		final boolean[] result = new boolean[1];
 		sut.registerListener(new HealthMonitorStrategyListener() {
-			
+
 			@Override
 			public void onUpdate(boolean isHealthy) {
 				result[0]= isHealthy;
-				
+
 			}
 		});
-		
+
 		sut.update(true);
 		Assert.assertEquals(true, result[0]);
 	}
-	
+
 	@Test
 	public void testUpdate() {
 		CountingHealthMonitorStrategy sut = new CountingHealthMonitorStrategy(3);
 		final boolean[] result = new boolean[1];
 		sut.registerListener(new HealthMonitorStrategyListener() {
-			
+
 			@Override
 			public void onUpdate(boolean isHealthy) {
 				result[0]= isHealthy;
-				
+
 			}
 		});
-		
+
 		sut.update(true);
 		Assert.assertEquals(true, result[0]);
 		sut.update(false);
@@ -65,20 +65,20 @@ public class CountingHealthMonitorStrategyTest {
 		sut.update(false);
 		Assert.assertEquals(false,result[0]);
 	}
-	
+
 	@Test
 	public void testResetCount() {
 		CountingHealthMonitorStrategy sut = new CountingHealthMonitorStrategy(3);
 		final boolean[] result = new boolean[1];
 		sut.registerListener(new HealthMonitorStrategyListener() {
-			
+
 			@Override
 			public void onUpdate(boolean isHealthy) {
 				result[0]= isHealthy;
-				
+
 			}
 		});
-		
+
 		sut.update(true);
 		Assert.assertEquals(true, result[0]);
 		sut.update(false);
@@ -91,18 +91,18 @@ public class CountingHealthMonitorStrategyTest {
 		Assert.assertEquals(true,result[0]);
 		sut.update(false);
 		Assert.assertEquals(false,result[0]);
-	}	
-	
+	}
+
 	@Test
 	public void testUpdateAfterListenersAdvised() {
 		CountingHealthMonitorStrategy sut = new CountingHealthMonitorStrategy(3);
 		final boolean[] result = new boolean[1];
 		sut.registerListener(new HealthMonitorStrategyListener() {
-			
+
 			@Override
 			public void onUpdate(boolean isHealthy) {
 				result[0]= isHealthy;
-				
+
 			}
 		});
 		sut.update(true);
@@ -116,6 +116,6 @@ public class CountingHealthMonitorStrategyTest {
 		Assert.assertEquals(false, result[0]);
 		sut.update(true);
 		Assert.assertEquals(false, result[0]);
-		
+
 	}
 }

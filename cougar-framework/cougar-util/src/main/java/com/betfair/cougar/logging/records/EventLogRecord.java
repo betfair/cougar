@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import java.util.logging.Level;
 import com.betfair.cougar.api.LoggableEvent;
 
 public final class EventLogRecord extends CougarLogRecord {
-	
+
 	private static final String fieldSeperator = ",";
 	private static final String collectionStart = "[";
     private static String collectionSeperator = ",";
@@ -44,7 +44,7 @@ public final class EventLogRecord extends CougarLogRecord {
     private static String[] NON_LOGGABLE_STRINGS = new String[]{
     	LINE_SEPARATOR, TAB, fieldSeperator, collectionSeperator
 	};
-    
+
     private String messageString;
     private final LoggableEvent event;
     private final Object[] xFields;
@@ -141,11 +141,11 @@ public final class EventLogRecord extends CougarLogRecord {
 
         sb.append(cleanse(o));
     }
-    
+
     private String cleanse(Object obj) {
     	if(obj == null)
     		return "";
-    	
+
     	String stringToLog = obj.toString();
     	for (String string : NON_LOGGABLE_STRINGS) {
     		stringToLog = stringToLog.replace(string, " ");
