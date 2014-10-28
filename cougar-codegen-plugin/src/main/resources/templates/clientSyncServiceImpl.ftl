@@ -151,7 +151,7 @@ public class  ${service}SyncClientImpl implements ${service}SyncClient {<#t>
             </#list>
 	    { </@compress>
 	    <@compress single_line=true><#if operation.returnType.javaType!="void">return </#if>${operation.operationName}(${argsToBePassed},
-                   timeoutMillis == 0 ? DefaultTimeConstraints.NO_CONSTRAINTS : DefaultTimeConstraints.fromTimeout(timeoutMillis));</@compress>
+                   DefaultTimeConstraints.fromTimeout(timeoutMillis));</@compress>
   }
 
  /**
