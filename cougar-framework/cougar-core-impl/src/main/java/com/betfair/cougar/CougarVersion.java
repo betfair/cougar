@@ -34,6 +34,7 @@ public class CougarVersion {
 
     private static String VERSION;
     private static String MAJOR_MINOR_VERSION;
+    private static String COUGAR_NAME = "Cougar";
 
     static {
         init("/version/CougarVersion.properties");
@@ -84,5 +85,13 @@ public class CougarVersion {
      */
     public static String getMajorMinorVersion() {
         return MAJOR_MINOR_VERSION;
+    }
+
+    /**
+     * Returns the version string to be used, amongst other cases, for identifying the server implementation.
+     * @return The version string
+     */
+    public static String getVersionString() {
+        return COUGAR_NAME + "-" + getVersion();
     }
 }

@@ -103,9 +103,37 @@ public class JettyHttpTransport extends AbstractRegisterableTransport implements
     private int gzipBufferSize;
     private String gzipExcludedAgents;
 
+    /**
+     * Is cors handling enabled?
+     */
+    private boolean corsEnabled;
+    /**
+     * todo
+     */
+    private String corsAllowedOrigins;
+    /**
+     * todo
+     */
+    private String corsAllowedMethods;
+    /**
+     * todo
+     */
+    private String corsAllowedHeaders;
+    /**
+     * todo
+     */
+    private Boolean corsAllowCredentials;
+    /**
+     * todo
+     */
+    private boolean corsChainPreflight;
+
+
+
     private int unknownCipherKeyLength;
     private boolean suppressCommasInAccessLogForStaticHtml;
     private boolean suppressCommasInAccessLogForCalls;
+    private String corsMaxAge;
 
     public JettyHttpTransport() {
     }
@@ -307,16 +335,32 @@ public class JettyHttpTransport extends AbstractRegisterableTransport implements
                 context.setAllowNullPathInfo(false);
             }
             context.setResourceBase(".");
+
             if (gzipEnabled) {
                 try {
-                    context.setHandler(new GzipHandler(gzipBufferSize,gzipMinSize,gzipExcludedAgents, jettyServiceHandler));
+                    if (isCorsEnabled()) {
+                        context.setHandler(new GzipHandler(gzipBufferSize, gzipMinSize, gzipExcludedAgents,
+                                new CrossOriginHandler(getCorsAllowedOrigins(), getCorsAllowedMethods(),
+                                        getCorsAllowedHeaders(), getCorsAllowCredentials(), getCorsMaxAge(), jettyServiceHandler)));
+                    } else {
+                        context.setHandler(new GzipHandler(gzipBufferSize,gzipMinSize,gzipExcludedAgents, jettyServiceHandler));
+                    }
                 }
                 catch (ServletException e) {
                     throw new CougarFrameworkException("Failed to create GZIP handler: [" + jettyContextRoot + "]", e);
                 }
             }
             else {
-                context.setHandler(jettyServiceHandler);
+                if (isCorsEnabled()) {
+                    try {
+                        context.setHandler(new CrossOriginHandler(getCorsAllowedOrigins(), getCorsAllowedMethods(),
+                                getCorsAllowedHeaders(), getCorsAllowCredentials(), getCorsMaxAge(), jettyServiceHandler));
+                    } catch (ServletException e) {
+                        throw new CougarFrameworkException("Failed to create CORS handler: [" + jettyContextRoot + "]", e);
+                    }
+                } else {
+                    context.setHandler(jettyServiceHandler);
+                }
             }
             handlerCollection.addHandler(context);
             try {
@@ -589,6 +633,62 @@ public class JettyHttpTransport extends AbstractRegisterableTransport implements
     public void setGzipMinSize(int minSize) {
     	this.gzipMinSize = minSize;
     }
+
+
+    public void setCorsEnabled(boolean corsEnabled) {
+        this.corsEnabled = corsEnabled;
+    }
+
+    @ManagedAttribute
+    public boolean isCorsEnabled() {
+        return corsEnabled;
+    }
+
+    public void setCorsAllowedOrigins(String corsAllowedOrigins) {
+        this.corsAllowedOrigins = corsAllowedOrigins;
+    }
+
+    @ManagedAttribute
+    public String getCorsAllowedOrigins() {
+        return corsAllowedOrigins;
+    }
+
+    public void setCorsAllowedMethods(String corsAllowedMethods) {
+        this.corsAllowedMethods = corsAllowedMethods;
+    }
+
+    @ManagedAttribute
+    public String getCorsAllowedMethods() {
+        return corsAllowedMethods;
+    }
+
+    public void setCorsAllowedHeaders(String corsAllowedHeaders) {
+        this.corsAllowedHeaders = corsAllowedHeaders;
+    }
+
+    @ManagedAttribute
+    public String getCorsAllowedHeaders() {
+        return corsAllowedHeaders;
+    }
+
+    public void setCorsAllowCredentials(Boolean corsAllowCredentials) {
+        this.corsAllowCredentials = corsAllowCredentials;
+    }
+
+    @ManagedAttribute
+    public Boolean getCorsAllowCredentials() {
+        return corsAllowCredentials;
+    }
+
+    public void setCorsMaxAge(String corsMaxAge) {
+        this.corsMaxAge = corsMaxAge;
+    }
+
+    @ManagedAttribute
+    public String getCorsMaxAge() {
+        return corsMaxAge;
+    }
+
 
 
     @ManagedAttribute
