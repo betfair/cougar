@@ -56,7 +56,6 @@ public class JettyHandler extends AbstractHandler {
 
 	private int timeoutInSeconds;
     private boolean suppressCommasInAccessLog;
-    private static final String VERSION_HEADER = "Cougar 2 - "+CougarVersion.getVersion();
 
     public JettyHandler(final TransportCommandProcessor<HttpCommand> commandProcessor, boolean suppressCommasInAccessLog) {
         this(commandProcessor, null, null, suppressCommasInAccessLog);
@@ -81,7 +80,7 @@ public class JettyHandler extends AbstractHandler {
 
 	@Override
 	public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        response.setHeader("Server", VERSION_HEADER);
+        response.setHeader("Server", CougarVersion.getVersionString());
 		try {
             IdentityTokenResolver itr = null;
             if (identityTokenResolverLookup != null) {
