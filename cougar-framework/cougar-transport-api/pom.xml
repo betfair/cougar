@@ -20,11 +20,11 @@
   <parent>
   	<artifactId>cougar-framework</artifactId>
   	<groupId>com.betfair.cougar</groupId>
-	<version>3.1.2-SNAPSHOT</version>
+	<version>3.1.1</version>
   </parent>
 
     <artifactId>cougar-transport-api</artifactId>
-  <version>3.1.2-SNAPSHOT</version>
+  <version>3.1.1</version>
     <packaging>jar</packaging>
     <name>cougar-transport-api</name>
 
