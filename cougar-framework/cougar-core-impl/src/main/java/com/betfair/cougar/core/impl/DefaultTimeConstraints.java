@@ -35,6 +35,9 @@ public class DefaultTimeConstraints implements TimeConstraints {
     }
 
     public static TimeConstraints fromTimeout(long timeout) {
+        if (timeout <= 0) {
+            return DefaultTimeConstraints.NO_CONSTRAINTS;
+        }
         return new DefaultTimeConstraints(System.currentTimeMillis()+timeout);
     }
 
