@@ -21,11 +21,11 @@
 	<parent>
 		<groupId>com.betfair.cougar</groupId>
 		<artifactId>cougar-master-pom</artifactId>
-		<version>3.1.1-SNAPSHOT</version>
+		<version>3.1.2-SNAPSHOT</version>
 	</parent>
 	
 	<artifactId>cougar-testing-service</artifactId>
-  <version>3.1.1-SNAPSHOT</version>
+  <version>3.1.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>cougar-testing-service</name>
 
