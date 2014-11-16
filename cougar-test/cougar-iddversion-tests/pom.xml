@@ -20,7 +20,7 @@
   <parent>
     <artifactId>cougar-test</artifactId>
     <groupId>com.betfair.cougar</groupId>
-    <version>3.1.1-SNAPSHOT</version>
+    <version>3.1.1</version>
   </parent>
   <artifactId>cougar-iddversion-tests</artifactId>
   <name>cougar-iddversion-tests</name>
