@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean class="com.betfair.cougar.util.configuration.PropertyConfigurer">
+        <constructor-arg index="0" ref="cougar.core.EncryptorRegistry"/>
+        <property name="defaultConfig" value="classpath:conf/zipkin-defaults.properties"/>
+        <property name="configOverride" value="overrides.properties"/>
+        <property name="placeholderPrefix" value="$zp{"/>
+    </bean>
+
+    <bean id="zipkinSpanCollector" class="com.github.kristofa.brave.zipkin.ZipkinSpanCollector">
+        <constructor-arg index="0" value="$zp{zipkin.host:localhost}"/>
+        <constructor-arg index="1" value="$zp{zipkin.port:9410}"/>
+        <constructor-arg index="2" ref="zipkinSpanCollectorParams"/>
+    </bean>
+
+    <bean id="zipkinSpanCollectorParams" class="com.github.kristofa.brave.zipkin.ZipkinSpanCollectorParams">
+        <property name="batchSize" value="$zp{zipkin.batchSize:10}"/>
+        <property name="failOnSetup" value="$zp{zipkin.failOnSetup:true}"/>
+        <property name="nrOfThreads" value="$zp{zipkin.nrOfThreads:1}"/>
+        <property name="queueSize" value="$zp{zipkin.queueSize:200}"/>
+        <property name="socketTimeout" value="$zp{zipkin.socketTimeout:5000}"/>
+    </bean>
+
+    <bean name="zipkinTracerInitialisation" parent="compoundTracerRegistrationHelper">
+        <constructor-arg index="1">
+            <bean class="com.betfair.cougar.core.impl.tracing.zipkin.ZipkinTracer"/>
+        </constructor-arg>
+        <constructor-arg index="2" value="#{ $zp{zipkin.tracing.level} > 0 }"/>
+    </bean>
+</beans>
