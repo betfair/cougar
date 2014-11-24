@@ -20,11 +20,16 @@ package com.betfair.testing.utils.cougar.assertions;
 import com.betfair.testing.utils.cougar.misc.AggregatedStepExpectedOutputMetaData;
 import com.betfair.testing.utils.cougar.misc.NameValuePair;
 import com.betfair.testing.utils.cougar.misc.ObjectUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.List;
 
 import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.fail;
 
 public class StandardAssertion implements IAssertion {
 
@@ -93,15 +98,40 @@ public class StandardAssertion implements IAssertion {
 				//	castedExpObj = expectedValue;
 				//}
                     if (castedExpObj.getClass().equals(actualValue.getClass())) {
-                        assertEquals(message, castedExpObj, actualValue);
-                    }
-                    else {
-    					AssertionUtils.jettAssertEquals(message+": "+errorMessage, castedExpObj, actualValue);
+
+                        if (String.class == castedExpObj.getClass()) {
+
+                            // Only bother checking JSON if the strings are not equal
+                            if (!castedExpObj.equals(actualValue)) {
+
+                                try {
+                                    // try JSON String comparison (e.g. doesn't care about the order of keys)
+                                    ObjectMapper mapper = new ObjectMapper();
+
+                                    JsonNode expObj = mapper.readTree((String) castedExpObj);
+                                    JsonNode actualObj = mapper.readTree((String) actualValue);
+
+                                    assertEquals(message, expObj, actualObj);
+
+                                } catch (JsonProcessingException e) {
+                                    // not JSON, try normal String comparison
+                                    assertEquals(message, castedExpObj, actualValue);
+                                } catch (IOException e) {
+                                    fail(message);
+                                }
+
+                            } // if the Strings are equal, the assertion has passed
+
+                        } else {
+                            // not String, normal object equality
+                            assertEquals(message, castedExpObj, actualValue);
+                        }
+
+                    } else {
+    					AssertionUtils.jettAssertEquals(message + ": " + errorMessage, castedExpObj, actualValue);
                     }
 				}
 			}
 		}
 	}
-
-
 }

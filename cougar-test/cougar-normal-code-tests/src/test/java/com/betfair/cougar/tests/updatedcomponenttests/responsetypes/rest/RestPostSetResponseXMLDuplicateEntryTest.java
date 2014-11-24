@@ -59,10 +59,10 @@ public class RestPostSetResponseXMLDuplicateEntryTest {
         cougarManager1.makeRestCougarHTTPCalls(getNewHttpCallBean1);
         
         XMLHelpers xMLHelpers3 = new XMLHelpers();
-        Document createAsDocument9 = xMLHelpers3.getXMLObjectFromString("<TestSimpleSetGetResponse><String>aaa string</String><String>ccc string</String><String>bbb string</String><String>ddd string</String></TestSimpleSetGetResponse>");
+        Document createAsDocument9 = xMLHelpers3.getXMLObjectFromString("<TestSimpleSetGetResponse><String>bbb string</String><String>aaa string</String><String>ddd string</String><String>ccc string</String></TestSimpleSetGetResponse>");
         
         JSONHelpers jSONHelpers4 = new JSONHelpers();
-        JSONObject createAsJSONObject10 = jSONHelpers4.createAsJSONObject(new JSONObject("{ \"response\":[\"aaa string\",\"ccc string\",\"bbb string\",\"ddd string\"]}"));
+        JSONObject createAsJSONObject10 = jSONHelpers4.createAsJSONObject(new JSONObject("{ \"response\":[\"bbb string\",\"aaa string\",\"ddd string\",\"ccc string\"]}"));
         
         HttpResponseBean response5 = getNewHttpCallBean1.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTXMLXML);
         AssertionUtils.multiAssertEquals(createAsDocument9, response5.getResponseObject());

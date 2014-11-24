@@ -57,7 +57,7 @@ public class SOAPMapResponseSimpleMapNullValueTest {
         cougarManager2.makeSoapCougarHTTPCalls(getNewHttpCallBean2);
         
         XMLHelpers xMLHelpers4 = new XMLHelpers();
-        Document createAsDocument9 = xMLHelpers4.getXMLObjectFromString("<response><entry key=\"aaa\"><String>Value for aaa</String></entry><entry key=\"ddd\"><String/></entry><entry key=\"ccc\"><String>Value for ccc</String></entry><entry key=\"bbb\"><String>Value for bbb</String></entry></response>");
+        Document createAsDocument9 = xMLHelpers4.getXMLObjectFromString("<response><entry key=\"aaa\"><String>Value for aaa</String></entry><entry key=\"ccc\"><String>Value for ccc</String></entry><entry key=\"bbb\"><String>Value for bbb</String></entry><entry key=\"ddd\"><String/></entry></response>");
         
         Map<String, Object> convertResponseToSOAP10 = cougarManager2.convertResponseToSOAP(createAsDocument9, getNewHttpCallBean2);
         

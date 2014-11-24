@@ -61,10 +61,10 @@ public class RestPostSetResponseXMLNullEntryTest {
         cougarManager1.makeRestCougarHTTPCall(getNewHttpCallBean1, com.betfair.testing.utils.cougar.enums.CougarMessageProtocolRequestTypeEnum.RESTXML, com.betfair.testing.utils.cougar.enums.CougarMessageContentTypeEnum.JSON);
         
         XMLHelpers xMLHelpers3 = new XMLHelpers();
-        Document createAsDocument10 = xMLHelpers3.getXMLObjectFromString("<TestSimpleSetGetResponse><String xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/><String>ccc string</String><String>bbb string</String><String>ddd string</String></TestSimpleSetGetResponse>");
+        Document createAsDocument10 = xMLHelpers3.getXMLObjectFromString("<TestSimpleSetGetResponse><String>bbb string</String><String xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/><String>ddd string</String><String>ccc string</String></TestSimpleSetGetResponse>");
         
         JSONHelpers jSONHelpers4 = new JSONHelpers();
-        JSONObject createAsJSONObject11 = jSONHelpers4.createAsJSONObject(new JSONObject("{\"response\": [null,\"ccc string\",\"bbb string\",\"ddd string\"]}"));
+        JSONObject createAsJSONObject11 = jSONHelpers4.createAsJSONObject(new JSONObject("{\"response\": [\"bbb string\",null,\"ddd string\",\"ccc string\"]}"));
         
         HttpResponseBean response5 = getNewHttpCallBean1.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTXMLXML);
         AssertionUtils.multiAssertEquals(createAsDocument10, response5.getResponseObject());

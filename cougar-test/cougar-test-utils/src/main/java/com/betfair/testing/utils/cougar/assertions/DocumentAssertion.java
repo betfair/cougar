@@ -117,6 +117,12 @@ public class DocumentAssertion implements IAssertion {
 			iterate(actNodeList.item(i), actNodes);
 		}
 
+        String messagePrefix = "\nExpected:\n" + new XMLHelpers().getXMLAsString(expDocument) + "\n\nactual:\n"+new XMLHelpers().getXMLAsString(actDocument)+"\n\n";
+
+//        TODO: Consider XMLUnit to compare XML?
+//        XMLUnit.setIgnoreAttributeOrder(true);
+//        assertXMLEqual(messagePrefix, expDocument, actDocument);
+
 		Collections.reverse(expNodes);
 		Collections.reverse(actNodes);
 
@@ -125,8 +131,6 @@ public class DocumentAssertion implements IAssertion {
 	/*	System.out.print(new XMLHelpers().getXMLAsString(expDocument));
 		System.out.print("");
 		System.out.print(new XMLHelpers().getXMLAsString(actDocument));*/
-
-        String messagePrefix = "Expected: " + new XMLHelpers().getXMLAsString(expDocument) + ", actual: "+new XMLHelpers().getXMLAsString(actDocument);
 
         AssertionUtils.jettAssertEquals(messagePrefix+": Check number of keys in document: ", expNodes.size(), actNodes.size());
 

@@ -1014,13 +1014,8 @@ public class CougarHelpers {
 		Map<String, Object> responseMap = new HashMap<String, Object >();
 
 		for(int i = 0; i < results.length(); i++){
-			String entryString = results.getString(i);
-			int idStart = entryString.indexOf(':')+1;
-			int idEnd = entryString.indexOf(',');
-			String id = entryString.substring(idStart, idEnd);
-			id = id.replace("\"","");
-
-			responseMap.put("response"+id, entryString);
+            JSONObject jsonObject = results.getJSONObject(i);
+            responseMap.put("response"+ jsonObject.get("id"), jsonObject.toString());
 		}
 
 		responseMap.put("httpStatusCode",batchedResponse.getHttpStatusCode()+"");

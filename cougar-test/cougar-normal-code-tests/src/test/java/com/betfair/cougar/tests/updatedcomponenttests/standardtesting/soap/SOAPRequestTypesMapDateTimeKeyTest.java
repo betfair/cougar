@@ -65,7 +65,7 @@ public class SOAPRequestTypesMapDateTimeKeyTest {
         hinstance.makeSoapCougarHTTPCalls(hbean);
         // Create the expected response object as an XML document (using the date objects created earlier)
         XMLHelpers xMLHelpers6 = new XMLHelpers();
-        Document createAsDocument11 = xMLHelpers6.createAsDocument(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(("<response><responseMap><entry key=\""+date2+"\"><String>date2</String></entry><entry key=\""+date1+"\"><String>date1</String></entry></responseMap></response>").getBytes())));
+        Document createAsDocument11 = xMLHelpers6.createAsDocument(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(("<response><responseMap><entry key=\""+date1+"\"><String>date1</String></entry><entry key=\""+date2+"\"><String>date2</String></entry></responseMap></response>").getBytes())));
         // Convert the expected response to SOAP for comparison with actual response
         Map<String, Object> convertResponseToSOAP12 = hinstance.convertResponseToSOAP(createAsDocument11, hbean);
         // Check the response is as expected

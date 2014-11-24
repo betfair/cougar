@@ -63,7 +63,7 @@ public class RestPostRequestTypesMapDateTimeKeyXMLTest {
         hinstance.makeRestCougarHTTPCall(hbean, com.betfair.testing.utils.cougar.enums.CougarMessageProtocolRequestTypeEnum.RESTXML, com.betfair.testing.utils.cougar.enums.CougarMessageContentTypeEnum.XML);
         // Create the expected response as an XML document (using the date object created earlier)
         XMLHelpers xMLHelpers5 = new XMLHelpers();
-        Document expectedResponseXML = xMLHelpers5.createAsDocument(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(("<MapDateTimeKeyOperationResponse><MapDateTimeKeyOperationResponseObject><responseMap><entry key=\""+date2+"\"><String>date2</String></entry><entry key=\""+date1+"\"><String>date1</String></entry></responseMap></MapDateTimeKeyOperationResponseObject></MapDateTimeKeyOperationResponse>").getBytes())));
+        Document expectedResponseXML = xMLHelpers5.createAsDocument(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(("<MapDateTimeKeyOperationResponse><MapDateTimeKeyOperationResponseObject><responseMap><entry key=\""+date1+"\"><String>date1</String></entry><entry key=\""+date2+"\"><String>date2</String></entry></responseMap></MapDateTimeKeyOperationResponseObject></MapDateTimeKeyOperationResponse>").getBytes())));
         // Check the response is as expected
         HttpResponseBean response6 = hbean.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTXMLXML);
         AssertionUtils.multiAssertEquals(expectedResponseXML, response6.getResponseObject());

@@ -57,7 +57,7 @@ public class SOAPSetResponseSimpleSetNullEntryTest {
         cougarManager2.makeSoapCougarHTTPCalls(getNewHttpCallBean2);
         
         XMLHelpers xMLHelpers4 = new XMLHelpers();
-        Document createAsDocument9 = xMLHelpers4.getXMLObjectFromString("<response><String/><String>aaa string</String><String>ccc string</String><String>bbb string</String></response>");
+        Document createAsDocument9 = xMLHelpers4.getXMLObjectFromString("<response><String>aaa string</String><String>bbb string</String><String>ccc string</String><String/></response>");
 
         Map<String, Object> convertResponseToSOAP10 = cougarManager2.convertResponseToSOAP(createAsDocument9, getNewHttpCallBean2);
         
