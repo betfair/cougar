@@ -1,10 +1,12 @@
 package com.betfair.cougar.core.impl.tracing.zipkin;
 
+import com.betfair.cougar.api.zipkin.ZipkinData;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-public class ZipkinData {
+public class ZipkinDataImpl implements ZipkinData {
 
     private Long traceId;
     private Long spanId;
@@ -14,8 +16,8 @@ public class ZipkinData {
     private short port;
 
 
-    private ZipkinData(@Nonnull Long traceId, @Nonnull Long spanId, @Nullable Long parentSpanId,
-                       @Nonnull String spanName, short port) {
+    private ZipkinDataImpl(@Nonnull Long traceId, @Nonnull Long spanId, @Nullable Long parentSpanId,
+                           @Nonnull String spanName, short port) {
         Objects.requireNonNull(traceId);
         Objects.requireNonNull(spanId);
         Objects.requireNonNull(spanName);
@@ -90,13 +92,13 @@ public class ZipkinData {
         }
 
         @Nonnull
-        public ZipkinData build() {
-            return new ZipkinData(traceId, spanId, parentSpanId, spanName, port);
+        public ZipkinDataImpl build() {
+            return new ZipkinDataImpl(traceId, spanId, parentSpanId, spanName, port);
         }
     }
 
 //    @Nonnull
-//    public static ZipkinData createInstance(@Nonnull String traceIdStr, @Nonnull String spanIdStr,
+//    public static ZipkinDataImpl createInstance(@Nonnull String traceIdStr, @Nonnull String spanIdStr,
 //                                            @Nullable String parentSpanIdStr, @Nonnull String spanName, int port) {
 //        Objects.requireNonNull(traceIdStr);
 //        Objects.requireNonNull(spanIdStr);
@@ -109,6 +111,6 @@ public class ZipkinData {
 //        // non mandatory
 //        Long parentSpanId = parentSpanIdStr == null ? null : Long.valueOf(parentSpanIdStr);
 //
-//        return new ZipkinData(traceId, spanId, parentSpanId, spanName, (short) port);
+//        return new ZipkinDataImpl(traceId, spanId, parentSpanId, spanName, (short) port);
 //    }
 }

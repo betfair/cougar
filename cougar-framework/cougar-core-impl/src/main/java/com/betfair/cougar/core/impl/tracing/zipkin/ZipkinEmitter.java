@@ -1,5 +1,6 @@
 package com.betfair.cougar.core.impl.tracing.zipkin;
 
+import com.betfair.cougar.api.zipkin.ZipkinData;
 import com.github.kristofa.brave.zipkin.ZipkinSpanCollector;
 import com.twitter.zipkin.gen.Annotation;
 import com.twitter.zipkin.gen.BinaryAnnotation;
@@ -52,41 +53,23 @@ public class ZipkinEmitter {
     }
 
     public void emitServerStartSpan(@Nonnull ZipkinData zipkinData) {
-        Objects.requireNonNull(zipkinData);
-
-        long startTimeMicro = TimeUnit.MICROSECONDS.convert(System.currentTimeMillis(), TimeUnit.MILLISECONDS);
-
-        Annotation annotation = new Annotation(startTimeMicro, SERVER_RECV);
-        annotation.setHost(new Endpoint(LOCALHOST_IP, zipkinData.getPort(), LOCALHOST_NAME));
-
-        Span span = generateSpan(zipkinData, Arrays.asList(annotation), null);
-
-        LOG.info("{}", span);
-
-        zipkinSpanCollector.collect(span);
+        emitAnnotation(zipkinData, SERVER_RECV);
     }
 
     public void emitServerStopSpan(@Nonnull ZipkinData zipkinData) {
-        Objects.requireNonNull(zipkinData);
-
-        long endTimeMicro = TimeUnit.MICROSECONDS.convert(System.currentTimeMillis(), TimeUnit.MILLISECONDS);
-
-        Annotation annotation = new Annotation(endTimeMicro, SERVER_SEND);
-        annotation.setHost(new Endpoint(LOCALHOST_IP, zipkinData.getPort(), LOCALHOST_NAME));
-
-        Span span = generateSpan(zipkinData, Arrays.asList(annotation), null);
-
-        LOG.info("{}", span);
-
-        zipkinSpanCollector.collect(span);
+        emitAnnotation(zipkinData, SERVER_SEND);
     }
 
     public void emitAnnotation(@Nonnull ZipkinData zipkinData, String s) {
         Objects.requireNonNull(zipkinData);
 
-        Annotation annotation = new Annotation(new Date().getTime() * 1000, s);
+        long annotationTimeMicro = TimeUnit.MICROSECONDS.toMicros(new Date().getTime());
+
+        Annotation annotation = new Annotation(annotationTimeMicro, s);
         annotation.setHost(new Endpoint(LOCALHOST_IP, zipkinData.getPort(), LOCALHOST_NAME));
+
         Span span = generateSpan(zipkinData, Arrays.asList(annotation), null);
+
         zipkinSpanCollector.collect(span);
     }
 

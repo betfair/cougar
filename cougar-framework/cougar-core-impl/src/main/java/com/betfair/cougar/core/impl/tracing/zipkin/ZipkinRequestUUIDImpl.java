@@ -2,6 +2,8 @@ package com.betfair.cougar.core.impl.tracing.zipkin;
 
 import com.betfair.cougar.api.RequestUUID;
 import com.betfair.cougar.api.UUIDGenerator;
+import com.betfair.cougar.api.zipkin.ZipkinData;
+import com.betfair.cougar.api.zipkin.ZipkinRequestUUID;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nonnull;
@@ -13,7 +15,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-public class ZipkinRequestUUIDImpl implements RequestUUID {
+public class ZipkinRequestUUIDImpl implements ZipkinRequestUUID {
     // Example: 2uhjsd-asdasjdaf-fss-jasd-asjd;2131415:3123124:23141515
     public static final String SERIALIZATION_SEPARATOR = ";";
     public static final String ZIPKIN_SERIALIZATION_SEPARATOR = ":";
@@ -161,7 +163,6 @@ public class ZipkinRequestUUIDImpl implements RequestUUID {
 
     public void setup(@Nullable String cougarUUID, @Nullable String traceId, @Nullable String spanId,
                       @Nullable String parentSpanId, @Nonnull String spanName) {
-        Objects.requireNonNull(cougarUUID);
         Objects.requireNonNull(spanName);
 
         if (cougarUUID == null) {
@@ -170,7 +171,7 @@ public class ZipkinRequestUUIDImpl implements RequestUUID {
             this.cougarUUID = cougarUUID;
         }
 
-        ZipkinData.Builder zipkinDataBuilder = new ZipkinData.Builder();
+        ZipkinDataImpl.Builder zipkinDataBuilder = new ZipkinDataImpl.Builder();
 
         if (traceId != null && spanId != null) {
             // a request with the fields is always traceable so we always propagate the tracing to the following calls
@@ -241,7 +242,7 @@ public class ZipkinRequestUUIDImpl implements RequestUUID {
     }
 
     private void updateSerialization() {
-        if (zipkinData != null) {
+        if (zipkinData == null) {
             this.serialization = getUUID();
         } else {
             this.serialization = getUUID() + SERIALIZATION_SEPARATOR +
