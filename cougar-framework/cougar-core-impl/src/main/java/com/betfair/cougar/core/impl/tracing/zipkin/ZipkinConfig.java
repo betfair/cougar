@@ -17,7 +17,7 @@ public class ZipkinConfig {
 
     private static final ThreadLocalRandom RANDOM = ThreadLocalRandom.current();
 
-    @Value("$zp{zipkin.tracing.level}")
+    @Value("$COUGAR_ZIPKIN{zipkin.tracing.level}")
     private int tracingLevel = 0;
 
     /**
