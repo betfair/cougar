@@ -40,6 +40,8 @@ public class ZipkinConfig {
     public void setTracingLevel(int tracingLevel) {
         if (tracingLevel >= MIN_LEVEL && tracingLevel <= MAX_LEVEL) {
             this.tracingLevel = tracingLevel;
+        } else {
+            throw new IllegalArgumentException("Tracing level " + tracingLevel + " is not in the range [" + MIN_LEVEL + ";" + MAX_LEVEL + "[");
         }
     }
 }
