@@ -10,6 +10,11 @@
         <property name="placeholderPrefix" value="$COUGAR_ZIPKIN{"/>
     </bean>
 
+
+    <bean id="zikinConfig" class="com.betfair.cougar.core.impl.tracing.zipkin.ZipkinConfig">
+        <property name="tracingLevel" value="$COUGAR_ZIPKIN{zipkin.tracing.level}"/>
+    </bean>
+
     <bean id="zipkinSpanCollector" class="com.github.kristofa.brave.zipkin.ZipkinSpanCollector">
         <constructor-arg index="0" value="$COUGAR_ZIPKIN{zipkin.collector.host}"/>
         <constructor-arg index="1" value="$COUGAR_ZIPKIN{zipkin.collector.port}"/>
