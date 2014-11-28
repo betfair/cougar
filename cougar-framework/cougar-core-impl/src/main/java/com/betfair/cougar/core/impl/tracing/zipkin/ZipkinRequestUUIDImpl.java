@@ -1,10 +1,9 @@
 package com.betfair.cougar.core.impl.tracing.zipkin;
 
 import com.betfair.cougar.api.RequestUUID;
-import com.betfair.cougar.api.UUIDGenerator;
 import com.betfair.cougar.api.zipkin.ZipkinData;
+import com.betfair.cougar.api.zipkin.ZipkinDataBuilder;
 import com.betfair.cougar.api.zipkin.ZipkinRequestUUID;
-import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -13,76 +12,103 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 public class ZipkinRequestUUIDImpl implements ZipkinRequestUUID {
-    // Example: 2uhjsd-asdasjdaf-fss-jasd-asjd;2131415:3123124:23141515
-    public static final String SERIALIZATION_SEPARATOR = ";";
-    public static final String ZIPKIN_SERIALIZATION_SEPARATOR = ":";
 
-    private static UUIDGenerator generator;
-    private static ZipkinConfig zipkinConfig;
-
-
-    private String cougarUUID;
+    private RequestUUID cougarUuid;
 
     private ZipkinData zipkinData;
 
-    private String serialization = "";
+    private ZipkinDataBuilder zipkinDataBuilder;
 
-
-    public ZipkinRequestUUIDImpl() {
-        cougarUUID = generator.getNextUUID();
+    public ZipkinRequestUUIDImpl(@Nonnull RequestUUID cougarUuid) {
+        this(cougarUuid, null);
     }
 
     /**
-     * Construct a ZipkinRequestUUIDImpl with the specified UUID. If the given UUID is a traditional Cougar UUID then
-     * Zipkin fields (including root UUID, parent UUID, local UUID), will NOT be derived from the given UUID and will be
-     * randomly generated following Zipkin's contract. If the given UUID is a Cougar-Zipkin serialization following the
-     * cougar-uuid;zipkin-traceid:zipkin-spanid:zipkin-parentspanid
-     *
-     * @param uuid complete traditional Cougar's uuid string
+     * Constuct a Cougar/Zipkin Request object.
+     * @param cougarUuid Traditional Cougar RequestUUID.
+     * @param zipkinDataBuilder Zipkin data builder object to be populated later with the span name.
+     *                          Passing null here means Zipkin tracing is not enabled for this request.
      */
-    public ZipkinRequestUUIDImpl(@Nonnull String uuid) {
-        Objects.requireNonNull(uuid);
-        setUuidRaw(uuid);
+    public ZipkinRequestUUIDImpl(@Nonnull RequestUUID cougarUuid, @Nullable ZipkinDataBuilder zipkinDataBuilder) {
+        Objects.requireNonNull(cougarUuid);
+
+        this.cougarUuid = cougarUuid;
+        this.zipkinData = null;
+        this.zipkinDataBuilder = zipkinDataBuilder;
+    }
+
+    @Override
+    public String getRootUUIDComponent() {
+        return cougarUuid.getRootUUIDComponent();
+    }
+
+    @Override
+    public String getParentUUIDComponent() {
+        return cougarUuid.getParentUUIDComponent();
+    }
+
+    @Override
+    public String getLocalUUIDComponent() {
+        return cougarUuid.getLocalUUIDComponent();
+    }
+
+    @Override
+    @Nonnull
+    public RequestUUID getNewSubUUID() {
+        RequestUUID cougarSubUuid = cougarUuid.getNewSubUUID();
+
+        if (isZipkinTracingEnabled()) {
+            // Creating a child zipkin data builder object.
+            // The child span name will still need to be set after, as it happened with the original zipkinDataBuilder.
+            ZipkinDataBuilder newZipkinDataBuilder = new ZipkinDataImpl.Builder()
+                    .traceId(zipkinData.getTraceId())
+                    .spanId(UUID.randomUUID().getMostSignificantBits())
+                    .parentSpanId(zipkinData.getSpanId())
+                    .port(zipkinData.getPort());
+
+            return new ZipkinRequestUUIDImpl(cougarSubUuid, newZipkinDataBuilder);
+        } else {
+            // If this request is not being traced by Zipkin, the next request can't be traced either.
+            return new ZipkinRequestUUIDImpl(cougarSubUuid);
+        }
     }
 
     /**
-     * Construct a ZipkinRequestUUIDImpl for a specific request.
-     *
-     * @param cougarUUID   Traditional cougar id (preserved for compatibility reasons). If null a new cougar id is
-     *                     generated based on the active UUIDGenerator.
-     * @param traceId      Zipkin traceId. If null a new trace id is generated.
-     * @param spanId       Zipkin spanId. If null a new span id is generated.
-     * @param parentSpanId Zipkin parent span id.
-     * @param spanName     Zipkin span name. Used to identify the current RPC node/service.
+     * Obtain Zipkin data if the object was already created.
+     * @return ZipkinData object or null if Zipkin is not enabled for this request.
+     * @throws IllegalStateException if the ZipkinData object isn't yet finalized or if Zipkin tracing is not enabled for this request.
      */
-    public ZipkinRequestUUIDImpl(@Nullable String cougarUUID, @Nullable String traceId, @Nullable String spanId,
-                                 @Nullable String parentSpanId, @Nonnull String spanName) {
-        setup(cougarUUID, traceId, spanId, parentSpanId, spanName);
+    @Override
+    @Nonnull
+    public ZipkinData getZipkinData() {
+        if (zipkinData == null) {
+            if (isZipkinTracingEnabled()) {
+                throw new IllegalStateException("Zipkin Data is still incomplete");
+            } else {
+                throw new IllegalStateException("Zipkin tracing is not enabled for this request");
+            }
+        } else {
+            return zipkinData;
+        }
     }
 
-    /**
-     * Note, this sets the system wide generator, not just the local one for this instance, nasty due to spring.
-     * In this case, as we are using Zipkin which has its own contract for trace and span ids, we only apply the
-     * given generator for compatibility purposes on the creation and validation of the traditional Cougar UUID
-     * (getUUID())
-     */
-    public static void setGenerator(@Nonnull UUIDGenerator generator) {
-        Objects.requireNonNull(generator);
-        ZipkinRequestUUIDImpl.generator = generator;
+    @Override
+    public boolean isZipkinTracingEnabled() {
+        return zipkinDataBuilder != null;
     }
 
-    /**
-     * Sets the static system-wide Zipkin configuration that contains the rules to determine whether we should trace
-     * the following requests or not.
-     *
-     * @param zipkinConfig zipkin static configurations
-     */
-    public static void setZipkinConfig(@Nonnull ZipkinConfig zipkinConfig) {
-        Objects.requireNonNull(zipkinConfig);
-        ZipkinRequestUUIDImpl.zipkinConfig = zipkinConfig;
+    // We need this because we only have the span name after the ZipkinHttpRequestUuidResolver pointcut
+    @Override
+    public void setZipkinSpanName(@Nonnull String spanName) {
+        Objects.requireNonNull(spanName);
+
+        if (zipkinData == null) {
+            zipkinData = zipkinDataBuilder.spanName(spanName).build();
+        } else {
+            throw new IllegalStateException("Span name was already set for this request.");
+        }
     }
 
     /**
@@ -92,133 +118,15 @@ public class ZipkinRequestUUIDImpl implements ZipkinRequestUUID {
      * @return String representing the Cougar request uuid
      */
     @Override
-    @Nonnull
     public String getUUID() {
-        return cougarUUID;
-    }
-
-    /**
-     * Represents Zipkin's trace id. One per request and propagated across the entire infrastructure.
-     *
-     * @return String representing the randomly generated long
-     */
-    @Override
-    @Nullable
-    public String getRootUUIDComponent() {
-        return zipkinData == null ? null : String.valueOf(zipkinData.getTraceId());
-    }
-
-    /**
-     * Represents Zipkin's parent span id. Previous RPC span.
-     *
-     * @return String representing the randomly generated long
-     */
-    @Override
-    @Nullable
-    public String getParentUUIDComponent() {
-        return zipkinData == null ? null : String.valueOf(zipkinData.getParentSpanId());
-    }
-
-    /**
-     * Represents Zipkin's current span id. Current RPC span.
-     *
-     * @return String representing the randomly generated long
-     */
-    @Override
-    @Nullable
-    public String getLocalUUIDComponent() {
-        return zipkinData == null ? null : String.valueOf(zipkinData.getSpanId());
-    }
-
-    /**
-     * Represents Zipkin's current span name.
-     *
-     * @return String representing the name of this current span (typically service or host name).
-     */
-    @Nullable
-    public String getSpanName() {
-        return zipkinData == null ? null : zipkinData.getSpanName();
-    }
-
-    /**
-     * Represents Zipkin's data.
-     * @return object will all Zipkin data, or null if it wasn't set already.
-     */
-    @Nullable
-    public ZipkinData getZipkinData() {
-        return zipkinData;
+        return cougarUuid.getUUID();
     }
 
     @Override
-    @Nonnull
-    public RequestUUID getNewSubUUID() {
-        if (zipkinData == null) {
-            // means that no uuid was passed into construction -> we are the root
-            return new ZipkinRequestUUIDImpl(null, null, null, null, "SPAN-NAME");
-        }
-        return new ZipkinRequestUUIDImpl(cougarUUID, String.valueOf(zipkinData.getTraceId()),
-                String.valueOf(UUID.randomUUID().getMostSignificantBits()),
-                String.valueOf(zipkinData.getSpanId()), "SPAN-NAME");
-    }
-
-    public void setup(@Nullable String cougarUUID, @Nullable String traceId, @Nullable String spanId,
-                      @Nullable String parentSpanId, @Nonnull String spanName) {
-        Objects.requireNonNull(spanName);
-
-        if (cougarUUID == null) {
-            this.cougarUUID = generator.getNextUUID();
-        } else {
-            this.cougarUUID = cougarUUID;
-        }
-
-        ZipkinDataImpl.Builder zipkinDataBuilder = new ZipkinDataImpl.Builder();
-
-        if (traceId != null && spanId != null) {
-            // a request with the fields is always traceable so we always propagate the tracing to the following calls
-            zipkinDataBuilder.traceId(Long.valueOf(traceId));
-            zipkinDataBuilder.spanId(Long.valueOf(spanId));
-            zipkinDataBuilder.parentSpanId(parentSpanId == null ? null : Long.valueOf(parentSpanId));
-            zipkinDataBuilder.spanName(spanName);
-
-            this.zipkinData = zipkinDataBuilder.build();
-
-        } else {
-
-            if (zipkinConfig.shouldTrace()) {
-                // starting point, we need to generate the ids if this request is to be sampled - we are the root
-                UUID uuid = UUID.randomUUID();
-                zipkinDataBuilder.traceId(uuid.getLeastSignificantBits());
-                zipkinDataBuilder.spanId(uuid.getMostSignificantBits());
-                zipkinDataBuilder.parentSpanId(null);
-                zipkinDataBuilder.spanName(spanName);
-
-                this.zipkinData = zipkinDataBuilder.build();
-
-            } else {
-                // otherwise leave them as null
-                this.zipkinData = null;
-
-            }
-
-        }
-
-        updateSerialization();
-    }
-
-    private void setUuidRaw(String rawUuid) {
-        String[] split = rawUuid.split(Pattern.quote(SERIALIZATION_SEPARATOR));
-
-        switch (split.length) {
-            case 2:
-                // traditional Cougar UUID and Zipkin UUIDs
-                String[] zipkinComponents = split[1].split(Pattern.quote(ZIPKIN_SERIALIZATION_SEPARATOR));
-                setup(split[0], zipkinComponents[0], zipkinComponents[1], zipkinComponents[2], "SPAN-NAME");
-                break;
-
-            case 1:
-                // only traditional Cougar UUID
-                setup(split[0], null, null, null, "servicename");
-        }
+    public String toString() {
+        // currently i think this is used for the logs, and I think it needs to
+        // change to use getUUID which should be renamed to be more explicit
+        return zipkinData + getUUID();
     }
 
     /**
@@ -226,11 +134,7 @@ public class ZipkinRequestUUIDImpl implements ZipkinRequestUUID {
      */
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        try {
-            setUuidRaw((String) in.readObject());
-        } catch (ClassNotFoundException e) {
-            throw new IOException(e);
-        }
+        throw new UnsupportedOperationException(); // assuming we can kill these
     }
 
     /**
@@ -238,26 +142,6 @@ public class ZipkinRequestUUIDImpl implements ZipkinRequestUUID {
      */
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(toString());
-    }
-
-    private void updateSerialization() {
-        if (zipkinData == null) {
-            this.serialization = getUUID();
-        } else {
-            this.serialization = getUUID() + SERIALIZATION_SEPARATOR +
-                    StringUtils.join(
-                            new String[]{
-                                    String.valueOf(zipkinData.getTraceId()),
-                                    String.valueOf(zipkinData.getSpanName()),
-                                    String.valueOf(zipkinData.getParentSpanId())
-                            },
-                            ZIPKIN_SERIALIZATION_SEPARATOR);
-        }
-    }
-
-    @Override
-    public String toString() {
-        return serialization;
+        throw new UnsupportedOperationException(); // assuming we can kill these
     }
 }
