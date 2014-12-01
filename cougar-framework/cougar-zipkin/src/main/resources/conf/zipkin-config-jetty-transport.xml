@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- <import resource="classpath:conf/zipkin-config-jetty-transport.xml" /> -->
+
+    <bean id="httpExecutionContextResolverFactory"
+          class="com.betfair.cougar.modules.zipkin.impl.ZipkinExecutionContextResolverFactory">
+        <property name="cougarUUIDHeader" value="$COUGAR-JETTY{cougar.http.uuidheader}"/>
+        <property name="uuidParentsHeader" value="$COUGAR-JETTY{cougar.http.uuidparentsheader}"/>
+        <property name="zipkinManager" ref="zikinConfig"/>
+    </bean>
+
+</beans>

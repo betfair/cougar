@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>cougar-master-pom</artifactId>
+        <groupId>com.betfair.cougar</groupId>
+        <version>3.2-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>cougar-zipkin</artifactId>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>com.betfair.cougar</groupId>
+            <artifactId>cougar-transport-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.betfair.cougar</groupId>
+            <artifactId>cougar-core-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.betfair.cougar</groupId>
+            <artifactId>jetty-transport</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.betfair.cougar</groupId>
+            <artifactId>socket-transport</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.kristofa</groupId>
+            <artifactId>brave-zipkin-spancollector</artifactId>
+        </dependency>
+    </dependencies>
+</project>

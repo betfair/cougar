@@ -23,9 +23,6 @@
 
     <import resource="classpath:conf/core-config-cougar-core-impl.xml" />
 
-    <!-- import zipkin context config -->
-    <!--<import resource="classpath:conf/cougar-zipkin-context.xml"/>-->
-    
     <!-- KPI monitoring -->
     <import resource="classpath:conf/cougar-kpi.xml"/>
 

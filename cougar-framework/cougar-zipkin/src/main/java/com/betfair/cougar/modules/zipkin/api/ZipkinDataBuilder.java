@@ -1,4 +1,4 @@
-package com.betfair.cougar.api.zipkin;
+package com.betfair.cougar.modules.zipkin.api;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

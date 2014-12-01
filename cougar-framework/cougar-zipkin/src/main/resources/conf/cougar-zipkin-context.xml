@@ -3,6 +3,9 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+    <!-- import zipkin context config -->
+    <!--<import resource="classpath:conf/cougar-zipkin-context.xml"/>-->
+
     <bean class="com.betfair.cougar.util.configuration.PropertyConfigurer">
         <constructor-arg index="0" ref="cougar.core.EncryptorRegistry"/>
         <property name="defaultConfig" value="classpath:conf/zipkin-defaults.properties"/>
@@ -10,9 +13,13 @@
         <property name="placeholderPrefix" value="$COUGAR_ZIPKIN{"/>
     </bean>
 
-
-    <bean id="zikinConfig" class="com.betfair.cougar.core.impl.tracing.zipkin.ZipkinConfig">
+    <bean id="zikinConfig" class="com.betfair.cougar.modules.zipkin.impl.ZipkinManager">
         <property name="tracingLevel" value="$COUGAR_ZIPKIN{zipkin.tracing.level}"/>
+    </bean>
+
+    <bean id="zipkinEmitter" class="com.betfair.cougar.modules.zipkin.impl.ZipkinEmitter">
+        <property name="zipkinSpanCollector" ref="zipkinSpanCollector"/>
+        <property name="cougarAppName" value="$COUGAR{cougar.app.name}"/>
     </bean>
 
     <bean id="zipkinSpanCollector" class="com.github.kristofa.brave.zipkin.ZipkinSpanCollector">
@@ -31,7 +38,9 @@
 
     <bean name="zipkinTracerInitialisation" parent="cougar.core.TracerRegistrationHelper">
         <constructor-arg index="1">
-            <bean class="com.betfair.cougar.core.impl.tracing.zipkin.ZipkinTracer"/>
+            <bean class="com.betfair.cougar.modules.zipkin.impl.ZipkinTracer">
+                <property name="zipkinEmitter" ref="zipkinEmitter"/>
+            </bean>
         </constructor-arg>
         <constructor-arg index="2" value="#{ $COUGAR_ZIPKIN{zipkin.tracing.level} > 0 }"/>
     </bean>

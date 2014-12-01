@@ -25,8 +25,6 @@ import com.betfair.cougar.transport.api.protocol.http.HttpCommand;
 import com.betfair.cougar.util.RequestUUIDImpl;
 import org.apache.commons.lang.StringUtils;
 
-import javax.servlet.http.HttpServletRequest;
-
 /**
  * Default HTTP UUID resolver. Uses the uuid and uuidParents headers to resolve uuids.
  */
@@ -42,6 +40,11 @@ public class HttpRequestUuidResolver<Ignore> extends SingleComponentResolver<Htt
 
     @Override
     public void resolve(HttpCommand httpCommand, Ignore ignore, DehydratedExecutionContextBuilder builder) {
+        RequestUUID requestUUID = resolve(httpCommand);
+        builder.setRequestUUID(requestUUID);
+    }
+
+    protected RequestUUID resolve(HttpCommand httpCommand) {
         String uuidString = httpCommand.getRequest().getHeader(uuidHeader);
         String uuidParentsString = httpCommand.getRequest().getHeader(uuidParentsHeader);
         final RequestUUID requestUUID;
@@ -55,6 +58,6 @@ public class HttpRequestUuidResolver<Ignore> extends SingleComponentResolver<Htt
         } else {
             requestUUID = new RequestUUIDImpl();
         }
-        builder.setRequestUUID(requestUUID);
+        return requestUUID;
     }
 }

@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package com.betfair.cougar.transport.impl.protocol.http;
+package com.betfair.cougar.modules.zipkin.impl;
 
 import com.betfair.cougar.api.export.Protocol;
+import com.betfair.cougar.modules.zipkin.impl.jetty.ZipkinHttpRequestUuidResolver;
+import com.betfair.cougar.modules.zipkin.impl.socket.ZipkinSocketRequestUuidResolver;
 import com.betfair.cougar.transport.api.DehydratedExecutionContextResolver;
 import com.betfair.cougar.transport.api.DehydratedExecutionContextResolverFactory;
 
@@ -26,21 +28,31 @@ import com.betfair.cougar.transport.api.DehydratedExecutionContextResolverFactor
 public class ZipkinExecutionContextResolverFactory implements DehydratedExecutionContextResolverFactory {
 
     private String cougarUUIDHeader;
+    private String uuidParentsHeader;
+    private ZipkinManager zipkinManager;
 
     public void setCougarUUIDHeader(String cougarUUIDHeader) {
         this.cougarUUIDHeader = cougarUUIDHeader;
     }
 
+    public void setUuidParentsHeader(String uuidParentsHeader) {
+        this.uuidParentsHeader = uuidParentsHeader;
+    }
+
+    public void setZipkinManager(ZipkinManager zipkinManager) {
+        this.zipkinManager = zipkinManager;
+    }
+
     @Override
     public <T, B> DehydratedExecutionContextResolver<T, B>[] resolvers(Protocol protocol) {
-        if (protocol == Protocol.SOAP) {
+        if (protocol.underlyingTransportIsHttp()) {
             return new DehydratedExecutionContextResolver[]{
-                    (DehydratedExecutionContextResolver<T, B>) new ZipkinHttpRequestUuidResolver<>(cougarUUIDHeader),
+                    (DehydratedExecutionContextResolver<T, B>) new ZipkinHttpRequestUuidResolver<>(cougarUUIDHeader, uuidParentsHeader, zipkinManager)
             };
         }
-        if (protocol.underlyingTransportIsHttp()) { // && HttpServletRequest.class.isAssignableFrom(transportClass)) { todo: #82: do we need this?
-            return new DehydratedExecutionContextResolver[]{
-                    (DehydratedExecutionContextResolver<T, B>) new ZipkinHttpRequestUuidResolver<>(cougarUUIDHeader),
+        if (protocol == Protocol.SOCKET) {
+            return new DehydratedExecutionContextResolver[] {
+                    (DehydratedExecutionContextResolver<T, B>) new ZipkinSocketRequestUuidResolver<>(zipkinManager)
             };
         }
         // i can't handle other protocols
@@ -49,6 +61,6 @@ public class ZipkinExecutionContextResolverFactory implements DehydratedExecutio
 
     @Override
     public String getName() {
-        return "Zipkin HTTP ContextResolverFactory";
+        return "Zipkin ContextResolverFactory";
     }
 }

@@ -1,9 +1,8 @@
-package com.betfair.cougar.api.zipkin;
+package com.betfair.cougar.modules.zipkin.api;
 
 import com.betfair.cougar.api.RequestUUID;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public interface ZipkinRequestUUID extends RequestUUID {
 
