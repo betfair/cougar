@@ -39,6 +39,10 @@
 
         <dependency>
             <groupId>com.github.kristofa</groupId>
+            <artifactId>brave-interfaces</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.kristofa</groupId>
             <artifactId>brave-zipkin-spancollector</artifactId>
         </dependency>
     </dependencies>
