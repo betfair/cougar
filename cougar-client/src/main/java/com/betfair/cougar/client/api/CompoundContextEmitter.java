@@ -1,5 +1,5 @@
 /*
- * Copyright #{YEAR}, The Sporting Exchange Limited
+ * Copyright 2014, Simon Matic Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- *
+ * Compound context emitter. Calls every child emitter in turn.
  */
 public class CompoundContextEmitter<HR,C> implements ContextEmitter<HR,C> {
     private CopyOnWriteArrayList<ContextEmitter<HR,C>> emitters;

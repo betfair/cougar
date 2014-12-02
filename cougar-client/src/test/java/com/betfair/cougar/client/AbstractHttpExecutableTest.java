@@ -454,14 +454,14 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
 
     @Test(expected = IllegalArgumentException.class)
     public void testExtractPortFromBadAddresses() throws IOException {
-        HttpClientExecutable executable = new HttpClientExecutable(null, new DefaultGeoLocationSerializer());
+        HttpClientExecutable executable = new HttpClientExecutable(null, new HttpContextEmitter(new DefaultGeoLocationSerializer(),"X-REQUEST-UUID","X-REQUEST-UUID-PARENTS"));
         executable.setRemoteAddress("NOT ASSIGNED");
         executable.extractPortFromAddress();
     }
 
     @Test
     public void testExtractPortFromAddress() throws IOException {
-        HttpClientExecutable executable = new HttpClientExecutable(null, new DefaultGeoLocationSerializer());
+        HttpClientExecutable executable = new HttpClientExecutable(null, new HttpContextEmitter(new DefaultGeoLocationSerializer(),"X-REQUEST-UUID","X-REQUEST-UUID-PARENTS"));
         executable.setRemoteAddress("http://wibble.com:3939/www");
         int actual = executable.extractPortFromAddress();
         assertEquals(3939, actual);

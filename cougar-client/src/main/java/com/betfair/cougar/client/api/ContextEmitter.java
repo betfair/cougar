@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2014, Simon Matic Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,5 @@ import java.util.Set;
  * Defines an emitter of contextual info.
  */
 public interface ContextEmitter<HR,C> {
-    ExecutionContextComponent[] handledComponents();
-    void handling(Set<ExecutionContextComponent> actual);
     void emit(ExecutionContext ctx, HR request, C container);
 }

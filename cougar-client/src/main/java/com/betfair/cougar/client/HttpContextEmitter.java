@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2014, Simon Matic Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,77 +47,38 @@ public class HttpContextEmitter<HR> implements ContextEmitter<HR, List<Header>> 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = ISODateTimeFormat.dateTime();
     private final String uuidHeader;
     private final String uuidParentsHeader;
-    private final IdentityResolver identityResolver;
     private final GeoLocationSerializer geoLocationSerializer;
-    private IdentityTokenResolver identityTokenResolver;
 
-    public HttpContextEmitter(IdentityResolver identityResolver, IdentityTokenResolver identityTokenResolver, GeoLocationSerializer geoLocationSerializer, String uuidHeader, String uuidParentsHeader) {
-        this.identityResolver = identityResolver;
-        this.identityTokenResolver = identityTokenResolver;
+    public HttpContextEmitter(GeoLocationSerializer geoLocationSerializer, String uuidHeader, String uuidParentsHeader) {
         this.geoLocationSerializer = geoLocationSerializer;
         this.uuidHeader = uuidHeader;
         this.uuidParentsHeader = uuidParentsHeader;
     }
 
-    private Set<ExecutionContextComponent> handling;
-
-    @Override
-    public ExecutionContextComponent[] handledComponents() {
-        return ExecutionContextComponent.values();
-    }
-
-    @Override
-    public void handling(Set<ExecutionContextComponent> actual) {
-        this.handling = actual;
-    }
 
     @Override
     public void emit(ExecutionContext ctx, HR request, List<Header> result) {
-        if (handling.contains(ExecutionContextComponent.TraceLoggingEnabled)) {
-            if (ctx.traceLoggingEnabled()) {
-                result.add(new BasicHeader("X-Trace-Me", "true"));
-            }
+        if (ctx.traceLoggingEnabled()) {
+            result.add(new BasicHeader("X-Trace-Me", "true"));
         }
-        if (handling.contains(ExecutionContextComponent.Location)) {
-            GeoLocationDetails gld = ctx.getLocation();
-            if (gld != null) {
-                geoLocationSerializer.serialize(gld, result);
-            }
+
+        GeoLocationDetails gld = ctx.getLocation();
+        if (gld != null) {
+            geoLocationSerializer.serialize(gld, result);
         }
-        if (handling.contains(ExecutionContextComponent.RequestUuid)) {
-            if (uuidHeader != null) {
-                RequestUUID requestUUID = ctx.getRequestUUID() != null ? ctx.getRequestUUID().getNewSubUUID() : new RequestUUIDImpl();
-                result.add(new BasicHeader(uuidHeader, requestUUID.getLocalUUIDComponent()));
-                if (uuidParentsHeader != null && requestUUID.getRootUUIDComponent() != null) {
-                    result.add(new BasicHeader(uuidParentsHeader, requestUUID.getRootUUIDComponent()+ UUIDGenerator.COMPONENT_SEPARATOR+requestUUID.getParentUUIDComponent()));
-                }
+
+        if (uuidHeader != null) {
+            RequestUUID requestUUID = ctx.getRequestUUID() != null ? ctx.getRequestUUID().getNewSubUUID() : new RequestUUIDImpl();
+            result.add(new BasicHeader(uuidHeader, requestUUID.getLocalUUIDComponent()));
+            if (uuidParentsHeader != null && requestUUID.getRootUUIDComponent() != null) {
+                result.add(new BasicHeader(uuidParentsHeader, requestUUID.getRootUUIDComponent()+ UUIDGenerator.COMPONENT_SEPARATOR+requestUUID.getParentUUIDComponent()));
             }
         }
         // time headers
-        if (handling.contains(ExecutionContextComponent.ReceivedTime)) {
-            if (ctx.getReceivedTime() != null) {
-                result.add(new BasicHeader("X-ReceivedTime", DATE_TIME_FORMATTER.print(ctx.getReceivedTime().getTime())));
-            }
+        if (ctx.getReceivedTime() != null) {
+            result.add(new BasicHeader("X-ReceivedTime", DATE_TIME_FORMATTER.print(ctx.getReceivedTime().getTime())));
         }
-        if (handling.contains(ExecutionContextComponent.RequestedTime)) {
-            result.add(new BasicHeader("X-RequestTime", DATE_TIME_FORMATTER.print(System.currentTimeMillis())));
-        }
-        if (handling.contains(ExecutionContextComponent.Identity)) {
-            if (identityTokenResolver != null && identityResolver != null &&
-                    identityTokenResolver.isRewriteSupported()) {
-                final List<IdentityToken> identityTokens = identityResolver.tokenise(ctx.getIdentity());
-                identityTokenResolver.rewrite(identityTokens, request);
-                if (LOGGER.isDebugEnabled()) {
-                    StringBuilder sb = new StringBuilder();
-                    for (IdentityToken it: identityTokens) {
-                        if (sb.length() > 0) {
-                            sb.append(",");
-                        }
-                        sb.append(it.getName()).append("=").append(it.getValue());
-                    }
-                    LOGGER.info("Rewrote tokens " + sb + " to http request");
-                }
-            }
-        }
+
+        result.add(new BasicHeader("X-RequestTime", DATE_TIME_FORMATTER.print(System.currentTimeMillis())));
     }
 }

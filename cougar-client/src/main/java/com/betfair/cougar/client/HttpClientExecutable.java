@@ -16,7 +16,7 @@
 
 package com.betfair.cougar.client;
 
-import com.betfair.cougar.client.api.GeoLocationSerializer;
+import com.betfair.cougar.client.api.ContextEmitter;
 import com.betfair.cougar.core.api.client.TransportMetrics;
 import com.betfair.cougar.core.api.ev.ExecutionObserver;
 import com.betfair.cougar.core.api.ev.OperationDefinition;
@@ -63,22 +63,14 @@ public class HttpClientExecutable extends AbstractHttpExecutable<HttpUriRequest>
 
     private HttpClientTransportMetrics metrics;
 
-
-    public HttpClientExecutable(final HttpServiceBindingDescriptor bindingDescriptor, GeoLocationSerializer serializer) {
-        this(bindingDescriptor, serializer, DEFAULT_REQUEST_UUID_HEADER, DEFAULT_REQUEST_UUID_PARENTS_HEADER);
-    }
-
     public HttpClientExecutable(final HttpServiceBindingDescriptor bindingDescriptor,
-                                final GeoLocationSerializer serializer,
-                                final String requestUUIDHeader,
-                                final String requestUUIDParentsHeader) {
-        this(bindingDescriptor, serializer, requestUUIDHeader, requestUUIDParentsHeader, new CougarClientConnManager());
+                                final ContextEmitter emission) {
+        this(bindingDescriptor, emission, new CougarClientConnManager());
     }
 
 
-    public HttpClientExecutable(final HttpServiceBindingDescriptor bindingDescriptor, GeoLocationSerializer serializer,
-                                String requestUUIDHeader, String requestUUIDParentsHeader, CougarClientConnManager clientConnectionManager) {
-        super(bindingDescriptor, new HttpClientCougarRequestFactory(serializer, requestUUIDHeader, requestUUIDParentsHeader));
+    public HttpClientExecutable(final HttpServiceBindingDescriptor bindingDescriptor, ContextEmitter emission, CougarClientConnManager clientConnectionManager) {
+        super(bindingDescriptor, new HttpClientCougarRequestFactory(emission));
         this.clientConnectionManager = clientConnectionManager;
     }
 

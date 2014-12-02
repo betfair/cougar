@@ -453,7 +453,7 @@ public class ExecutionVenueNioServerTest {
 
         Object[] args = { pass, echoMe};
 
-        marshaller.writeInvocationRequest(createRequest(args), out,null, communicationVersion);
+        marshaller.writeInvocationRequest(createRequest(args), out,null, null,communicationVersion);
         out.flush();
 
         final byte[] bytes = baos.toByteArray();

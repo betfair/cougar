@@ -18,6 +18,7 @@ package com.betfair.cougar.client;
 
 import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.ResponseCode;
+import com.betfair.cougar.client.api.ContextEmitter;
 import com.betfair.cougar.core.api.ev.ClientExecutionResult;
 import com.betfair.cougar.core.api.ev.ExecutionObserver;
 import com.betfair.cougar.core.api.ev.ExecutionResult;
@@ -65,6 +66,7 @@ public class HttpClientExecutableTest extends AbstractHttpExecutableTest<HttpUri
     // --------------- Initialisation stuff ----------------
 	HttpClient mockHttpClient;
     CougarClientConnManager mockManager;
+    private ContextEmitter emitter;
 
     @Override
     protected AbstractHttpExecutable<HttpUriRequest> makeExecutable(HttpServiceBindingDescriptor tsbd) throws Exception {
@@ -72,10 +74,11 @@ public class HttpClientExecutableTest extends AbstractHttpExecutableTest<HttpUri
         HttpResponse response = mock(HttpResponse.class);
         when(mockHttpClient.execute(any(HttpUriRequest.class))).thenReturn(response);
         when(response.getStatusLine()).thenReturn(new BasicStatusLine(new ProtocolVersion("HTTP",1,1), 200, "OK"));
+        emitter = mock(ContextEmitter.class);
 
         mockManager = mock(CougarClientConnManager.class);
 
-        HttpClientExecutable ret = new HttpClientExecutable(tsbd, new DefaultGeoLocationSerializer(), DEFAULT_REQUEST_UUID_HEADER, DEFAULT_REQUEST_UUID_PARENTS_HEADER, mockManager);
+        HttpClientExecutable ret = new HttpClientExecutable(tsbd, emitter, mockManager);
         ret.setClient(mockHttpClient);
         return ret;
     }

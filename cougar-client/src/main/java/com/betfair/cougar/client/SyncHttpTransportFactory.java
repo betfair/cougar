@@ -18,7 +18,7 @@ package com.betfair.cougar.client;
 
 import com.betfair.cougar.api.security.IdentityResolver;
 import com.betfair.cougar.api.security.IdentityTokenResolver;
-import com.betfair.cougar.client.api.GeoLocationSerializer;
+import com.betfair.cougar.client.api.ContextEmitter;
 import com.betfair.cougar.client.exception.ExceptionTransformer;
 import com.betfair.cougar.client.query.QueryStringGeneratorFactory;
 import com.betfair.cougar.core.api.client.ExceptionFactory;
@@ -32,29 +32,15 @@ import org.springframework.core.io.Resource;
  */
 public class SyncHttpTransportFactory {
 
-    private GeoLocationSerializer serializer;
-    private String uuidHeader;
-    private String uuidParentsHeader;
     private HttpRequestRetryHandler retryHandler;
     private DataBindingFactory dataBindingFactory;
     private QueryStringGeneratorFactory queryStringGeneratorFactory;
     private ExceptionTransformer exceptionTransformer;
+    private ContextEmitter contextEmitter;
     private int httpTimeout = -1;
     private int maxTotalConnections = -1;
     private int maxPerRouteConnections = -1;
     private boolean hardFailEnumDeserialisation;
-
-    public void setGeoLocationSerializer(GeoLocationSerializer serializer) {
-        this.serializer = serializer;
-    }
-
-    public void setUuidHeader(String uuidHeader) {
-        this.uuidHeader = uuidHeader;
-    }
-
-    public void setUuidParentsHeader(String uuidParentsHeader) {
-        this.uuidParentsHeader = uuidParentsHeader;
-    }
 
     public void setRetryHandler(HttpRequestRetryHandler retryHandler) {
         this.retryHandler = retryHandler;
@@ -70,6 +56,10 @@ public class SyncHttpTransportFactory {
 
     public void setExceptionTransformer(ExceptionTransformer exceptionTransformer) {
         this.exceptionTransformer = exceptionTransformer;
+    }
+
+    public void setContextEmitter(ContextEmitter contextEmitter) {
+        this.contextEmitter = contextEmitter;
     }
 
     public void setHttpTimeout(int httpTimeout) {
@@ -90,36 +80,26 @@ public class SyncHttpTransportFactory {
 
     public HttpClientExecutable getHttpTransport(String remoteServerAddress, HttpServiceBindingDescriptor bindingDescriptor,
                                                  ExceptionFactory exceptionFactory) {
-        return getHttpTransport(remoteServerAddress, bindingDescriptor, exceptionFactory, null, null);
-    }
-
-    public HttpClientExecutable getHttpTransport(String remoteServerAddress, HttpServiceBindingDescriptor bindingDescriptor,
-                                                 ExceptionFactory exceptionFactory, IdentityTokenResolver identityTokenResolver,
-                                                 IdentityResolver identityResolver) {
-        return getHttpTransport(remoteServerAddress, bindingDescriptor, exceptionFactory, identityTokenResolver, identityResolver,
+        return getHttpTransport(remoteServerAddress, bindingDescriptor, exceptionFactory,
                 false, null, null, null, null, false);
     }
 
     public HttpClientExecutable getHttpTransport(String remoteServerAddress, HttpServiceBindingDescriptor bindingDescriptor,
-                                                 ExceptionFactory exceptionFactory, IdentityTokenResolver identityTokenResolver,
-                                                 IdentityResolver identityResolver, boolean sslEnabled, Resource keyStore,
+                                                 ExceptionFactory exceptionFactory, boolean sslEnabled, Resource keyStore,
                                                  String keyPassword, Resource trustStore, String trustPassword,
                                                  boolean hostnameVerificationDisabled) {
-        final HttpClientExecutable client = new HttpClientExecutable(bindingDescriptor, serializer, uuidHeader, uuidParentsHeader);
-        populateTransportAttributes(client, remoteServerAddress, exceptionFactory, identityTokenResolver, identityResolver,
+        final HttpClientExecutable client = new HttpClientExecutable(bindingDescriptor, contextEmitter);
+        populateTransportAttributes(client, remoteServerAddress, exceptionFactory,
                 sslEnabled, keyStore, keyPassword, trustStore, trustPassword, hostnameVerificationDisabled);
         return client;
     }
 
     private void populateTransportAttributes(HttpClientExecutable client, String remoteServerAddress,
-                                             ExceptionFactory exceptionFactory, IdentityTokenResolver identityTokenResolver,
-                                             IdentityResolver identityResolver, boolean sslEnabled, Resource keyStore,
+                                             ExceptionFactory exceptionFactory, boolean sslEnabled, Resource keyStore,
                                              String keyPassword, Resource trustStore, String trustPassword,
                                              boolean hostnameVerificationDisabled) {
         client.setRemoteAddress(remoteServerAddress);
         client.setExceptionFactory(exceptionFactory);
-        client.setIdentityTokenResolver(identityTokenResolver);
-        client.setIdentityResolver(identityResolver);
         client.setTransportSSLEnabled(sslEnabled);
         client.setHttpsKeystore(keyStore);
         client.setHttpsKeyPassword(keyPassword);

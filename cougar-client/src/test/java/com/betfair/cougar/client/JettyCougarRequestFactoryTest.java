@@ -22,6 +22,7 @@ import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.marshalling.api.databinding.Marshaller;
 import com.betfair.cougar.util.RequestUUIDImpl;
 import com.betfair.cougar.util.UUIDGeneratorImpl;
+import org.eclipse.jetty.client.api.Request;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -55,7 +56,7 @@ public class JettyCougarRequestFactoryTest {
     @Mock
     private TimeConstraints mockTimeConstraints;
 
-    private JettyCougarRequestFactory factory = new JettyCougarRequestFactory(new DefaultGeoLocationSerializer(), "X-REQUEST-UUID", "X-REQUEST-UUID-PARENTS");
+    private JettyCougarRequestFactory factory = new JettyCougarRequestFactory(new HttpContextEmitter<Request>(new DefaultGeoLocationSerializer(), "X-REQUEST-UUID", "X-REQUEST-UUID-PARENTS"));
 
     private String uri = "http://Some.uri";
     private String contentType = "application/X-my-type";

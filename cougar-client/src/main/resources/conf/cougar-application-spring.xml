@@ -49,13 +49,29 @@
         <constructor-arg value="false"/>
     </bean>
 
+    <bean id="defaultHttpContextEmitter" class="com.betfair.cougar.client.HttpContextEmitter">
+        <constructor-arg index="0" ref="$COUGAR_CLIENT{cougar.client.geoLocationSerializerBean}"/>
+        <constructor-arg index="1" value="$COUGAR_CLIENT{cougar.client.http.uuidheader}"/>
+        <constructor-arg index="2" value="$COUGAR_CLIENT{cougar.client.http.uuidparentsheader}"/>
+    </bean>
+
+    <bean id="defaultHttpContextEmission" class="com.betfair.cougar.client.api.CompoundContextEmitter">
+        <constructor-arg index="0">
+            <list>
+                <ref bean="defaultHttpContextEmitter"/>
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="defaultHttpContextEmitterRegisterer" class="com.betfair.cougar.client.api.ContextEmitterRegisterer"
+          abstract="true">
+        <constructor-arg index="0" ref="defaultHttpContextEmission"/>
+    </bean>
 
     <!-- synchronous http transport -->
     <bean id="abstractRescriptTransport" class="com.betfair.cougar.client.HttpClientExecutable" abstract="true"
           init-method="init">
-        <constructor-arg index="1" ref="$COUGAR_CLIENT{cougar.client.geoLocationSerializerBean}"/>
-        <constructor-arg index="2" value="$COUGAR_CLIENT{cougar.client.http.uuidheader}"/>
-        <constructor-arg index="3" value="$COUGAR_CLIENT{cougar.client.http.uuidparentsheader}"/>
+        <constructor-arg index="1" ref="defaultHttpContextEmission"/>
 
         <property name="retryHandler" ref="defaultRetryHandler"/>
         <property name="dataBindingFactory" ref="cougar.marshalling.JSONBindingFactory"/>
@@ -106,11 +122,9 @@
 
     <bean id="abstractAsyncRescriptTransport" class="com.betfair.cougar.client.AsyncHttpExecutable" abstract="true"
           init-method="init">
-        <constructor-arg index="1" ref="$COUGAR_CLIENT{cougar.client.geoLocationSerializerBean}"/>
-        <constructor-arg index="2" value="$COUGAR_CLIENT{cougar.client.http.uuidheader}"/>
-        <constructor-arg index="3" value="$COUGAR_CLIENT{cougar.client.http.uuidparentsheader}"/>
-        <constructor-arg index="4" ref="asyncHttpWorkerThreadPool"/>
-        <constructor-arg index="5" ref="asyncHttpReponseProcessorThreadPool"/>
+        <constructor-arg index="1" ref="defaultHttpContextEmission"/>
+        <constructor-arg index="2" ref="asyncHttpWorkerThreadPool"/>
+        <constructor-arg index="3" ref="asyncHttpReponseProcessorThreadPool"/>
 
         <property name="dataBindingFactory" ref="cougar.marshalling.JSONBindingFactory"/>
         <property name="queryStringGeneratorFactory" ref="qsGeneratorFactory"/>
@@ -127,9 +141,6 @@
 
     <!-- synchronous http transport factory -->
     <bean id="syncHttpTransportFactory" class="com.betfair.cougar.client.SyncHttpTransportFactory">
-        <property name="geoLocationSerializer" ref="$COUGAR_CLIENT{cougar.client.geoLocationSerializerBean}"/>
-        <property name="uuidHeader" value="$COUGAR_CLIENT{cougar.client.http.uuidheader}"/>
-        <property name="uuidParentsHeader" value="$COUGAR_CLIENT{cougar.client.http.uuidparentsheader}"/>
         <property name="retryHandler" ref="defaultRetryHandler"/>
         <property name="dataBindingFactory" ref="cougar.marshalling.JSONBindingFactory"/>
         <property name="queryStringGeneratorFactory" ref="qsGeneratorFactory"/>
@@ -212,6 +223,19 @@
         <constructor-arg index="0" value="$COUGAR_CLIENT{cougar.client.socket.address.resolver}"/>
     </bean>
 
+    <bean id="defaultSocketContextEmission" class="com.betfair.cougar.client.api.CompoundContextEmitter">
+        <constructor-arg index="0">
+            <list>
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="defaultSocketContextEmitterRegisterer" class="com.betfair.cougar.client.api.ContextEmitterRegisterer"
+          abstract="true">
+        <constructor-arg index="0" ref="defaultSocketContextEmission"/>
+    </bean>
+
+    <!-- todo: still need to do socket transport emission!! -->
     <bean id="abstractSocketTransport" class="com.betfair.cougar.client.socket.ExecutionVenueNioClient" abstract="true"
           init-method="start" destroy-method="stop">
         <constructor-arg index="0" ref="clientNioLogger"/>
@@ -226,6 +250,7 @@
         <constructor-arg index="10" value="$COUGAR_CLIENT{cougar.client.socket.session.recycle.interval}"/>
         <constructor-arg index="11" ref="networkAddressResolver"/>
         <property name="marshaller" ref="clientSocketMarshaller"/>
+        <property name="contextEmitter" ref="defaultSocketContextEmission"/>
     </bean>
 
     <bean id="objectIOFactory" class="com.betfair.cougar.netutil.nio.hessian.HessianObjectIOFactory">
@@ -281,6 +306,10 @@
     <alias name="abstractAsyncRescriptTransport" alias="cougar.client.AbstractAsyncRescriptTransport"/>
     <alias name="abstractClient" alias="cougar.client.AbstractClient"/>
     <alias name="abstractSyncClient" alias="cougar.client.AbstractSyncClient"/>
+    <alias name="defaultHttpContextEmission" alias="cougar.client.DefaultHttpContextEmission"/>
+    <alias name="defaultHttpContextEmitterRegisterer" alias="cougar.client.DefaultHttpContextEmissionRegisterer"/>
+    <alias name="defaultSocketContextEmission" alias="cougar.client.DefaultSocketContextEmission"/>
+    <alias name="defaultSocketContextEmitterRegisterer" alias="cougar.client.DefaultSocketContextEmissionRegisterer"/>
 
     <bean name="clientMbeanExporter" class="org.springframework.jmx.export.MBeanExporter">
         <property name="beans">

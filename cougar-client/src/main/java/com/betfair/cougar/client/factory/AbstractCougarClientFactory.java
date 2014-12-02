@@ -21,6 +21,7 @@ import com.betfair.cougar.api.security.IdentityResolver;
 import com.betfair.cougar.api.security.IdentityTokenResolver;
 import com.betfair.cougar.client.HttpClientExecutable;
 import com.betfair.cougar.client.SyncHttpTransportFactory;
+import com.betfair.cougar.client.api.ContextEmitter;
 import com.betfair.cougar.core.api.ServiceDefinition;
 import com.betfair.cougar.core.api.ev.ExecutionVenue;
 import com.betfair.cougar.core.api.ev.RegisterableClientExecutableResolver;
@@ -50,14 +51,6 @@ public abstract class AbstractCougarClientFactory {
 
     protected void registerClient(Service service, String endpointUrl, String namespace,
                                   HttpServiceBindingDescriptor serviceBindingDescriptor, ExceptionFactory exceptionFactory,
-                                  ServiceDefinition serviceDefinition, RegisterableClientExecutableResolver executableResolver) {
-
-        registerClient(service, endpointUrl, namespace, serviceBindingDescriptor, exceptionFactory, serviceDefinition,
-                executableResolver, null, null);
-    }
-
-    protected void registerClient(Service service, String endpointUrl, String namespace,
-                                  HttpServiceBindingDescriptor serviceBindingDescriptor, ExceptionFactory exceptionFactory,
                                   ServiceDefinition serviceDefinition, RegisterableClientExecutableResolver executableResolver,
                                   IdentityResolver identityResolver, IdentityTokenResolver identityTokenResolver) {
         registerClient(service, endpointUrl, namespace, serviceBindingDescriptor, exceptionFactory, serviceDefinition,
@@ -74,8 +67,10 @@ public abstract class AbstractCougarClientFactory {
         try {
             // Initialise transport
             HttpClientExecutable transport = syncHttpTransportFactory.getHttpTransport(endpointUrl, serviceBindingDescriptor,
-                    exceptionFactory, identityTokenResolver, identityResolver, sslEnabled, keyStore, keyPassword,
+                    exceptionFactory, sslEnabled, keyStore, keyPassword,
                     trustStore, trustPassword, hostnameVerificationDisabled);
+            transport.setIdentityTokenResolver(identityTokenResolver);
+            transport.setIdentityResolver(identityResolver);
             transport.init();
 
             // Initialise executable resolver

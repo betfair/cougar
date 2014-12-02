@@ -18,6 +18,7 @@ package com.betfair.cougar.client;
 
 import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.geolocation.GeoLocationDetails;
+import com.betfair.cougar.client.api.GeoLocationSerializer;
 import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.marshalling.api.databinding.Marshaller;
 import com.betfair.cougar.util.RequestUUIDImpl;
@@ -56,6 +57,8 @@ public class CougarRequestFactoryTest {
     @Mock
     private GeoLocationDetails mockGeoLocation;
     @Mock
+    private GeoLocationSerializer mockGeoLocationSerializer;
+    @Mock
     private TimeConstraints mockTimeConstraints;
 
     private Object httpRequest = new Object();
@@ -67,7 +70,7 @@ public class CougarRequestFactoryTest {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = ISODateTimeFormat.dateTime();
 
-    private TestCougarRequestFactory factory = new TestCougarRequestFactory();
+    private TestCougarRequestFactory factory = new TestCougarRequestFactory(mockGeoLocationSerializer, "X-REQUEST-UUID", "X-REQUEST-UUID-PARENTS");
 
     @Before
     public void setUp() throws Exception {
@@ -178,8 +181,8 @@ public class CougarRequestFactoryTest {
 
     private class TestCougarRequestFactory extends CougarRequestFactory<Object> {
 
-        public TestCougarRequestFactory() {
-            super(new DefaultGeoLocationSerializer(), "X-REQUEST-UUID", "X-REQUEST-UUID-PARENTS");
+        public TestCougarRequestFactory(GeoLocationSerializer geoLocation, String uuidHeader, String uuidParentsHeader) {
+            super(new HttpContextEmitter<Object>(geoLocation,uuidHeader,uuidParentsHeader));
         }
 
         @Override
