@@ -16,7 +16,9 @@
 
 package com.betfair.cougar.client.socket;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.logging.Level;
@@ -24,6 +26,7 @@ import java.util.logging.Level;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
 import com.betfair.cougar.api.export.Protocol;
+import com.betfair.cougar.client.api.CompoundContextEmitter;
 import com.betfair.cougar.client.socket.resolver.DNSBasedAddressResolver;
 import com.betfair.cougar.core.api.OperationBindingDescriptor;
 import com.betfair.cougar.core.api.ServiceBindingDescriptor;
@@ -239,6 +242,7 @@ public class ServerClientFactory {
                 new JMXReportingThreadPoolExecutor(30, 60, 0, TimeUnit.SECONDS, new SynchronousQueue<Runnable>()), new JMXReportingThreadPoolExecutor(30, 60, 0, TimeUnit.SECONDS, new SynchronousQueue<Runnable>()),
                 new DNSBasedAddressResolver());
         client.setMarshaller(marshaller);
+        client.setContextEmitter(new CompoundContextEmitter<Map<String, String>, Object>(Collections.EMPTY_LIST));
 
         return client;
 	}
