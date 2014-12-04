@@ -160,14 +160,14 @@ public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller 
     }
 
     @Override
-	public void writeInvocationRequest(InvocationRequest request, CougarObjectOutput out, IdentityResolver identityResolver, byte protocolVersion) throws IOException {
+	public void writeInvocationRequest(InvocationRequest request, CougarObjectOutput out, IdentityResolver identityResolver, Map<String,String> additionalParams, byte protocolVersion) throws IOException {
         // todo: decide if we want app protocol versioning too?
         // note that new additions to the app protocol must be backwards compatible from the client side, the server side response may be breaking since it knows what
         // the client version is..
 //        if (protocolVersion >= CougarProtocol.TRANSPORT_PROTOCOL_VERSION_TIME_CONSTRAINTS) {
 //            out.writeBytes(new byte[] {CougarProtocol.TRANSPORT_PROTOCOL_VERSION_TIME_CONSTRAINTS});
 //        }
-		writeExecutionContext(request.getExecutionContext(), out, identityResolver, protocolVersion);
+		writeExecutionContext(request.getExecutionContext(), out, identityResolver, additionalParams, protocolVersion);
 		writeOperationKey(request.getOperationKey(), out);
 		writeArgs(request.getParameters(), request.getArgs(), out);
         writeTimeConstraints(request.getTimeConstraints(), out, protocolVersion);
@@ -286,20 +286,29 @@ public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller 
 		}
 	}
 
-	private void writeExecutionContext(ExecutionContext ctx, CougarObjectOutput out, IdentityResolver identityResolver, byte protocolVersion) throws IOException {
+	private void writeExecutionContext(ExecutionContext ctx, CougarObjectOutput out, IdentityResolver identityResolver, Map<String,String> additionalParams, byte protocolVersion) throws IOException {
 		writeGeoLocation(ctx.getLocation(), out, protocolVersion);
 		writeIdentity(ctx.getIdentity(), out, identityResolver);
         writeRequestUUID(ctx.getRequestUUID(), out, protocolVersion);
         writeReceivedTime(ctx.getReceivedTime(), out);
         out.writeBoolean(ctx.traceLoggingEnabled());
         writeRequestTime(out, protocolVersion);
-        writeAdditionalParams(ctx, out, protocolVersion);
+        writeAdditionalParams(additionalParams, out, protocolVersion);
     }
 
-    void writeAdditionalParams(ExecutionContext ctx, CougarObjectOutput out, byte protocolVersion) throws IOException {
+    void writeAdditionalParams(Map<String,String> additionalParams, CougarObjectOutput out, byte protocolVersion) throws IOException {
         if (protocolVersion >= CougarProtocol.TRANSPORT_PROTOCOL_VERSION_COMPOUND_REQUEST_UUID) {
-            // todo: #82: when we have some additional params, this will send num keys and then key followed by value for each (as strings)
-            out.writeInt(0);
+            // when we have some additional params, this will send num keys and then key followed by value for each (as strings)
+            if (additionalParams != null) {
+                out.writeInt(additionalParams.size());
+                for (String key : additionalParams.keySet()) {
+                    out.writeString(key);
+                    out.writeString(additionalParams.get(key));
+                }
+            }
+            else {
+                out.writeInt(0);
+            }
         }
     }
 

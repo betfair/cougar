@@ -64,7 +64,7 @@ public class HttpClientCougarRequestFactoryTest {
     @Mock
     private TimeConstraints mockTimeConstraints;
 
-    private HttpClientCougarRequestFactory factory = new HttpClientCougarRequestFactory(new DefaultGeoLocationSerializer(), "X-REQUEST-UUID", "X-REQUEST-UUID-PARENTS");
+    private HttpClientCougarRequestFactory factory = new HttpClientCougarRequestFactory(new HttpContextEmitter<HttpUriRequest>(new DefaultGeoLocationSerializer(), "X-REQUEST-UUID", "X-REQUEST-UUID-PARENTS"));
 
     private String uri = "http://Some.uri";
     private String contentType = "application/X-my-type";

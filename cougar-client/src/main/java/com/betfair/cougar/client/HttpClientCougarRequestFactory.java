@@ -16,7 +16,7 @@
 
 package com.betfair.cougar.client;
 
-import com.betfair.cougar.client.api.GeoLocationSerializer;
+import com.betfair.cougar.client.api.ContextEmitter;
 import org.apache.http.Header;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -33,8 +33,8 @@ import java.util.List;
  */
 public class HttpClientCougarRequestFactory extends CougarRequestFactory<HttpUriRequest> {
 
-    public HttpClientCougarRequestFactory(GeoLocationSerializer serializer, String requestUUIDHeader, String requestUUIDParentsHeader) {
-        super(serializer, requestUUIDHeader, requestUUIDParentsHeader);
+    public HttpClientCougarRequestFactory(ContextEmitter<HttpUriRequest,List<Header>> emission) {
+        super(emission);
     }
 
     @Override

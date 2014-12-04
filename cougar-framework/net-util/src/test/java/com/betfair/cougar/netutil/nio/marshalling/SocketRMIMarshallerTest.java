@@ -22,6 +22,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anySet;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -35,7 +37,10 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import com.betfair.cougar.api.DehydratedExecutionContext;
+import com.betfair.cougar.api.export.Protocol;
 import com.betfair.cougar.api.security.IdentityResolver;
+import com.betfair.cougar.core.api.builder.DehydratedExecutionContextBuilder;
+import com.betfair.cougar.core.api.builder.ExecutionContextBuilder;
 import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.transcription.TranscribableParams;
@@ -46,8 +51,7 @@ import com.betfair.cougar.marshalling.impl.SimpleApplicationException;
 import com.betfair.cougar.marshalling.impl.SimpleExecutionContext;
 import com.betfair.cougar.marshalling.impl.SimpleGeoLocationDetails;
 import com.betfair.cougar.netutil.nio.CougarProtocol;
-import com.betfair.cougar.transport.api.DehydratedExecutionContextResolution;
-import com.betfair.cougar.transport.api.RequestTimeResolver;
+import com.betfair.cougar.transport.api.*;
 import com.betfair.cougar.transport.impl.DehydratedExecutionContextResolutionImpl;
 import com.betfair.cougar.util.RequestUUIDImpl;
 import com.betfair.cougar.util.UUIDGeneratorImpl;
@@ -61,6 +65,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import com.betfair.cougar.api.ExecutionContext;
@@ -91,6 +96,8 @@ import com.betfair.cougar.netutil.nio.hessian.HessianObjectIOFactory;
 import com.betfair.cougar.transport.api.protocol.socket.InvocationRequest;
 import com.betfair.cougar.transport.api.protocol.socket.InvocationResponse;
 import com.betfair.cougar.util.geolocation.GeoIPLocator;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 /**
  * Unit test for the @see SocketRMIMarshallerTest class
@@ -196,9 +203,38 @@ public class SocketRMIMarshallerTest {
     private static DehydratedExecutionContextResolutionImpl contextResolution = new DehydratedExecutionContextResolutionImpl();
     private SocketRMIMarshaller cut = new SocketRMIMarshaller(new CommonNameCertInfoExtractor(), contextResolution);
 
+    private static ArgumentCaptor<SocketContextResolutionParams> socketContextResolutionParamsArgumentCaptor = ArgumentCaptor.forClass(SocketContextResolutionParams.class);
+
     @BeforeClass
     public static void staticBefore() {
+        DehydratedExecutionContextResolver<SocketContextResolutionParams, Void> additionalParamsMock = mock(DehydratedExecutionContextResolver.class);
+        when(additionalParamsMock.supportedComponents()).thenReturn(new DehydratedExecutionContextComponent[] { DehydratedExecutionContextComponent.ReceivedTime });
+        final ArgumentCaptor<DehydratedExecutionContextBuilder> builderArgumentCaptor = ArgumentCaptor.forClass(DehydratedExecutionContextBuilder.class);
+        final ArgumentCaptor<Void> voidArgumentCaptor = ArgumentCaptor.forClass(Void.class);
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                List<DehydratedExecutionContextBuilder> allBuilders = builderArgumentCaptor.getAllValues();
+                allBuilders.get(allBuilders.size()-1).setReceivedTime(new Date());
+                return null;
+            }
+        }).when(additionalParamsMock).resolve(socketContextResolutionParamsArgumentCaptor.capture(),voidArgumentCaptor.capture(),builderArgumentCaptor.capture());
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                Set<DehydratedExecutionContextComponent> components = (Set<DehydratedExecutionContextComponent>) invocation.getArguments()[0];
+                if (!components.contains(DehydratedExecutionContextComponent.ReceivedTime))
+                {
+                    throw new RuntimeException("I'm not handling what i want to!");
+                }
+                return null;
+            }
+        }).when(additionalParamsMock).resolving(anySet());
+        DehydratedExecutionContextResolverFactory additionalParamsFactory = mock(DehydratedExecutionContextResolverFactory.class);
+        when(additionalParamsFactory.resolvers(Protocol.SOCKET)).thenReturn(new DehydratedExecutionContextResolver[] { additionalParamsMock });
+
         contextResolution.registerFactory(new DefaultExecutionContextResolverFactory(mock(GeoIPLocator.class), mock(RequestTimeResolver.class)));
+        contextResolution.registerFactory(additionalParamsFactory);
         contextResolution.init(false);
     }
 
@@ -369,7 +405,10 @@ public class SocketRMIMarshallerTest {
             }
         };
 
-        cut.writeInvocationRequest(request, cougarObjectOutput, identityResolver, protocolVersion);
+        Map<String,String> additionalParams = new HashMap<>();
+        additionalParams.put("paramA","valueA");
+
+        cut.writeInvocationRequest(request, cougarObjectOutput, identityResolver, additionalParams, protocolVersion);
         cougarObjectOutput.flush();
         cougarObjectOutput.close();
         //String resolvedAddresses = RemoteAddressUtils.externaliseWithLocalAddresses(ctx.getLocation().getResolvedAddresses());
@@ -382,6 +421,15 @@ public class SocketRMIMarshallerTest {
         assertNotNull(actualContext);
         assertEquals(key, actualKey);
         assertArrayEquals(args, actualArgs);
+        List<SocketContextResolutionParams> allSocketParams = socketContextResolutionParamsArgumentCaptor.getAllValues();
+        Map<String,String> reslvedAdditionalParams = allSocketParams.get(allSocketParams.size()-1).getAdditionalData();
+        if (protocolVersion >= CougarProtocol.TRANSPORT_PROTOCOL_VERSION_COMPOUND_REQUEST_UUID) {
+            assertEquals(1,reslvedAdditionalParams.size());
+            assertEquals("valueA",reslvedAdditionalParams.get("paramA"));
+        }
+        else {
+            assertEquals(0,reslvedAdditionalParams.size());
+        }
     }
 
     @Test

@@ -109,7 +109,7 @@ public abstract class AbstractHttpExecutable<HR> extends AbstractClientTransport
     protected int idleTimeout = -1;
 
 
-    public AbstractHttpExecutable(final HttpServiceBindingDescriptor bindingDescriptor,
+    protected AbstractHttpExecutable(final HttpServiceBindingDescriptor bindingDescriptor,
                                   CougarRequestFactory<HR> requestFactory) {
         this.serviceBindingDescriptor = bindingDescriptor;
         this.requestFactory = requestFactory;

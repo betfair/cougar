@@ -17,6 +17,8 @@
 package com.betfair.cougar.client.socket;
 
 import com.betfair.cougar.api.ExecutionContext;
+import com.betfair.cougar.api.security.IdentityResolver;
+import com.betfair.cougar.client.api.ContextEmitter;
 import com.betfair.cougar.client.socket.jmx.ClientSocketTransportInfo;
 import com.betfair.cougar.client.socket.resolver.NetworkAddressResolver;
 import com.betfair.cougar.core.api.client.AbstractClientTransport;
@@ -45,6 +47,7 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.mina.common.*;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
@@ -53,11 +56,12 @@ import javax.net.ssl.SSLException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.FutureTask;
-import java.util.logging.Level;
 
 import static com.betfair.cougar.netutil.nio.NioLogger.LoggingLevel.*;
 
@@ -265,6 +269,7 @@ public class ExecutionVenueNioClient extends AbstractClientTransport implements 
     // ================================ Executable ==========
 
     private RemotableMethodInvocationMarshaller marshaller;
+    private ContextEmitter<Map<String, String>, ?> contextEmitter;
 
     @Override
     public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer,
@@ -290,6 +295,9 @@ public class ExecutionVenueNioClient extends AbstractClientTransport implements 
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     byte protocolVersion = CougarProtocol.getProtocolVersion(session);
                     final CougarObjectOutput out = objectIOFactory.newCougarObjectOutput(baos, protocolVersion);
+
+                    final Map<String,String> additionalData = new HashMap<>();
+                    contextEmitter.emit(ctx,additionalData,null);
 
 //                    addObserver(correlationId, def.getReturnType(), observer);
                     marshaller.writeInvocationRequest(new InvocationRequest() {
@@ -318,7 +326,7 @@ public class ExecutionVenueNioClient extends AbstractClientTransport implements 
                         public TimeConstraints getTimeConstraints() {
                             return timeConstraints;
                         }
-                    }, out, getIdentityResolver(), protocolVersion);
+                    }, out, getIdentityResolver(), additionalData, protocolVersion);
                     out.close();
 
                     ((RequestResponseManager) session.getAttribute(RequestResponseManager.SESSION_KEY)).sendRequest(baos.toByteArray(), new RequestResponseManager.ResponseHandler() {
@@ -370,6 +378,11 @@ public class ExecutionVenueNioClient extends AbstractClientTransport implements 
 
     public RemotableMethodInvocationMarshaller getMarshaller() {
         return marshaller;
+    }
+
+    @Required
+    public void setContextEmitter(ContextEmitter<Map<String, String>, ?> contextEmitter) {
+        this.contextEmitter = contextEmitter;
     }
 
     /**

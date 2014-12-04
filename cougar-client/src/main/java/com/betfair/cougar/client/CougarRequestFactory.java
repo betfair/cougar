@@ -18,17 +18,11 @@ package com.betfair.cougar.client;
 
 import com.betfair.cougar.CougarVersion;
 import com.betfair.cougar.api.ExecutionContext;
-import com.betfair.cougar.api.RequestUUID;
-import com.betfair.cougar.api.UUIDGenerator;
-import com.betfair.cougar.api.geolocation.GeoLocationDetails;
-import com.betfair.cougar.client.api.GeoLocationSerializer;
+import com.betfair.cougar.client.api.ContextEmitter;
 import com.betfair.cougar.core.api.ev.TimeConstraints;
 import com.betfair.cougar.marshalling.api.databinding.Marshaller;
-import com.betfair.cougar.util.RequestUUIDImpl;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
@@ -45,21 +39,15 @@ import static org.apache.http.HttpHeaders.*;
 public abstract class CougarRequestFactory<HR> {
     protected static final String UTF8 = "utf-8";
 
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = ISODateTimeFormat.dateTime();
     // todo: base this on app name as well?
     static final String USER_AGENT_HEADER = "Cougar Client " + CougarVersion.getVersion();
 
-    private final String uuidHeader;
-    private final String uuidParentsHeader;
-
-    private final GeoLocationSerializer geoLocationSerializer;
+    private final ContextEmitter<HR,List<Header>> contextEmission;
 
     private volatile boolean gzipCompressionEnabled;
 
-    public CougarRequestFactory(GeoLocationSerializer geoLocationSerializer, String uuidHeader, String uuidParentsHeader) {
-        this.geoLocationSerializer = geoLocationSerializer;
-        this.uuidHeader = uuidHeader;
-        this.uuidParentsHeader = uuidParentsHeader;
+    public CougarRequestFactory(ContextEmitter<HR,List<Header>> contextEmission) {
+        this.contextEmission = contextEmission;
     }
 
     public HR create(final String uri, final String httpMethod, final Message message,
@@ -71,7 +59,10 @@ public abstract class CougarRequestFactory<HR> {
             addPostEntity(httpRequest, createPostEntity(message, marshaller), contentType);
         }
 
-        addHeaders(httpRequest, constructRequestHeaders(message, contentType, ctx, timeConstraints));
+        List<Header> coreHeaders = constructRequestHeaders(message, contentType, ctx, timeConstraints);
+        contextEmission.emit(ctx, httpRequest, coreHeaders);
+
+        addHeaders(httpRequest, coreHeaders);
         return httpRequest;
     }
 
@@ -125,28 +116,6 @@ public abstract class CougarRequestFactory<HR> {
         }
         result.add(new BasicHeader(USER_AGENT, USER_AGENT_HEADER));
 
-        if (ctx.traceLoggingEnabled()) {
-            result.add(new BasicHeader("X-Trace-Me", "true"));
-        }
-
-        GeoLocationDetails gld = ctx.getLocation();
-        if (gld != null) {
-            geoLocationSerializer.serialize(gld, result);
-        }
-
-        if (uuidHeader != null) {
-            RequestUUID requestUUID = ctx.getRequestUUID() != null ? ctx.getRequestUUID().getNewSubUUID() : new RequestUUIDImpl();
-            result.add(new BasicHeader(uuidHeader, requestUUID.getLocalUUIDComponent()));
-            if (uuidParentsHeader != null && requestUUID.getRootUUIDComponent() != null) {
-                result.add(new BasicHeader(uuidParentsHeader, requestUUID.getRootUUIDComponent()+ UUIDGenerator.COMPONENT_SEPARATOR+requestUUID.getParentUUIDComponent()));
-            }
-        }
-
-        // time headers
-        if (ctx.getReceivedTime() != null) {
-            result.add(new BasicHeader("X-ReceivedTime", DATE_TIME_FORMATTER.print(ctx.getReceivedTime().getTime())));
-        }
-        result.add(new BasicHeader("X-RequestTime", DATE_TIME_FORMATTER.print(System.currentTimeMillis())));
         if (timeConstraints.getTimeRemaining() != null) {
             result.add(new BasicHeader("X-RequestTimeout", String.valueOf(timeConstraints.getTimeRemaining())));
         }

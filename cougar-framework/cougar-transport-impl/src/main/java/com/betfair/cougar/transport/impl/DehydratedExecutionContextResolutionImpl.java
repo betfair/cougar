@@ -61,7 +61,9 @@ public class DehydratedExecutionContextResolutionImpl implements GateListener, D
             for (Protocol p : protocols) {
                 Set<DehydratedExecutionContextComponent> remainingComponents = new HashSet<>(Arrays.asList(DehydratedExecutionContextComponent.values()));
                 Set<DehydratedExecutionContextResolver> componentResolvers = new HashSet<>();
-                for (DehydratedExecutionContextResolverFactory f : factories) {
+                List<DehydratedExecutionContextResolverFactory> reversedFactories = new ArrayList<>(factories);
+                Collections.reverse(reversedFactories);
+                for (DehydratedExecutionContextResolverFactory f : reversedFactories) {
                     DehydratedExecutionContextResolver<?,?>[] resolvers = f.resolvers(p);
                     if (resolvers != null) {
                         for (DehydratedExecutionContextResolver<?,?> resolver : resolvers) {

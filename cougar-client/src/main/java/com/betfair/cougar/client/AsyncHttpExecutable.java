@@ -16,7 +16,7 @@
 
 package com.betfair.cougar.client;
 
-import com.betfair.cougar.client.api.GeoLocationSerializer;
+import com.betfair.cougar.client.api.ContextEmitter;
 import com.betfair.cougar.core.api.client.TransportMetrics;
 import com.betfair.cougar.core.api.ev.ExecutionObserver;
 import com.betfair.cougar.core.api.ev.OperationDefinition;
@@ -71,15 +71,9 @@ public class AsyncHttpExecutable extends AbstractHttpExecutable<Request> impleme
     private int maxConnectionsPerDestination;
     private int maxRequestsQueuedPerDestination;
 
-    public AsyncHttpExecutable(HttpServiceBindingDescriptor bindingDescriptor, GeoLocationSerializer serializer,
+    public AsyncHttpExecutable(HttpServiceBindingDescriptor bindingDescriptor, ContextEmitter emission,
                                ExecutorService threadPool, ExecutorService responseThreadPool) {
-        this(bindingDescriptor, serializer, DEFAULT_REQUEST_UUID_HEADER, DEFAULT_REQUEST_UUID_PARENTS_HEADER, threadPool, responseThreadPool);
-    }
-
-    public AsyncHttpExecutable(HttpServiceBindingDescriptor bindingDescriptor, GeoLocationSerializer serializer,
-                               String requestUUIDHeader, String requestUUIDParentsHeader,
-                               ExecutorService threadPool, ExecutorService responseThreadPool) {
-        super(bindingDescriptor, new JettyCougarRequestFactory(serializer, requestUUIDHeader, requestUUIDParentsHeader));
+        super(bindingDescriptor, new JettyCougarRequestFactory(emission));
         ((JettyCougarRequestFactory)super.requestFactory).setExecutable(this);
         this.threadPool = threadPool;
         this.responseThreadPool = responseThreadPool;

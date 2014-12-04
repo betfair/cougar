@@ -28,6 +28,7 @@ import com.betfair.cougar.transport.api.protocol.socket.InvocationRequest;
 import com.betfair.cougar.transport.api.protocol.socket.InvocationResponse;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * This interface describes a component for serialising and deserialising binary
@@ -35,7 +36,7 @@ import java.io.IOException;
  */
 public interface RemotableMethodInvocationMarshaller {
 
-    public void writeInvocationRequest(InvocationRequest request, CougarObjectOutput out, IdentityResolver identityResolver, byte protocolVersion) throws IOException;
+    public void writeInvocationRequest(InvocationRequest request, CougarObjectOutput out, IdentityResolver identityResolver, Map<String,String> additionalData, byte protocolVersion) throws IOException;
 
     public void writeInvocationResponse(InvocationResponse response, CougarObjectOutput out, byte protocolVersion) throws IOException;
 

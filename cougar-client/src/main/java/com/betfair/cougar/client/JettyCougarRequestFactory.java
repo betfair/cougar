@@ -16,7 +16,7 @@
 
 package com.betfair.cougar.client;
 
-import com.betfair.cougar.client.api.GeoLocationSerializer;
+import com.betfair.cougar.client.api.ContextEmitter;
 import org.apache.http.Header;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -32,8 +32,8 @@ class JettyCougarRequestFactory extends CougarRequestFactory<Request> {
 
     private AsyncHttpExecutable executable;
 
-    public JettyCougarRequestFactory(GeoLocationSerializer serializer, String requestUUIDHeader, String requestUUIDParentsHeader) {
-        super(serializer, requestUUIDHeader, requestUUIDParentsHeader);
+    public JettyCougarRequestFactory(ContextEmitter<Request,List<Header>> emission) {
+        super(emission);
     }
 
     void setExecutable(AsyncHttpExecutable executable) {
