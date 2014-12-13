@@ -18,13 +18,14 @@ package com.betfair.cougar.core.api.tracing;
 
 import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.RequestUUID;
+import com.betfair.cougar.core.api.ev.OperationKey;
 
 /**
  * SPI for providing tracing implementations.
  */
 public interface Tracer {
 
-    void start(RequestUUID uuid);
+    void start(RequestUUID uuid, OperationKey operation);
 
     void trace(RequestUUID uuid, String msg);
     void trace(RequestUUID uuid, String msg, Object arg1);
@@ -38,5 +39,9 @@ public interface Tracer {
     void trace(ExecutionContext ctx, String msg, Object arg1, Object arg2, Object arg3);
     void trace(ExecutionContext ctx, String msg, Object... args);
 
+    /**
+     * Called when a request (or call within a batch request) is completed. Called at most one time (certain error conditions may result in this never being called, although in
+     * reality this will represent a bug in Cougar.
+     */
     void end(RequestUUID uuid);
 }

@@ -92,11 +92,14 @@ public abstract class AbstractCommandProcessor<T extends TransportCommand> imple
             validateCommand(command);
 			CommandResolver<T> resolver = createCommandResolver(command, tracer);
 			ctx = resolver.resolveExecutionContext();
-            tracer.start(ctx.getRequestUUID());
+            List<ExecutionCommand> executionCommands = resolver.resolveExecutionCommands();
+            if (executionCommands.size() > 1) {
+                throw new CougarFrameworkException("Resolved >1 command in a non-batch call!");
+            }
+            ExecutionCommand exec = executionCommands.get(0);
+            tracer.start(ctx.getRequestUUID(), exec.getOperationKey());
             traceStarted = true;
-			for (ExecutionCommand exec : resolver.resolveExecutionCommands()) {
-                executeCommand(exec, ctx);
-			}
+			executeCommand(exec, ctx);
 		} catch(CougarException ce) {
             executeError(command, ctx, ce, traceStarted);
 		} catch (Exception e) {
@@ -183,7 +186,7 @@ public abstract class AbstractCommandProcessor<T extends TransportCommand> imple
             this.tracer = tracer;
         }
 
-        public final Iterable<ExecutionCommand> resolveExecutionCommands() {
+        public final List<ExecutionCommand> resolveExecutionCommands() {
 			ArrayList<ExecutionCommand> list = new ArrayList<ExecutionCommand>();
 			list.add(resolveExecutionCommand(tracer));
 			return list;

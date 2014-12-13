@@ -18,6 +18,8 @@ package com.betfair.cougar.transport.api;
 
 import com.betfair.cougar.api.DehydratedExecutionContext;
 
+import java.util.List;
+
 /**
  * Resolves a TransportCommand to ExecutionCommand (or batch of ExecutionCommands) and
  * contextual execution information.
@@ -25,6 +27,6 @@ import com.betfair.cougar.api.DehydratedExecutionContext;
  */
 public interface CommandResolver<C extends TransportCommand> {
     public DehydratedExecutionContext resolveExecutionContext();
-    public Iterable<ExecutionCommand> resolveExecutionCommands();
+    public List<ExecutionCommand> resolveExecutionCommands();
 }
 

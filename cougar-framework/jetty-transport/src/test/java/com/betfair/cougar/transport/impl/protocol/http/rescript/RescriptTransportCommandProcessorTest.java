@@ -224,7 +224,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
         inorder.verify(logger).logAccess(eq(command), any(ExecutionContext.class), anyLong(), anyLong(),
                                             any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
 
-        verifyTracerCalls();
+        verifyTracerCalls(firstOpKey);
 	}
 
 
@@ -261,7 +261,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
 		assertEquals("TestError-123", faultCaptor.getValue().getErrorCode());
 		assertEquals(FaultCode.Client, faultCaptor.getValue().getFaultCode());
 
-        verifyTracerCalls();
+        verifyTracerCalls(firstOpKey);
 	}
 
 	/**
@@ -287,7 +287,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
         inorder.verify(logger).logAccess(eq(command), any(ExecutionContext.class), anyLong(), anyLong(),
                                             any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
 
-        verifyTracerCalls();
+        verifyTracerCalls(null);
 	}
 
 	@Test
@@ -318,7 +318,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
         inorder.verify(logger).logAccess(eq(command), any(ExecutionContext.class), anyLong(), anyLong(),
                 any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
 
-        verifyTracerCalls();
+        verifyTracerCalls(invalidOpKey);
 
 	}
 
@@ -337,7 +337,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
 
         verify(response).setStatus(HttpServletResponse.SC_OK);
 
-        verifyTracerCalls();
+        verifyTracerCalls(voidReturnOpKey);
     }
 
     @Test
@@ -358,7 +358,7 @@ public class RescriptTransportCommandProcessorTest extends AbstractHttpCommandPr
         inorder.verify(logger).logAccess(eq(command), any(ExecutionContext.class), anyLong(), anyLong(),
                                             any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
 
-        verifyTracerCalls();
+        verifyTracerCalls(null);
     }
 
 

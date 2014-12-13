@@ -16,6 +16,8 @@
 
 package com.betfair.cougar;
 
+import com.betfair.cougar.core.api.exception.CougarException;
+import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -69,7 +71,7 @@ public class CougarVersion {
             MAJOR_MINOR_VERSION = matcher.group();
         }
         else {
-            MAJOR_MINOR_VERSION = null;
+            throw new CougarFrameworkException("Cannot resolve Cougar's version, something is seriously amiss");
         }
     }
 
@@ -80,7 +82,7 @@ public class CougarVersion {
     /**
      * Returns the version in the format &lt;major>.&lt;minor>. It will always strip snapshot strings and will also
      * strip anything after the minor version.
-     * @return The version in the correct format, or <code>null</code> if it can't be converted.
+     * @return The version in the correct format
      */
     public static String getMajorMinorVersion() {
         return MAJOR_MINOR_VERSION;

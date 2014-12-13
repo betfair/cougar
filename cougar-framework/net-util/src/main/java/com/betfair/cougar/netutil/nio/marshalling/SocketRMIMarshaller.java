@@ -410,7 +410,7 @@ public class SocketRMIMarshaller implements RemotableMethodInvocationMarshaller 
     void writeRequestUUID(RequestUUID uuid, CougarObjectOutput out, byte protocolVersion) throws IOException {
         if (uuid != null) {
             out.writeBoolean(true);
-            if (protocolVersion >= CougarProtocol.TRANSPORT_PROTOCOL_VERSION_TIME_CONSTRAINTS) {
+            if (protocolVersion >= CougarProtocol.TRANSPORT_PROTOCOL_VERSION_COMPOUND_REQUEST_UUID) {
                 out.writeString(uuid.getNewSubUUID().toString());
             }
             else {

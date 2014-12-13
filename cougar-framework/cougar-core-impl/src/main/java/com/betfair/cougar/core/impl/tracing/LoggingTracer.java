@@ -17,6 +17,7 @@
 package com.betfair.cougar.core.impl.tracing;
 
 import com.betfair.cougar.api.RequestUUID;
+import com.betfair.cougar.core.api.ev.OperationKey;
 import com.betfair.cougar.logging.CougarLoggingUtils;
 
 /**
@@ -25,7 +26,7 @@ import com.betfair.cougar.logging.CougarLoggingUtils;
 public class LoggingTracer extends AbstractTracer {
 
     @Override
-    public void start(RequestUUID uuid) {
+    public void start(RequestUUID uuid, OperationKey operation) {
         // no-op
     }
 

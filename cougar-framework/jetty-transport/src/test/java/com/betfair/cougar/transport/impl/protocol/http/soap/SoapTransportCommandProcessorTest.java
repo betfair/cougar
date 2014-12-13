@@ -217,7 +217,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
                                             any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
 
-        verifyTracerCalls();
+        verifyTracerCalls(firstOpKey);
     }
 
     /**
@@ -250,7 +250,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
                                             any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
 
-        verifyTracerCalls();
+        verifyTracerCalls(firstOpKey);
     }
 
     /**
@@ -284,7 +284,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
                                             any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
 
-        verifyTracerCalls();
+        verifyTracerCalls(voidReturnOpKey);
     }
 
     /**
@@ -308,7 +308,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
                                             any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
 
-        verifyTracerCalls();
+        verifyTracerCalls(null);
     }
 
     /**
@@ -341,7 +341,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
                 any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
 
-        verifyTracerCalls();
+        verifyTracerCalls(voidReturnOpKey);
     }
 
 
@@ -376,7 +376,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
                                             any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
 
-        verifyTracerCalls();
+        verifyTracerCalls(firstOpKey);
 	}
 
     /**
@@ -422,7 +422,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
             verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
                                                 any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
 
-            verifyTracerCalls();
+            verifyTracerCalls(firstOpKey);
         }
         finally {
             FaultController.getInstance().setDetailedFaults(false);
@@ -450,7 +450,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
                                             any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
 
-        verifyTracerCalls();
+        verifyTracerCalls(null);
 	}
 
 	/**
@@ -497,7 +497,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
                                             any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
 
-        verifyTracerCalls();
+        verifyTracerCalls(mapOpKey);
 	}
 
 	/**
@@ -538,7 +538,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
                                             any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
 
-        verifyTracerCalls();
+        verifyTracerCalls(listOpKey);
 	}
 
 
@@ -606,7 +606,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
                 any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
 
-        verifyTracerCalls();
+        verifyTracerCalls(firstOpKey);
     }
 
     @Test
@@ -827,7 +827,7 @@ public class SoapTransportCommandProcessorTest extends AbstractHttpCommandProces
         verify(logger).logAccess(eq(command), isA(ExecutionContext.class), anyLong(), anyLong(),
                 any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
 
-        verifyTracerCalls();
+        verifyTracerCalls(firstOpKey);
     }
 
     private String buildSoapMessage(String header, String body, String fault, String faultDetail) {

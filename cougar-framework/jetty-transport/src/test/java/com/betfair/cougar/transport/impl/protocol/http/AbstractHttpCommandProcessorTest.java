@@ -160,21 +160,24 @@ public abstract class AbstractHttpCommandProcessorTest<CredentialContainer> {
 
     protected abstract Protocol getProtocol();
 
-    protected void verifyTracerCalls() {
+    protected void verifyTracerCalls(OperationKey expected) {
         final ArgumentCaptor<RequestUUID> captor = ArgumentCaptor.forClass(RequestUUID.class);
+        final ArgumentCaptor<OperationKey> opKeyCaptor = ArgumentCaptor.forClass(OperationKey.class);
 
-        InOrder inOrder = inOrder(tracer);
-        inOrder.verify(tracer).start(captor.capture());
-        inOrder.verify(tracer).end(argThat(new BaseMatcher<RequestUUID>() {
-            @Override
-            public boolean matches(Object o) {
-                return o.equals(captor.getValue());
-            }
+        if (expected != null) {
+            InOrder inOrder = inOrder(tracer);
+            inOrder.verify(tracer).start(captor.capture(), opKeyCaptor.capture());
+            inOrder.verify(tracer).end(argThat(new BaseMatcher<RequestUUID>() {
+                @Override
+                public boolean matches(Object o) {
+                    return o.equals(captor.getValue());
+                }
 
-            @Override
-            public void describeTo(Description description) {
-            }
-        }));
+                @Override
+                public void describeTo(Description description) {
+                }
+            }));
+        }
     }
 
     @Test(expected = PanicInTheCougar.class)
@@ -622,7 +625,7 @@ public abstract class AbstractHttpCommandProcessorTest<CredentialContainer> {
                 }
 
                 @Override
-                public Iterable<ExecutionCommand> resolveExecutionCommands() {
+                public List<ExecutionCommand> resolveExecutionCommands() {
                     List commands = Arrays.asList(new ExecutionCommand() {
                         @Override
                         public OperationKey getOperationKey() {
