@@ -16,6 +16,7 @@
 
 package com.betfair.cougar.transport.api;
 
+import com.betfair.cougar.api.DehydratedExecutionContext;
 import com.betfair.cougar.core.api.ev.ExecutionObserver;
 import com.betfair.cougar.core.api.ev.OperationKey;
 import com.betfair.cougar.core.api.ev.TimeConstraints;

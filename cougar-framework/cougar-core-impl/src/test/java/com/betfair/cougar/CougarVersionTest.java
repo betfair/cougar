@@ -16,6 +16,7 @@
 
 package com.betfair.cougar;
 
+import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
@@ -46,11 +47,10 @@ public class CougarVersionTest {
         assertEquals("Versions do not agree", "2.3", v);
     }
 
-    @Test
+    @Test(expected = CougarFrameworkException.class)
     public void testMajorMinorNoPropertiesFile() {
         CougarVersion.init("/version/wibble.properties");
-        String v = CougarVersion.getMajorMinorVersion();
-        assertEquals("Versions do not agree", null, v);
+        CougarVersion.getMajorMinorVersion();
     }
 
 

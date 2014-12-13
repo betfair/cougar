@@ -17,6 +17,7 @@
 package com.betfair.cougar.core.impl.tracing;
 
 import com.betfair.cougar.api.RequestUUID;
+import com.betfair.cougar.core.api.ev.OperationKey;
 import com.betfair.cougar.core.api.tracing.Tracer;
 
 import java.util.ArrayList;
@@ -29,9 +30,9 @@ public class CompoundTracer extends AbstractTracer {
     private List<Tracer> tracers = new ArrayList<>();
 
     @Override
-    public void start(RequestUUID uuid) {
+    public void start(RequestUUID uuid, OperationKey operation) {
         for (Tracer t : tracers) {
-            t.start(uuid);
+            t.start(uuid, operation);
         }
     }
 

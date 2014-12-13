@@ -21,7 +21,6 @@ import com.betfair.cougar.api.DehydratedExecutionContext;
 import com.betfair.cougar.api.RequestUUID;
 import com.betfair.cougar.api.ResponseCode;
 import com.betfair.cougar.api.export.Protocol;
-import com.betfair.cougar.api.geolocation.GeoLocationDetails;
 import com.betfair.cougar.api.security.*;
 import com.betfair.cougar.core.api.OperationBindingDescriptor;
 import com.betfair.cougar.core.api.RequestTimer;
@@ -45,6 +44,7 @@ import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.api.tracing.Tracer;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
+import com.betfair.cougar.core.impl.CougarInternalOperations;
 import com.betfair.cougar.core.impl.ev.BaseExecutionVenue;
 import com.betfair.cougar.logging.CougarLoggingUtils;
 import com.betfair.cougar.transport.api.DehydratedExecutionContextResolution;
@@ -91,11 +91,9 @@ import java.io.InputStream;
 import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import static junit.framework.Assert.*;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -128,22 +126,31 @@ public class JsonRpcTransportCommandProcessorTest  {
     private DehydratedExecutionContextResolution contextResolution;
     private DehydratedExecutionContext context;
 
-    protected void verifyTracerCalls() {
-        final ArgumentCaptor<RequestUUID> captor = ArgumentCaptor.forClass(RequestUUID.class);
+    protected void verifyTracerCalls(final OperationKey... calls) {
+        verifyTracerCalls(false, calls);
+    }
+
+    protected void verifyTracerCalls(boolean allowMoreStarts, final OperationKey... calls) {
+        final ArgumentCaptor<RequestUUID> startCaptor = ArgumentCaptor.forClass(RequestUUID.class);
+        final ArgumentCaptor<RequestUUID> endCaptor = ArgumentCaptor.forClass(RequestUUID.class);
+        final ArgumentCaptor<OperationKey> opKeyCaptor = ArgumentCaptor.forClass(OperationKey.class);
 
         InOrder inOrder = inOrder(tracer);
-        inOrder.verify(tracer).start(captor.capture());
-        inOrder.verify(tracer).end(argThat(new BaseMatcher<RequestUUID>() {
-            @Override
-            public boolean matches(Object o) {
-                return o.equals(captor.getValue());
+        inOrder.verify(tracer, allowMoreStarts ? atLeast(calls.length+1) : times(calls.length+1)).start(startCaptor.capture(), opKeyCaptor.capture());
+        inOrder.verify(tracer, times(calls.length+1)).end(endCaptor.capture());
+        List<RequestUUID> starts = new ArrayList<>(startCaptor.getAllValues());
+        List<RequestUUID> ends = new ArrayList<>(endCaptor.getAllValues());
+        if (allowMoreStarts) {
+            for (; starts.size()>ends.size();) {
+                starts.remove(starts.size()-1);
             }
+        }
+        Collections.reverse(ends);
+        assertEquals(starts,ends);
 
-            @Override
-            public void describeTo(Description description) {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-        }));
+        for (int i=0; i<calls.length; i++) {
+            assertEquals(calls[i], opKeyCaptor.getAllValues().get(i+1));
+        }
     }
 
     @BeforeClass
@@ -336,7 +343,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         assertFalse(DehydratedExecutionContext.class.isAssignableFrom(req2.ctx.getClass()));
         assertEquals(TEST_OP_KEY, req2.key);
 
-        verifyTracerCalls();
+        verifyTracerCalls(TEST_OP_KEY);
     }
 
     @Test
@@ -800,7 +807,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         HttpCommand mockedCommand = mock(HttpCommand.class);
         RequestTimer mockTimer = mock(RequestTimer.class);
 
-        commandProcessor.setExecutionVenue(new RandomFailureEV());
+        commandProcessor.setExecutionVenue(new RandomFailureEV(1));
 
         when(mockedCommand.getRequest()).thenReturn(request);
         when(mockedCommand.getResponse()).thenReturn(response);
@@ -838,7 +845,7 @@ public class JsonRpcTransportCommandProcessorTest  {
         verify(logger).logAccess(eq(mockedCommand), isA(ExecutionContext.class), anyLong(), anyLong(),
                 any(MediaType.class), any(MediaType.class), any(ResponseCode.class));
 
-        verifyTracerCalls();
+        verifyTracerCalls(true);
     }
 
     /**
@@ -1104,6 +1111,11 @@ public class JsonRpcTransportCommandProcessorTest  {
     }
 
     private static class RandomFailureEV implements ExecutionVenue {
+        private AtomicInteger remainingOk;
+
+        private RandomFailureEV(int okCalls) {
+            remainingOk = new AtomicInteger(okCalls);
+        }
 
         @Override
         public void registerOperation(String namespace, OperationDefinition def, Executable executable, ExecutionTimingRecorder recorder, long maxExecutionTime) {
@@ -1121,11 +1133,17 @@ public class JsonRpcTransportCommandProcessorTest  {
 
         @Override
         public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, TimeConstraints clientExpiryTime) {
+            if (remainingOk.getAndDecrement()>0) {
+                observer.onResult(new ExecutionResult(null));
+            }
             throw new NullPointerException("BANG");
         }
 
         @Override
         public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, Executor executor, TimeConstraints clientExpiryTime) {
+            if (remainingOk.getAndDecrement()>0) {
+                observer.onResult(new ExecutionResult(null));
+            }
             throw new NullPointerException("BANG");
         }
 

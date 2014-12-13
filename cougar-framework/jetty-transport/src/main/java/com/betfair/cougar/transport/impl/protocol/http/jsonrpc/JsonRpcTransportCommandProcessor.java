@@ -18,27 +18,26 @@ package com.betfair.cougar.transport.impl.protocol.http.jsonrpc;
 
 import java.io.IOException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 
 import com.betfair.cougar.api.DehydratedExecutionContext;
+import com.betfair.cougar.api.RequestUUID;
 import com.betfair.cougar.api.export.Protocol;
+import com.betfair.cougar.api.geolocation.GeoLocationDetails;
 import com.betfair.cougar.api.security.*;
 import com.betfair.cougar.core.api.OperationBindingDescriptor;
 import com.betfair.cougar.core.api.ServiceBindingDescriptor;
-import com.betfair.cougar.core.api.ServiceVersion;
 import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.exception.*;
 import com.betfair.cougar.core.api.tracing.Tracer;
 import com.betfair.cougar.core.api.transcription.EnumDerialisationException;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
+import com.betfair.cougar.core.impl.CougarInternalOperations;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.marshalling.impl.databinding.json.JSONBindingFactory;
 import com.betfair.cougar.transport.api.DehydratedExecutionContextResolution;
@@ -90,7 +89,7 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
     static final String IDENTITY_RESOLUTION_NAMESPACE = null;
     // package private for testing
     static final OperationDefinition IDENTITY_RESOLUTION_OPDEF = new SimpleOperationDefinition(
-            new OperationKey(new ServiceVersion(1,0), "_CougarInternal","resolveIdentities",Type.Request),
+            CougarInternalOperations.RESOLVE_IDENTITIES,
             new Parameter[0], ParameterType.create(Void.class)
     );
     // package private for testing
@@ -148,12 +147,12 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
 	@Override
 	protected CommandResolver<HttpCommand> createCommandResolver(final HttpCommand http, final Tracer tracer) {
         final DehydratedExecutionContext context = resolveExecutionContext(http, null);
-        tracer.start(context.getRequestUUID());
+        tracer.start(context.getRequestUUID(), CougarInternalOperations.BATCH_CALL);
 
 
-		final List<JsonRpcRequest> requests = new ArrayList<JsonRpcRequest>();
-		final List<ExecutionCommand> commands = new ArrayList<ExecutionCommand>();
-		final List<JsonRpcResponse> responses = new ArrayList<JsonRpcResponse>();
+		final List<JsonRpcRequest> requests = new ArrayList<>();
+		final List<ExecutionCommand> commands = new LinkedList<>();
+		final List<JsonRpcResponse> responses = new ArrayList<>();
 
 		JsonNode root;
 		ByteCountingInputStream iStream = null;
@@ -238,14 +237,15 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
 			//return command resolver irrespective of whether it is empty so the top level processor doesn't error
 			return new CommandResolver<HttpCommand>() {
 				@Override
-				public DehydratedExecutionContext resolveExecutionContext() {
-					return context;
-				}
-				@Override
-				public Iterable<ExecutionCommand> resolveExecutionCommands() {
+				public List<ExecutionCommand> resolveExecutionCommands() {
 					return commands;
 				}
-			};
+
+                @Override
+                public DehydratedExecutionContext resolveExecutionContext() {
+                    return context;
+                }
+            };
 		} catch (Exception e) {
             throw CougarMarshallingException.unmarshallingException("json", "Unable to resolve requests for json-rpc", e, false);
 		} finally {
@@ -297,7 +297,10 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
                         // BaseExecutionVenue doesn't try to re-resolve
                         ExecutionContext context = ExecutionContextFactory.resolveExecutionContext(finalCtx, finalCtx.getIdentity());
                         for (ExecutionCommand exec : resolver.resolveExecutionCommands()) {
-                            executeCommand(exec, context);
+                            ExecutionContext subContext = createCallContext(context);
+                            tracer.start(subContext.getRequestUUID(), exec.getOperationKey());
+                            ExecutionCommand newCommand = createTraceableSubCommand(exec, tracer, subContext.getRequestUUID());
+                            executeCommand(newCommand, context);
                         }
                     }
                 }
@@ -318,6 +321,76 @@ public class JsonRpcTransportCommandProcessor extends AbstractHttpCommandProcess
             //publication mechanism doesn't work cleanly for JSON-RPC
             writeErrorResponse(command, ctx, new CougarServiceException(ServerFaultCode.ServiceRuntimeException, ex.getMessage()), traceStarted);
         }
+    }
+
+    private ExecutionCommand createTraceableSubCommand(final ExecutionCommand exec, final Tracer tracer, final RequestUUID requestUUID) {
+        return new ExecutionCommand() {
+            @Override
+            public OperationKey getOperationKey() {
+                return exec.getOperationKey();
+            }
+
+            @Override
+            public Object[] getArgs() {
+                return exec.getArgs();
+            }
+
+            @Override
+            public TimeConstraints getTimeConstraints() {
+                return exec.getTimeConstraints();
+            }
+
+            @Override
+            public void onResult(ExecutionResult executionResult) {
+                tracer.end(requestUUID);
+                exec.onResult(executionResult);
+            }
+        };
+    }
+
+    private ExecutionContext createCallContext(final ExecutionContext context) {
+        final RequestUUID callUuid = context.getRequestUUID().getNewSubUUID();
+        return new ExecutionContext() {
+            @Override
+            public GeoLocationDetails getLocation() {
+                return context.getLocation();
+            }
+
+            @Override
+            public IdentityChain getIdentity() {
+                return context.getIdentity();
+            }
+
+            @Override
+            public RequestUUID getRequestUUID() {
+                return callUuid;
+            }
+
+            @Override
+            public Date getReceivedTime() {
+                return context.getReceivedTime();
+            }
+
+            @Override
+            public Date getRequestTime() {
+                return context.getRequestTime();
+            }
+
+            @Override
+            public boolean traceLoggingEnabled() {
+                return context.traceLoggingEnabled();
+            }
+
+            @Override
+            public int getTransportSecurityStrengthFactor() {
+                return context.getTransportSecurityStrengthFactor();
+            }
+
+            @Override
+            public boolean isTransportSecure() {
+                return context.isTransportSecure();
+            }
+        };
     }
 
 
