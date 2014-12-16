@@ -9,7 +9,7 @@
 <div id="overview"><a href="../../../../../../apidocs/com/betfair/cougar/transformations/validators/RequestParameterValidator.html">View Javadoc</a></div><pre>
 
 <a class="jxr_linenumber" name="1" href="#1">1</a>   <em class="jxr_comment">/*</em>
-<a class="jxr_linenumber" name="2" href="#2">2</a>   <em class="jxr_comment"> * Copyright 2013, The Sporting Exchange Limited</em>
+<a class="jxr_linenumber" name="2" href="#2">2</a>   <em class="jxr_comment"> * Copyright 2014, The Sporting Exchange Limited</em>
 <a class="jxr_linenumber" name="3" href="#3">3</a>   <em class="jxr_comment"> *</em>
 <a class="jxr_linenumber" name="4" href="#4">4</a>   <em class="jxr_comment"> * Licensed under the Apache License, Version 2.0 (the "License");</em>
 <a class="jxr_linenumber" name="5" href="#5">5</a>   <em class="jxr_comment"> * you may not use this file except in compliance with the License.</em>
@@ -63,7 +63,7 @@
 <a class="jxr_linenumber" name="53" href="#53">53</a>  	@Override
 <a class="jxr_linenumber" name="54" href="#54">54</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> validate(Node node) <strong class="jxr_keyword">throws</strong> ValidationException {
 <a class="jxr_linenumber" name="55" href="#55">55</a>  		Set&lt;String&gt; namesUsed = <strong class="jxr_keyword">new</strong> HashSet&lt;String&gt;();
-<a class="jxr_linenumber" name="56" href="#56">56</a>  		
+<a class="jxr_linenumber" name="56" href="#56">56</a>  
 <a class="jxr_linenumber" name="57" href="#57">57</a>  		List&lt;Node&gt; values = getChildrenWithName(getName(), node, <span class="jxr_string">"parameter"</span>);
 <a class="jxr_linenumber" name="58" href="#58">58</a>  		<strong class="jxr_keyword">for</strong> (Node val: values) {
 <a class="jxr_linenumber" name="59" href="#59">59</a>  			String name = getAttribute(getName(), val, <span class="jxr_string">"name"</span>);
@@ -80,7 +80,7 @@
 <a class="jxr_linenumber" name="70" href="#70">70</a>  
 <a class="jxr_linenumber" name="71" href="#71">71</a>  		}
 <a class="jxr_linenumber" name="72" href="#72">72</a>  	}
-<a class="jxr_linenumber" name="73" href="#73">73</a>  	
+<a class="jxr_linenumber" name="73" href="#73">73</a>  
 <a class="jxr_linenumber" name="74" href="#74">74</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> validateExtensions(Node node) <strong class="jxr_keyword">throws</strong> ValidationException {
 <a class="jxr_linenumber" name="75" href="#75">75</a>  		getAndValidateAttribute(getName(), node, <span class="jxr_string">"name"</span>);
 <a class="jxr_linenumber" name="76" href="#76">76</a>  		String type = getAndValidateAttribute(getName(), node, <span class="jxr_string">"type"</span>);
@@ -104,7 +104,7 @@
 <a class="jxr_linenumber" name="94" href="#94">94</a>  		<strong class="jxr_keyword">if</strong> (style == <strong class="jxr_keyword">null</strong> || style.length() == 0) {
 <a class="jxr_linenumber" name="95" href="#95">95</a>  			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../com/betfair/cougar/codegen/ValidationException.html">ValidationException</a>(getName() + <span class="jxr_string">" - style not defined"</span>, node);
 <a class="jxr_linenumber" name="96" href="#96">96</a>  		}
-<a class="jxr_linenumber" name="97" href="#97">97</a>  		
+<a class="jxr_linenumber" name="97" href="#97">97</a>  
 <a class="jxr_linenumber" name="98" href="#98">98</a>  		<strong class="jxr_keyword">if</strong> (style.equals(<span class="jxr_string">"body"</span>)) {
 <a class="jxr_linenumber" name="99" href="#99">99</a>              <em class="jxr_comment">// body style params must be in a POST method</em>
 <a class="jxr_linenumber" name="100" href="#100">100</a>             <strong class="jxr_keyword">try</strong> {

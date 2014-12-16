@@ -6,4 +6,5 @@ com.betfair.cougar.core.impl.jmx
 com.betfair.cougar.core.impl.kpi
 com.betfair.cougar.core.impl.logging
 com.betfair.cougar.core.impl.security
+com.betfair.cougar.core.impl.tracing
 com.betfair.cougar.core.impl.transports

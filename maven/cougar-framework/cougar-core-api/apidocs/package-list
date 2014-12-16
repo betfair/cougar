@@ -1,4 +1,5 @@
 com.betfair.cougar.core.api
+com.betfair.cougar.core.api.builder
 com.betfair.cougar.core.api.client
 com.betfair.cougar.core.api.collectionwrappers
 com.betfair.cougar.core.api.ev
@@ -11,5 +12,6 @@ com.betfair.cougar.core.api.logging
 com.betfair.cougar.core.api.mediatype
 com.betfair.cougar.core.api.monitor
 com.betfair.cougar.core.api.security
+com.betfair.cougar.core.api.tracing
 com.betfair.cougar.core.api.transcription
 com.betfair.cougar.core.api.transports

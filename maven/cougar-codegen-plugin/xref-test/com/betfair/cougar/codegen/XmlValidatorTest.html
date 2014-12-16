@@ -9,7 +9,7 @@
 <div id="overview"><a href="../../../../../testapidocs/com/betfair/cougar/codegen/XmlValidatorTest.html">View Javadoc</a></div><pre>
 
 <a class="jxr_linenumber" name="1" href="#1">1</a>   <em class="jxr_comment">/*</em>
-<a class="jxr_linenumber" name="2" href="#2">2</a>   <em class="jxr_comment"> * Copyright 2013, The Sporting Exchange Limited</em>
+<a class="jxr_linenumber" name="2" href="#2">2</a>   <em class="jxr_comment"> * Copyright 2014, The Sporting Exchange Limited</em>
 <a class="jxr_linenumber" name="3" href="#3">3</a>   <em class="jxr_comment"> *</em>
 <a class="jxr_linenumber" name="4" href="#4">4</a>   <em class="jxr_comment"> * Licensed under the Apache License, Version 2.0 (the "License");</em>
 <a class="jxr_linenumber" name="5" href="#5">5</a>   <em class="jxr_comment"> * you may not use this file except in compliance with the License.</em>
@@ -50,13 +50,13 @@
 <a class="jxr_linenumber" name="40" href="#40">40</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setUp() {
 <a class="jxr_linenumber" name="41" href="#41">41</a>      	resolver = Files.initResolver(mock(Log.<strong class="jxr_keyword">class</strong>));
 <a class="jxr_linenumber" name="42" href="#42">42</a>  	}
-<a class="jxr_linenumber" name="43" href="#43">43</a>  	
+<a class="jxr_linenumber" name="43" href="#43">43</a>  
 <a class="jxr_linenumber" name="44" href="#44">44</a>      @Test
 <a class="jxr_linenumber" name="45" href="#45">45</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testValidFile() {
-<a class="jxr_linenumber" name="46" href="#46">46</a>          
+<a class="jxr_linenumber" name="46" href="#46">46</a>  
 <a class="jxr_linenumber" name="47" href="#47">47</a>          File xmlFile = Files.fromResource(<span class="jxr_string">"SomeService.xml"</span>);
 <a class="jxr_linenumber" name="48" href="#48">48</a>          Document xml = XmlUtil.parse(xmlFile, resolver);
-<a class="jxr_linenumber" name="49" href="#49">49</a>          
+<a class="jxr_linenumber" name="49" href="#49">49</a>  
 <a class="jxr_linenumber" name="50" href="#50">50</a>          <strong class="jxr_keyword">new</strong> XmlValidator(resolver).validate(xml);
 <a class="jxr_linenumber" name="51" href="#51">51</a>      }
 <a class="jxr_linenumber" name="52" href="#52">52</a>  
@@ -68,10 +68,10 @@
 <a class="jxr_linenumber" name="58" href="#58">58</a>  
 <a class="jxr_linenumber" name="59" href="#59">59</a>          <strong class="jxr_keyword">new</strong> XmlValidator(resolver).validate(xml);
 <a class="jxr_linenumber" name="60" href="#60">60</a>      }
-<a class="jxr_linenumber" name="61" href="#61">61</a>      
+<a class="jxr_linenumber" name="61" href="#61">61</a>  
 <a class="jxr_linenumber" name="62" href="#62">62</a>      @Test
 <a class="jxr_linenumber" name="63" href="#63">63</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testInvalidFile() {
-<a class="jxr_linenumber" name="64" href="#64">64</a>      
+<a class="jxr_linenumber" name="64" href="#64">64</a>  
 <a class="jxr_linenumber" name="65" href="#65">65</a>          File xmlFile = Files.fromResource(<span class="jxr_string">"BrokenService.xml"</span>);
 <a class="jxr_linenumber" name="66" href="#66">66</a>          Document xml = XmlUtil.parse(xmlFile, resolver);
 <a class="jxr_linenumber" name="67" href="#67">67</a>          <strong class="jxr_keyword">try</strong> {
@@ -79,7 +79,7 @@
 <a class="jxr_linenumber" name="69" href="#69">69</a>              fail(<span class="jxr_string">"Should have thrown an exception"</span>);
 <a class="jxr_linenumber" name="70" href="#70">70</a>          }
 <a class="jxr_linenumber" name="71" href="#71">71</a>          <strong class="jxr_keyword">catch</strong> (Exception e) {
-<a class="jxr_linenumber" name="72" href="#72">72</a>              assertTrue(<span class="jxr_string">"Should have validation error about invalid element, instead got: "</span> + e, 
+<a class="jxr_linenumber" name="72" href="#72">72</a>              assertTrue(<span class="jxr_string">"Should have validation error about invalid element, instead got: "</span> + e,
 <a class="jxr_linenumber" name="73" href="#73">73</a>                              e.getMessage().contains(<span class="jxr_string">"AnInvalidElement"</span>));
 <a class="jxr_linenumber" name="74" href="#74">74</a>          }
 <a class="jxr_linenumber" name="75" href="#75">75</a>      }

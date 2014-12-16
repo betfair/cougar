@@ -1,9 +1,7 @@
 com.betfair.cougar
 com.betfair.cougar.logging
 com.betfair.cougar.logging.events
-com.betfair.cougar.logging.handlers
 com.betfair.cougar.logging.records
-com.betfair.cougar.logging.rolling
 com.betfair.cougar.util
 com.betfair.cougar.util.configuration
 com.betfair.cougar.util.geolocation

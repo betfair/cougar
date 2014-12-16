@@ -9,7 +9,7 @@
 <div id="overview"><a href="../../../../../apidocs/com/betfair/cougar/codegen/FileUtil.html">View Javadoc</a></div><pre>
 
 <a class="jxr_linenumber" name="1" href="#1">1</a>   <em class="jxr_comment">/*</em>
-<a class="jxr_linenumber" name="2" href="#2">2</a>   <em class="jxr_comment"> * Copyright 2013, The Sporting Exchange Limited</em>
+<a class="jxr_linenumber" name="2" href="#2">2</a>   <em class="jxr_comment"> * Copyright 2014, The Sporting Exchange Limited</em>
 <a class="jxr_linenumber" name="3" href="#3">3</a>   <em class="jxr_comment"> *</em>
 <a class="jxr_linenumber" name="4" href="#4">4</a>   <em class="jxr_comment"> * Licensed under the Apache License, Version 2.0 (the "License");</em>
 <a class="jxr_linenumber" name="5" href="#5">5</a>   <em class="jxr_comment"> * you may not use this file except in compliance with the License.</em>
@@ -36,13 +36,13 @@
 <a class="jxr_linenumber" name="26" href="#26">26</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../com/betfair/cougar/codegen/FileUtil.html">FileUtil</a> {
 <a class="jxr_linenumber" name="27" href="#27">27</a>  
 <a class="jxr_linenumber" name="28" href="#28">28</a>  	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="29" href="#29">29</a>  <em class="jxr_javadoccomment">	 * Copy the given resource to the given file. </em>
-<a class="jxr_linenumber" name="30" href="#30">30</a>  <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="29" href="#29">29</a>  <em class="jxr_javadoccomment">	 * Copy the given resource to the given file.</em>
+<a class="jxr_linenumber" name="30" href="#30">30</a>  <em class="jxr_javadoccomment">	 *</em>
 <a class="jxr_linenumber" name="31" href="#31">31</a>  <em class="jxr_javadoccomment">	 * @param resourceName name of resource to copy</em>
 <a class="jxr_linenumber" name="32" href="#32">32</a>  <em class="jxr_javadoccomment">	 * @param destination file</em>
 <a class="jxr_linenumber" name="33" href="#33">33</a>  <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="34" href="#34">34</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> resourceToFile(String resourceName, File dest, Class src) {
-<a class="jxr_linenumber" name="35" href="#35">35</a>  		
+<a class="jxr_linenumber" name="35" href="#35">35</a>  
 <a class="jxr_linenumber" name="36" href="#36">36</a>  		InputStream is = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="37" href="#37">37</a>  	    OutputStream os = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="38" href="#38">38</a>  	    <strong class="jxr_keyword">try</strong> {
@@ -54,7 +54,7 @@
 <a class="jxr_linenumber" name="44" href="#44">44</a>  	        os = <strong class="jxr_keyword">new</strong> FileOutputStream(dest);
 <a class="jxr_linenumber" name="45" href="#45">45</a>  
 <a class="jxr_linenumber" name="46" href="#46">46</a>  	        IOUtils.copy(is, os);
-<a class="jxr_linenumber" name="47" href="#47">47</a>  	        
+<a class="jxr_linenumber" name="47" href="#47">47</a>  
 <a class="jxr_linenumber" name="48" href="#48">48</a>  	    } <strong class="jxr_keyword">catch</strong> (Exception e) {
 <a class="jxr_linenumber" name="49" href="#49">49</a>  	    	<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> RuntimeException(<span class="jxr_string">"Error copying resource '"</span> + resourceName + <span class="jxr_string">"' to file '"</span>
 <a class="jxr_linenumber" name="50" href="#50">50</a>  	    					+ dest.getPath() + <span class="jxr_string">"': "</span>+ e, e);
