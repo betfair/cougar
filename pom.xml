@@ -129,7 +129,6 @@
     <modules>
         <module>cougar-codegen-plugin</module>
         <module>cougar-framework</module>
-        <module>cougar-client</module>
     </modules>
 
     <profiles>
