@@ -64,8 +64,8 @@ public class RPCPostSetResponseTest {
         // Convert the returned json object to a map for comparison
         CougarHelpers cougarHelpers4 = new CougarHelpers();
         Map<String, Object> map5 = cougarHelpers4.convertBatchedResponseToMap(response);
-        AssertionUtils.multiAssertEquals("{\"id\":1,\"result\":[\"Value b\",\"Value a\"],\"jsonrpc\":\"2.0\"}", map5.get("response1"));
-        AssertionUtils.multiAssertEquals("{\"id\":2,\"result\":[\"Value d\",\"Value c\"],\"jsonrpc\":\"2.0\"}", map5.get("response2"));
+        AssertionUtils.multiAssertEquals("{\"id\":1,\"result\":[\"Value a\",\"Value b\"],\"jsonrpc\":\"2.0\"}", map5.get("response1"));
+        AssertionUtils.multiAssertEquals("{\"id\":2,\"result\":[\"Value c\",\"Value d\"],\"jsonrpc\":\"2.0\"}", map5.get("response2"));
         AssertionUtils.multiAssertEquals(200, map5.get("httpStatusCode"));
         AssertionUtils.multiAssertEquals("OK", map5.get("httpStatusText"));
         // Pause the test to allow the logs to be filled

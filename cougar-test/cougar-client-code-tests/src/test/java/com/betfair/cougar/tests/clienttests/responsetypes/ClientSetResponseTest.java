@@ -46,10 +46,10 @@ public class ClientSetResponseTest {
         // Call method using recript transport
         Set<String> responseSet = client.testSimpleSetGet(context, requestSet);
         // Check received set response is as expected
-        assertEquals("[aaa, ddd, ccc, bbb]", responseSet.toString());
+        assertEquals(requestSet, responseSet);
     }
 
-    @DataProvider(name="TransportType")
+    @DataProvider(name = "TransportType")
     public Object[][] clients() {
         return ClientTestsHelper.clientsToTest();
     }

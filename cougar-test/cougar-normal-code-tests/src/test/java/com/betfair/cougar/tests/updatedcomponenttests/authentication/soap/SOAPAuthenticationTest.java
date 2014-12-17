@@ -66,7 +66,7 @@ public class SOAPAuthenticationTest {
         cougarManager2.makeSoapCougarHTTPCalls(getNewHttpCallBean2);
         
         XMLHelpers xMLHelpers5 = new XMLHelpers();
-        Document createAsDocument11 = xMLHelpers5.getXMLObjectFromString("<response><identities><Ident><principal>PRINCIPAL: Password</principal><credentialName>CREDENTIAL: Password</credentialName><credentialValue>bar</credentialValue></Ident><Ident><principal>PRINCIPAL: Username</principal><credentialName>CREDENTIAL: Username</credentialName><credentialValue>foo</credentialValue></Ident></identities></response>");
+        Document createAsDocument11 = xMLHelpers5.getXMLObjectFromString("<response><identities><Ident><principal>PRINCIPAL: Username</principal><credentialName>CREDENTIAL: Username</credentialName><credentialValue>foo</credentialValue></Ident><Ident><principal>PRINCIPAL: Password</principal><credentialName>CREDENTIAL: Password</credentialName><credentialValue>bar</credentialValue></Ident></identities></response>");
         
         Map<String, Object> convertResponseToSOAP12 = cougarManager2.convertResponseToSOAP(createAsDocument11, getNewHttpCallBean2);
         
@@ -74,7 +74,7 @@ public class SOAPAuthenticationTest {
         AssertionUtils.multiAssertEquals(convertResponseToSOAP12.get("SOAP"), getResponseObjectsByEnum13.getResponseObject());
         
         Map<String, String> map7 = getResponseObjectsByEnum13.getResponseHeaders();
-        AssertionUtils.multiAssertEquals("Password:bar Username:foo", map7.get("Credentials"));
+        AssertionUtils.multiAssertEquals("Username:foo Password:bar", map7.get("Credentials"));
         
         // generalHelpers.pauseTest(1000L);
         

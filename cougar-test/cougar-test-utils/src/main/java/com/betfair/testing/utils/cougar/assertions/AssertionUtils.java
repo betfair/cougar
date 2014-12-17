@@ -37,7 +37,7 @@ public class AssertionUtils {
 
     public static void jettAssertEquals(String message, Object expected, Object actual) {
         if (actual == null) {
-            assertNull(expected);
+            assertNull(message, expected);
         }
         else {
             DataTypeEnum actualObjectType = ObjectUtil.resolveType(actual.getClass());
