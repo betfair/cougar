@@ -49,7 +49,10 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 public class JettyHandler extends AbstractHandler {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(JettyHandler.class);
-	private final TransportCommandProcessor<HttpCommand> commandProcessor;
+    private static final String VERSION_HEADER = "Cougar 2 - " + CougarVersion.getVersion();
+
+
+    private final TransportCommandProcessor<HttpCommand> commandProcessor;
     private final long MILLI=1000;
     private String protocolBindingRoot;
     private IdentityTokenResolverLookup identityTokenResolverLookup;
@@ -80,7 +83,7 @@ public class JettyHandler extends AbstractHandler {
 
 	@Override
 	public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        response.setHeader("Server", CougarVersion.getVersionString());
+        response.setHeader("Server", VERSION_HEADER);
 		try {
             IdentityTokenResolver itr = null;
             if (identityTokenResolverLookup != null) {

@@ -31,6 +31,7 @@ import com.betfair.cougar.transport.api.protocol.http.rescript.RescriptOperation
 import com.betfair.cougar.transport.api.protocol.http.rescript.RescriptParamBindingDescriptor;
 import com.betfair.cougar.transport.impl.protocol.http.DefaultGeoLocationDeserializer;
 import com.betfair.cougar.transport.jetty.jmx.JettyEndpoints;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -152,6 +153,11 @@ public class JettyHttpTransportTest {
         transport.getServerWrapper().setHttpsTrustPassword("MUST_BE_OVERRIDDEN");
     }
 
+    private void populateTransportWithCORSEnabled(JettyHttpTransport transport) throws Exception {
+        populateTransport(transport);
+        transport.setCorsEnabled(true);
+    }
+
     @Test
     public void testNotify() {
         //We need to test that for a particular service we end up with
@@ -196,6 +202,72 @@ public class JettyHttpTransportTest {
         JettyHandlerSpecification spec = transport.getHandlerSpecificationMap().values().iterator().next();
         assertNotNull("Jetty handler spec should not be null", spec);
         assertTrue("There should be one identityTokenResolver plugged in here", spec.getVersionToIdentityTokenResolverMap().size() == 1);
+    }
+
+    @Test
+    public void testCORSEnabledAddNewHandlerToContextHandlerCollection() throws Exception {
+        ProtocolBinding pb = new ProtocolBinding("/", null, Protocol.RESCRIPT);
+        ProtocolBinding pb2 = new ProtocolBinding("/api", null, Protocol.RESCRIPT);
+        ProtocolBinding pb3 = new ProtocolBinding("/", null, Protocol.JSON_RPC);
+        Set<ProtocolBinding> bindingSet = new HashSet<ProtocolBinding>();
+        bindingSet.add(pb);
+        bindingSet.add(pb2);
+        bindingSet.add(pb3);
+        ProtocolBindingRegistry bindingReg = Mockito.mock(ProtocolBindingRegistry.class);
+        when(bindingReg.getProtocolBindings()).thenReturn(bindingSet);
+
+
+        JettyHttpTransport transport = new JettyHttpTransport();
+        populateTransport(transport);
+        transport.setProtocolBindingRegistry(bindingReg);
+        transport.setCommandProcessorFactory(factory);
+
+        JettyEndpoints endpoints = Mockito.mock(JettyEndpoints.class);
+        transport.setJettyEndPoints(endpoints);
+
+        transport.notify(rescriptServiceBindingDescriptor);
+        transport.notify(jsonRpcBindingDescriptor);
+
+        transport.initialiseStaticJettyConfig();
+        populateTransportWithCORSEnabled(transport);
+        transport.onCougarStart();
+
+        assertEquals(3, transport.getHandlerCollection().getChildHandlersByClass(CrossOriginHandler.class).length);
+
+        transport.stop();
+    }
+
+    @Test
+    public void testCORSDisabledDoesNotAddHandlersToContextHandlerCollection() throws Exception {
+        ProtocolBinding pb = new ProtocolBinding("/", null, Protocol.RESCRIPT);
+        ProtocolBinding pb2 = new ProtocolBinding("/api", null, Protocol.RESCRIPT);
+        ProtocolBinding pb3 = new ProtocolBinding("/", null, Protocol.JSON_RPC);
+        Set<ProtocolBinding> bindingSet = new HashSet<ProtocolBinding>();
+        bindingSet.add(pb);
+        bindingSet.add(pb2);
+        bindingSet.add(pb3);
+        ProtocolBindingRegistry bindingReg = Mockito.mock(ProtocolBindingRegistry.class);
+        when(bindingReg.getProtocolBindings()).thenReturn(bindingSet);
+
+
+        JettyHttpTransport transport = new JettyHttpTransport();
+        populateTransport(transport);
+        transport.setProtocolBindingRegistry(bindingReg);
+        transport.setCommandProcessorFactory(factory);
+
+        JettyEndpoints endpoints = Mockito.mock(JettyEndpoints.class);
+        transport.setJettyEndPoints(endpoints);
+
+        transport.notify(rescriptServiceBindingDescriptor);
+        transport.notify(jsonRpcBindingDescriptor);
+
+        transport.initialiseStaticJettyConfig();
+        populateTransport(transport);
+        transport.onCougarStart();
+
+        assertEquals(0, transport.getHandlerCollection().getChildHandlersByClass(CrossOriginHandler.class).length);
+
+        transport.stop();
     }
 
     @Test

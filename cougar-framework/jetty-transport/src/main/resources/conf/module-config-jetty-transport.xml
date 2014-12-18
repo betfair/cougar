@@ -115,6 +115,16 @@
         <property name="corsAllowCredentials" value="$COUGAR-JETTY{cougar.corsHandler.allowCredentials}"/>
         <property name="corsMaxAge" value="$COUGAR-JETTY{cougar.corsHandler.maxAgeSec}"/>
 
+        <!-- CORS -->
+        <property name="corsEnabled" value="$COUGAR-JETTY{cougar.corsHandler.enabled}"/>
+        <property name="corsAllowedOrigins" value="$COUGAR-JETTY{cougar.corsHandler.allowedOrigins}"/>
+        <property name="corsAllowedMethods" value="$COUGAR-JETTY{cougar.corsHandler.allowedMethods}"/>
+        <property name="corsAllowedHeaders" value="$COUGAR-JETTY{cougar.corsHandler.allowedHeaders}"/>
+        <property name="corsPreflightMaxAge" value="$COUGAR-JETTY{cougar.corsHandler.preFlightMaxAge}"/>
+        <property name="corsAllowCredentials" value="$COUGAR-JETTY{cougar.corsHandler.allowCredentials}"/>
+        <property name="corsExposedHeaders" value="$COUGAR-JETTY{cougar.corsHandler.exposedHeaders}"/>
+        <!-- END CORS -->
+
         <property name="serverWrapper.maxFormContentSize" value="$COUGAR-JETTY{cougar.maxFormContentSize}"/>
 
         <property name="pathAliases" ref="pathAliasMap"/>
