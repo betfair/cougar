@@ -108,13 +108,6 @@
         <property name="gzipMinSize" value="$COUGAR-JETTY{cougar.gzipHandler.minSize}"/>
         <property name="gzipExcludedAgents" value="$COUGAR-JETTY{cougar.gzipHandler.excludedAgents}"/>
 
-        <property name="corsEnabled" value="$COUGAR-JETTY{cougar.corsHandler.enabled}"/>
-        <property name="corsAllowedOrigins" value="$COUGAR-JETTY{cougar.corsHandler.allowedOrigins}"/>
-        <property name="corsAllowedMethods" value="$COUGAR-JETTY{cougar.corsHandler.allowedMethods}"/>
-        <property name="corsAllowedHeaders" value="$COUGAR-JETTY{cougar.corsHandler.allowedHeaders}"/>
-        <property name="corsAllowCredentials" value="$COUGAR-JETTY{cougar.corsHandler.allowCredentials}"/>
-        <property name="corsMaxAge" value="$COUGAR-JETTY{cougar.corsHandler.maxAgeSec}"/>
-
         <!-- CORS -->
         <property name="corsEnabled" value="$COUGAR-JETTY{cougar.corsHandler.enabled}"/>
         <property name="corsAllowedOrigins" value="$COUGAR-JETTY{cougar.corsHandler.allowedOrigins}"/>
