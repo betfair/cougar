@@ -267,7 +267,7 @@ public class JettyHttpTransportTest {
         transport.initialiseStaticJettyConfig();
 
         populateTransport(transport);
-        transport.start();
+        transport.onCougarStart();
 
         assertEquals(0, transport.getHandlerCollection().getChildHandlersByClass(CrossOriginHandler.class).length);
 
