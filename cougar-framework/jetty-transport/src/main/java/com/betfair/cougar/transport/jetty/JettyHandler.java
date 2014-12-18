@@ -83,7 +83,7 @@ public class JettyHandler extends AbstractHandler {
 
 	@Override
 	public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        response.setHeader("Server", VERSION_HEADER);
+        response.setHeader("Server", CougarVersion.getVersionString());
 		try {
             IdentityTokenResolver itr = null;
             if (identityTokenResolverLookup != null) {

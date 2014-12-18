@@ -1,9 +1,28 @@
+/*
+ * Copyright 2014, The Sporting Exchange Limited
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.betfair.cougar.transport.jetty;
 
 import com.betfair.cougar.CougarVersion;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
+import org.eclipse.jetty.servlets.GzipFilter;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +32,7 @@ import java.util.Enumeration;
 
 /**
  * Jetty AbstractHandler acting as a request middleware to accept CORS requests and decorate the responses accordingly.
+ * @see <a href="http://www.w3.org/TR/cors/">Cross-Origin Resource Sharing W3C Recommendation</a>
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS>Mozilla HTTP access control</a>
  */
 public class CrossOriginHandler extends AbstractHandler {
@@ -88,5 +108,4 @@ public class CrossOriginHandler extends AbstractHandler {
             ((Request) request).setHandled(false);
 		}
 	}
-
 }

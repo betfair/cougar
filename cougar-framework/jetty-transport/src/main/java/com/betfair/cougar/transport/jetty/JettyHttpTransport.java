@@ -102,12 +102,39 @@ public class JettyHttpTransport extends AbstractRegisterableTransport implements
     private String gzipExcludedAgents;
 
     // CORS
+    /**
+     * Is CORS Handler enabled?
+     */
     private boolean corsEnabled;
+    /**
+     * Comma separated list of allowed cors origins
+     * @link <a href="http://www.w3.org/TR/cors/#access-control-allow-origin-response-header">CORS Allow Origins</a>
+     */
     private String corsAllowedOrigins;
+    /**
+     * Comma separated list of allowed cors methods
+     * @link <a href="http://www.w3.org/TR/cors/#access-control-allow-methods-response-header">CORS Allow Methods</a>
+     */
     private String corsAllowedMethods;
+    /**
+     * Comma separated list of allowed cors headers
+     * @see <a href="http://www.w3.org/TR/cors/#access-control-allow-headers-response-header">CORS Allow Headers</a>
+     */
     private String corsAllowedHeaders;
+    /**
+     * String representation of the pre-flight request ttl
+     * @link <a href="http://www.w3.org/TR/cors/#access-control-max-age-response-header">CORS Max Age</a>
+     */
     private String corsPreflightMaxAge;
+    /**
+     * String representation of a boolean indicating if the request can include user credentials
+     * @link <a href="http://www.w3.org/TR/cors/#access-control-allow-credentials-response-header">CORS Allow Credentials</a>
+     */
     private String corsAllowCredentials;
+    /**
+     * Comma separated list of allowed cors exposed headers
+     * @link <a href="http://www.w3.org/TR/cors/#http-access-control-expose-headers">CORS Expose Headers</a>
+     */
     private String corsExposedHeaders;
     // End CORS
 
@@ -340,7 +367,6 @@ public class JettyHttpTransport extends AbstractRegisterableTransport implements
             if (gzipEnabled) {
                 try {
                     context.setHandler(new GzipHandler(gzipBufferSize, gzipMinSize, gzipExcludedAgents, jettyServiceHandler));
-                    context.setHandler(new GzipHandler(gzipBufferSize,gzipMinSize,gzipExcludedAgents, jettyServiceHandler));
                 } catch (ServletException e) {
                     throw new CougarFrameworkException("Failed to create GZIP handler: [" + jettyContextRoot + "]", e);
                 }
@@ -644,22 +670,22 @@ public class JettyHttpTransport extends AbstractRegisterableTransport implements
         this.corsAllowedMethods = corsAllowedMethods;
     }
 
-    public void setCorsAllowedHeaders(String corsAllowedHeaders) {
-        this.corsAllowedHeaders = corsAllowedHeaders;
-    }
-
     @ManagedAttribute
     public String getCorsAllowedHeaders() {
         return corsAllowedHeaders;
     }
 
-    public void setCorsMaxAge(String corsMaxAge) {
-        this.corsMaxAge = corsMaxAge;
+    public void setCorsAllowedHeaders(String corsAllowedHeaders) {
+        this.corsAllowedHeaders = corsAllowedHeaders;
     }
 
     @ManagedAttribute
     public String getCorsMaxAge() {
         return corsMaxAge;
+    }
+
+    public void setCorsMaxAge(String corsMaxAge) {
+        this.corsMaxAge = corsMaxAge;
     }
 
     @ManagedAttribute
