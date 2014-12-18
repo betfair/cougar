@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,11 +57,10 @@ public class SOAPRequestTypesDateTimeList60SecondsTest {
         // Create the expected response object as an XML document (fault)
         XMLHelpers xMLHelpers4 = new XMLHelpers();
         Document createAsDocument10 = xMLHelpers4.getXMLObjectFromString("<soapenv:Fault><faultcode>soapenv:Client</faultcode><faultstring>DSC-0044</faultstring><detail/></soapenv:Fault>");
-        // Convert the expected response to SOAP for comparison with actual response
-        Map<String, Object> convertResponseToSOAP11 = hinstance.convertResponseToSOAP(createAsDocument10, hbean);
+
         // Check the response is as expected
         HttpResponseBean response5 = hbean.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.SOAP);
-        AssertionUtils.multiAssertEquals(convertResponseToSOAP11.get("SOAP"), response5.getResponseObject());
+        AssertionUtils.multiAssertEquals(createAsDocument10, response5.getResponseObject());
 
         // generalHelpers.pauseTest(3000L);
         // Check the log entries are as expected

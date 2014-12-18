@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,11 +45,11 @@ public class SOAPVoidOKTest {
         CougarManager cougarManager2 = CougarManager.getInstance();
         HttpCallBean getNewHttpCallBean2 = cougarManager2.getNewHttpCallBean("87.248.113.14");
         cougarManager2 = cougarManager2;
-        
+
         cougarManager2.setCougarFaultControllerJMXMBeanAttrbiute("DetailedFaults", "false");
-        
+
         getNewHttpCallBean2.setServiceName("Baseline");
-        
+
         getNewHttpCallBean2.setVersion("v2");
         // Set the created SOAP request as the PostObject
         getNewHttpCallBean2.setPostObjectForRequestType(createAsDocument1, "SOAP");
@@ -60,15 +61,13 @@ public class SOAPVoidOKTest {
         // Create the expected response object as an XML document (void response body)
         XMLHelpers xMLHelpers4 = new XMLHelpers();
         Document createAsDocument10 = xMLHelpers4.getXMLObjectFromString("<soapenv:Body></soapenv:Body>");
-        // Convert the expected response to SOAP for comparison with actual response
-        Map<String, Object> convertResponseToSOAP11 = cougarManager2.convertResponseToSOAP(createAsDocument10, getNewHttpCallBean2);
         // Check the responses are as expected (with a null/void responseObject)
         HttpResponseBean response5 = getNewHttpCallBean2.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.SOAP);
-        AssertionUtils.multiAssertEquals(convertResponseToSOAP11.get("SOAP"), response5.getResponseObject());
+        AssertionUtils.multiAssertEquals(createAsDocument10, response5.getResponseObject());
         // Check the log entries are as expected
-        
+
         cougarManager2.verifyRequestLogEntriesAfterDate(getTimeAsTimeStamp8, new RequestLogRequirement("2.8", "voidResponseOperation") );
-        
+
         CougarManager cougarManager8 = CougarManager.getInstance();
         cougarManager8.verifyAccessLogEntriesAfterDate(getTimeAsTimeStamp8, new AccessLogRequirement("87.248.113.14", "/BaselineService/v2", "Ok") );
     }

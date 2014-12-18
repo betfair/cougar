@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,9 +56,9 @@ public class SOAPRequestTypesMapComplexMapTest {
         CougarManager cougarManager5 = CougarManager.getInstance();
         HttpCallBean getNewHttpCallBean5 = cougarManager5.getNewHttpCallBean("87.248.113.14");
         cougarManager5 = cougarManager5;
-        
+
         getNewHttpCallBean5.setServiceName("Baseline");
-        
+
         getNewHttpCallBean5.setVersion("v2");
         // Set the created SOAP request as the PostObject
         getNewHttpCallBean5.setPostObjectForRequestType(createAsDocument4, "SOAP");
@@ -69,15 +70,14 @@ public class SOAPRequestTypesMapComplexMapTest {
         // Create the expected response object as an XML document (using the date objects created earlier)
         XMLHelpers xMLHelpers7 = new XMLHelpers();
         Document createAsDocument12 = xMLHelpers7.createAsDocument(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(("<response><responseMap><entry key=\"aaa\"><SomeComplexObject><stringParameter>String value for aaa</stringParameter><dateTimeParameter>"+convertUTCDateTimeToCougarFormat1+"</dateTimeParameter><enumParameter>BAR</enumParameter><listParameter><String>aaa List Entry 1</String><String>aaa List Entry 2</String><String>aaa List Entry 3</String></listParameter></SomeComplexObject></entry><entry key=\"bbb\"><SomeComplexObject><stringParameter>String value for bbb</stringParameter><dateTimeParameter>"+convertUTCDateTimeToCougarFormat2+"</dateTimeParameter><enumParameter>FOOBAR</enumParameter><listParameter><String>bbb List Entry 1</String><String>bbb List Entry 2</String><String>bbb List Entry 3</String></listParameter></SomeComplexObject></entry><entry key=\"ccc\"><stringParameter>String value for ccc</stringParameter><SomeComplexObject><dateTimeParameter>"+convertUTCDateTimeToCougarFormat3+"</dateTimeParameter><enumParameter>FOO</enumParameter><listParameter><String>ccc List Entry 1</String><String>ccc List Entry 2</String><String>ccc List Entry 3</String></listParameter></SomeComplexObject></entry></responseMap></response>").getBytes())));
-        // Convert the expected response to SOAP for comparison with actual response
-        Map<String, Object> convertResponseToSOAP13 = cougarManager5.convertResponseToSOAP(createAsDocument12, getNewHttpCallBean5);
+
         // Check the response is as expected
         HttpResponseBean response8 = getNewHttpCallBean5.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.SOAP);
-        AssertionUtils.multiAssertEquals(convertResponseToSOAP13.get("SOAP"), response8.getResponseObject());
-        
+        AssertionUtils.multiAssertEquals(createAsDocument12, response8.getResponseObject());
+
         // generalHelpers.pauseTest(2000L);
         // Check the log entries are as expected
-        
+
         cougarManager5.verifyRequestLogEntriesAfterDate(getTimeAsTimeStamp10, new RequestLogRequirement("2.8", "complexMapOperation") );
     }
 

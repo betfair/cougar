@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,9 +47,9 @@ public class SOAPRequestTypesDateTimeListNoOffSetSpecifiedTest {
         CougarManager cougarManager2 = CougarManager.getInstance();
         HttpCallBean hbean = cougarManager2.getNewHttpCallBean("87.248.113.14");
         CougarManager hinstance = cougarManager2;
-        
+
         hbean.setServiceName("Baseline");
-        
+
         hbean.setVersion("v2");
         // Create the date object expected to be returned in the response
 
@@ -63,15 +64,14 @@ public class SOAPRequestTypesDateTimeListNoOffSetSpecifiedTest {
         // Create the expected response object as an XML document (using the date object created earlier)
         XMLHelpers xMLHelpers5 = new XMLHelpers();
         Document createAsDocument11 = xMLHelpers5.createAsDocument(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(("<response><responseList><Date>"+convertUTCDateTimeToCougarFormat6+"</Date><Date>"+convertUTCDateTimeToCougarFormat6+"</Date></responseList></response>").getBytes())));
-        // Convert the expected response to SOAP for comparison with actual response
-        Map<String, Object> convertResponseToSOAP12 = hinstance.convertResponseToSOAP(createAsDocument11, hbean);
+
         // Check the response is as expected
         HttpResponseBean response6 = hbean.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.SOAP);
-        AssertionUtils.multiAssertEquals(convertResponseToSOAP12.get("SOAP"), response6.getResponseObject());
-        
+        AssertionUtils.multiAssertEquals(createAsDocument11, response6.getResponseObject());
+
         // generalHelpers.pauseTest(3000L);
         // Check the log entries are as expected
-        
+
         hinstance.verifyRequestLogEntriesAfterDate(getTimeAsTimeStamp9, new RequestLogRequirement("2.8", "dateTimeListOperation") );
     }
 

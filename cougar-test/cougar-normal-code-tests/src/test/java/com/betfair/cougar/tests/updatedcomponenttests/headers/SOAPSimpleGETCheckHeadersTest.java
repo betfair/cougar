@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,13 +46,13 @@ public class SOAPSimpleGETCheckHeadersTest {
         HttpCallBean getNewHttpCallBean2 = cougarManager2.getNewHttpCallBean("87.248.113.14");
         cougarManager2 = cougarManager2;
         // Get the cougar log attribute for getting log entries later
-        
+
         cougarManager2.setCougarFaultControllerJMXMBeanAttrbiute("DetailedFaults", "false");
-        
+
         getNewHttpCallBean2.setServiceName("Baseline");
-        
+
         getNewHttpCallBean2.setVersion("v2");
-        
+
         getNewHttpCallBean2.setPostObjectForRequestType(createAsDocument1, "SOAP");
         // Get current time for getting log entries later
 
@@ -61,19 +62,17 @@ public class SOAPSimpleGETCheckHeadersTest {
         // Create the expected response as an XML document
         XMLHelpers xMLHelpers4 = new XMLHelpers();
         Document createAsDocument10 = xMLHelpers4.getXMLObjectFromString("<response><message>foo</message></response>");
-        // Convert the expected response to SOAP for comparison with actual responses
-        Map<String, Object> convertResponseToSOAP11 = cougarManager2.convertResponseToSOAP(createAsDocument10, getNewHttpCallBean2);
         // Check the response is as expected
         HttpResponseBean getResponseObjectsByEnum12 = getNewHttpCallBean2.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.SOAP);
-        AssertionUtils.multiAssertEquals(convertResponseToSOAP11.get("SOAP"), getResponseObjectsByEnum12.getResponseObject());
+        AssertionUtils.multiAssertEquals(createAsDocument10, getResponseObjectsByEnum12.getResponseObject());
         // Check the response headers are as expected (set to default values as no headers were set in the request)
         Map<String, String> map6 = getResponseObjectsByEnum12.getResponseHeaders();
         AssertionUtils.multiAssertEquals("no-cache", map6.get("Cache-Control"));
         AssertionUtils.multiAssertEquals("text/xml; charset=utf-8", map6.get("Content-Type"));
         // Check the log entries are as expected
-        
+
         cougarManager2.verifyRequestLogEntriesAfterDate(getTimeAsTimeStamp8, new RequestLogRequirement("2.8", "testSimpleGet") );
-        
+
         cougarManager2.verifyAccessLogEntriesAfterDate(getTimeAsTimeStamp8, new AccessLogRequirement(null, null, "Ok") );
     }
 

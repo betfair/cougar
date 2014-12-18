@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,12 +61,10 @@ public class SOAPi32ResponseTest {
         // Create a soap response structure as a Document object
         XMLHelpers xMLHelpers4 = new XMLHelpers();
         Document responseDocument = xMLHelpers4.getXMLObjectFromString("<response>200</response>");
-        // Convert the Document to SOAP
-        Map<String, Object> response5 = CougarManager.convertResponseToSOAP(responseDocument, HTTPCallBean);
-        Object responseSoap = response5.get("SOAP");
+
         // Get the actual SOAP response and compare it to the expected response
         HttpResponseBean response6 = HTTPCallBean.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.SOAP);
-        AssertionUtils.multiAssertEquals(responseSoap, response6.getResponseObject());
+        AssertionUtils.multiAssertEquals(responseDocument, response6.getResponseObject());
         // Pause test
         // generalHelpers.pauseTest(500L);
         // Get Service log entries after the time recorded earlier in the test

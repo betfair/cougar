@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,11 +51,11 @@ public class SOAPTestParameterStylesENUMVALID1Test {
         CougarManager cougarManager3 = CougarManager.getInstance();
         HttpCallBean getNewHttpCallBean2 = cougarManager3.getNewHttpCallBean("87.248.113.14");
         CougarManager cougarManager2 = cougarManager3;
-        
+
         cougarManager2.setCougarFaultControllerJMXMBeanAttrbiute("DetailedFaults", "false");
-        
+
         getNewHttpCallBean2.setServiceName("Baseline");
-        
+
         getNewHttpCallBean2.setVersion("v2");
         // Set the created SOAP request as the PostObject
         getNewHttpCallBean2.setPostObjectForRequestType(createAsDocument1, "SOAP");
@@ -66,15 +67,13 @@ public class SOAPTestParameterStylesENUMVALID1Test {
         // Create the expected response object as an XML document (A message stating if the number of items in the list was correct)
         XMLHelpers xMLHelpers5 = new XMLHelpers();
         Document createAsDocument10 = xMLHelpers5.createAsDocument(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(("<response><message>headerParam=Foo,queryParam=qp1,dateQueryParam="+convertedDate1+"</message></response>").getBytes())));
-        // Convert the expected response to SOAP for comparison with actual response
-        Map<String, Object> convertResponseToSOAP11 = cougarManager2.convertResponseToSOAP(createAsDocument10, getNewHttpCallBean2);
         // Check the response is as expected
         HttpResponseBean response6 = getNewHttpCallBean2.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.SOAP);
-        AssertionUtils.multiAssertEquals(convertResponseToSOAP11.get("SOAP"), response6.getResponseObject());
-        
+        AssertionUtils.multiAssertEquals(createAsDocument10, response6.getResponseObject());
+
         // generalHelpers.pauseTest(500L);
         // Check the log entries are as expected
-        
+
         cougarManager2.verifyRequestLogEntriesAfterDate(getTimeAsTimeStamp8, new RequestLogRequirement("2.8", "testParameterStylesQA") );
     }
 

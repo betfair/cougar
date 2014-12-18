@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,9 +47,9 @@ public class SOAPRequestTypesDateTimeMillisecondsTest {
         CougarManager cougarManager2 = CougarManager.getInstance();
         HttpCallBean getNewHttpCallBean2 = cougarManager2.getNewHttpCallBean("87.248.113.14");
         cougarManager2 = cougarManager2;
-        
+
         getNewHttpCallBean2.setServiceName("Baseline");
-        
+
         getNewHttpCallBean2.setVersion("v2");
         // Create the date object expected to be returned in the response
 
@@ -63,15 +64,13 @@ public class SOAPRequestTypesDateTimeMillisecondsTest {
         // Create the expected response object as an XML document (using the date object created earlier)
         XMLHelpers xMLHelpers5 = new XMLHelpers();
         Document createAsDocument10 = xMLHelpers5.createAsDocument(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(("<response><localTime>"+convertUTCDateTimeToLocalTimezoneXMLSchema26+"</localTime><localTime2>"+convertUTCDateTimeToLocalTimezoneXMLSchema26+"</localTime2></response>").getBytes())));
-        // Convert the expected response to SOAP for comparison with actual response
-        Map<String, Object> convertResponseToSOAP11 = cougarManager2.convertResponseToSOAP(createAsDocument10, getNewHttpCallBean2);
         // Check the response is as expected
         HttpResponseBean response6 = getNewHttpCallBean2.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.SOAP);
-        AssertionUtils.multiAssertEquals(convertResponseToSOAP11.get("SOAP"), response6.getResponseObject());
-        
+        AssertionUtils.multiAssertEquals(createAsDocument10, response6.getResponseObject());
+
         // generalHelpers.pauseTest(4000L);
         // Check the log entries are as expected
-        
+
         cougarManager2.verifyRequestLogEntriesAfterDate(getTimeAsTimeStamp8, new RequestLogRequirement("2.8", "dateTimeOperation") );
     }
 

@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,9 +44,9 @@ public class SOAPRequestTypesBytesNegativesTest {
         CougarManager cougarManager2 = CougarManager.getInstance();
         HttpCallBean hbean = cougarManager2.getNewHttpCallBean("87.248.113.14");
         CougarManager hinstance = cougarManager2;
-        
+
         hbean.setServiceName("Baseline");
-        
+
         hbean.setVersion("v2");
         // Set the created SOAP request as the PostObject
         hbean.setPostObjectForRequestType(createAsDocument1, "SOAP");
@@ -57,15 +58,14 @@ public class SOAPRequestTypesBytesNegativesTest {
         // Create the expected response object as an XML document
         XMLHelpers xMLHelpers4 = new XMLHelpers();
         Document createAsDocument9 = xMLHelpers4.getXMLObjectFromString("<response><queryParameter>-128</queryParameter><headerParameter>-1</headerParameter><bodyParameter>BBBB</bodyParameter></response>");
-        // Convert the expected response to SOAP for comparison with actual response
-        Map<String, Object> convertResponseToSOAP10 = hinstance.convertResponseToSOAP(createAsDocument9, hbean);
+
         // Check the response is as expected
         HttpResponseBean response5 = hbean.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.SOAP);
-        AssertionUtils.multiAssertEquals(convertResponseToSOAP10.get("SOAP"), response5.getResponseObject());
-        
+        AssertionUtils.multiAssertEquals(createAsDocument9, response5.getResponseObject());
+
         // generalHelpers.pauseTest(500L);
         // Check the log entries are as expected
-        
+
         hinstance.verifyRequestLogEntriesAfterDate(getTimeAsTimeStamp7, new RequestLogRequirement("2.8", "byteOperation") );
     }
 
