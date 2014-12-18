@@ -230,10 +230,13 @@ public class JettyHttpTransportTest {
 
         transport.initialiseStaticJettyConfig();
         populateTransportWithCORSEnabled(transport);
+
         transport.onCougarStart();
 
         assertEquals(3, transport.getHandlerCollection().getChildHandlersByClass(CrossOriginHandler.class).length);
 
+        // Instruct Jetty not to wait for Handlers to terminate
+        transport.getServerWrapper().getJettyServer().setStopTimeout(0);
         transport.stop();
     }
 
@@ -262,11 +265,14 @@ public class JettyHttpTransportTest {
         transport.notify(jsonRpcBindingDescriptor);
 
         transport.initialiseStaticJettyConfig();
+
         populateTransport(transport);
-        transport.onCougarStart();
+        transport.start();
 
         assertEquals(0, transport.getHandlerCollection().getChildHandlersByClass(CrossOriginHandler.class).length);
 
+        // Instruct Jetty not to wait for Handlers to terminate
+        transport.getServerWrapper().getJettyServer().setStopTimeout(0);
         transport.stop();
     }
 
