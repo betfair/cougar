@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,11 +66,10 @@ public class SOAPRequestTypesSetSimpleSetNullTest {
             // Create the expected response object as an XML document (fault)
             XMLHelpers xMLHelpers4 = new XMLHelpers();
             Document createAsDocument10 = xMLHelpers4.getXMLObjectFromString("<soapenv:Fault><faultcode>soapenv:Client</faultcode><faultstring>DSC-0018</faultstring><detail/></soapenv:Fault>");
-            // Convert the expected response to SOAP for comparison with the actual response
-            Map<String, Object> convertResponseToSOAP11 = cougarManager2.convertResponseToSOAP(createAsDocument10, getNewHttpCallBean2);
+
             // Check the response is as expected
             HttpResponseBean response5 = getNewHttpCallBean2.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.SOAP);
-            AssertionUtils.multiAssertEquals(convertResponseToSOAP11.get("SOAP"), response5.getResponseObject());
+            AssertionUtils.multiAssertEquals(createAsDocument10, response5.getResponseObject());
 
             // generalHelpers.pauseTest(2000L);
             // Check the log entries are as expected

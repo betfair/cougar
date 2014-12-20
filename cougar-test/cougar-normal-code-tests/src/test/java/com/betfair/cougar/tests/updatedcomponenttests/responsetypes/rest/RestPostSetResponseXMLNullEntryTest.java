@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,46 +40,46 @@ import java.sql.Timestamp;
 public class RestPostSetResponseXMLNullEntryTest {
     @Test
     public void doTest() throws Exception {
-        
+
         CougarManager cougarManager1 = CougarManager.getInstance();
         HttpCallBean getNewHttpCallBean1 = cougarManager1.getNewHttpCallBean();
         cougarManager1 = cougarManager1;
-        
-        
+
+
         getNewHttpCallBean1.setOperationName("TestSimpleSetGet", "simpleSetGet");
-        
+
         getNewHttpCallBean1.setServiceName("baseline", "cougarBaseline");
-        
+
         getNewHttpCallBean1.setVersion("v2");
-        
+
         getNewHttpCallBean1.setRestPostQueryObjects(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream("<inputSet><String>bbb string</String><String xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/><String>ddd string</String><String>ccc string</String></inputSet>".getBytes())));
-        
+
 
         Timestamp getTimeAsTimeStamp7 = new Timestamp(System.currentTimeMillis());
-        
+
         cougarManager1.makeRestCougarHTTPCall(getNewHttpCallBean1, com.betfair.testing.utils.cougar.enums.CougarMessageProtocolRequestTypeEnum.RESTXML, com.betfair.testing.utils.cougar.enums.CougarMessageContentTypeEnum.XML);
-        
+
         cougarManager1.makeRestCougarHTTPCall(getNewHttpCallBean1, com.betfair.testing.utils.cougar.enums.CougarMessageProtocolRequestTypeEnum.RESTXML, com.betfair.testing.utils.cougar.enums.CougarMessageContentTypeEnum.JSON);
-        
+
         XMLHelpers xMLHelpers3 = new XMLHelpers();
-        Document createAsDocument10 = xMLHelpers3.getXMLObjectFromString("<TestSimpleSetGetResponse><String xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/><String>ccc string</String><String>bbb string</String><String>ddd string</String></TestSimpleSetGetResponse>");
-        
+        Document createAsDocument10 = xMLHelpers3.getXMLObjectFromString("<TestSimpleSetGetResponse><String>bbb string</String><String xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/><String>ddd string</String><String>ccc string</String></TestSimpleSetGetResponse>");
+
         JSONHelpers jSONHelpers4 = new JSONHelpers();
-        JSONObject createAsJSONObject11 = jSONHelpers4.createAsJSONObject(new JSONObject("{\"response\": [null,\"ccc string\",\"bbb string\",\"ddd string\"]}"));
-        
+        JSONObject createAsJSONObject11 = jSONHelpers4.createAsJSONObject(new JSONObject("{\"response\": [\"bbb string\",null,\"ddd string\",\"ccc string\"]}"));
+
         HttpResponseBean response5 = getNewHttpCallBean1.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTXMLXML);
-        AssertionUtils.multiAssertEquals(createAsDocument10, response5.getResponseObject());
+        AssertionUtils.multiAssertEquals(createAsDocument10, (Document)response5.getResponseObject(),"/TestSimpleSetGetResponse");
         AssertionUtils.multiAssertEquals((int) 200, response5.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("OK", response5.getHttpStatusText());
-        
+
         HttpResponseBean response6 = getNewHttpCallBean1.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTXMLJSON);
         AssertionUtils.multiAssertEquals(createAsJSONObject11, response6.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 200, response6.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("OK", response6.getHttpStatusText());
-        
+
         // generalHelpers.pauseTest(500L);
-        
-        
+
+
         cougarManager1.verifyRequestLogEntriesAfterDate(getTimeAsTimeStamp7, new RequestLogRequirement("2.8", "testSimpleSetGet"),new RequestLogRequirement("2.8", "testSimpleSetGet") );
     }
 

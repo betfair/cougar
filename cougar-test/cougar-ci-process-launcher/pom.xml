@@ -79,6 +79,9 @@
                                             <workingDir>baseline/baseline-launch</workingDir>
                                             <startWatchString>COUGAR HAS STARTED</startWatchString>
                                             <failureWatchString>PanicInTheCougar</failureWatchString>
+                                            <environmentProperties>
+                                                <JAVA_HOME>${java.home}</JAVA_HOME>
+                                            </environmentProperties>
                                         </containerProcess>
                                     </containerProcesses>
                                     <testProcesses>
@@ -88,6 +91,9 @@
                                             <workingDir>cougar-test/cougar-binaryprotocol-tests</workingDir>
                                             <failureWatchString>Failures: [1-9]|BUILD FAILURE</failureWatchString>
                                             <watchString>Failures: 0</watchString>
+                                            <environmentProperties>
+                                                <JAVA_HOME>${java.home}</JAVA_HOME>
+                                            </environmentProperties>
                                         </testProcess>
                                         <testProcess>
                                             <id>iddversions</id>
@@ -95,6 +101,9 @@
                                             <workingDir>cougar-test/cougar-iddversion-tests</workingDir>
                                             <failureWatchString>Failures: [1-9]|BUILD FAILURE</failureWatchString>
                                             <watchString>Failures: 0</watchString>
+                                            <environmentProperties>
+                                                <JAVA_HOME>${java.home}</JAVA_HOME>
+                                            </environmentProperties>
                                         </testProcess>
                                         <testProcess>
                                             <id>clientNG</id>
@@ -102,6 +111,9 @@
                                             <workingDir>cougar-test/cougar-client-code-tests</workingDir>
                                             <failureWatchString>Failures: [1-9]|BUILD FAILURE</failureWatchString>
                                             <watchString>Failures: 0</watchString>
+                                            <environmentProperties>
+                                                <JAVA_HOME>${java.home}</JAVA_HOME>
+                                            </environmentProperties>
                                         </testProcess>
                                         <testProcess>
                                             <id>normalNG</id>
@@ -109,6 +121,9 @@
                                             <workingDir>cougar-test/cougar-normal-code-tests</workingDir>
                                             <failureWatchString>Failures: [1-9]|BUILD FAILURE</failureWatchString>
                                             <watchString>Failures: 0</watchString>
+                                            <environmentProperties>
+                                                <JAVA_HOME>${java.home}</JAVA_HOME>
+                                            </environmentProperties>
                                         </testProcess>
                                     </testProcesses>
                                     <containersStartupTimeout>120000</containersStartupTimeout>

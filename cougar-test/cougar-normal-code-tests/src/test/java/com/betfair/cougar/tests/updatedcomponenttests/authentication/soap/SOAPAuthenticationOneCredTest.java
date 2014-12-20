@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,48 +39,46 @@ import java.util.Map;
 public class SOAPAuthenticationOneCredTest {
     @Test
     public void doTest() throws Exception {
-        
+
         XMLHelpers xMLHelpers1 = new XMLHelpers();
         Document createAsDocument1 = xMLHelpers1.getXMLObjectFromString("<TestIdentityChainRequest/>");
-        
+
         CougarManager cougarManager2 = CougarManager.getInstance();
         HttpCallBean getNewHttpCallBean2 = cougarManager2.getNewHttpCallBean("87.248.113.14");
         cougarManager2 = cougarManager2;
-        
-        
+
+
         cougarManager2.setCougarFaultControllerJMXMBeanAttrbiute("DetailedFaults", "false");
-        
+
         getNewHttpCallBean2.setServiceName("Baseline", "cougarBaseline");
-        
+
         getNewHttpCallBean2.setVersion("v2");
-        
+
         Map map3 = new HashMap();
         map3.put("Username","foo");
         getNewHttpCallBean2.setAuthCredentials(map3);
-        
+
         getNewHttpCallBean2.setPostObjectForRequestType(createAsDocument1, "SOAP");
-        
+
 
         Timestamp getTimeAsTimeStamp9 = new Timestamp(System.currentTimeMillis());
-        
+
         cougarManager2.makeSoapCougarHTTPCalls(getNewHttpCallBean2);
-        
+
         XMLHelpers xMLHelpers5 = new XMLHelpers();
         Document createAsDocument11 = xMLHelpers5.getXMLObjectFromString("<response><identities><Ident><principal>PRINCIPAL: Username</principal><credentialName>CREDENTIAL: Username</credentialName><credentialValue>foo</credentialValue></Ident></identities></response>");
-        
-        Map<String, Object> convertResponseToSOAP12 = cougarManager2.convertResponseToSOAP(createAsDocument11, getNewHttpCallBean2);
-        
+
         HttpResponseBean getResponseObjectsByEnum13 = getNewHttpCallBean2.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.SOAP);
-        AssertionUtils.multiAssertEquals(convertResponseToSOAP12.get("SOAP"), getResponseObjectsByEnum13.getResponseObject());
-        
+        AssertionUtils.multiAssertEquals(createAsDocument11, getResponseObjectsByEnum13.getResponseObject());
+
         Map<String, String> map7 = getResponseObjectsByEnum13.getResponseHeaders();
         AssertionUtils.multiAssertEquals("Username:foo", map7.get("Credentials"));
-        
+
         // generalHelpers.pauseTest(1000L);
-        
-        
+
+
         cougarManager2.verifyRequestLogEntriesAfterDate(getTimeAsTimeStamp9, new RequestLogRequirement("2.8", "testIdentityChain") );
-        
+
         cougarManager2.verifyAccessLogEntriesAfterDate(getTimeAsTimeStamp9, new AccessLogRequirement(null, null, "Ok") );
     }
 

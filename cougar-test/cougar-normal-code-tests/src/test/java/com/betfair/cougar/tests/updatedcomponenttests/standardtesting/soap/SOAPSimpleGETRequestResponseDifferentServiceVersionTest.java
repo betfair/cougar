@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,9 +44,9 @@ public class SOAPSimpleGETRequestResponseDifferentServiceVersionTest {
         CougarManager cougarManager2 = CougarManager.getInstance();
         HttpCallBean getNewHttpCallBean2 = cougarManager2.getNewHttpCallBean("87.248.113.14");
         cougarManager2 = cougarManager2;
-        
+
         cougarManager2.setCougarFaultControllerJMXMBeanAttrbiute("DetailedFaults", "false");
-        
+
         getNewHttpCallBean2.setServiceName("Baseline");
         // Run the operation on a different version of the same service
         getNewHttpCallBean2.setVersion("v1.0");
@@ -59,13 +60,11 @@ public class SOAPSimpleGETRequestResponseDifferentServiceVersionTest {
         // Create the expected response object as an XML document
         XMLHelpers xMLHelpers4 = new XMLHelpers();
         Document createAsDocument10 = xMLHelpers4.getXMLObjectFromString("<response><message>foo emitted by version 1.0.0 of Baseline</message></response>");
-        // Convert the expected response to SOAP for comparison with actual response
-        Map<String, Object> convertResponseToSOAP11 = cougarManager2.convertResponseToSOAP(createAsDocument10, getNewHttpCallBean2);
         // Check the response is as expected
         HttpResponseBean response5 = getNewHttpCallBean2.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.SOAP);
-        AssertionUtils.multiAssertEquals(convertResponseToSOAP11.get("SOAP"), response5.getResponseObject());
+        AssertionUtils.multiAssertEquals(createAsDocument10, response5.getResponseObject());
         // Check the log entries are as expected
-        
+
         cougarManager2.verifyRequestLogEntriesAfterDate(getTimeAsTimeStamp8, new RequestLogRequirement("1.0", "testSimpleGet") );
     }
 

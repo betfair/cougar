@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -202,25 +203,6 @@ public class CougarManager {
 		return returnMap;
 	}
 
-	/**
-	 * Method returns a Map holding the response converted to each of the SOAP message/content types
-	 * supported by the cougar baseline app
-	 *
-	 * @param document
-	 * @param httpCallBean
-	 * @return
-	 */
-	public Map<String, Object> convertResponseToSOAP(Document document, HttpCallBean httpCallBean) {
-
-		//AbstractResponseBuilder responseBuilder = responseBuilderFactory.resolveResponseBuilderForCougarService(httpCallBean.getServiceName());
-		HashMap<String, Object> returnMap = new HashMap<String, Object>();
-
-		//returnMap.put(CougarMessageProtocolRequestTypeEnum.SOAPXML.toString(), responseBuilder.buildSOAPXMLResponse(document, httpCallBean));
-		returnMap.put(CougarMessageProtocolRequestTypeEnum.SOAP.toString(), document);
-
-
-		return returnMap;
-	}
 
 	/**
 	 * Method will make REST JSON and XML calls to the baseline-app service specified in

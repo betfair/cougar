@@ -74,6 +74,7 @@
         <module>jms-transport</module>
         <module>activemq-transport</module>
         <module>cougar-zipkin</module>
+        <module>cougar-client</module>
 	</modules>
 
 </project>

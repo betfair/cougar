@@ -131,7 +131,6 @@
     <modules>
         <module>cougar-codegen-plugin</module>
         <module>cougar-framework</module>
-        <module>cougar-client</module>
     </modules>
 
     <profiles>
@@ -591,6 +590,7 @@
                             </excludes>
                             <skipTests>${skipTests}</skipTests>
                             <testFailureIgnore>false</testFailureIgnore>
+                            <!--<debugForkedProcess>true</debugForkedProcess>-->
                         </configuration>
                     </execution>
                     <execution>
@@ -608,6 +608,7 @@
                             </includes>
                             <skipTests>${skipTests}</skipTests>
                             <testFailureIgnore>false</testFailureIgnore>
+                            <!--<debugForkedProcess>true</debugForkedProcess>-->
                             <argLine>-Xms256m -Xmx768m</argLine>
                         </configuration>
                     </execution>

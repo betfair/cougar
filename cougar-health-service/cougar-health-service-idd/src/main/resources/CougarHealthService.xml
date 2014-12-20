@@ -17,7 +17,7 @@
 
 <interface name="Health"
 		   version="3.0"
-		   namespace="com.betfair.cougar.health.service" 
+		   namespace="com.betfair.cougar.health.service"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:noNamespaceSchemaLocation="http://www.betfair.com/BSIDL/4.0.xsd">
     <authors>
@@ -126,7 +126,7 @@
                 <description>This Cougar instance is UP</description>
             </value>
             <value name="FAIL">
-                <description>This Cougar instance DOWN</description>
+                <description>This Cougar instance is DOWN</description>
             </value>
         </validValues>
     </simpleType>

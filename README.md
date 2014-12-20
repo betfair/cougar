@@ -19,7 +19,7 @@ Licensing
 
 Cougar is covered by "[The Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html)":
 
-    Copyright 2013, The Sporting Exchange Limited
+    Copyright 2013-2014, The Sporting Exchange Limited
     
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -32,3 +32,5 @@ Cougar is covered by "[The Apache License, Version 2.0](http://www.apache.org/li
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
+
+Portions (indicated in individual files) under different Copyright, but same license.

@@ -63,7 +63,7 @@ public class RestPostMapResponseJSONNullValueTest {
         cougarManager1.makeRestCougarHTTPCall(getNewHttpCallBean1, com.betfair.testing.utils.cougar.enums.CougarMessageProtocolRequestTypeEnum.RESTJSON, com.betfair.testing.utils.cougar.enums.CougarMessageContentTypeEnum.JSON);
         
         XMLHelpers xMLHelpers4 = new XMLHelpers();
-        Document createAsDocument10 = xMLHelpers4.getXMLObjectFromString("<TestSimpleMapGetResponse><entry key=\"aaa\"><String>Value for aaa</String></entry><entry key=\"ddd\"></entry><entry key=\"ccc\"><String>Value for ccc</String></entry><entry key=\"bbb\"><String>Value for bbb</String></entry></TestSimpleMapGetResponse>");
+        Document createAsDocument10 = xMLHelpers4.getXMLObjectFromString("<TestSimpleMapGetResponse><entry key=\"aaa\"><String>Value for aaa</String></entry><entry key=\"ccc\"><String>Value for ccc</String></entry><entry key=\"bbb\"><String>Value for bbb</String></entry><entry key=\"ddd\"></entry></TestSimpleMapGetResponse>");
         
         JSONHelpers jSONHelpers5 = new JSONHelpers();
         JSONObject createAsJSONObject11 = jSONHelpers5.createAsJSONObject(new JSONObject("{\"aaa\": \"Value for aaa\",\"bbb\": \"Value for bbb\",\"ccc\": \"Value for ccc\",\"ddd\": null}"));

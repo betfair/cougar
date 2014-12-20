@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,12 +89,9 @@ public class SOAPBlacklistedIPTest {
         if (!ok) {
             XMLHelpers xMLHelpers4 = new XMLHelpers();
             Document responseDocument = xMLHelpers4.getXMLObjectFromString("<soapenv:Fault><faultcode>soapenv:Client</faultcode><faultstring>DSC-0015</faultstring><detail/></soapenv:Fault>");
-            // Convert the Document to SOAP
-            Map<String, Object> response5 = cougarManager.convertResponseToSOAP(responseDocument, HTTPCallBean);
-            Object responseSoap = response5.get("SOAP");
             // Get the actual SOAP response and compare it to the expected response
             HttpResponseBean response6 = HTTPCallBean.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.SOAP);
-            AssertionUtils.multiAssertEquals(responseSoap, response6.getResponseObject());
+            AssertionUtils.multiAssertEquals(responseDocument, response6.getResponseObject());
         }
         // Get access log entries after the time recorded earlier in the test
         cougarManager.verifyAccessLogEntriesAfterDate(timestamp, new AccessLogRequirement(testIPAddress, "/BaselineService/v2", ok ? "Ok" : "Forbidden"));

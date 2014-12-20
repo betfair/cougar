@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,46 +40,46 @@ import java.sql.Timestamp;
 public class RestPostMapResponseXMLNullValueTest {
     @Test
     public void doTest() throws Exception {
-        
+
         CougarManager cougarManager1 = CougarManager.getInstance();
         HttpCallBean getNewHttpCallBean1 = cougarManager1.getNewHttpCallBean("87.248.113.14");
         cougarManager1 = cougarManager1;
-        
-        
+
+
         getNewHttpCallBean1.setOperationName("TestSimpleMapGet", "simpleMapGet");
-        
+
         getNewHttpCallBean1.setServiceName("baseline", "cougarBaseline");
-        
+
         getNewHttpCallBean1.setVersion("v2");
-        
+
         getNewHttpCallBean1.setRestPostQueryObjects(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream("<inputMap><entry key=\"bbb\"><String>Value for bbb</String></entry><entry key=\"aaa\"><String>Value for aaa</String></entry><entry key=\"ddd\"></entry><entry key=\"ccc\"><String>Value for ccc</String></entry></inputMap>".getBytes())));
-        
+
 
         Timestamp getTimeAsTimeStamp7 = new Timestamp(System.currentTimeMillis());
-        
+
         cougarManager1.makeRestCougarHTTPCall(getNewHttpCallBean1, com.betfair.testing.utils.cougar.enums.CougarMessageProtocolRequestTypeEnum.RESTXML, com.betfair.testing.utils.cougar.enums.CougarMessageContentTypeEnum.XML);
-        
+
         cougarManager1.makeRestCougarHTTPCall(getNewHttpCallBean1, com.betfair.testing.utils.cougar.enums.CougarMessageProtocolRequestTypeEnum.RESTXML, com.betfair.testing.utils.cougar.enums.CougarMessageContentTypeEnum.JSON);
-        
+
         XMLHelpers xMLHelpers3 = new XMLHelpers();
-        Document createAsDocument10 = xMLHelpers3.getXMLObjectFromString("<TestSimpleMapGetResponse><entry key=\"aaa\"><String>Value for aaa</String></entry><entry key=\"ddd\"></entry><entry key=\"ccc\"><String>Value for ccc</String></entry><entry key=\"bbb\"><String>Value for bbb</String></entry></TestSimpleMapGetResponse>");
-        
+        Document createAsDocument10 = xMLHelpers3.getXMLObjectFromString("<TestSimpleMapGetResponse><entry key=\"aaa\"><String>Value for aaa</String></entry><entry key=\"ccc\"><String>Value for ccc</String></entry><entry key=\"bbb\"><String>Value for bbb</String></entry><entry key=\"ddd\"></entry></TestSimpleMapGetResponse>");
+
         JSONHelpers jSONHelpers4 = new JSONHelpers();
         JSONObject createAsJSONObject11 = jSONHelpers4.createAsJSONObject(new JSONObject("{\"aaa\": \"Value for aaa\",\"bbb\": \"Value for bbb\",\"ccc\": \"Value for ccc\",\"ddd\": null}"));
-        
+
         HttpResponseBean response5 = getNewHttpCallBean1.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTXMLXML);
-        AssertionUtils.multiAssertEquals(createAsDocument10, response5.getResponseObject());
+        AssertionUtils.multiAssertEquals(createAsDocument10, (Document)response5.getResponseObject(), "/TestSimpleMapGetResponse");
         AssertionUtils.multiAssertEquals((int) 200, response5.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("OK", response5.getHttpStatusText());
-        
+
         HttpResponseBean response6 = getNewHttpCallBean1.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTXMLJSON);
         AssertionUtils.multiAssertEquals(createAsJSONObject11, response6.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 200, response6.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("OK", response6.getHttpStatusText());
-        
+
         // generalHelpers.pauseTest(500L);
-        
-        
+
+
         cougarManager1.verifyRequestLogEntriesAfterDate(getTimeAsTimeStamp7, new RequestLogRequirement("2.8", "testSimpleMapGet"),new RequestLogRequirement("2.8", "testSimpleMapGet") );
     }
 

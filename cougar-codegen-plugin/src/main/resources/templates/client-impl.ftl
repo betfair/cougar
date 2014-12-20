@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +36,6 @@ import java.util.concurrent.Executor;
 import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.ServiceVersion;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
-import com.betfair.tornjak.monitor.MonitorRegistry;
 
 <@compress single_line=true>
 <#include "common.ftl">
@@ -58,7 +58,7 @@ public class ${service}ClientImpl implements ${service}Client {<#t>
 	public ${service}ClientImpl(ExecutionVenue ev, Executor executor) {
 		this(ev, executor, null);
     }<#t>
-	
+
     public ${service}ClientImpl(ExecutionVenue ev, Executor executor, String namespace) {
         this.ev = ev;
         this.executor = executor;
@@ -136,7 +136,7 @@ public class ${service}ClientImpl implements ${service}Client {<#t>
 	</@compress>
 
 	}
-		
+
 <#t>
 </#list><#t>
 

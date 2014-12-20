@@ -49,6 +49,8 @@ public class BinaryProtocolIDDVersionTest extends TestSuite{
 		TestClientContextFactory context = new TestClientContextFactory();
 		springContext = (ClassPathXmlApplicationContext) context.create("conf/binary-client-spring.xml");
 		BaselineSyncClient baselineClient = (BaselineSyncClient) springContext.getBean("baselineClient");
+        //TODO get a better way to make sure there is an open session already before starting the test
+        Thread.sleep(5000);
 		super.setBaselineClient(baselineClient);
 	}
 
