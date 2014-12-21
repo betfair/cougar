@@ -1,13 +1,13 @@
 package com.betfair.cougar.modules.zipkin.impl;
 
 import com.betfair.cougar.api.RequestUUID;
+import com.betfair.cougar.core.api.ev.OperationKey;
 import com.betfair.cougar.core.impl.tracing.AbstractTracer;
 import com.betfair.cougar.modules.zipkin.api.ZipkinData;
 import com.betfair.cougar.modules.zipkin.api.ZipkinRequestUUID;
 import com.google.common.base.Optional;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -18,20 +18,13 @@ public class ZipkinTracer extends AbstractTracer {
     private ZipkinEmitter zipkinEmitter;
 
     @Override
-    public void start(RequestUUID uuid) {
-        if (!(uuid instanceof ZipkinRequestUUID)) {
-            throw new IllegalStateException("RequestUUID is not a ZipkinRequestUUIDImpl");
-        }
-    }
-
-    // todo: we need to add this hook
-    public void setServiceCalls(@Nonnull RequestUUID uuid, @Nonnull String[] calls) {
-        Objects.requireNonNull(calls);
+    public void start(RequestUUID uuid, OperationKey operation) {
+        Objects.requireNonNull(operation);
 
         if (uuid instanceof ZipkinRequestUUID) {
             ZipkinRequestUUID zipkinRequestUUID = (ZipkinRequestUUID) uuid;
 
-            zipkinRequestUUID.setZipkinSpanName(Arrays.toString(calls));
+            zipkinRequestUUID.setZipkinSpanName(operation.toString());
 
             Optional<ZipkinData> zipkinDataOptional = getZipkinData(uuid);
             // Check if Zipkin is enabled

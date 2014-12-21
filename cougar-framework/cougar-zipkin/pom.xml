@@ -11,6 +11,10 @@
 
     <artifactId>cougar-zipkin</artifactId>
 
+    <properties>
+        <brave-version>2.4</brave-version>
+    </properties>
+
     <dependencies>
 
         <dependency>
@@ -40,10 +44,12 @@
         <dependency>
             <groupId>com.github.kristofa</groupId>
             <artifactId>brave-interfaces</artifactId>
+            <version>${brave-version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.kristofa</groupId>
             <artifactId>brave-zipkin-spancollector</artifactId>
+            <version>${brave-version}</version>
         </dependency>
     </dependencies>
 </project>
