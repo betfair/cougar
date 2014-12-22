@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +26,7 @@ import com.betfair.testing.utils.cougar.manager.AccessLogRequirement;
 import com.betfair.testing.utils.cougar.manager.CougarManager;
 import com.betfair.testing.utils.cougar.manager.RequestLogRequirement;
 
+import org.json.JSONObject;
 import org.testng.annotations.Test;
 
 import java.sql.Timestamp;
@@ -64,16 +66,16 @@ public class RPCPostSetResponseDuplicateEntryTest {
         // Convert the returned json object to a map for comparison
         CougarHelpers cougarHelpers4 = new CougarHelpers();
         Map<String, Object> map5 = cougarHelpers4.convertBatchedResponseToMap(response);
-        AssertionUtils.multiAssertEquals("{\"id\":1,\"result\":[\"Value a\",\"Value b\"],\"jsonrpc\":\"2.0\"}", map5.get("response1"));
-        AssertionUtils.multiAssertEquals("{\"id\":2,\"result\":[\"Value c\",\"Value d\"],\"jsonrpc\":\"2.0\"}", map5.get("response2"));
+        AssertionUtils.multiAssertEquals(new JSONObject("{\"id\":1,\"result\":[\"Value a\",\"Value b\"],\"jsonrpc\":\"2.0\"}"), new JSONObject((String)map5.get("response1")), "/result");
+        AssertionUtils.multiAssertEquals(new JSONObject("{\"id\":2,\"result\":[\"Value c\",\"Value d\"],\"jsonrpc\":\"2.0\"}"), new JSONObject((String)map5.get("response2")), "/result");
         AssertionUtils.multiAssertEquals(200, map5.get("httpStatusCode"));
         AssertionUtils.multiAssertEquals("OK", map5.get("httpStatusText"));
         // Pause the test to allow the logs to be filled
         // generalHelpers.pauseTest(500L);
         // Check the log entries are as expected
-        
+
         cougarManager.verifyRequestLogEntriesAfterDate(timeStamp, new RequestLogRequirement("2.8", "testSimpleSetGet"),new RequestLogRequirement("2.8", "testSimpleSetGet") );
-        
+
         cougarManager.verifyAccessLogEntriesAfterDate(timeStamp, new AccessLogRequirement("87.248.113.14", "/json-rpc", "Ok") );
     }
 

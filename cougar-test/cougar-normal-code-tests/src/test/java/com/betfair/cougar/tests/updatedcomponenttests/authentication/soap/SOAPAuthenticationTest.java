@@ -73,7 +73,7 @@ public class SOAPAuthenticationTest {
         AssertionUtils.multiAssertEquals(createAsDocument11, (Document)getResponseObjectsByEnum13.getResponseObject(), "/response/identities");
 
         Map<String, String> map7 = getResponseObjectsByEnum13.getResponseHeaders();
-        AssertionUtils.multiAssertEquals("Username:foo Password:bar", map7.get("Credentials"));
+        AssertionUtils.multiAssertEquals("Password:bar Username:foo", map7.get("Credentials"));
 
         // generalHelpers.pauseTest(1000L);
 

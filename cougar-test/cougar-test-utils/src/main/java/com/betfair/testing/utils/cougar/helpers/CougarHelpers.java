@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -277,16 +278,9 @@ public class CougarHelpers {
 				//if the header entry contains child nodes - write them with the node names
 				if(nodes.item(x).hasChildNodes()){
 					NodeList childnodes = nodes.item(x).getChildNodes();
-					StringBuilder buff = new StringBuilder();
 					for(int y = 0; y<childnodes.getLength();y++){
-						if(!"".equals(buff.toString()))
-						{
-							buff.append(" ");
-						}
-						buff.append(childnodes.item(y).getLocalName()).append(":");
-						buff.append(childnodes.item(y).getTextContent());
-					}
-				responseBean.addEntryToResponseHeaders(nodes.item(x).getLocalName(), buff.toString());
+                        responseBean.addEntryToResponseHeaders(nodes.item(x).getLocalName(),childnodes.item(y).getLocalName()+":"+childnodes.item(y).getTextContent());
+                    }
 				}
 				else{
 					responseBean.addEntryToResponseHeaders(nodes.item(x).getLocalName(), nodes.item(x).getTextContent());
@@ -747,10 +741,10 @@ public class CougarHelpers {
 		HttpResponseBean httpResponseBean = new HttpResponseBean();
 
 		Header[] headersArray = httpResponse.getAllHeaders();
-		Map<String, String> headersMap = new HashMap<String, String>();
+		Map<String, String[]> headersMap = new HashMap<>();
 		for (Header header: headersArray) {
 			String[] headerAttributes = header.toString().split(": ");
-			headersMap.put(headerAttributes[0], headerAttributes[1].replace("\r\n", ""));
+			headersMap.put(headerAttributes[0], new String[] { headerAttributes[1].replace("\r\n", "")});
 		}
 		httpResponseBean.setResponseHeaders(headersMap);
 
