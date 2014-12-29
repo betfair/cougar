@@ -36,7 +36,10 @@ import com.betfair.cougar.transport.jetty.jmx.JettyEndpoints;
 import com.betfair.cougar.util.geolocation.GeoIPLocator;
 import com.betfair.cougar.util.jmx.JMXControl;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.*;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.server.handler.ErrorHandler;
+import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
@@ -56,7 +59,6 @@ public class JettyHttpTransport extends AbstractRegisterableTransport implements
 
     private StaticContentServiceHandler wsdlStaticHandler;
     private StaticContentServiceHandler htmlStaticHandler;
-
     private ContextHandlerCollection handlerCollection = new ContextHandlerCollection();
 
     private TransportCommandProcessorFactory<HttpCommandProcessor> commandProcessorFactory;
@@ -346,11 +348,13 @@ public class JettyHttpTransport extends AbstractRegisterableTransport implements
                     handlerCollection.addHandler(corsContext);
                     if (serviceProtocol == Protocol.SOAP || serviceProtocol == Protocol.JSON_RPC) {
                         corsContext.setAllowNullPathInfo(true);
-                    } else {
+                    }
+                    else {
                         corsContext.setAllowNullPathInfo(false);
                     }
                     corsContext.setResourceBase(".");
-                } catch (ServletException e) {
+                }
+                catch (ServletException e) {
                     throw new CougarFrameworkException("Failed to create CORS handler: [" + jettyContextRoot + "]", e);
                 }
             }
@@ -367,9 +371,13 @@ public class JettyHttpTransport extends AbstractRegisterableTransport implements
             if (gzipEnabled) {
                 try {
                     context.setHandler(new GzipHandler(gzipBufferSize, gzipMinSize, gzipExcludedAgents, jettyServiceHandler));
-                } catch (ServletException e) {
+                }
+                catch (ServletException e) {
                     throw new CougarFrameworkException("Failed to create GZIP handler: [" + jettyContextRoot + "]", e);
                 }
+            }
+            else {
+                context.setHandler(jettyServiceHandler);
             }
             handlerCollection.addHandler(context);
             try {

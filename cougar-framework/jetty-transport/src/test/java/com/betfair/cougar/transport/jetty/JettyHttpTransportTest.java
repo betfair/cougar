@@ -31,7 +31,6 @@ import com.betfair.cougar.transport.api.protocol.http.rescript.RescriptOperation
 import com.betfair.cougar.transport.api.protocol.http.rescript.RescriptParamBindingDescriptor;
 import com.betfair.cougar.transport.impl.protocol.http.DefaultGeoLocationDeserializer;
 import com.betfair.cougar.transport.jetty.jmx.JettyEndpoints;
-import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;

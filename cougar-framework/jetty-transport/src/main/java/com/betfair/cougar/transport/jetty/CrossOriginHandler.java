@@ -42,14 +42,6 @@ public class CrossOriginHandler extends AbstractHandler {
 
     /**
      * See {@link org.eclipse.jetty.servlets.CrossOriginFilter} for more information on these arguments.
-     *
-     * @param allowedOrigins
-     * @param allowedMethods
-     * @param allowedHeaders
-     * @param preflightMaxAge
-     * @param allowCredentials
-     * @param exposedHeaders
-     * @throws ServletException
      */
 	public CrossOriginHandler(final String allowedOrigins, final String allowedMethods, final String allowedHeaders,
                               final String preflightMaxAge, final String allowCredentials, final String exposedHeaders)
@@ -86,20 +78,20 @@ public class CrossOriginHandler extends AbstractHandler {
             }
         });
 	}
-	
+
 	@Override
 	public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         response.setHeader("Server", "Cougar 2 - " + CougarVersion.getVersion());
-        /**
-         * Mark the request as handled by default. Leave the responsibility to undo this statement (if necessary) to
-         * the request chain.
-         * This exists here to make sure the original {@link org.eclipse.jetty.servlets.CrossOriginFilter} is left
-         * pristine.
-         */
+        /*
+         Mark the request as handled by default. Leave the responsibility to undo this statement (if necessary) to
+         the request chain.
+         This exists here to make sure the original {@link org.eclipse.jetty.servlets.CrossOriginFilter} is left
+         pristine.
+        */
         ((Request) request).setHandled(true);
         crossOriginFilter.doFilter(request, response, continuationChain);
 	}
-	
+
 	public class ContinuationChain implements FilterChain {
 
 		@Override

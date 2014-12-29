@@ -9,6 +9,8 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Vector;
 
 import static org.mockito.Matchers.any;
@@ -52,7 +54,7 @@ public class CrossOriginHandlerTest {
         Mockito.when(req.getMethod()).thenReturn("OPTIONS");
         Mockito.when(req.getHeader("Origin")).thenReturn("betfair.com");
         Mockito.when(req.getHeader(CrossOriginFilter.ACCESS_CONTROL_REQUEST_METHOD_HEADER)).thenReturn("PUT");
-        Mockito.when(req.getHeaders("Connection")).thenReturn(new Vector(0).elements());
+        Mockito.when(req.getHeaders("Connection")).thenReturn(Collections.<String>emptyEnumeration());
 
         victim.handle("/", req, req, res);
 
