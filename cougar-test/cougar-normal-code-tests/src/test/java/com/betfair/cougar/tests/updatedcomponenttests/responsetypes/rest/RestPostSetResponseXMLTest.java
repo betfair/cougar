@@ -71,7 +71,7 @@ public class RestPostSetResponseXMLTest {
         AssertionUtils.multiAssertEquals("OK", response5.getHttpStatusText());
 
         HttpResponseBean response6 = getNewHttpCallBean1.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTXMLJSON);
-        AssertionUtils.multiAssertEquals(createAsJSONObject10, response6.getResponseObject());
+        AssertionUtils.multiAssertEquals(createAsJSONObject10, (JSONObject)response6.getResponseObject(), "/response");
         AssertionUtils.multiAssertEquals((int) 200, response6.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("OK", response6.getHttpStatusText());
 

@@ -49,7 +49,7 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 public class JettyHandler extends AbstractHandler {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(JettyHandler.class);
-	private final TransportCommandProcessor<HttpCommand> commandProcessor;
+    private final TransportCommandProcessor<HttpCommand> commandProcessor;
     private final long MILLI=1000;
     private String protocolBindingRoot;
     private IdentityTokenResolverLookup identityTokenResolverLookup;

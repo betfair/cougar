@@ -21,8 +21,12 @@ package com.betfair.testing.utils.cougar.assertions;
 import com.betfair.testing.utils.cougar.misc.DataTypeEnum;
 import com.betfair.testing.utils.cougar.misc.ObjectUtil;
 import com.betfair.testing.utils.cougar.misc.XMLHelpers;
+import org.apache.commons.jxpath.JXPathContext;
 import org.apache.xml.serializer.DOMSerializer;
 import org.apache.xml.serializer.ToTextStream;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -117,6 +121,45 @@ public class AssertionUtils {
         s.serialize(k);
         return sw.toString();
 
+    }
+
+    public static void multiAssertEquals(JSONObject expected, JSONObject actual, String... unorderedXpaths) throws RuntimeException {
+        try {
+            for (String x : unorderedXpaths) {
+                doJsonSorting(expected, x);
+                doJsonSorting(actual, x);
+            }
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        jettAssertEquals(null, expected, actual);
+    }
+
+    private static void doJsonSorting(JSONObject doc, String x) throws XPathExpressionException, IOException, JSONException {
+        JXPathContext ctx = JXPathContext.newContext(doc);
+        String parentX = x.substring(0,x.lastIndexOf("/"));
+        if ("".equals(parentX)) {
+            parentX = "/";
+        }
+        String childName = x.substring(x.lastIndexOf("/")+1);
+        Iterator it = ctx.iterate(parentX);
+        while (it.hasNext()) {
+            JSONObject p = (JSONObject) it.next();
+            JSONArray n = p.getJSONArray(childName);
+            List allKids = new ArrayList<>(n.length());
+            for (int j=0; j<n.length(); j++) {
+                allKids.add(n.get(j));
+            }
+            Collections.sort(allKids, new Comparator<Object>() {
+                @Override
+                public int compare(Object o1, Object o2) {
+                    return o1.toString().compareTo(o2.toString());
+                }
+            });
+            JSONArray newArray = new JSONArray(allKids);
+            p.put(childName,newArray);
+        }
     }
 
     public static void multiAssertEquals(Object expected, Object actual) {

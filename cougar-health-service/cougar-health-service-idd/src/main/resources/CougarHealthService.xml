@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
+  - Copyright 2013, Simon Mati? Langford
   ~ Copyright 2013, The Sporting Exchange Limited
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -126,7 +127,7 @@
                 <description>This Cougar instance is UP</description>
             </value>
             <value name="FAIL">
-                <description>This Cougar instance is DOWN</description>
+                <description>This Cougar instance DOWN</description>
             </value>
         </validValues>
     </simpleType>
