@@ -29,7 +29,7 @@ public class ZipkinTracer extends AbstractTracer {
             Optional<ZipkinData> zipkinDataOptional = getZipkinData(uuid);
             // Check if Zipkin is enabled
             if (zipkinDataOptional.isPresent()) {
-                zipkinEmitter.emitServerStartSpan(zipkinDataOptional.get());
+                zipkinEmitter.emitServerReceiveSpan(zipkinDataOptional.get());
             }
         } else {
             throw new IllegalStateException("RequestUUID is not a ZipkinRequestUUIDImpl");
@@ -86,7 +86,7 @@ public class ZipkinTracer extends AbstractTracer {
         Optional<ZipkinData> zipkinDataOptional = getZipkinData(uuid);
         // Check if Zipkin is enabled
         if (zipkinDataOptional.isPresent()) {
-            zipkinEmitter.emitServerStopSpan(zipkinDataOptional.get());
+            zipkinEmitter.emitServerSendSpan(zipkinDataOptional.get());
         }
     }
 

@@ -42,6 +42,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.betfair.cougar</groupId>
+            <artifactId>cougar-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.github.kristofa</groupId>
             <artifactId>brave-interfaces</artifactId>
             <version>${brave-version}</version>

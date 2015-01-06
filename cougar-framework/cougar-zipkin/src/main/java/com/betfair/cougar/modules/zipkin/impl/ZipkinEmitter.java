@@ -16,8 +16,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import static com.twitter.zipkin.gen.zipkinCoreConstants.SERVER_RECV;
-import static com.twitter.zipkin.gen.zipkinCoreConstants.SERVER_SEND;
+import static com.twitter.zipkin.gen.zipkinCoreConstants.*;
 
 public class ZipkinEmitter {
 
@@ -32,12 +31,20 @@ public class ZipkinEmitter {
         LOCALHOST_IP = RemoteAddressUtils.getIPv4AsInteger();
     }
 
-    public void emitServerStartSpan(@Nonnull ZipkinData zipkinData) {
+    public void emitServerReceiveSpan(@Nonnull ZipkinData zipkinData) {
         emitAnnotation(zipkinData, SERVER_RECV);
     }
 
-    public void emitServerStopSpan(@Nonnull ZipkinData zipkinData) {
+    public void emitServerSendSpan(@Nonnull ZipkinData zipkinData) {
         emitAnnotation(zipkinData, SERVER_SEND);
+    }
+
+    public void emitClientSendSpan(@Nonnull ZipkinData zipkinData) {
+        emitAnnotation(zipkinData, CLIENT_SEND);
+    }
+
+    public void emitClientReceiveSpan(@Nonnull ZipkinData zipkinData) {
+        emitAnnotation(zipkinData, CLIENT_RECV);
     }
 
     public void emitAnnotation(@Nonnull ZipkinData zipkinData, String s) {
