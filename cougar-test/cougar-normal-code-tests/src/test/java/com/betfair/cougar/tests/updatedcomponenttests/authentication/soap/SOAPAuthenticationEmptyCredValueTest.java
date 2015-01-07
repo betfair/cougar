@@ -72,7 +72,7 @@ public class SOAPAuthenticationEmptyCredValueTest {
         HttpResponseBean getResponseObjectsByEnum13 = getNewHttpCallBean2.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.SOAP);
         AssertionUtils.multiAssertEquals(createAsDocument11, (Document)getResponseObjectsByEnum13.getResponseObject(),"/response/identities");
 
-        Map<String, String> map7 = getResponseObjectsByEnum13.getResponseHeaders();
+        Map<String, String> map7 = getResponseObjectsByEnum13.getFlattenedResponseHeaders();
         AssertionUtils.multiAssertEquals("Password: Username:foo", map7.get("Credentials"));
 
         // generalHelpers.pauseTest(1000L);

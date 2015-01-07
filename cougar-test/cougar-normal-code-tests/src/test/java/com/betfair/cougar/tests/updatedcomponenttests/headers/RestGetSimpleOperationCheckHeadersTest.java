@@ -44,13 +44,13 @@ public class RestGetSimpleOperationCheckHeadersTest {
         HttpCallBean getNewHttpCallBean1 = cougarManager1.getNewHttpCallBean("");
         cougarManager1 = cougarManager1;
         // Get the cougar log attribute for getting log entries later
-        
+
         getNewHttpCallBean1.setOperationName("testSimpleGet", "simple");
-        
+
         getNewHttpCallBean1.setServiceName("baseline", "cougarBaseline");
-        
+
         getNewHttpCallBean1.setVersion("v2");
-        
+
         Map map2 = new HashMap();
         map2.put("message","foo");
         getNewHttpCallBean1.setQueryParams(map2);
@@ -70,7 +70,7 @@ public class RestGetSimpleOperationCheckHeadersTest {
         AssertionUtils.multiAssertEquals((int) 200, getResponseObjectsByEnum11.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("OK", getResponseObjectsByEnum11.getHttpStatusText());
         // Check the response headers are as expected (set to default values as no headers were set in the request)
-        Map<String, String> map6 = getResponseObjectsByEnum11.getResponseHeaders();
+        Map<String, String> map6 = getResponseObjectsByEnum11.getFlattenedResponseHeaders();
         AssertionUtils.multiAssertEquals("no-cache", map6.get("Cache-Control"));
         AssertionUtils.multiAssertEquals("application/xml", map6.get("Content-Type"));
         // Check the response is as expected  (request: JSON response: JSON)
@@ -79,7 +79,7 @@ public class RestGetSimpleOperationCheckHeadersTest {
         AssertionUtils.multiAssertEquals((int) 200, response7.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("OK", response7.getHttpStatusText());
         // Check the response headers are as expected (set to default values as no headers were set in the request)
-        Map<String, String> map8 = getResponseObjectsByEnum11.getResponseHeaders();
+        Map<String, String> map8 = getResponseObjectsByEnum11.getFlattenedResponseHeaders();
         AssertionUtils.multiAssertEquals("no-cache", map8.get("Cache-Control"));
         AssertionUtils.multiAssertEquals("application/xml", map8.get("Content-Type"));
         // Check the response is as expected  (request: XML response: JSON)
@@ -88,7 +88,7 @@ public class RestGetSimpleOperationCheckHeadersTest {
         AssertionUtils.multiAssertEquals((int) 200, response9.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("OK", response9.getHttpStatusText());
         // Check the response headers are as expected (set to default values as no headers were set in the request)
-        Map<String, String> map10 = getResponseObjectsByEnum11.getResponseHeaders();
+        Map<String, String> map10 = getResponseObjectsByEnum11.getFlattenedResponseHeaders();
         AssertionUtils.multiAssertEquals("no-cache", map10.get("Cache-Control"));
         AssertionUtils.multiAssertEquals("application/xml", map10.get("Content-Type"));
         // Check the response is as expected  (request: JSON response:XML)
@@ -97,15 +97,15 @@ public class RestGetSimpleOperationCheckHeadersTest {
         AssertionUtils.multiAssertEquals((int) 200, response11.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("OK", response11.getHttpStatusText());
         // Check the response headers are as expected (set to default values as no headers were set in the request)
-        Map<String, String> map12 = getResponseObjectsByEnum11.getResponseHeaders();
+        Map<String, String> map12 = getResponseObjectsByEnum11.getFlattenedResponseHeaders();
         AssertionUtils.multiAssertEquals("no-cache", map12.get("Cache-Control"));
         AssertionUtils.multiAssertEquals("application/xml", map12.get("Content-Type"));
-        
+
         // generalHelpers.pauseTest(500L);
         // Check the log entries are as expected
-        
+
         cougarManager1.verifyRequestLogEntriesAfterDate(getTimeAsTimeStamp7, new RequestLogRequirement("2.8", "testSimpleGet"),new RequestLogRequirement("2.8", "testSimpleGet"),new RequestLogRequirement("2.8", "testSimpleGet"),new RequestLogRequirement("2.8", "testSimpleGet") );
-        
+
         cougarManager1.verifyAccessLogEntriesAfterDate(getTimeAsTimeStamp7, new AccessLogRequirement(null, null, "Ok"),new AccessLogRequirement(null, null, "Ok"),new AccessLogRequirement(null, null, "Ok"),new AccessLogRequirement(null, null, "Ok") );
     }
 

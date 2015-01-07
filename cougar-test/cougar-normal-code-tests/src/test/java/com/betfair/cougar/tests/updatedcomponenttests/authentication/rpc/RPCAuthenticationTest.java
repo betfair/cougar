@@ -74,7 +74,7 @@ public class RPCAuthenticationTest {
         AssertionUtils.multiAssertEquals("200", response.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("OK", response.getHttpStatusText());
         // Check the authentication headers are set correctly in the response
-        Map<String, String> responseHeaders = response.getResponseHeaders();
+        Map<String, String> responseHeaders = response.getFlattenedResponseHeaders();
         AssertionUtils.multiAssertEquals("foo", responseHeaders.get("X-Token-Username"));
         AssertionUtils.multiAssertEquals("bar", responseHeaders.get("X-Token-Password"));
         // Check the log entries are as expected

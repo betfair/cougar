@@ -39,7 +39,7 @@ public class RPCConcurrentBatchedRequests {
 	private List<Thread> threads = new ArrayList<Thread>();
 	private List<Executor> executors = new ArrayList<Executor>();
 	private static final String OK_STATUS_CODE = "200";
-		
+
 	public List<Thread> getThreads() {
 		return threads;
 	}
@@ -57,7 +57,7 @@ public class RPCConcurrentBatchedRequests {
 	}
 
 	public RPCConcurrentBatchedRequestsResultBean executeTest(Integer numberOfThreads, Integer numberOfCallsPerThread) throws InterruptedException, JSONException{
-		
+
 		//Build required calls and executors, and thread them
 		for (int i = 0; i < numberOfThreads; i++) {
 			Executor executor = new Executor("executor"+i);
@@ -67,12 +67,12 @@ public class RPCConcurrentBatchedRequests {
 			executor.setNumberOfRequests(numberOfCallsPerThread);
 			executor.buildCalls();
 		}
-		
+
 		//Start the threads
 		for (Thread thread: threads) {
 			thread.start();
 		}
-		
+
 		//Wait until all threads finished
 		for (Thread thread: threads) {
 			thread.join();
@@ -81,15 +81,15 @@ public class RPCConcurrentBatchedRequests {
 		//Create maps to hold responses to assert
 		Map<String, Map<String,Object>> expectedResponses = new LinkedHashMap<String, Map<String,Object>>();
 		Map<String, Map<String,Object>> actualResponses = new LinkedHashMap<String, Map<String,Object>>();
-		
+
 		//Populate response maps
 		for (Executor executor: executors) {
 			Map<String, Map<String,Object>> executorExpectedResponses = executor.getExpectedResponses();
 			expectedResponses.putAll(executorExpectedResponses);
 			Map<String, Map<String,Object>> executorActualResponses = executor.getActualResponses();
-			actualResponses.putAll(executorActualResponses);	
+			actualResponses.putAll(executorActualResponses);
 		}
-		
+
 		//Put maps into bean and return
 		RPCConcurrentBatchedRequestsResultBean returnBean = new RPCConcurrentBatchedRequestsResultBean();
 		returnBean.setActualResponses(actualResponses);
@@ -97,19 +97,19 @@ public class RPCConcurrentBatchedRequests {
 		return returnBean;
 
 	}
-	
-	
-	
-	
+
+
+
+
 	public static class Executor implements Runnable {
-		
+
 		public Executor(String identifier) {
 			this.identifier = identifier;
 		}
-		
+
 		private CougarManager cougarManager = CougarManager.getInstance();
 		private CougarHelpers cougarHelpers = new CougarHelpers();
-		
+
 		private String identifier;
 		private int numberOfRequests;
 
@@ -125,9 +125,9 @@ public class RPCConcurrentBatchedRequests {
 				e.printStackTrace();
 			}
 		}
-		
+
 		public void buildCalls() throws JSONException {
-			
+
 			for (int i = 0; i < numberOfRequests+1; i++) {
 				//Setup call beans
 				HttpCallBean callBean = new HttpCallBean();
@@ -149,26 +149,26 @@ public class RPCConcurrentBatchedRequests {
 				List<BatchedRequestBean> requests = new ArrayList<BatchedRequestBean>();
 				requests.add(request1);
 				requests.add(request2);
-				
+
 				callBean.setJSONRPC(true);
 				callBean.setBatchedRequestsDirect(requests);
 				httpCallBeans.add(callBean);
-				
+
 				//Store expected responses
 				Map<String,Object> responseMap = new HashMap<String,Object>();
-				
+
 				String response1 = "{\"id\":1,\"result\":{\"message\":\"foo\"},\"jsonrpc\":\"2.0\"}";
 				String response2 = "{\"id\":2,\"result\":{\"message\":\"foo\"},\"jsonrpc\":\"2.0\"}";
-				
+
 				responseMap.put("response1", response1);
 				responseMap.put("response2", response2);
 				responseMap.put("httpStatusCode", OK_STATUS_CODE);
 				responseMap.put("httpStatusText", "OK");
-	
+
 				expectedResponses.put(identifier + "Response " + i, responseMap);
 			}
 		}
-		
+
 		public void makeCalls() throws JSONException {
 			//Make the calls
 			int loopCounter = 0;
@@ -179,18 +179,18 @@ public class RPCConcurrentBatchedRequests {
 				cougarManager.makeRestCougarHTTPCall(callBean, CougarMessageProtocolRequestTypeEnum.RESTJSON, CougarMessageContentTypeEnum.JSON);
 				loopCounter++;
 			}
-			
-			
+
+
 			//Get actual responses
 			loopCounter=0;
 			for (HttpCallBean httpCallBean: httpCallBeans) {
 				HttpResponseBean responseBean = httpCallBean.getResponseObjectsByEnum(CougarMessageProtocolResponseTypeEnum.RESTJSONJSON);
-				responseBean.setResponseHeaders(null);
+				responseBean.clearResponseHeaders();
 				Map<String,Object> responseMap = cougarHelpers.convertBatchedResponseToMap(responseBean);
 				actualResponses.put(identifier + "Response " + loopCounter, responseMap);
 				loopCounter++;
 			}
-			
+
 			//Set the expected response time
 			for (String keyString: expectedResponses.keySet()) {
 				Map<String,Object> responseMap = expectedResponses.get(keyString);
@@ -198,7 +198,7 @@ public class RPCConcurrentBatchedRequests {
 				responseMap.put("requestTime", requestTime);
 				responseMap.put("responseTime", requestTime);
 			}
-			
+
 		}
 
 		public Map<String, Map<String,Object>> getActualResponses() {
@@ -225,12 +225,12 @@ public class RPCConcurrentBatchedRequests {
 			this.numberOfRequests = numberOfRequests;
 		}
 	}
-	
+
 	public static class RPCConcurrentBatchedRequestsResultBean {
-		
+
 		private Map<String, Map<String,Object>> expectedResponses = new LinkedHashMap<String, Map<String,Object>>();
 		private Map<String, Map<String,Object>> actualResponses = new LinkedHashMap<String, Map<String,Object>>();
-		
+
 		public Map<String, Map<String,Object>> getActualResponses() {
 			return actualResponses;
 		}
@@ -243,5 +243,5 @@ public class RPCConcurrentBatchedRequests {
 		public void setExpectedResponses(Map<String, Map<String,Object>> expectedResponses) {
 			this.expectedResponses = expectedResponses;
 		}
-	}	
+	}
 }

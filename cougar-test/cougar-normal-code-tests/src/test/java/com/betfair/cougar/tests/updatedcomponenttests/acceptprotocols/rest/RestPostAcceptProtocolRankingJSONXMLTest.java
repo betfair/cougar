@@ -45,11 +45,11 @@ public class RestPostAcceptProtocolRankingJSONXMLTest {
         CougarManager cougarManager1 = CougarManager.getInstance();
         HttpCallBean getNewHttpCallBean1 = cougarManager1.getNewHttpCallBean("87.248.113.14");
         cougarManager1 = cougarManager1;
-        
+
         getNewHttpCallBean1.setOperationName("testComplexMutator", "complex");
-        
+
         getNewHttpCallBean1.setServiceName("baseline", "cougarBaseline");
-        
+
         getNewHttpCallBean1.setVersion("v2");
         // Set the response protocols (with XML ranked highest)
         Map map2 = new HashMap();
@@ -57,7 +57,7 @@ public class RestPostAcceptProtocolRankingJSONXMLTest {
         map2.put("application/xml","q=20");
         map2.put("application/json","q=10");
         getNewHttpCallBean1.setAcceptProtocols(map2);
-        
+
         getNewHttpCallBean1.setRestPostQueryObjects(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream("<message><name>sum</name><value1>7</value1><value2>75</value2></message>".getBytes())));
         // Get current time for getting log entries later
 
@@ -75,12 +75,12 @@ public class RestPostAcceptProtocolRankingJSONXMLTest {
         AssertionUtils.multiAssertEquals((int) 200, getResponseObjectsByEnum12.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("OK", getResponseObjectsByEnum12.getHttpStatusText());
         // Check the response header is as expected (XML)
-        Map<String, String> map6 = getResponseObjectsByEnum12.getResponseHeaders();
+        Map<String, String> map6 = getResponseObjectsByEnum12.getFlattenedResponseHeaders();
         AssertionUtils.multiAssertEquals("application/xml", map6.get("Content-Type"));
         // Check the log entries are as expected
-        
+
         cougarManager1.verifyRequestLogEntriesAfterDate(getTimeAsTimeStamp8, new RequestLogRequirement("2.8", "testComplexMutator") );
-        
+
         cougarManager1.verifyAccessLogEntriesAfterDate(getTimeAsTimeStamp8, new AccessLogRequirement(null, null, "Ok") );
     }
 
