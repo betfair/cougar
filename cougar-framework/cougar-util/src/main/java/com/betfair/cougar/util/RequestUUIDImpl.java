@@ -62,26 +62,13 @@ public class RequestUUIDImpl implements RequestUUID {
         localUUid = components[2];
     }
 
-    public RequestUUIDImpl(ObjectInput in) throws IOException {
-        readExternal(in);
-    }
-
     public static void setGenerator(UUIDGenerator generator) {
         RequestUUIDImpl.generator = generator;
     }
 
     @Override
-    public void readExternal(ObjectInput in) throws IOException {
-        try {
-            setUuidRaw((String) in.readObject());
-        } catch (ClassNotFoundException e) {
-            throw new IOException(e);
-        }
-    }
-
-    @Override
-    public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(toString());
+    public String toCougarLogString() {
+        return internalGetUuidString();
     }
 
     @Override
@@ -112,6 +99,11 @@ public class RequestUUIDImpl implements RequestUUID {
     }
 
     public String getUUID() {
+        return internalGetUuidString();
+    }
+
+    private String internalGetUuidString()
+    {
         StringBuilder sb = new StringBuilder();
         String sep = "";
         if (rootUUid != null) {

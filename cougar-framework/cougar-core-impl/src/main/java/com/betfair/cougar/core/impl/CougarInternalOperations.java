@@ -29,4 +29,5 @@ public class CougarInternalOperations {
     public static String COUGAR_INTERNAL_INTERFACE_NAME = "_CougarInternal";
     public static OperationKey RESOLVE_IDENTITIES = new OperationKey(COUGAR_VERSION, COUGAR_INTERNAL_INTERFACE_NAME,"resolveIdentities", OperationKey.Type.Request);
     public static OperationKey BATCH_CALL = new OperationKey(COUGAR_VERSION, COUGAR_INTERNAL_INTERFACE_NAME,"batchCall", OperationKey.Type.Request);
+    public static String COUGAR_IN_PROCESS_NAMESPACE = "_IN_PROCESS";
 }

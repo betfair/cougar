@@ -108,13 +108,8 @@ public class ExecutionContextImplTest {
             }
 
             @Override
-            public void writeExternal(ObjectOutput objectOutput) throws IOException {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public void readExternal(ObjectInput objectInput) throws IOException, ClassNotFoundException {
-                //To change body of implemented methods use File | Settings | File Templates.
+            public String toCougarLogString() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
             public String toString() {

@@ -33,31 +33,36 @@ public class LoggingTracer extends AbstractTracer {
 
     @Override
     public void trace(RequestUUID uuid, String msg) {
-        CougarLoggingUtils.getTraceLogger().info(uuid.toString()+": "+ msg);
+        CougarLoggingUtils.getTraceLogger().info(uuid.toCougarLogString()+": "+ msg);
     }
 
     @Override
     public void trace(RequestUUID uuid, String msg, Object arg1) {
-        CougarLoggingUtils.getTraceLogger().info(uuid.toString()+": "+ msg, arg1);
+        CougarLoggingUtils.getTraceLogger().info(uuid.toCougarLogString()+": "+ msg, arg1);
     }
 
     @Override
     public void trace(RequestUUID uuid, String msg, Object arg1, Object arg2) {
-        CougarLoggingUtils.getTraceLogger().info(uuid.toString()+": "+ msg, arg1, arg2);
+        CougarLoggingUtils.getTraceLogger().info(uuid.toCougarLogString()+": "+ msg, arg1, arg2);
     }
 
     @Override
     public void trace(RequestUUID uuid, String msg, Object arg1, Object arg2, Object arg3) {
-        CougarLoggingUtils.getTraceLogger().info(uuid.toString()+": "+ msg, arg1, arg2, arg3);
+        CougarLoggingUtils.getTraceLogger().info(uuid.toCougarLogString()+": "+ msg, arg1, arg2, arg3);
     }
 
     @Override
     public void trace(RequestUUID uuid, String msg, Object... args) {
-        CougarLoggingUtils.getTraceLogger().info(uuid.toString()+": "+ msg, args);
+        CougarLoggingUtils.getTraceLogger().info(uuid.toCougarLogString()+": "+ msg, args);
     }
 
     @Override
     public void end(RequestUUID uuid) {
         // no-op
+    }
+
+    @Override
+    public void subCall(RequestUUID uuid, RequestUUID subUuid, OperationKey key) {
+        trace(uuid,"Making request to %s with uuid %s",subUuid.toCougarLogString(),key);
     }
 }

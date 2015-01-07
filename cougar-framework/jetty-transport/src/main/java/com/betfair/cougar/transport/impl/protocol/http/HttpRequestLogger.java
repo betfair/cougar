@@ -1,5 +1,6 @@
 /*
  * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2014, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -120,7 +121,7 @@ public class HttpRequestLogger implements RequestLogger {
                     }
                     return new Object[] {
                             command.getTimer().getReceivedTime(),
-                            context != null ? context.getRequestUUID() : "",
+                            context != null ? context.getRequestUUID().toCougarLogString() : "",
                             command.getFullPath(),
                             compression,
                             location != null ? location.getRemoteAddr() : "",

@@ -1,5 +1,6 @@
 /*
  * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2014, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +18,6 @@
 package com.betfair.cougar.core.impl.ev;
 
 import java.util.*;
-import java.util.logging.Level;
 
 import com.betfair.cougar.api.*;
 import com.betfair.cougar.core.api.ServiceDefinition;
@@ -26,6 +26,7 @@ import com.betfair.cougar.core.api.ServiceVersion;
 import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.security.IdentityResolverFactory;
 import com.betfair.cougar.core.api.tracing.Tracer;
+import com.betfair.cougar.core.impl.CougarInternalOperations;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,7 +111,18 @@ public class ServiceRegisterableExecutionVenue extends BaseExecutionVenue implem
     @Override
     public void registerService(String namespace, ServiceDefinition serviceDefinition, Service implementation, ExecutableResolver resolver) {
         getImplementationMapForNamespace(namespace).put(serviceDefinition, implementation);
+        // register the real service executables
         registerServiceDefinition(namespace, serviceDefinition, resolver);
+        if (namespace == null) {
+            // register the in process one if this is the core service binding
+            final InProcessExecutable inProcessExecutable = new InProcessExecutable(tracer);
+            registerServiceDefinition(CougarInternalOperations.COUGAR_IN_PROCESS_NAMESPACE, serviceDefinition, new ExecutableResolver() {
+                @Override
+                public Executable resolveExecutable(OperationKey operationKey, ExecutionVenue ev) {
+                    return inProcessExecutable;
+                }
+            });
+        }
 
         LOGGER.info("Initialising {} Service version {}",
                 serviceDefinition.getServiceName(),

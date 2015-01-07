@@ -173,7 +173,7 @@ public class ServiceExecutableResolverTest {
                 //Field 0 is request start time
                 assertTrue(eventFields[0] instanceof Date);
                 //Field 1 is Request UUID
-                assertEquals(requestuuid, eventFields[1]);
+                assertEquals(requestuuid.toCougarLogString(), eventFields[1]);
                 //Field 2 is version without the "v" character
                 assertEquals("1.0", eventFields[2]);
                 //Field 3 is the operation name
