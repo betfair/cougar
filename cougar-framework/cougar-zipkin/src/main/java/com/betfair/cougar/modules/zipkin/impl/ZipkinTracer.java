@@ -18,18 +18,19 @@ public class ZipkinTracer extends AbstractTracer {
     private ZipkinEmitter zipkinEmitter;
 
     @Override
-    public void start(RequestUUID uuid, OperationKey operation) {
-        Objects.requireNonNull(operation);
+    public void start(RequestUUID uuid, OperationKey operationKey) {
+        Objects.requireNonNull(operationKey);
 
         if (uuid instanceof ZipkinRequestUUID) {
             ZipkinRequestUUID zipkinRequestUUID = (ZipkinRequestUUID) uuid;
 
-            zipkinRequestUUID.setZipkinSpanName(operation.toString());
+            if (zipkinRequestUUID.isZipkinTracingEnabled()) {
 
-            Optional<ZipkinData> zipkinDataOptional = getZipkinData(uuid);
-            // Check if Zipkin is enabled
-            if (zipkinDataOptional.isPresent()) {
-                zipkinEmitter.emitServerReceiveSpan(zipkinDataOptional.get());
+                zipkinRequestUUID.setZipkinSpanName(operationKey.toString());
+
+                ZipkinData zipkinData = zipkinRequestUUID.getZipkinData();
+
+                zipkinEmitter.emitServerReceiveSpan(zipkinData);
             }
         } else {
             throw new IllegalStateException("RequestUUID is not a ZipkinRequestUUIDImpl");
@@ -38,8 +39,8 @@ public class ZipkinTracer extends AbstractTracer {
 
     @Override
     public void trace(RequestUUID uuid, String msg) {
-        Optional<ZipkinData> zipkinDataOptional = getZipkinData(uuid);
-        // Check if Zipkin is enabled
+        Optional<ZipkinData> zipkinDataOptional = getZipkinDataIfReady(uuid);
+        // Check if Zipkin is ready
         if (zipkinDataOptional.isPresent()) {
             emitAnnotation(zipkinDataOptional.get(), msg);
         }
@@ -47,8 +48,8 @@ public class ZipkinTracer extends AbstractTracer {
 
     @Override
     public void trace(RequestUUID uuid, String msg, Object arg1) {
-        Optional<ZipkinData> zipkinDataOptional = getZipkinData(uuid);
-        // Check if Zipkin is enabled
+        Optional<ZipkinData> zipkinDataOptional = getZipkinDataIfReady(uuid);
+        // Check if Zipkin is ready
         if (zipkinDataOptional.isPresent()) {
             emitAnnotation(zipkinDataOptional.get(), msg, arg1);
         }
@@ -56,8 +57,8 @@ public class ZipkinTracer extends AbstractTracer {
 
     @Override
     public void trace(RequestUUID uuid, String msg, Object arg1, Object arg2) {
-        Optional<ZipkinData> zipkinDataOptional = getZipkinData(uuid);
-        // Check if Zipkin is enabled
+        Optional<ZipkinData> zipkinDataOptional = getZipkinDataIfReady(uuid);
+        // Check if Zipkin is ready
         if (zipkinDataOptional.isPresent()) {
             emitAnnotation(zipkinDataOptional.get(), msg, arg1, arg2);
         }
@@ -65,8 +66,8 @@ public class ZipkinTracer extends AbstractTracer {
 
     @Override
     public void trace(RequestUUID uuid, String msg, Object arg1, Object arg2, Object arg3) {
-        Optional<ZipkinData> zipkinDataOptional = getZipkinData(uuid);
-        // Check if Zipkin is enabled
+        Optional<ZipkinData> zipkinDataOptional = getZipkinDataIfReady(uuid);
+        // Check if Zipkin is ready
         if (zipkinDataOptional.isPresent()) {
             emitAnnotation(zipkinDataOptional.get(), msg, arg1, arg2, arg3);
         }
@@ -74,8 +75,8 @@ public class ZipkinTracer extends AbstractTracer {
 
     @Override
     public void trace(RequestUUID uuid, String msg, Object... args) {
-        Optional<ZipkinData> zipkinDataOptional = getZipkinData(uuid);
-        // Check if Zipkin is enabled
+        Optional<ZipkinData> zipkinDataOptional = getZipkinDataIfReady(uuid);
+        // Check if Zipkin is ready
         if (zipkinDataOptional.isPresent()) {
             emitAnnotation(zipkinDataOptional.get(), msg, args);
         }
@@ -83,19 +84,38 @@ public class ZipkinTracer extends AbstractTracer {
 
     @Override
     public void end(RequestUUID uuid) {
-        Optional<ZipkinData> zipkinDataOptional = getZipkinData(uuid);
-        // Check if Zipkin is enabled
+        Optional<ZipkinData> zipkinDataOptional = getZipkinDataIfReady(uuid);
+        // Check if Zipkin is ready
         if (zipkinDataOptional.isPresent()) {
             zipkinEmitter.emitServerSendSpan(zipkinDataOptional.get());
         }
     }
 
-    @Nonnull
-    private static Optional<ZipkinData> getZipkinData(@Nonnull RequestUUID uuid) {
+    @Override
+    public void subCall(RequestUUID uuid, RequestUUID subUuid, OperationKey operationKey) {
+        Objects.requireNonNull(operationKey);
+
+        if (subUuid instanceof ZipkinRequestUUID) {
+            ZipkinRequestUUID zipkinSubRequestUUID = (ZipkinRequestUUID) subUuid;
+
+            if (zipkinSubRequestUUID.isZipkinTracingEnabled()) {
+
+                zipkinSubRequestUUID.setZipkinSpanName(operationKey.toString());
+
+                ZipkinData zipkinData = zipkinSubRequestUUID.getZipkinData();
+
+                zipkinEmitter.emitClientSendSpan(zipkinData);
+            }
+        } else {
+            throw new IllegalStateException("RequestUUID is not a ZipkinRequestUUIDImpl");
+        }
+    }
+
+    private static Optional<ZipkinData> getZipkinDataIfReady(@Nonnull RequestUUID uuid) {
         if (uuid instanceof ZipkinRequestUUID) {
             ZipkinRequestUUID zipkinRequestUUID = (ZipkinRequestUUID) uuid;
 
-            if (zipkinRequestUUID.isZipkinTracingEnabled()) {
+            if (zipkinRequestUUID.isZipkinTracingReady()) {
                 return Optional.of(zipkinRequestUUID.getZipkinData());
             } else {
                 return Optional.absent();

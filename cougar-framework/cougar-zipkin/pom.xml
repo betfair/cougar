@@ -13,6 +13,7 @@
 
     <properties>
         <brave-version>2.4</brave-version>
+        <guava-version>18.0</guava-version>
     </properties>
 
     <dependencies>
@@ -45,6 +46,13 @@
             <groupId>com.betfair.cougar</groupId>
             <artifactId>cougar-client</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava-version}</version>
         </dependency>
 
         <dependency>

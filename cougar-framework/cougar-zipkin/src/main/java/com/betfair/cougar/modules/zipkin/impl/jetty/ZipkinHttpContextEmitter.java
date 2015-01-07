@@ -3,15 +3,13 @@ package com.betfair.cougar.modules.zipkin.impl.jetty;
 import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.RequestUUID;
 import com.betfair.cougar.client.HttpContextEmitter;
+import com.betfair.cougar.client.api.CompoundContextEmitter;
 import com.betfair.cougar.client.api.GeoLocationSerializer;
 import com.betfair.cougar.modules.zipkin.api.ZipkinData;
 import com.betfair.cougar.modules.zipkin.api.ZipkinRequestUUID;
-import com.betfair.cougar.modules.zipkin.impl.ZipkinEmitter;
 import com.betfair.cougar.modules.zipkin.impl.ZipkinManager;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -20,16 +18,12 @@ import java.util.List;
  * Zipkin context emitter for use with http client transports
  */
 public class ZipkinHttpContextEmitter<HR> extends HttpContextEmitter<HR> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(HttpContextEmitter.class);
-
-    private final ZipkinEmitter zipkinEmitter;
 
     public ZipkinHttpContextEmitter(GeoLocationSerializer geoLocationSerializer, String uuidHeader, String uuidParentsHeader,
-                                    ZipkinEmitter zipkinEmitter) {
+                                    CompoundContextEmitter<HR, List<Header>> compoundContextEmitter) {
         super(geoLocationSerializer, uuidHeader, uuidParentsHeader);
-        this.zipkinEmitter = zipkinEmitter;
+        compoundContextEmitter.addEmitter(this);
     }
-
 
     @Override
     public void emit(ExecutionContext ctx, HR request, List<Header> result) {
@@ -44,14 +38,9 @@ public class ZipkinHttpContextEmitter<HR> extends HttpContextEmitter<HR> {
 
                 ZipkinRequestUUID newZipkinRequestUUID = (ZipkinRequestUUID) zipkinRequestUUID.getNewSubUUID();
 
-                //TODO: Set span name
-                newZipkinRequestUUID.setZipkinSpanName("SOMETHING NEW SPECIFIC TO THIS CLIENT CALL");
-
                 ZipkinData zipkinData = newZipkinRequestUUID.getZipkinData();
 
                 appendZipkinHeaders(result, zipkinData);
-
-                zipkinEmitter.emitClientSendSpan(zipkinData);
             }
 
         } else {

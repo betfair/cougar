@@ -5,11 +5,22 @@
 
     <!-- <import resource="classpath:conf/zipkin-config-jetty-transport.xml" /> -->
 
-    <bean id="httpExecutionContextResolverFactory"
+    <bean id="zipkinExecutionContextResolverFactory"
           class="com.betfair.cougar.modules.zipkin.impl.ZipkinExecutionContextResolverFactory">
         <property name="cougarUUIDHeader" value="$COUGAR-JETTY{cougar.http.uuidheader}"/>
         <property name="uuidParentsHeader" value="$COUGAR-JETTY{cougar.http.uuidparentsheader}"/>
         <property name="zipkinManager" ref="zikinConfig"/>
+    </bean>
+
+    <bean parent="cougar.transport.ContextRegisterer" lazy-init="false">
+        <constructor-arg index="1" ref="zipkinExecutionContextResolverFactory"/>
+    </bean>
+
+    <bean id="zipkinHttpContextEmitter" class="com.betfair.cougar.modules.zipkin.impl.jetty.ZipkinHttpContextEmitter">
+        <constructor-arg index="0" ref="$COUGAR_CLIENT{cougar.client.geoLocationSerializerBean}"/>
+        <constructor-arg index="1" value="$COUGAR_CLIENT{cougar.client.http.uuidheader}"/>
+        <constructor-arg index="2" value="$COUGAR_CLIENT{cougar.client.http.uuidparentsheader}"/>
+        <constructor-arg index="3" value="defaultHttpContextEmission"/>
     </bean>
 
 </beans>

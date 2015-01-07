@@ -26,7 +26,7 @@ import com.betfair.cougar.core.api.ev.OperationKey;
  */
 public interface Tracer {
 
-    void start(RequestUUID uuid, OperationKey operation);
+    void start(RequestUUID uuid, OperationKey operationKey);
 
     void trace(RequestUUID uuid, String msg);
     void trace(RequestUUID uuid, String msg, Object arg1);
@@ -46,5 +46,5 @@ public interface Tracer {
      */
     void end(RequestUUID uuid);
 
-    void subCall(RequestUUID uuid, RequestUUID subUuid, OperationKey key);
+    void subCall(RequestUUID uuid, RequestUUID subUuid, OperationKey operationKey);
 }

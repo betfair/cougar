@@ -7,9 +7,6 @@ import com.betfair.cougar.modules.zipkin.api.ZipkinRequestUUID;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -27,7 +24,8 @@ public class ZipkinRequestUUIDImpl implements ZipkinRequestUUID {
 
     /**
      * Constuct a Cougar/Zipkin Request object.
-     * @param cougarUuid Traditional Cougar RequestUUID.
+     *
+     * @param cougarUuid        Traditional Cougar RequestUUID.
      * @param zipkinDataBuilder Zipkin data builder object to be populated later with the span name.
      *                          Passing null here means Zipkin tracing is not enabled for this request.
      */
@@ -74,11 +72,6 @@ public class ZipkinRequestUUIDImpl implements ZipkinRequestUUID {
         }
     }
 
-    /**
-     * Obtain Zipkin data if the object was already created.
-     * @return ZipkinData object or null if Zipkin is not enabled for this request.
-     * @throws IllegalStateException if the ZipkinData object isn't yet finalized or if Zipkin tracing is not enabled for this request.
-     */
     @Override
     @Nonnull
     public ZipkinData getZipkinData() {
@@ -98,7 +91,11 @@ public class ZipkinRequestUUIDImpl implements ZipkinRequestUUID {
         return zipkinDataBuilder != null;
     }
 
-    // We need this because we only have the span name after the ZipkinHttpRequestUuidResolver pointcut
+    @Override
+    public boolean isZipkinTracingReady() {
+        return zipkinData != null;
+    }
+
     @Override
     public void setZipkinSpanName(@Nonnull String spanName) {
         Objects.requireNonNull(spanName);
@@ -118,7 +115,12 @@ public class ZipkinRequestUUIDImpl implements ZipkinRequestUUID {
      */
     @Override
     public String getUUID() {
-        return cougarUuid.getUUID();
+        return toCougarLogString();
+    }
+
+    @Override
+    public String toCougarLogString() {
+        return cougarUuid.toCougarLogString();
     }
 
     @Override
@@ -126,21 +128,5 @@ public class ZipkinRequestUUIDImpl implements ZipkinRequestUUID {
         // currently i think this is used for the logs, and I think it needs to
         // change to use getUUID which should be renamed to be more explicit
         return zipkinData + getUUID();
-    }
-
-    /**
-     * Part o Externalizable interface
-     */
-    @Override
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        throw new UnsupportedOperationException(); // assuming we can kill these
-    }
-
-    /**
-     * Part of Externalizable interface
-     */
-    @Override
-    public void writeExternal(ObjectOutput out) throws IOException {
-        throw new UnsupportedOperationException(); // assuming we can kill these
     }
 }
