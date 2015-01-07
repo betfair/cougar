@@ -31,25 +31,6 @@ public class RequestUUIDImplTest {
         RequestUUIDImpl.setGenerator(new UUIDGeneratorImpl());
     }
 
-	@Test
-	public void testStringValue() throws Exception {
-		RequestUUID uuid = new RequestUUIDImpl();
-
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ObjectOutput out = new ObjectOutputStream(baos);
-
-		uuid.writeExternal(out);
-
-		// must close the writer or it doesn't actually do the write to the underlying
-		// buffer
-		out.close();
-
-		ObjectInput in = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()));
-		RequestUUID clone = new RequestUUIDImpl(in);
-
-		assertEquals("RequestUUID implementation's toString() output do not match", uuid.toString(), clone.toString());
-	}
-
     @Test
     public void testUUIDGenerationTooShort() {
         testGeneration("foofoofoofoofoofoof", true);

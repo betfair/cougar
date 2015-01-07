@@ -19,6 +19,8 @@ package com.betfair.cougar.core.api.ev;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
 
+import java.util.Arrays;
+
 public class SimpleOperationDefinition implements OperationDefinition {
     private final OperationKey operationKey;
     private final Parameter[] parameters;
@@ -47,4 +49,12 @@ public class SimpleOperationDefinition implements OperationDefinition {
         return returnType;
     }
 
+    @Override
+    public String toString() {
+        return "SimpleOperationDefinition{" +
+                "operationKey=" + operationKey +
+                ", parameters=" + Arrays.toString(parameters) +
+                ", returnType=" + returnType +
+                '}';
+    }
 }

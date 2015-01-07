@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2014, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +33,7 @@ import com.betfair.cougar.core.api.exception.CougarException;
 import com.betfair.cougar.core.api.exception.CougarClientException;
 import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
+import com.betfair.cougar.core.impl.CougarInternalOperations;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 
 import com.betfair.tornjak.monitor.MonitorRegistry;
@@ -89,20 +91,24 @@ public class  ${service}SyncClientImpl implements ${service}SyncClient {<#t>
      */
     protected ${service}SyncClientImpl() {
     }
+
     protected void setEv(ExecutionVenue ev) {
         this.ev = ev;
     }
     protected void setNamespace(String namespace) {
+        if (namespace == null || "".equals(namespace)) {
+            throw new IllegalArgumentException("Namespace must be a non-empty string: "+namespace);
+        }
         this.namespace = namespace;
     }
 
     public ${service}SyncClientImpl(ExecutionVenue ev) {
-        this.ev = ev;
+        this(ev, CougarInternalOperations.COUGAR_IN_PROCESS_NAMESPACE);
     }
 
     public ${service}SyncClientImpl(ExecutionVenue ev, String namespace) {
-        this.ev = ev;
-        this.namespace = namespace;
+        setEv(ev);
+        setNamespace(namespace);
     }
 
     private OperationKey getOperationKey(OperationKey key) {

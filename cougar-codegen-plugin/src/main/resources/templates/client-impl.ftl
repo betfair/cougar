@@ -35,6 +35,7 @@ import java.util.*;
 import java.util.concurrent.Executor;
 import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.ServiceVersion;
+import com.betfair.cougar.core.impl.CougarInternalOperations;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 
 <@compress single_line=true>
@@ -56,10 +57,13 @@ public class ${service}ClientImpl implements ${service}Client {<#t>
 	private static final ServiceVersion serviceVersion = new ServiceVersion("${dotMajorMinorVersion}");
 
 	public ${service}ClientImpl(ExecutionVenue ev, Executor executor) {
-		this(ev, executor, null);
+		this(ev, executor, CougarInternalOperations.COUGAR_IN_PROCESS_NAMESPACE);
     }<#t>
 
     public ${service}ClientImpl(ExecutionVenue ev, Executor executor, String namespace) {
+        if (namespace == null || "".equals(namespace)) {
+            throw new IllegalArgumentException("Namespace must be a non-empty string: "+namespace);
+        }
         this.ev = ev;
         this.executor = executor;
         this.namespace = namespace;

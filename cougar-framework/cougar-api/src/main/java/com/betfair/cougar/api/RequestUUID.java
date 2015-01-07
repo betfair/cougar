@@ -1,5 +1,6 @@
 /*
  * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2014, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +24,17 @@ import java.io.Externalizable;
  * identification of traffic flows all stemming from a common source. Consists of three components, each of which is
  * individually a guid. If this uuid is the root of a tree then the root and parent components will be null.
  */
-public interface RequestUUID extends Externalizable {
+public interface RequestUUID {
     /**
      * String representation of this uuid. Contains any/all relevant component uuids.
      */
 	String getUUID();
+
+    /**
+     * Returns the representation to be used in standard cougar logs, including but not limited to request, access and
+     * trace logs. This must always return a string compatible with the default cougar RequestUUID implementation.
+     */
+    String toCougarLogString();
 
     /**
      * Get the root component of this uuid. Returns null if there is none.

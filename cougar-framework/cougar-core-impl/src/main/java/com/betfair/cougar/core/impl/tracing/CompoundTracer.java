@@ -79,6 +79,13 @@ public class CompoundTracer extends AbstractTracer {
         }
     }
 
+    @Override
+    public void subCall(RequestUUID uuid, RequestUUID subUuid, OperationKey key) {
+        for (Tracer t : tracers) {
+            t.subCall(uuid, subUuid, key);
+        }
+    }
+
     public void addTracer(Tracer impl) {
         tracers.add(impl);
     }
