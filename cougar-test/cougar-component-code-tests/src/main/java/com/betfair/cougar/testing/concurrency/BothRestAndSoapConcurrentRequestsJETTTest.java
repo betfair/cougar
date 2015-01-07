@@ -34,12 +34,12 @@ import java.util.List;
 import java.util.Map;
 
 public class BothRestAndSoapConcurrentRequestsJETTTest {
-	
+
 	private List<Thread> threads = new ArrayList<Thread>();
 	private List<Executor> restExecutors = new ArrayList<Executor>();
 	private List<SOAPExecutor> sOAPExecutors = new ArrayList<SOAPExecutor>();
 	private static final int OK_STATUS_CODE = 200;
-	
+
 	public List<Thread> getThreads() {
 		return threads;
 	}
@@ -71,15 +71,15 @@ public class BothRestAndSoapConcurrentRequestsJETTTest {
 
 
 	public BothRestAndSoapConcurrentRequestsJETTTestResultBean executeTest(Integer numberOfThreadsPerOperation, Integer numberOfCallsPerThread, CougarMessageProtocolRequestTypeEnum protocolRequestType, CougarMessageContentTypeEnum responseContentType) throws InterruptedException {
-		
+
 		//Build required calls and executors, and thread them
 		for (int i = 0; i < numberOfThreadsPerOperation; i++) {
 			SimpleExecutor restSimpleExecutor = new SimpleExecutor("restSimpleExecutor"+i);
 			SOAPExecutor soapSimpleExecutor = new SOAPExecutor("soapSimpleExecutor"+i);
-			
+
 			restExecutors.add(restSimpleExecutor);
 			sOAPExecutors.add(soapSimpleExecutor);
-			
+
 			Thread thread1 = new Thread(restSimpleExecutor);
 			Thread thread2 = new Thread(soapSimpleExecutor);
 
@@ -89,16 +89,16 @@ public class BothRestAndSoapConcurrentRequestsJETTTest {
 			restSimpleExecutor.setNumberOfRequests(numberOfCallsPerThread);
 			restSimpleExecutor.setRequestProtocolTypeEnum(protocolRequestType);
 			restSimpleExecutor.buildCalls(responseContentType);
-			
+
 			soapSimpleExecutor.setNumberOfRequests(numberOfCallsPerThread);
 			soapSimpleExecutor.buildCalls("TestSimpleGet");
 		}
-		
+
 		//Start the threads
 		for (Thread thread: threads) {
 			thread.start();
 		}
-		
+
 		//Wait until all threads finished
 		for (Thread thread: threads) {
 			thread.join();
@@ -107,24 +107,24 @@ public class BothRestAndSoapConcurrentRequestsJETTTest {
 		//Create maps to hold responses to assert
 		Map<String, HttpResponseBean> expectedResponses = new LinkedHashMap<String, HttpResponseBean>();
 		Map<String, HttpResponseBean> actualResponses = new LinkedHashMap<String, HttpResponseBean>();
-		
+
 
 		//Populate response maps
 		for (Executor executor: restExecutors) {
 			Map<String, HttpResponseBean> executorExpectedResponses = executor.getExpectedResponses();
 			expectedResponses.putAll(executorExpectedResponses);
 			Map<String, HttpResponseBean> executorActualResponses = executor.getActualResponses();
-			actualResponses.putAll(executorActualResponses);	
+			actualResponses.putAll(executorActualResponses);
 		}
-		
+
 		//Populate response maps
 		for (SOAPExecutor executor: sOAPExecutors) {
 			Map<String, HttpResponseBean> executorExpectedResponses = executor.getExpectedResponses();
 			expectedResponses.putAll(executorExpectedResponses);
 			Map<String, HttpResponseBean> executorActualResponses = executor.getActualResponses();
-			actualResponses.putAll(executorActualResponses);	
+			actualResponses.putAll(executorActualResponses);
 		}
-		
+
 		//Put maps into bean and return
 		BothRestAndSoapConcurrentRequestsJETTTestResultBean returnBean = new BothRestAndSoapConcurrentRequestsJETTTestResultBean();
 		returnBean.setActualResponses(actualResponses);
@@ -132,22 +132,22 @@ public class BothRestAndSoapConcurrentRequestsJETTTest {
 		return returnBean;
 
 	}
-	
+
 	public abstract class Executor implements Runnable {
 		public abstract Map<String, HttpResponseBean> getExpectedResponses();
 		public abstract Map<String, HttpResponseBean> getActualResponses();
 	};
-	
-	
+
+
 	public class SimpleExecutor extends Executor {
-		
+
 		public SimpleExecutor(String identifier) {
 			this.identifier = identifier;
 		}
-	
+
 		private XMLHelpers xHelpers = new XMLHelpers();
 		private CougarManager cougarManager = CougarManager.getInstance();
-		
+
 		private String identifier;
 		private int numberOfRequests;
 		private CougarMessageProtocolRequestTypeEnum requestProtocolTypeEnum;
@@ -156,7 +156,7 @@ public class BothRestAndSoapConcurrentRequestsJETTTest {
 		private Map<String, HttpResponseBean> actualResponses = new LinkedHashMap<String, HttpResponseBean>();
 		private List<HttpCallBean> httpCallBeans = new ArrayList<HttpCallBean>();
 		private Map<String, Timestamp> expectedRequestTimes = new LinkedHashMap<String, Timestamp>();
-		
+
 		public CougarMessageProtocolRequestTypeEnum getRequestProtocolTypeEnum() {
 			return requestProtocolTypeEnum;
 		}
@@ -169,9 +169,9 @@ public class BothRestAndSoapConcurrentRequestsJETTTest {
 		public void run() {
 			this.makeCalls();
 		}
-		
+
 		public void buildCalls(CougarMessageContentTypeEnum responseContentTypeEnum) {
-			
+
 			for (int i = 0; i < numberOfRequests+1; i++) {
 				//Setup call beans
 				HttpCallBean callBean = new HttpCallBean();
@@ -183,7 +183,7 @@ public class BothRestAndSoapConcurrentRequestsJETTTest {
 				queryParams.put("message", queryParameter);
 				callBean.setQueryParams(queryParams);
 				httpCallBeans.add(callBean);
-							
+
 				Map<String, String> acceptProtocols = new HashMap<String,String>();
 				switch (responseContentTypeEnum) {
 				case JSON:
@@ -194,7 +194,7 @@ public class BothRestAndSoapConcurrentRequestsJETTTest {
 					break;
 				}
 				callBean.setAcceptProtocols(acceptProtocols);
-				
+
 				//Store expected responses
 				HttpResponseBean responseBean = new HttpResponseBean();
 				String responseXmlString = "<SimpleResponse><message>" + queryParameter + "</message></SimpleResponse>";
@@ -210,11 +210,11 @@ public class BothRestAndSoapConcurrentRequestsJETTTest {
 				}
 				responseBean.setHttpStatusCode(OK_STATUS_CODE);
 				responseBean.setHttpStatusText("OK");
-	
+
 				expectedResponses.put(identifier + "Response " + i, responseBean);
 			}
 		}
-		
+
 		public void makeCalls() {
 			//Make the calls
 			int loopCounter = 0;
@@ -225,17 +225,17 @@ public class BothRestAndSoapConcurrentRequestsJETTTest {
 				cougarManager.makeRestCougarHTTPCall(callBean, requestProtocolTypeEnum);
 				loopCounter++;
 			}
-			
-			
+
+
 			//Get actual responses
 			loopCounter=0;
 			for (HttpCallBean httpCallBean: httpCallBeans) {
 				HttpResponseBean responseBean = httpCallBean.getResponseObjectsByEnum(CougarMessageProtocolResponseTypeEnum.REST);
-				responseBean.setResponseHeaders(null);
+				responseBean.clearResponseHeaders();
 				actualResponses.put(identifier + "Response " + loopCounter, responseBean);
 				loopCounter++;
 			}
-			
+
 			//Set the expected response time
 			for (String keyString: expectedResponses.keySet()) {
 				HttpResponseBean responseBean = expectedResponses.get(keyString);
@@ -243,7 +243,7 @@ public class BothRestAndSoapConcurrentRequestsJETTTest {
 				responseBean.setRequestTime(requestTime);
 				responseBean.setResponseTime(requestTime);
 			}
-			
+
 		}
 
 		public Map<String, HttpResponseBean> getActualResponses() {
@@ -270,13 +270,13 @@ public class BothRestAndSoapConcurrentRequestsJETTTest {
 			this.numberOfRequests = numberOfRequests;
 		}
 	}
-	
-	
+
+
 	public static class BothRestAndSoapConcurrentRequestsJETTTestResultBean {
-		
+
 		private Map<String, HttpResponseBean> expectedResponses = new LinkedHashMap<String, HttpResponseBean>();
 		private Map<String, HttpResponseBean> actualResponses = new LinkedHashMap<String, HttpResponseBean>();
-		
+
 		public Map<String, HttpResponseBean> getActualResponses() {
 			return actualResponses;
 		}
@@ -289,9 +289,9 @@ public class BothRestAndSoapConcurrentRequestsJETTTest {
 		public void setExpectedResponses(Map<String, HttpResponseBean> expectedResponses) {
 			this.expectedResponses = expectedResponses;
 		}
-		
+
 	}
-	
-	
+
+
 }
-	
+

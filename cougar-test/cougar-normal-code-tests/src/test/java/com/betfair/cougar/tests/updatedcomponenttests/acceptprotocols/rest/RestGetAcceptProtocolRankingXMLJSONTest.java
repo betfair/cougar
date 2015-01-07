@@ -44,13 +44,13 @@ public class RestGetAcceptProtocolRankingXMLJSONTest {
         CougarManager cougarManager1 = CougarManager.getInstance();
         HttpCallBean getNewHttpCallBean1 = cougarManager1.getNewHttpCallBean("87.248.113.14");
         cougarManager1 = cougarManager1;
-        
+
         getNewHttpCallBean1.setOperationName("testSimpleGet", "simple");
-        
+
         getNewHttpCallBean1.setServiceName("baseline", "cougarBaseline");
-        
+
         getNewHttpCallBean1.setVersion("v2");
-        
+
         Map map2 = new HashMap();
         map2.put("message","foo");
         getNewHttpCallBean1.setQueryParams(map2);
@@ -77,12 +77,12 @@ public class RestGetAcceptProtocolRankingXMLJSONTest {
         AssertionUtils.multiAssertEquals((int) 200, getResponseObjectsByEnum12.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("OK", getResponseObjectsByEnum12.getHttpStatusText());
         // Check the response header is as expected (JSON)
-        Map<String, String> map8 = getResponseObjectsByEnum12.getResponseHeaders();
+        Map<String, String> map8 = getResponseObjectsByEnum12.getFlattenedResponseHeaders();
         AssertionUtils.multiAssertEquals("application/json", map8.get("Content-Type"));
         // Check the log entries are as expected
-        
+
         cougarManager1.verifyRequestLogEntriesAfterDate(getTimeAsTimeStamp8, new RequestLogRequirement("2.8", "testSimpleGet") );
-        
+
         cougarManager1.verifyAccessLogEntriesAfterDate(getTimeAsTimeStamp8, new AccessLogRequirement(null, null, "Ok") );
     }
 

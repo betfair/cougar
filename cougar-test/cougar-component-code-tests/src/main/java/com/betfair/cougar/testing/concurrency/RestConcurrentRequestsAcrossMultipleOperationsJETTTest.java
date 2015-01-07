@@ -35,14 +35,14 @@ import java.util.Map;
 
 public class RestConcurrentRequestsAcrossMultipleOperationsJETTTest {
 
-	
-	
+
+
 	private List<Thread> threads = new ArrayList<Thread>();
 	private List<Executor> executors = new ArrayList<Executor>();
-	
+
 	private static final int OK_STATUS_CODE = 200;
 	private static final String RESPONSE = "Response ";
-	
+
 	public List<Thread> getThreads() {
 		return threads;
 	}
@@ -60,7 +60,7 @@ public class RestConcurrentRequestsAcrossMultipleOperationsJETTTest {
 	}
 
 	public RestConcurrentRequestsAcrossMultipleOperationsTestResultBean executeTest(Integer numberOfThreadsPerOperation, Integer numberOfCallsPerThread, CougarMessageProtocolRequestTypeEnum protocolRequestType, CougarMessageContentTypeEnum responseContentType) throws InterruptedException {
-		
+
 		//Build required calls and executors, and thread them
 		for (int i = 0; i < numberOfThreadsPerOperation; i++) {
 			SimpleExecutor simpleExecutor = new SimpleExecutor("simpleExecutor"+i);
@@ -85,12 +85,12 @@ public class RestConcurrentRequestsAcrossMultipleOperationsJETTTest {
 			paramterStylesExecutor.setRequestProtocolTypeEnum(protocolRequestType);
 			paramterStylesExecutor.buildCalls(responseContentType);
 		}
-		
+
 		//Start the threads
 		for (Thread thread: threads) {
 			thread.start();
 		}
-		
+
 		//Wait until all threads finished
 		for (Thread thread: threads) {
 			thread.join();
@@ -99,15 +99,15 @@ public class RestConcurrentRequestsAcrossMultipleOperationsJETTTest {
 		//Create maps to hold responses to assert
 		Map<String, HttpResponseBean> expectedResponses = new LinkedHashMap<String, HttpResponseBean>();
 		Map<String, HttpResponseBean> actualResponses = new LinkedHashMap<String, HttpResponseBean>();
-		
+
 		//Populate response maps
 		for (Executor executor: executors) {
 			Map<String, HttpResponseBean> executorExpectedResponses = executor.getExpectedResponses();
 			expectedResponses.putAll(executorExpectedResponses);
 			Map<String, HttpResponseBean> executorActualResponses = executor.getActualResponses();
-			actualResponses.putAll(executorActualResponses);	
+			actualResponses.putAll(executorActualResponses);
 		}
-		
+
 		//Put maps into bean and return
 		RestConcurrentRequestsAcrossMultipleOperationsTestResultBean returnBean = new RestConcurrentRequestsAcrossMultipleOperationsTestResultBean();
 		returnBean.setActualResponses(actualResponses);
@@ -115,22 +115,22 @@ public class RestConcurrentRequestsAcrossMultipleOperationsJETTTest {
 		return returnBean;
 
 	}
-	
+
 	public abstract class Executor implements Runnable {
 		public abstract Map<String, HttpResponseBean> getExpectedResponses();
 		public abstract Map<String, HttpResponseBean> getActualResponses();
 	};
-	
-	
+
+
 	public class SimpleExecutor extends Executor {
-		
+
 		public SimpleExecutor(String identifier) {
 			this.identifier = identifier;
 		}
-	
+
 		private XMLHelpers xHelpers = new XMLHelpers();
 		private CougarManager cougarManager = CougarManager.getInstance();
-		
+
 		private String identifier;
 		private int numberOfRequests;
 		private CougarMessageProtocolRequestTypeEnum requestProtocolTypeEnum;
@@ -139,7 +139,7 @@ public class RestConcurrentRequestsAcrossMultipleOperationsJETTTest {
 		private Map<String, HttpResponseBean> actualResponses = new LinkedHashMap<String, HttpResponseBean>();
 		private List<HttpCallBean> httpCallBeans = new ArrayList<HttpCallBean>();
 		private Map<String, Timestamp> expectedRequestTimes = new LinkedHashMap<String, Timestamp>();
-		
+
 		public CougarMessageProtocolRequestTypeEnum getRequestProtocolTypeEnum() {
 			return requestProtocolTypeEnum;
 		}
@@ -152,9 +152,9 @@ public class RestConcurrentRequestsAcrossMultipleOperationsJETTTest {
 		public void run() {
 			this.makeCalls();
 		}
-		
+
 		public void buildCalls(CougarMessageContentTypeEnum responseContentTypeEnum) {
-			
+
 			for (int i = 0; i < numberOfRequests+1; i++) {
 				//Setup call beans
 				HttpCallBean callBean = new HttpCallBean();
@@ -166,7 +166,7 @@ public class RestConcurrentRequestsAcrossMultipleOperationsJETTTest {
 				queryParams.put("message",queryParameter );
 				callBean.setQueryParams(queryParams);
 				httpCallBeans.add(callBean);
-							
+
 				Map<String, String> acceptProtocols = new HashMap<String,String>();
 				switch (responseContentTypeEnum) {
 				case JSON:
@@ -177,7 +177,7 @@ public class RestConcurrentRequestsAcrossMultipleOperationsJETTTest {
 					break;
 				}
 				callBean.setAcceptProtocols(acceptProtocols);
-				
+
 				//Store expected responses
 				HttpResponseBean responseBean = new HttpResponseBean();
 				String responseXmlString = "<SimpleResponse><message>" + queryParameter + "</message></SimpleResponse>";
@@ -193,31 +193,31 @@ public class RestConcurrentRequestsAcrossMultipleOperationsJETTTest {
 				}
 				responseBean.setHttpStatusCode(OK_STATUS_CODE);
 				responseBean.setHttpStatusText("OK");
-	
+
 				expectedResponses.put(identifier + RESPONSE + i, responseBean);
 			}
 		}
-		
+
 		public void makeCalls() {
 			//Make the calls
 			int loopCounter = 0;
 			for(HttpCallBean callBean: httpCallBeans) {
-				Date time = new Date();				
+				Date time = new Date();
 				expectedRequestTimes.put(identifier + RESPONSE + loopCounter, new Timestamp(time.getTime()));
 				cougarManager.makeRestCougarHTTPCall(callBean, requestProtocolTypeEnum);
 				loopCounter++;
 			}
-			
-			
+
+
 			//Get actual responses
 			loopCounter=0;
 			for (HttpCallBean httpCallBean: httpCallBeans) {
 				HttpResponseBean responseBean = httpCallBean.getResponseObjectsByEnum(CougarMessageProtocolResponseTypeEnum.REST);
-				responseBean.setResponseHeaders(null);
+				responseBean.clearResponseHeaders();
 				actualResponses.put(identifier + RESPONSE + loopCounter, responseBean);
 				loopCounter++;
 			}
-			
+
 			//Set the expected response time
 			for (String keyString: expectedResponses.keySet()) {
 				HttpResponseBean responseBean = expectedResponses.get(keyString);
@@ -225,7 +225,7 @@ public class RestConcurrentRequestsAcrossMultipleOperationsJETTTest {
 				responseBean.setRequestTime(requestTime);
 				responseBean.setResponseTime(requestTime);
 			}
-			
+
 		}
 
 		public Map<String, HttpResponseBean> getActualResponses() {
@@ -252,17 +252,17 @@ public class RestConcurrentRequestsAcrossMultipleOperationsJETTTest {
 			this.numberOfRequests = numberOfRequests;
 		}
 	}
-	
-	
+
+
 	public class ParamterStylesExecutor extends Executor {
-		
+
 		public ParamterStylesExecutor(String identifier) {
 			this.identifier = identifier;
 		}
-	
+
 		private XMLHelpers xHelpers = new XMLHelpers();
 		private CougarManager cougarManager = CougarManager.getInstance();
-		
+
 		private String identifier;
 		private int numberOfRequests;
 		private CougarMessageProtocolRequestTypeEnum requestProtocolTypeEnum;
@@ -271,7 +271,7 @@ public class RestConcurrentRequestsAcrossMultipleOperationsJETTTest {
 		private Map<String, HttpResponseBean> actualResponses = new LinkedHashMap<String, HttpResponseBean>();
 		private List<HttpCallBean> httpCallBeans = new ArrayList<HttpCallBean>();
 		private Map<String, Timestamp> expectedRequestTimes = new LinkedHashMap<String, Timestamp>();
-		
+
 		public CougarMessageProtocolRequestTypeEnum getRequestProtocolTypeEnum() {
 			return requestProtocolTypeEnum;
 		}
@@ -284,30 +284,30 @@ public class RestConcurrentRequestsAcrossMultipleOperationsJETTTest {
 		public void run() {
 			this.makeCalls();
 		}
-		
+
 		public void buildCalls(CougarMessageContentTypeEnum responseContentTypeEnum) {
-			
+
 			for (int i = 0; i < numberOfRequests+1; i++) {
 				//Setup call beans
 				HttpCallBean callBean = new HttpCallBean();
 				callBean.setServiceName("baseline","cougarBaseline");
 				callBean.setVersion("v2");
 				callBean.setOperationName("testParameterStylesQA");
-				
+
 				Map<String, String> headerParams = new HashMap<String, String>();
 				headerParams.put("headerParam", "Foo");
 				callBean.setHeaderParams(headerParams);
-				
+
 				Map<String, String> queryParams = new HashMap<String, String>();
 				String queryParameter = "queryParameter-" + identifier + "-" + i;
 				queryParams.put("queryParam", queryParameter);
 				String dateQueryParameter = "2009-06-01T13:50:00.0Z";
 				queryParams.put("dateQueryParam", dateQueryParameter);
 				callBean.setQueryParams(queryParams);
-				
-				
+
+
 				httpCallBeans.add(callBean);
-							
+
 				Map<String, String> acceptProtocols = new HashMap<String,String>();
 				switch (responseContentTypeEnum) {
 				case JSON:
@@ -318,7 +318,7 @@ public class RestConcurrentRequestsAcrossMultipleOperationsJETTTest {
 					break;
 				}
 				callBean.setAcceptProtocols(acceptProtocols);
-				
+
 				//Store expected responses
 				HttpResponseBean responseBean = new HttpResponseBean();
 				String responseXmlString = "<SimpleResponse><message>headerParam=Foo,queryParam=" + queryParameter + ",dateQueryParam=Mon Jun 01 13:50:00 UTC 2009</message></SimpleResponse>";
@@ -334,31 +334,31 @@ public class RestConcurrentRequestsAcrossMultipleOperationsJETTTest {
 				}
 				responseBean.setHttpStatusCode(OK_STATUS_CODE);
 				responseBean.setHttpStatusText("OK");
-	
+
 				expectedResponses.put(identifier + RESPONSE + i, responseBean);
 			}
 		}
-		
+
 		public void makeCalls() {
 			//Make the calls
 			int loopCounter = 0;
 			for(HttpCallBean callBean: httpCallBeans) {
-				Date time = new Date();				
+				Date time = new Date();
 				expectedRequestTimes.put(identifier + RESPONSE + loopCounter, new Timestamp(time.getTime()));
 				cougarManager.makeRestCougarHTTPCall(callBean, requestProtocolTypeEnum);
 				loopCounter++;
 			}
-			
-			
+
+
 			//Get actual responses
 			loopCounter=0;
 			for (HttpCallBean httpCallBean: httpCallBeans) {
 				HttpResponseBean responseBean = httpCallBean.getResponseObjectsByEnum(CougarMessageProtocolResponseTypeEnum.REST);
-				responseBean.setResponseHeaders(null);
+				responseBean.clearResponseHeaders();
 				actualResponses.put(identifier + RESPONSE + loopCounter, responseBean);
 				loopCounter++;
 			}
-			
+
 			//Set the expected response time
 			for (String keyString: expectedResponses.keySet()) {
 				HttpResponseBean responseBean = expectedResponses.get(keyString);
@@ -366,7 +366,7 @@ public class RestConcurrentRequestsAcrossMultipleOperationsJETTTest {
 				responseBean.setRequestTime(requestTime);
 				responseBean.setResponseTime(requestTime);
 			}
-			
+
 		}
 
 		public Map<String, HttpResponseBean> getActualResponses() {
@@ -393,18 +393,18 @@ public class RestConcurrentRequestsAcrossMultipleOperationsJETTTest {
 			this.numberOfRequests = numberOfRequests;
 		}
 	}
-	
-	
-	
+
+
+
 	public class ComplexOperationExecutor extends Executor {
-		
+
 		public ComplexOperationExecutor(String identifier) {
 			this.identifier = identifier;
 		}
-	
+
 		private XMLHelpers xHelpers = new XMLHelpers();
 		private CougarManager cougarManager = CougarManager.getInstance();
-		
+
 		private String identifier;
 		private int numberOfRequests;
 		private CougarMessageProtocolRequestTypeEnum requestProtocolTypeEnum;
@@ -413,7 +413,7 @@ public class RestConcurrentRequestsAcrossMultipleOperationsJETTTest {
 		private Map<String, HttpResponseBean> actualResponses = new LinkedHashMap<String, HttpResponseBean>();
 		private List<HttpCallBean> httpCallBeans = new ArrayList<HttpCallBean>();
 		private Map<String, Timestamp> expectedRequestTimes = new LinkedHashMap<String, Timestamp>();
-		
+
 		public CougarMessageProtocolRequestTypeEnum getRequestProtocolTypeEnum() {
 			return requestProtocolTypeEnum;
 		}
@@ -426,16 +426,16 @@ public class RestConcurrentRequestsAcrossMultipleOperationsJETTTest {
 		public void run() {
 			this.makeCalls();
 		}
-		
+
 		public void buildCalls(CougarMessageContentTypeEnum responseContentTypeEnum) {
-			
+
 			for (int i = 0; i < numberOfRequests+1; i++) {
 				//Setup call beans
 				HttpCallBean callBean = new HttpCallBean();
 				callBean.setServiceName("baseline","cougarBaseline");
 				callBean.setVersion("v2");
 				callBean.setOperationName("testComplexMutator","complex");
-							
+
 				Map<String, String> acceptProtocols = new HashMap<String,String>();
 				switch (responseContentTypeEnum) {
 				case JSON:
@@ -446,13 +446,13 @@ public class RestConcurrentRequestsAcrossMultipleOperationsJETTTest {
 					break;
 				}
 				callBean.setAcceptProtocols(acceptProtocols);
-				
+
 				String requestXmlString = "";
 				requestXmlString = "<message><name>sum</name><value1> " + i + "</value1><value2>" + i + "</value2></message>";
 				Document requestDocument = xHelpers.getXMLObjectFromString(requestXmlString);
 				callBean.setRestPostQueryObjects(requestDocument);
 				httpCallBeans.add(callBean);
-				
+
 				//Store expected responses
 				HttpResponseBean responseBean = new HttpResponseBean();
 				String responseXmlString = "<SimpleResponse><message>sum = " + i*2 + "</message></SimpleResponse>";
@@ -468,31 +468,31 @@ public class RestConcurrentRequestsAcrossMultipleOperationsJETTTest {
 				}
 				responseBean.setHttpStatusCode(OK_STATUS_CODE);
 				responseBean.setHttpStatusText("OK");
-	
+
 				expectedResponses.put(identifier + RESPONSE + i, responseBean);
 			}
 		}
-		
+
 		public void makeCalls() {
 			//Make the calls
 			int loopCounter = 0;
 			for(HttpCallBean callBean: httpCallBeans) {
-				Date time = new Date();				
+				Date time = new Date();
 				expectedRequestTimes.put(identifier + RESPONSE + loopCounter, new Timestamp(time.getTime()));
 				cougarManager.makeRestCougarHTTPCall(callBean, requestProtocolTypeEnum);
 				loopCounter++;
 			}
-			
-			
+
+
 			//Get actual responses
 			loopCounter=0;
 			for (HttpCallBean httpCallBean: httpCallBeans) {
 				HttpResponseBean responseBean = httpCallBean.getResponseObjectsByEnum(CougarMessageProtocolResponseTypeEnum.REST);
-				responseBean.setResponseHeaders(null);
+				responseBean.clearResponseHeaders();
 				actualResponses.put(identifier + RESPONSE + loopCounter, responseBean);
 				loopCounter++;
 			}
-			
+
 			//Set the expected response time
 			for (String keyString: expectedResponses.keySet()) {
 				HttpResponseBean responseBean = expectedResponses.get(keyString);
@@ -500,7 +500,7 @@ public class RestConcurrentRequestsAcrossMultipleOperationsJETTTest {
 				responseBean.setRequestTime(requestTime);
 				responseBean.setResponseTime(requestTime);
 			}
-			
+
 		}
 
 		public Map<String, HttpResponseBean> getActualResponses() {
@@ -527,12 +527,12 @@ public class RestConcurrentRequestsAcrossMultipleOperationsJETTTest {
 			this.numberOfRequests = numberOfRequests;
 		}
 	}
-	
+
 	public static class RestConcurrentRequestsAcrossMultipleOperationsTestResultBean {
-		
+
 		private Map<String, HttpResponseBean> expectedResponses = new LinkedHashMap<String, HttpResponseBean>();
 		private Map<String, HttpResponseBean> actualResponses = new LinkedHashMap<String, HttpResponseBean>();
-		
+
 		public Map<String, HttpResponseBean> getActualResponses() {
 			return actualResponses;
 		}
@@ -545,9 +545,9 @@ public class RestConcurrentRequestsAcrossMultipleOperationsJETTTest {
 		public void setExpectedResponses(Map<String, HttpResponseBean> expectedResponses) {
 			this.expectedResponses = expectedResponses;
 		}
-		
+
 	}
-	
-	
+
+
 }
-	
+

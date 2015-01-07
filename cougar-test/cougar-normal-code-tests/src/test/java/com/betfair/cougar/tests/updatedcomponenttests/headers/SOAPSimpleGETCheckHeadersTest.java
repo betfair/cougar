@@ -66,7 +66,7 @@ public class SOAPSimpleGETCheckHeadersTest {
         HttpResponseBean getResponseObjectsByEnum12 = getNewHttpCallBean2.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.SOAP);
         AssertionUtils.multiAssertEquals(createAsDocument10, getResponseObjectsByEnum12.getResponseObject());
         // Check the response headers are as expected (set to default values as no headers were set in the request)
-        Map<String, String> map6 = getResponseObjectsByEnum12.getResponseHeaders();
+        Map<String, String> map6 = getResponseObjectsByEnum12.getFlattenedResponseHeaders();
         AssertionUtils.multiAssertEquals("no-cache", map6.get("Cache-Control"));
         AssertionUtils.multiAssertEquals("text/xml; charset=utf-8", map6.get("Content-Type"));
         // Check the log entries are as expected

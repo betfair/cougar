@@ -1,5 +1,6 @@
 /*
  * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2014, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +48,7 @@ public class RequestLogEvent implements LoggableEvent {
 	public Object[] getFieldsToLog() {
 		return new Object[] {
 		        receivedTime,
-				uuid,
+				uuid.toCougarLogString(),
 				String.format("%1$d.%2$d", operationKey.getVersion().getMajor(), operationKey.getVersion().getMinor()),
 				operationKey.getOperationName(),
 				faultCode,

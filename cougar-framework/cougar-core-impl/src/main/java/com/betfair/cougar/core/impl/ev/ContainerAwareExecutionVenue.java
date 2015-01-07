@@ -17,7 +17,6 @@
 package com.betfair.cougar.core.impl.ev;
 
 import java.util.*;
-import java.util.logging.Level;
 
 import com.betfair.cougar.core.api.*;
 
@@ -32,8 +31,6 @@ import com.betfair.cougar.core.api.exception.PanicInTheCougar;
 import com.betfair.cougar.util.jmx.Exportable;
 import com.betfair.cougar.util.jmx.ExportableRegistration;
 import com.betfair.cougar.util.jmx.JMXControl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.betfair.tornjak.monitor.Status;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
@@ -52,6 +49,10 @@ public class ContainerAwareExecutionVenue extends ServiceRegisterableExecutionVe
 
     private List<GateListener> startingListeners = new ArrayList<GateListener>();
     private List<Exportable> exportables = new ArrayList<Exportable>();
+
+    public ContainerAwareExecutionVenue() {
+        super();
+    }
 
     @Override
 	public void registerExportable(Exportable exportable) {

@@ -44,21 +44,21 @@ public class RestGetAcceptProtocolRankingXMLUnsupportedTest {
         // Get the cougar logging attribute for getting log entries later
         // Point the created HttpCallBean at the correct service
         httpCallBeanBaseline.setServiceName("baseline", "cougarBaseline");
-        
+
         httpCallBeanBaseline.setVersion("v2");
         // Set up the Http Call Bean to make the request
         CougarManager cougarManager2 = CougarManager.getInstance();
         HttpCallBean getNewHttpCallBean2 = cougarManager2.getNewHttpCallBean("87.248.113.14");
         cougarManager2 = cougarManager2;
-        
+
         cougarManager2.setCougarFaultControllerJMXMBeanAttrbiute("DetailedFaults", "false");
-        
+
         getNewHttpCallBean2.setOperationName("testSimpleGet", "simple");
-        
+
         getNewHttpCallBean2.setServiceName("baseline", "cougarBaseline");
-        
+
         getNewHttpCallBean2.setVersion("v2");
-        
+
         Map map3 = new HashMap();
         map3.put("message","foo");
         getNewHttpCallBean2.setQueryParams(map3);
@@ -80,11 +80,11 @@ public class RestGetAcceptProtocolRankingXMLUnsupportedTest {
         AssertionUtils.multiAssertEquals(createAsDocument12, getResponseObjectsByEnum13.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 406, getResponseObjectsByEnum13.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("Not Acceptable", getResponseObjectsByEnum13.getHttpStatusText());
-        
-        Map<String, String> map8 = getResponseObjectsByEnum13.getResponseHeaders();
+
+        Map<String, String> map8 = getResponseObjectsByEnum13.getFlattenedResponseHeaders();
         AssertionUtils.multiAssertEquals("application/xml", map8.get("Content-Type"));
         // Check the log entries are as expected
-        
+
         cougarManagerBaseline.verifyAccessLogEntriesAfterDate(getTimeAsTimeStamp10, new AccessLogRequirement("87.248.113.14", "/cougarBaseline/v2/simple", "MediaTypeNotAcceptable") );
     }
 

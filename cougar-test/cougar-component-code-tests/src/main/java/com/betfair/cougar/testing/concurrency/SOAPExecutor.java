@@ -30,7 +30,7 @@ import java.util.Map;
 
 public class SOAPExecutor extends Thread{
 	private CougarManager cougarManager = CougarManager.getInstance();
-	
+
 	private String identifier;
 	private int numberOfRequests;
 
@@ -48,12 +48,12 @@ public class SOAPExecutor extends Thread{
 	{
 		return  expectedResponses;
 	}
-	
+
 	public Map<String, HttpResponseBean> getActualResponses()
 	{
 		return actualResponses;
 	}
-	
+
 	public void setNumberOfRequests(int numberOfRequests) {
 		this.numberOfRequests = numberOfRequests;
 	}
@@ -66,8 +66,8 @@ public class SOAPExecutor extends Thread{
 		// Make the calls
 		int loopCounter = 0;
 		for (HttpCallBean callBean : httpCallBeans) {
-			
-			Date time = new Date();		
+
+			Date time = new Date();
 			expectedRequestTimes.put(identifier + "Response " + loopCounter, new Timestamp(time.getTime()));
 
 			cougarManager.makeSoapCougarHTTPCalls(callBean);
@@ -79,7 +79,7 @@ public class SOAPExecutor extends Thread{
 		loopCounter = 0;
 		for (HttpCallBean httpCallBean : httpCallBeans) {
 			HttpResponseBean responseBean = httpCallBean.getResponseObjectsByEnum(CougarMessageProtocolResponseTypeEnum.SOAP);
-			responseBean.setResponseHeaders(null);
+			responseBean.clearResponseHeaders();
 			actualResponses.put(identifier + "Response " + loopCounter, responseBean);
 			loopCounter++;
 		}
@@ -89,25 +89,25 @@ public class SOAPExecutor extends Thread{
 			HttpResponseBean responseBean = expectedResponses
 					.get(keyString);
 			Timestamp requestTime = expectedRequestTimes.get(keyString);
-				
+
 			responseBean.setRequestTime(requestTime);
 			responseBean.setResponseTime(requestTime);
 		}
 	}
 
 	public void buildCalls(String operationName) {
-					
+
 		for (int i = 0; i < numberOfRequests + 1; i++) {
-			
+
 			// Setup call beans
 			HttpCallBean callBean = new HttpCallBean();
 			callBean.setServiceName("BaselineService");
 			callBean.setVersion("v2");
 
 			//TODO decide here at run time what message to create? for multiple services??
-			
+
 			SOAPMessageExchange msgEx = null;
-			
+
 			if(operationName.equalsIgnoreCase("TestComplexMutator")){
 				msgEx = SOAPGenerator.buildSOAPMessageCOMPLEX(callBean);
 			}
@@ -123,18 +123,18 @@ public class SOAPExecutor extends Thread{
 			else{
 				throw new RuntimeException("Unsupported operation. i dont know how to handle the following operation: " + operationName);
 			}
-				
+
 			callBean.setSOAPMessage(msgEx.getRequest());
-			
+
 			httpCallBeans.add(callBean);
 
 			// create expected responses
 			HttpResponseBean responseBean = new HttpResponseBean();
-			
+
 			//set the message to correspond to the request
-			
+
 			responseBean.setResponseObject(msgEx.getResponse());
-			
+
 			expectedResponses.put(identifier + "Response " + i,
 					responseBean);
 		}

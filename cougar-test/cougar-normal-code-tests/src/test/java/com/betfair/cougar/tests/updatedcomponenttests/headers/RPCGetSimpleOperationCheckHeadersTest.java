@@ -69,15 +69,15 @@ public class RPCGetSimpleOperationCheckHeadersTest {
         AssertionUtils.multiAssertEquals("200", map5.get("httpStatusCode"));
         AssertionUtils.multiAssertEquals("OK", map5.get("httpStatusText"));
         // Check the response headers are as expected (cache=control set to default values as no headers were set in the request but content-type will be json as is a batched json request)
-        Map<String, String> map6 = response.getResponseHeaders();
+        Map<String, String> map6 = response.getFlattenedResponseHeaders();
         AssertionUtils.multiAssertEquals("no-cache", map6.get("Cache-Control"));
         AssertionUtils.multiAssertEquals("application/json", map6.get("Content-Type"));
         // Pause the test to allow the logs to be filled
         // generalHelpers.pauseTest(500L);
         // Check the log entries are as expected
-        
+
         cougarManager.verifyRequestLogEntriesAfterDate(timeStamp, new RequestLogRequirement("2.8", "testSimpleGet"),new RequestLogRequirement("2.8", "testSimpleGet") );
-        
+
         cougarManager.verifyAccessLogEntriesAfterDate(timeStamp, new AccessLogRequirement(null, "/json-rpc", "Ok") );
     }
 

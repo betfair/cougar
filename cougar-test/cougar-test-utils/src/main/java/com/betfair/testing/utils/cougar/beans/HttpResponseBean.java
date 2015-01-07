@@ -66,7 +66,10 @@ public class HttpResponseBean {
 	public void setResponseObject(Object responseObject) {
 		this.responseObject = responseObject;
 	}
-	public Map<String, String> getResponseHeaders() {
+	public Map<String, String[]> getResponseHeaders() {
+        return responseHeaders;
+    }
+	public Map<String, String> getFlattenedResponseHeaders() {
         if (responseHeaders == null) {
             return null;
         }
@@ -83,6 +86,11 @@ public class HttpResponseBean {
         }
 		return ret;
 	}
+
+    public void clearResponseHeaders() {
+        this.responseHeaders = null;
+    }
+
 	public void setResponseHeaders(Map<String, String[]> responseHeaders) {
 		this.responseHeaders = responseHeaders;
 	}

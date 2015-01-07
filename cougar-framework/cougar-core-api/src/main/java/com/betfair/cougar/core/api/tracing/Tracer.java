@@ -42,7 +42,9 @@ public interface Tracer {
 
     /**
      * Called when a request (or call within a batch request) is completed. Called at most one time (certain error conditions may result in this never being called, although in
-     * reality this will represent a bug in Cougar.
+     * reality this would represent a bug in Cougar.
      */
     void end(RequestUUID uuid);
+
+    void subCall(RequestUUID uuid, RequestUUID subUuid, OperationKey key);
 }
