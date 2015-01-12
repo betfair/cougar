@@ -50,7 +50,7 @@ public class ZipkinEmitter {
     public void emitAnnotation(@Nonnull ZipkinData zipkinData, String s) {
         Objects.requireNonNull(zipkinData);
 
-        long annotationTimeMicro = TimeUnit.MICROSECONDS.toMicros(new Date().getTime());
+        long annotationTimeMicro = TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis());
 
         Annotation annotation = new Annotation(annotationTimeMicro, s);
         annotation.setHost(new Endpoint(LOCALHOST_IP, zipkinData.getPort(), cougarAppName));
