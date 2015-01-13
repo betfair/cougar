@@ -20,7 +20,7 @@
         <constructor-arg index="0" ref="$COUGAR_CLIENT{cougar.client.geoLocationSerializerBean}"/>
         <constructor-arg index="1" value="$COUGAR_CLIENT{cougar.client.http.uuidheader}"/>
         <constructor-arg index="2" value="$COUGAR_CLIENT{cougar.client.http.uuidparentsheader}"/>
-        <constructor-arg index="3" value="defaultHttpContextEmission"/>
+        <constructor-arg index="3" value="cougar.client.DefaultHttpContextEmission"/>
     </bean>
 
 </beans>
