@@ -30,7 +30,7 @@ public class ZipkinTracer extends AbstractTracer {
 
                 ZipkinData zipkinData = zipkinRequestUUID.getZipkinData();
 
-                zipkinEmitter.emitServerReceiveSpan(zipkinData);
+                zipkinEmitter.emitServerReceive(zipkinData);
             }
         } else {
             throw new IllegalStateException("RequestUUID is not a ZipkinRequestUUIDImpl");
@@ -87,7 +87,7 @@ public class ZipkinTracer extends AbstractTracer {
         Optional<ZipkinData> zipkinDataOptional = getZipkinDataIfReady(uuid);
         // Check if Zipkin is ready
         if (zipkinDataOptional.isPresent()) {
-            zipkinEmitter.emitServerSendSpan(zipkinDataOptional.get());
+            zipkinEmitter.emitServerSend(zipkinDataOptional.get());
         }
     }
 
@@ -104,7 +104,7 @@ public class ZipkinTracer extends AbstractTracer {
 
                 ZipkinData zipkinData = zipkinSubRequestUUID.getZipkinData();
 
-                zipkinEmitter.emitClientSendSpan(zipkinData);
+                zipkinEmitter.emitClientSend(zipkinData);
             }
         } else {
             throw new IllegalStateException("RequestUUID is not a ZipkinRequestUUIDImpl");

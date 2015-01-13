@@ -11,7 +11,6 @@ import com.twitter.zipkin.gen.Span;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -31,19 +30,19 @@ public class ZipkinEmitter {
         LOCALHOST_IP = RemoteAddressUtils.getIPv4AsInteger();
     }
 
-    public void emitServerReceiveSpan(@Nonnull ZipkinData zipkinData) {
+    public void emitServerReceive(@Nonnull ZipkinData zipkinData) {
         emitAnnotation(zipkinData, SERVER_RECV);
     }
 
-    public void emitServerSendSpan(@Nonnull ZipkinData zipkinData) {
+    public void emitServerSend(@Nonnull ZipkinData zipkinData) {
         emitAnnotation(zipkinData, SERVER_SEND);
     }
 
-    public void emitClientSendSpan(@Nonnull ZipkinData zipkinData) {
+    public void emitClientSend(@Nonnull ZipkinData zipkinData) {
         emitAnnotation(zipkinData, CLIENT_SEND);
     }
 
-    public void emitClientReceiveSpan(@Nonnull ZipkinData zipkinData) {
+    public void emitClientReceive(@Nonnull ZipkinData zipkinData) {
         emitAnnotation(zipkinData, CLIENT_RECV);
     }
 
