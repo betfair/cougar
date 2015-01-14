@@ -9,8 +9,8 @@ import java.util.Objects;
 
 public class ZipkinDataImpl implements ZipkinData {
 
-    private final Long traceId;
-    private final Long spanId;
+    private final long traceId;
+    private final long spanId;
     private final Long parentSpanId;
 
     private final String spanName;
@@ -26,18 +26,14 @@ public class ZipkinDataImpl implements ZipkinData {
         spanName = builder.spanName;
         port = builder.port;
 
-        Objects.requireNonNull(traceId);
-        Objects.requireNonNull(spanId);
         Objects.requireNonNull(spanName);
     }
 
-    @Nonnull
-    public Long getTraceId() {
+    public long getTraceId() {
         return traceId;
     }
 
-    @Nonnull
-    public Long getSpanId() {
+    public long getSpanId() {
         return spanId;
     }
 
@@ -56,21 +52,21 @@ public class ZipkinDataImpl implements ZipkinData {
     }
 
     public static final class Builder implements ZipkinDataBuilder {
-        private Long traceId;
-        private Long spanId;
+        private long traceId;
+        private long spanId;
         private Long parentSpanId;
 
         private String spanName;
         private short port;
 
         @Nonnull
-        public Builder traceId(@Nonnull Long traceId) {
+        public Builder traceId(long traceId) {
             this.traceId = traceId;
             return this;
         }
 
         @Nonnull
-        public Builder spanId(@Nonnull Long spanId) {
+        public Builder spanId(long spanId) {
             this.spanId = spanId;
             return this;
         }

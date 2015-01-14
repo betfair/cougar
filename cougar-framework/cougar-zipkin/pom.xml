@@ -12,7 +12,7 @@
     <artifactId>cougar-zipkin</artifactId>
 
     <properties>
-        <brave-version>2.4</brave-version>
+        <brave-version>2.4.1</brave-version>
         <guava-version>18.0</guava-version>
     </properties>
 

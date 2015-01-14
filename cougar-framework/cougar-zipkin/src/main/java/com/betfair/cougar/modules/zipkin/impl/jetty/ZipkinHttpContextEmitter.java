@@ -49,8 +49,8 @@ public class ZipkinHttpContextEmitter<HR> extends HttpContextEmitter<HR> {
     }
 
     private void appendZipkinHeaders(@Nonnull List<Header> result, @Nonnull ZipkinData zipkinData) {
-        result.add(new BasicHeader(ZipkinManager.TRACE_ID_KEY, zipkinData.getTraceId().toString()));
-        result.add(new BasicHeader(ZipkinManager.SPAN_ID_KEY, zipkinData.getSpanId().toString()));
+        result.add(new BasicHeader(ZipkinManager.TRACE_ID_KEY, String.valueOf(zipkinData.getTraceId())));
+        result.add(new BasicHeader(ZipkinManager.SPAN_ID_KEY, String.valueOf(zipkinData.getSpanId())));
         if (zipkinData.getParentSpanId() != null) {
             result.add(new BasicHeader(ZipkinManager.PARENT_SPAN_ID_KEY, zipkinData.getParentSpanId().toString()));
         }

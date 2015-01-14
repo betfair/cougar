@@ -5,16 +5,14 @@ import javax.annotation.Nullable;
 
 public interface ZipkinData {
 
-    @Nonnull
-    Long getTraceId();
+    long getTraceId();
 
     /**
      * Represents Zipkin's current span name.
      *
      * @return String representing the name of this current span (typically service or host name).
      */
-    @Nonnull
-    Long getSpanId();
+    long getSpanId();
 
     @Nullable
     Long getParentSpanId();

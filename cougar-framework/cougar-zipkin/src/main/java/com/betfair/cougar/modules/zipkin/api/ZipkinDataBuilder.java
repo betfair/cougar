@@ -6,10 +6,10 @@ import javax.annotation.Nullable;
 public interface ZipkinDataBuilder {
 
     @Nonnull
-    ZipkinDataBuilder traceId(@Nonnull Long traceId);
+    ZipkinDataBuilder traceId(long traceId);
 
     @Nonnull
-    ZipkinDataBuilder spanId(@Nonnull Long spanId);
+    ZipkinDataBuilder spanId(long spanId);
 
     @Nonnull
     ZipkinDataBuilder parentSpanId(@Nullable Long parentSpanId);
