@@ -17,6 +17,7 @@
 package com.betfair.cougar.client.api;
 
 import com.betfair.cougar.api.ExecutionContext;
+import com.betfair.cougar.client.ClientCallContext;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -36,7 +37,7 @@ public class CompoundContextEmitter<HR,C> implements ContextEmitter<HR,C> {
     }
 
     @Override
-    public void emit(ExecutionContext ctx, HR request, C container) {
+    public void emit(ClientCallContext ctx, HR request, C container) {
         for (ContextEmitter<HR,C> emitter : emitters) {
             emitter.emit(ctx, request, container);
         }

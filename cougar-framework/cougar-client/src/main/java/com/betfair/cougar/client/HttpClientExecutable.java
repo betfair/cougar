@@ -1,5 +1,6 @@
 /*
  * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +21,7 @@ import com.betfair.cougar.client.api.ContextEmitter;
 import com.betfair.cougar.core.api.client.TransportMetrics;
 import com.betfair.cougar.core.api.ev.ExecutionObserver;
 import com.betfair.cougar.core.api.ev.OperationDefinition;
+import com.betfair.cougar.core.api.tracing.Tracer;
 import com.betfair.cougar.transport.api.protocol.http.HttpServiceBindingDescriptor;
 import com.betfair.cougar.util.KeyStoreManagement;
 import com.betfair.cougar.util.jmx.JMXControl;
@@ -64,13 +66,14 @@ public class HttpClientExecutable extends AbstractHttpExecutable<HttpUriRequest>
     private HttpClientTransportMetrics metrics;
 
     public HttpClientExecutable(final HttpServiceBindingDescriptor bindingDescriptor,
-                                final ContextEmitter emission) {
-        this(bindingDescriptor, emission, new CougarClientConnManager());
+                                final ContextEmitter emission,
+                                final Tracer tracer) {
+        this(bindingDescriptor, emission, tracer, new CougarClientConnManager());
     }
 
 
-    public HttpClientExecutable(final HttpServiceBindingDescriptor bindingDescriptor, ContextEmitter emission, CougarClientConnManager clientConnectionManager) {
-        super(bindingDescriptor, new HttpClientCougarRequestFactory(emission));
+    public HttpClientExecutable(final HttpServiceBindingDescriptor bindingDescriptor, ContextEmitter emission, Tracer tracer, CougarClientConnManager clientConnectionManager) {
+        super(bindingDescriptor, new HttpClientCougarRequestFactory(emission), tracer);
         this.clientConnectionManager = clientConnectionManager;
     }
 

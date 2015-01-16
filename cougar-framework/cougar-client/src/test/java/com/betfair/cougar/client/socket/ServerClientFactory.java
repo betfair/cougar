@@ -1,5 +1,6 @@
 /*
  * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -240,7 +241,7 @@ public class ServerClientFactory {
         NioLogger logger = new NioLogger("ALL");
 		ExecutionVenueNioClient client = new ExecutionVenueNioClient(logger,  cfg, new HessianObjectIOFactory(true), new ClientConnectedObjectManager(), null, connectionString,
                 new JMXReportingThreadPoolExecutor(30, 60, 0, TimeUnit.SECONDS, new SynchronousQueue<Runnable>()), new JMXReportingThreadPoolExecutor(30, 60, 0, TimeUnit.SECONDS, new SynchronousQueue<Runnable>()),
-                new DNSBasedAddressResolver());
+                new DNSBasedAddressResolver(), new CompoundTracer());
         client.setMarshaller(marshaller);
         client.setContextEmitter(new CompoundContextEmitter<Map<String, String>, Object>(Collections.EMPTY_LIST));
 

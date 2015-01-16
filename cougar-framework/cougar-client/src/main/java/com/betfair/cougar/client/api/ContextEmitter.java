@@ -17,6 +17,7 @@
 package com.betfair.cougar.client.api;
 
 import com.betfair.cougar.api.ExecutionContext;
+import com.betfair.cougar.client.ClientCallContext;
 import com.betfair.cougar.transport.api.ExecutionContextComponent;
 
 import java.util.Set;
@@ -25,5 +26,5 @@ import java.util.Set;
  * Defines an emitter of contextual info.
  */
 public interface ContextEmitter<HR,C> {
-    void emit(ExecutionContext ctx, HR request, C container);
+    void emit(ClientCallContext ctx, HR request, C container);
 }

@@ -62,7 +62,20 @@ public class LoggingTracer extends AbstractTracer {
     }
 
     @Override
-    public void subCall(RequestUUID uuid, RequestUUID subUuid, OperationKey key) {
-        trace(uuid,"Making request to %s with uuid %s",subUuid.toCougarLogString(),key);
+    public void startCall(RequestUUID uuid, RequestUUID subUuid, OperationKey key) {
+        // parent uuid could be null if we're embedded in a non-cougar app and they've not set
+        // uuid in the execution context
+        if (uuid != null) {
+            trace(uuid,"Making request to %s with uuid %s",key,subUuid.toCougarLogString());
+        }
+    }
+
+    @Override
+    public void endCall(RequestUUID uuid, RequestUUID subUuid, OperationKey key) {
+        // parent uuid could be null if we're embedded in a non-cougar app and they've not set
+        // uuid in the execution context
+        if (uuid != null) {
+            trace(uuid,"Received response from %s with uuid %s",key,subUuid.toCougarLogString());
+        }
     }
 }

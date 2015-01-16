@@ -1,5 +1,6 @@
 /*
  * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +18,7 @@
 package com.betfair.cougar.client;
 
 import com.betfair.cougar.api.ExecutionContext;
+import com.betfair.cougar.api.RequestUUID;
 import com.betfair.cougar.api.geolocation.GeoLocationDetails;
 import com.betfair.cougar.client.api.GeoLocationSerializer;
 import com.betfair.cougar.core.api.ev.TimeConstraints;
@@ -49,7 +51,7 @@ public class CougarRequestFactoryTest {
     private static final String CONTENT_TYPE = "application/x-my-type";
 
     @Mock
-    private ExecutionContext mockContext;
+    private ClientCallContext mockCallContext;
     @Mock
     private Message mockMessage;
     @Mock
@@ -77,7 +79,6 @@ public class CougarRequestFactoryTest {
         initMocks(this);
         factory.setGzipCompressionEnabled(false);
         RequestUUIDImpl.setGenerator(new UUIDGeneratorImpl());
-
     }
 
     @Test
@@ -85,8 +86,9 @@ public class CougarRequestFactoryTest {
         httpMethod = "GET";
         contentType = CONTENT_TYPE;
         when(mockMessage.getHeaderMap()).thenReturn(Collections.<String, Object>emptyMap());
+        when(mockCallContext.getRequestUUID()).thenReturn(new RequestUUIDImpl());
 
-        Object result = factory.create(uri, httpMethod, mockMessage, mockMarshaller, contentType, mockContext, mockTimeConstraints);
+        Object result = factory.create(uri, httpMethod, mockMessage, mockMarshaller, contentType, mockCallContext, mockTimeConstraints);
 
         assertSame(httpRequest, result);
         assertEquals(5, headers.size());
@@ -104,15 +106,15 @@ public class CougarRequestFactoryTest {
         String uuid = UUID.randomUUID().toString();
         Date date = new Date();
         when(mockMessage.getHeaderMap()).thenReturn(Collections.singletonMap("X-My-Header", (Object) "value"));
-        when(mockContext.traceLoggingEnabled()).thenReturn(true);
-        when(mockContext.getRequestUUID()).thenReturn(new RequestUUIDImpl(uuid));
-        when(mockContext.getReceivedTime()).thenReturn(date);
+        when(mockCallContext.traceLoggingEnabled()).thenReturn(true);
+        RequestUUID toReturn = new RequestUUIDImpl(uuid);
+        when(mockCallContext.getRequestUUID()).thenReturn(toReturn.getNewSubUUID());
         factory.setGzipCompressionEnabled(true);
 
-        Object result = factory.create(uri, httpMethod, mockMessage, mockMarshaller, contentType, mockContext, mockTimeConstraints);
+        Object result = factory.create(uri, httpMethod, mockMessage, mockMarshaller, contentType, mockCallContext, mockTimeConstraints);
 
         assertSame(httpRequest, result);
-        assertEquals(10, headers.size());
+        assertEquals(9, headers.size());
         assertHeadersContains(headers, ACCEPT, contentType);
         assertHeadersContains(headers, USER_AGENT, CougarRequestFactory.USER_AGENT_HEADER);
         assertHeadersContains(headers, ACCEPT_ENCODING, "gzip");
@@ -120,11 +122,10 @@ public class CougarRequestFactoryTest {
         String uuidHeaderParent = assertHeadersContains(headers, "X-REQUEST-UUID-PARENTS");
         assertEquals(uuid+":"+uuid,uuidHeaderParent);
         String uuidHeader = assertHeadersContains(headers, "X-REQUEST-UUID");
-        assertNotEquals(uuid,uuidHeader);
+        assertNotEquals(uuid, uuidHeader);
         assertHeadersContains(headers, "X-RequestTime");
         assertHeadersContains(headers, "X-RequestTimeout", "0");
         assertHeadersContains(headers, "X-My-Header", "value");
-        assertHeadersContains(headers, "X-ReceivedTime", DATE_TIME_FORMATTER.print(date.getTime()));
     }
 
 
@@ -143,10 +144,11 @@ public class CougarRequestFactoryTest {
         };
 
 
+        when(mockCallContext.getRequestUUID()).thenReturn(new RequestUUIDImpl());
         when(mockMessage.getHeaderMap()).thenReturn(Collections.<String, Object>emptyMap());
         doAnswer(postAnswer).when(mockMarshaller).marshall(any(ByteArrayOutputStream.class), anyObject(), anyString(), eq(true));
 
-        Object result = factory.create(uri, httpMethod, mockMessage, mockMarshaller, contentType, mockContext, mockTimeConstraints);
+        Object result = factory.create(uri, httpMethod, mockMessage, mockMarshaller, contentType, mockCallContext, mockTimeConstraints);
 
         assertSame(httpRequest, result);
         assertEquals(5, headers.size());

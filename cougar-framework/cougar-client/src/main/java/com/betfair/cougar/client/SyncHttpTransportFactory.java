@@ -1,5 +1,6 @@
 /*
  * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +23,7 @@ import com.betfair.cougar.client.api.ContextEmitter;
 import com.betfair.cougar.client.exception.ExceptionTransformer;
 import com.betfair.cougar.client.query.QueryStringGeneratorFactory;
 import com.betfair.cougar.core.api.client.ExceptionFactory;
+import com.betfair.cougar.core.api.tracing.Tracer;
 import com.betfair.cougar.marshalling.api.databinding.DataBindingFactory;
 import com.betfair.cougar.transport.api.protocol.http.HttpServiceBindingDescriptor;
 import org.apache.http.client.HttpRequestRetryHandler;
@@ -37,6 +39,7 @@ public class SyncHttpTransportFactory {
     private QueryStringGeneratorFactory queryStringGeneratorFactory;
     private ExceptionTransformer exceptionTransformer;
     private ContextEmitter contextEmitter;
+    private Tracer tracer;
     private int httpTimeout = -1;
     private int maxTotalConnections = -1;
     private int maxPerRouteConnections = -1;
@@ -60,6 +63,10 @@ public class SyncHttpTransportFactory {
 
     public void setContextEmitter(ContextEmitter contextEmitter) {
         this.contextEmitter = contextEmitter;
+    }
+
+    public void setTracer(Tracer tracer) {
+        this.tracer = tracer;
     }
 
     public void setHttpTimeout(int httpTimeout) {
@@ -88,7 +95,7 @@ public class SyncHttpTransportFactory {
                                                  ExceptionFactory exceptionFactory, boolean sslEnabled, Resource keyStore,
                                                  String keyPassword, Resource trustStore, String trustPassword,
                                                  boolean hostnameVerificationDisabled) {
-        final HttpClientExecutable client = new HttpClientExecutable(bindingDescriptor, contextEmitter);
+        final HttpClientExecutable client = new HttpClientExecutable(bindingDescriptor, contextEmitter, tracer);
         populateTransportAttributes(client, remoteServerAddress, exceptionFactory,
                 sslEnabled, keyStore, keyPassword, trustStore, trustPassword, hostnameVerificationDisabled);
         return client;

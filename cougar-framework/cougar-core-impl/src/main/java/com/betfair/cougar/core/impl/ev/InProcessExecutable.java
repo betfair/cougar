@@ -22,9 +22,9 @@ import com.betfair.cougar.api.geolocation.GeoLocationDetails;
 import com.betfair.cougar.api.security.IdentityChain;
 import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.tracing.Tracer;
+import com.betfair.cougar.core.impl.tracing.TracingEndObserver;
 
 import java.util.Date;
-import java.util.concurrent.Executor;
 
 /**
  * Simple pass-through executable which ensures which client calls which go via the internal in-process transport
@@ -41,10 +41,10 @@ public class InProcessExecutable implements Executable {
     @Override
     public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, ExecutionVenue executionVenue, TimeConstraints timeConstraints) {
         RequestUUID subUuid = ctx.getRequestUUID().getNewSubUUID();
-        tracer.subCall(ctx.getRequestUUID(), subUuid, key);
+        tracer.startCall(ctx.getRequestUUID(), subUuid, key);
 
         // this call uses the same thread so that the callers expectations regarding threading model are met
-        executionVenue.execute(subContext(ctx,subUuid),key,args,observer,timeConstraints);
+        executionVenue.execute(subContext(ctx,subUuid),key,args,new TracingEndObserver(tracer,observer,ctx.getRequestUUID(),subUuid,key),timeConstraints);
     }
 
     private ExecutionContext subContext(final ExecutionContext orig, final RequestUUID subUuid) {

@@ -1,5 +1,6 @@
 /*
  * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,10 +62,10 @@ public class InterceptingExecutableWrapper implements ExecutableWrapper {
 
                 } catch (CougarException e) {
                     newObserver.onResult(new ExecutionResult(e));
-                    newObserver.onResult(new ExecutionResult(
-                            new CougarFrameworkException(ServerFaultCode.ServiceRuntimeException, "Exception thrown by service method", e)));
                 }
                 catch (Exception e) {
+                    newObserver.onResult(new ExecutionResult(
+                            new CougarFrameworkException(ServerFaultCode.ServiceRuntimeException, "Exception thrown by service method", e)));
                 }
             }
         };

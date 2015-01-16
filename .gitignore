@@ -13,3 +13,6 @@ target
 # Folder view configuration files
 .DS_Store
 Desktop.ini
+
+# Local stuff
+fixCopyrights.sh

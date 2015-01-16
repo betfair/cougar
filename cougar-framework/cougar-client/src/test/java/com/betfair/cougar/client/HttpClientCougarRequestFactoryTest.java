@@ -1,5 +1,6 @@
 /*
  * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,9 +53,8 @@ import static org.mockito.MockitoAnnotations.initMocks;
  */
 public class HttpClientCougarRequestFactoryTest {
 
-
     @Mock
-    private ExecutionContext mockContext;
+    private ClientCallContext mockCallContext;
     @Mock
     private Message mockMessage;
     @Mock
@@ -82,17 +82,18 @@ public class HttpClientCougarRequestFactoryTest {
             }
         };
 
+        RequestUUIDImpl.setGenerator(new UUIDGeneratorImpl());
+        when(mockCallContext.getRequestUUID()).thenReturn(new RequestUUIDImpl());
         when(mockMessage.getHeaderMap()).thenReturn(Collections.<String, Object>emptyMap());
         when(mockMessage.getRequestBodyMap()).thenReturn(Collections.<String, Object>singletonMap("key", "value"));
         doAnswer(postAnswer).when(mockMarshaller).marshall(any(ByteArrayOutputStream.class), anyObject(),
                 anyString(), eq(true));
-        RequestUUIDImpl.setGenerator(new UUIDGeneratorImpl());
     }
 
     @Test
     public void shouldCreateGetRequest() {
         HttpUriRequest httpExchange = factory.create(uri, "GET", mockMessage, mockMarshaller, contentType,
-                mockContext, mockTimeConstraints);
+                mockCallContext, mockTimeConstraints);
 
         assertTrue(httpExchange instanceof HttpGet);
         assertEquals("GET", httpExchange.getMethod());
@@ -103,7 +104,7 @@ public class HttpClientCougarRequestFactoryTest {
     @Test
     public void shouldCreatePostRequest() throws Exception {
         HttpUriRequest httpExchange = factory.create(uri, "POST", mockMessage, mockMarshaller, contentType,
-                mockContext, mockTimeConstraints);
+                mockCallContext, mockTimeConstraints);
 
         assertTrue(httpExchange instanceof HttpPost);
         assertEquals("POST", httpExchange.getMethod());
@@ -116,7 +117,7 @@ public class HttpClientCougarRequestFactoryTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void shouldNotCreateUnknownMethod() {
-        factory.create(uri, "TRACE", mockMessage, mockMarshaller, contentType, mockContext, mockTimeConstraints);
+        factory.create(uri, "TRACE", mockMessage, mockMarshaller, contentType, mockCallContext, mockTimeConstraints);
     }
 
     @Test
