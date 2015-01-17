@@ -21,6 +21,7 @@ import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -43,7 +44,15 @@ public class TestListener implements ITestListener, Runnable {
             // wait on something for 9 minutes,
             try {
                 if (!activityLatch.get().await(9, TimeUnit.MINUTES)) {
-                    Thread.dumpStack();
+                    System.err.println("Thread dump:");
+                    System.err.println("============");
+                    for (Map.Entry<Thread,StackTraceElement[]> entry : Thread.getAllStackTraces().entrySet()) {
+                        System.err.println("Thread: "+entry.getKey().getId()+" - "+entry.getKey().getName());
+                        for (StackTraceElement s : entry.getValue()) {
+                            System.err.println(s);
+                        }
+                        System.err.println("\n");
+                    }
                 }
             }
             catch (InterruptedException ie) {
