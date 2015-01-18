@@ -63,7 +63,8 @@ public class InProcessExecutableTest {
         InProcessExecutable victim = new InProcessExecutable(tracer);
 
         ExecutionContext ctx = mock(ExecutionContext.class);
-        OperationKey op = new OperationKey(new ServiceVersion(1,0),"Wibble","wobble");
+        OperationKey expectedOp = new OperationKey(new ServiceVersion(1,0),"Wibble","wobble");
+        OperationKey op = new OperationKey(expectedOp, "_IN_PROCESS");
         Object[] args = new Object[1];
         ExecutionObserver obs = mock(ExecutionObserver.class);
         ExecutionVenue venue = mock(ExecutionVenue.class);
@@ -96,9 +97,9 @@ public class InProcessExecutableTest {
         verify(venue, times(1)).execute(arg1.capture(), arg2.capture(), arg3.capture(), arg4.capture(), arg5.capture());
 
         assertThat(arg1.getValue(), isSubContextOf(ctx));
-        assertThat(arg2.getValue(), new Equals(op));
+        assertThat(arg2.getValue(), new Equals(expectedOp));
         assertThat(arg3.getValue(), new Same(args));
-        assertThat(arg4.getValue(), isTracingEndObserver(obs, parentUuid, op, tracer));
+        assertThat(arg4.getValue(), isTracingEndObserver(obs, parentUuid, expectedOp, tracer));
         assertThat(arg5.getValue(), new Same(constraints));
     }
 
@@ -135,7 +136,7 @@ public class InProcessExecutableTest {
                 if (tracingObserver.getParentUuid() != parentUuid) {
                     return false;
                 }
-                if (tracingObserver.getKey() != key) {
+                if (!tracingObserver.getKey().equals(key)) {
                     return false;
                 }
                 if (tracingObserver.getTracer() != tracer) {

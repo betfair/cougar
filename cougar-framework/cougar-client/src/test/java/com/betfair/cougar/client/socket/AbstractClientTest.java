@@ -1,5 +1,6 @@
 /*
  * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,8 +57,11 @@ public abstract class AbstractClientTest {
     private NioConfig cfg = new NioConfig();
 
     public static Collection<Object[]> protocolVersionParams() {
-        List<Object[]> ret = new ArrayList<Object[]>();
-        for (byte b=CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MIN_SUPPORTED; b<=CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED; b++) {
+        byte minVersion = Byte.parseByte(System.getProperty("test.cougar.client.minVersion",String.valueOf(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MIN_SUPPORTED)));
+        byte maxVersion = Byte.parseByte(System.getProperty("test.cougar.client.maxVersion",String.valueOf(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED)));
+
+        List<Object[]> ret = new ArrayList<>();
+        for (byte b=minVersion; b<=maxVersion; b++) {
             ret.add(new Object[] {b});
         }
         return ret;

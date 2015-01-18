@@ -40,11 +40,12 @@ public class InProcessExecutable implements Executable {
 
     @Override
     public void execute(ExecutionContext ctx, OperationKey key, Object[] args, ExecutionObserver observer, ExecutionVenue executionVenue, TimeConstraints timeConstraints) {
+        OperationKey noNamespaceKey = new OperationKey(key, null);
         RequestUUID subUuid = ctx.getRequestUUID().getNewSubUUID();
-        tracer.startCall(ctx.getRequestUUID(), subUuid, key);
+        tracer.startCall(ctx.getRequestUUID(), subUuid, noNamespaceKey);
 
         // this call uses the same thread so that the callers expectations regarding threading model are met
-        executionVenue.execute(subContext(ctx,subUuid),key,args,new TracingEndObserver(tracer,observer,ctx.getRequestUUID(),subUuid,key),timeConstraints);
+        executionVenue.execute(subContext(ctx,subUuid),noNamespaceKey,args,new TracingEndObserver(tracer,observer,ctx.getRequestUUID(),subUuid,noNamespaceKey),timeConstraints);
     }
 
     private ExecutionContext subContext(final ExecutionContext orig, final RequestUUID subUuid) {

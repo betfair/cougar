@@ -17,6 +17,7 @@
 
 package com.betfair.cougar.testng;
 
+import com.betfair.testing.utils.cougar.manager.CougarManager;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
@@ -53,6 +54,9 @@ public class TestListener implements ITestListener, Runnable {
                         }
                         System.err.println("\n");
                     }
+
+                    // server dump
+//                    CougarManager.getInstance().getCougarHelpers().dumpThreads();
                 }
             }
             catch (InterruptedException ie) {
@@ -68,6 +72,7 @@ public class TestListener implements ITestListener, Runnable {
 
     @Override
     public void onTestStart(ITestResult iTestResult) {
+//        System.out.println();
     }
 
     @Override
