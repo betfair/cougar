@@ -67,7 +67,7 @@ public class RestPostRequestTypesMapDateTimeKeyXMLTest {
         Document expectedResponseXML = xMLHelpers5.createAsDocument(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(("<MapDateTimeKeyOperationResponse><MapDateTimeKeyOperationResponseObject><responseMap><entry key=\""+date1+"\"><String>date1</String></entry><entry key=\""+date2+"\"><String>date2</String></entry></responseMap></MapDateTimeKeyOperationResponseObject></MapDateTimeKeyOperationResponse>").getBytes())));
         // Check the response is as expected
         HttpResponseBean response6 = hbean.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTXMLXML);
-        AssertionUtils.multiAssertEquals(expectedResponseXML, (Document) response6.getResponseObject(),"/*[local-name()='MapDateTimeKeyOperationResponseObject']/*[local-name()='responseMap']");
+        AssertionUtils.multiAssertEquals(expectedResponseXML, (Document) response6.getResponseObject(),"/*[local-name()='MapDateTimeKeyOperationResponse']/*[local-name()='MapDateTimeKeyOperationResponseObject']/*[local-name()='responseMap']");
         AssertionUtils.multiAssertEquals((int) 200, response6.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("OK", response6.getHttpStatusText());
 

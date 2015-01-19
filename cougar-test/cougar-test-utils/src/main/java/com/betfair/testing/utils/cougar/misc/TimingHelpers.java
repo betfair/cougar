@@ -26,8 +26,8 @@ import java.util.TimeZone;
 public class TimingHelpers {
 
     public static String convertUTCDateTimeToCougarFormat(int year, int month, int day, int hour, int minute, int second, int millis) {
+        /*
         Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        c.set(year, month, day, hour, minute, second);
         c.set(Calendar.YEAR, year);
         c.set(Calendar.MONTH, month-1);
         c.set(Calendar.DAY_OF_MONTH, day);
@@ -35,21 +35,43 @@ public class TimingHelpers {
         c.set(Calendar.MINUTE, minute);
         c.set(Calendar.SECOND, second);
         c.set(Calendar.MILLISECOND, millis);
+
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         return sdf.format(c.getTime());
+        */
+        StringBuilder sb = new StringBuilder();
+        sb.append(year).append("-");
+        if (month < 10) {
+            sb.append("0");
+        }
+        sb.append(month).append("-");
+        if (day < 10) {
+            sb.append("0");
+        }
+        sb.append(day).append("T");
+        if (hour < 10) {
+            sb.append("0");
+        }
+        sb.append(hour).append(":");
+        if (minute < 10) {
+            sb.append("0");
+        }
+        sb.append(minute).append(":");
+        if (second < 10) {
+            sb.append("0");
+        }
+        sb.append(second).append(".");
+        if (millis < 100) {
+            sb.append("0");
+        }
+        if (millis < 10) {
+            sb.append("0");
+        }
+        sb.append(millis).append("Z");
+        return sb.toString();
     }
 
     public static String convertUTCDateTimeToLocalTimezoneXMLSchema2(int year, int month, int day, int hour, int minute, int second, int millis) {
-        Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        c.set(year, month, day, hour, minute, second);
-        c.set(Calendar.YEAR, year);
-        c.set(Calendar.MONTH, month-1);
-        c.set(Calendar.DAY_OF_MONTH, day);
-        c.set(Calendar.HOUR_OF_DAY, hour);
-        c.set(Calendar.MINUTE, minute);
-        c.set(Calendar.SECOND, second);
-        c.set(Calendar.MILLISECOND, millis);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        return sdf.format(c.getTime());
+        return convertUTCDateTimeToCougarFormat(year, month, day, hour, minute, second, millis);
     }
 }
