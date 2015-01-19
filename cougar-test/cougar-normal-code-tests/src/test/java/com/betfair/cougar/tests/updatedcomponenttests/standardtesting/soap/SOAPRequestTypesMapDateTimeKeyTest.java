@@ -70,7 +70,7 @@ public class SOAPRequestTypesMapDateTimeKeyTest {
 
         // Check the response is as expected
         HttpResponseBean response7 = hbean.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.SOAP);
-        AssertionUtils.multiAssertEquals(createAsDocument11, (Document)response7.getResponseObject(),"/*[local-name()='response']");
+        AssertionUtils.multiAssertEquals(createAsDocument11, (Document)response7.getResponseObject(),"/*[local-name()='responseMap']");
 
         // generalHelpers.pauseTest(3000L);
         // Check the log entries are as expected
