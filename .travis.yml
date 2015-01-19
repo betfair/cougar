@@ -21,7 +21,7 @@ after_success:
   - "bash deploySnapshotBuild.sh"
 env:
  global:
-   - "MAVEN_OPTS=-Xmx756m"
+   - "MAVEN_OPTS=-Xmx2536m"
    - "ARTIFACTS_AWS_REGION=eu-west-1"
    - "ARTIFACTS_S3_BUCKET=betfair.travis-ci"
    # S3 credentials
