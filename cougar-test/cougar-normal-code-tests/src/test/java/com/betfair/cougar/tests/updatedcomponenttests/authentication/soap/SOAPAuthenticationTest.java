@@ -70,7 +70,7 @@ public class SOAPAuthenticationTest {
         Document createAsDocument11 = xMLHelpers5.getXMLObjectFromString("<response><identities><Ident><principal>PRINCIPAL: Username</principal><credentialName>CREDENTIAL: Username</credentialName><credentialValue>foo</credentialValue></Ident><Ident><principal>PRINCIPAL: Password</principal><credentialName>CREDENTIAL: Password</credentialName><credentialValue>bar</credentialValue></Ident></identities></response>");
 
         HttpResponseBean getResponseObjectsByEnum13 = getNewHttpCallBean2.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.SOAP);
-        AssertionUtils.multiAssertEquals(createAsDocument11, (Document)getResponseObjectsByEnum13.getResponseObject(), "/response/identities");
+        AssertionUtils.multiAssertEquals(createAsDocument11, (Document)getResponseObjectsByEnum13.getResponseObject(), "/*[local-name()='response']/*[local-name()='identities']");
 
         Map<String, String> map7 = getResponseObjectsByEnum13.getFlattenedResponseHeaders();
         AssertionUtils.multiAssertEquals("Password:bar Username:foo", map7.get("Credentials"));

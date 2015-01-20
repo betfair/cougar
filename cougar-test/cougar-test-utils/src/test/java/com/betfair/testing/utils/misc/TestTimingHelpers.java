@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, Simon Matic Langford
+ * Copyright #{YEAR}, The Sporting Exchange Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-package com.betfair.cougar.client.api;
+package com.betfair.testing.utils.misc;
 
-import com.betfair.cougar.api.ExecutionContext;
-import com.betfair.cougar.client.ClientCallContext;
-import com.betfair.cougar.transport.api.ExecutionContextComponent;
+import com.betfair.testing.utils.cougar.misc.TimingHelpers;
+import org.junit.Test;
 
-import java.util.Set;
+import static junit.framework.Assert.assertEquals;
 
 /**
- * Defines an emitter of contextual info.
+ *
  */
-public interface ContextEmitter<HR,C> {
-    void emit(ClientCallContext ctx, HR request, C container);
+public class TestTimingHelpers {
+
+    @Test
+    public void summerTimeUTCConversion() {
+        String date1 = TimingHelpers.convertUTCDateTimeToCougarFormat((int) 2009, (int) 6, (int) 1, (int) 13, (int) 50, (int) 0, (int) 0);
+        assertEquals("2009-06-01T13:50:00.000Z",date1);
+    }
 }

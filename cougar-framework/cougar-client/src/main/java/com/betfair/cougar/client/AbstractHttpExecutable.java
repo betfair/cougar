@@ -1,5 +1,6 @@
 /*
  * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +28,11 @@ import com.betfair.cougar.core.api.client.ExceptionFactory;
 import com.betfair.cougar.core.api.client.TransportMetrics;
 import com.betfair.cougar.core.api.ev.*;
 import com.betfair.cougar.core.api.exception.*;
+import com.betfair.cougar.core.api.tracing.Tracer;
 import com.betfair.cougar.core.api.transcription.EnumDerialisationException;
 import com.betfair.cougar.core.api.transcription.EnumUtils;
 import com.betfair.cougar.core.api.transcription.Parameter;
+import com.betfair.cougar.core.impl.tracing.TracingEndObserver;
 import com.betfair.cougar.marshalling.api.databinding.DataBindingFactory;
 import com.betfair.cougar.transport.api.protocol.http.HttpServiceBindingDescriptor;
 import com.betfair.cougar.transport.api.protocol.http.rescript.RescriptOperationBindingDescriptor;
@@ -84,6 +87,7 @@ public abstract class AbstractHttpExecutable<HR> extends AbstractClientTransport
     private ExceptionTransformer exceptionTransformer;
     private ExceptionFactory exceptionFactory;
     protected CougarRequestFactory<HR> requestFactory;
+    private Tracer tracer;
 
     protected boolean transportSSLEnabled;
     protected boolean hostnameVerificationDisabled;
@@ -110,9 +114,11 @@ public abstract class AbstractHttpExecutable<HR> extends AbstractClientTransport
 
 
     protected AbstractHttpExecutable(final HttpServiceBindingDescriptor bindingDescriptor,
-                                  CougarRequestFactory<HR> requestFactory) {
+                                  CougarRequestFactory<HR> requestFactory,
+                                  Tracer tracer) {
         this.serviceBindingDescriptor = bindingDescriptor;
         this.requestFactory = requestFactory;
+        this.tracer = tracer;
     }
 
     protected int extractPortFromAddress() throws IOException {
@@ -140,6 +146,10 @@ public abstract class AbstractHttpExecutable<HR> extends AbstractClientTransport
     public void execute(final ExecutionContext ctx, final OperationKey key, final Object[] args,
                         final ExecutionObserver obs, final ExecutionVenue executionVenue, final TimeConstraints timeConstraints) {
 
+        final ClientCallContext callContext = CallContextFactory.createSubContext(ctx);
+
+        tracer.startCall(ctx.getRequestUUID(), callContext.getRequestUUID(), key);
+
         final OperationDefinition operationDefinition = executionVenue.getOperationDefinition(key);
 
         final Parameter[] parameters = operationDefinition.getParameters();
@@ -161,7 +171,7 @@ public abstract class AbstractHttpExecutable<HR> extends AbstractClientTransport
         // create http request
 
         HR request = requestFactory.create(uri + queryString, httpMethod, message,
-                dataBindingFactory.getMarshaller(), CONTENT_TYPE, ctx, timeConstraints);
+                dataBindingFactory.getMarshaller(), CONTENT_TYPE, callContext, timeConstraints);
 
         Exception exception = null;
         Object result = null;
@@ -179,13 +189,14 @@ public abstract class AbstractHttpExecutable<HR> extends AbstractClientTransport
                     }
                     sb.append(it.getName()).append("=").append(it.getValue());
                 }
-                LOGGER.info("Rewrote tokens " + sb + " to http request");
+                LOGGER.debug("Rewrote tokens " + sb + " to http request");
             }
         }
 
         // Send Request
 
-        sendRequest(request, obs, operationDefinition);
+
+        sendRequest(request, new TracingEndObserver(tracer, obs, ctx.getRequestUUID(), callContext.getRequestUUID(), key), operationDefinition);
 
     }
 
@@ -480,4 +491,5 @@ public abstract class AbstractHttpExecutable<HR> extends AbstractClientTransport
     public void setGzipCompressionEnabled(boolean gzipCompressionEnabled) {
         this.gzipCompressionEnabled = gzipCompressionEnabled;
     }
+
 }

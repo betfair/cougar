@@ -1,5 +1,6 @@
 /*
  * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,7 +75,7 @@ public class AsyncHttpExecutableTest extends AbstractHttpExecutableTest<Request>
 
         contextEmitter = new HttpContextEmitter(new DefaultGeoLocationSerializer(),"X-REQUEST-UUID","X-REQUEST-UUID-PARENTS");
 
-        AsyncHttpExecutable executable = new AsyncHttpExecutable(tsbd,contextEmitter, Executors.newCachedThreadPool(), Executors.newCachedThreadPool());
+        AsyncHttpExecutable executable = new AsyncHttpExecutable(tsbd,contextEmitter, tracer, Executors.newCachedThreadPool(), Executors.newCachedThreadPool());
         mockClient = mock(HttpClient.class);
         when(mockClient.newRequest(anyString())).thenReturn(mockRequest);
         executable.setClient(mockClient);
@@ -191,7 +192,7 @@ public class AsyncHttpExecutableTest extends AbstractHttpExecutableTest<Request>
 
     @Test
     public void shouldStartupAndShutdown() throws Exception {
-        final AsyncHttpExecutable executable = new AsyncHttpExecutable(new TestServiceBindingDescriptor(),contextEmitter, Executors.newCachedThreadPool(), Executors.newCachedThreadPool());
+        final AsyncHttpExecutable executable = new AsyncHttpExecutable(new TestServiceBindingDescriptor(),contextEmitter, tracer, Executors.newCachedThreadPool(), Executors.newCachedThreadPool());
         executable.setRemoteAddress("http://localhost");
         executable.init();
 
@@ -200,7 +201,7 @@ public class AsyncHttpExecutableTest extends AbstractHttpExecutableTest<Request>
 
     @Test
     public void shouldStartupAndShutdownWithTimeout() throws Exception {
-        final AsyncHttpExecutable executable = new AsyncHttpExecutable(new TestServiceBindingDescriptor(),contextEmitter, Executors.newCachedThreadPool(), Executors.newCachedThreadPool());
+        final AsyncHttpExecutable executable = new AsyncHttpExecutable(new TestServiceBindingDescriptor(),contextEmitter, tracer, Executors.newCachedThreadPool(), Executors.newCachedThreadPool());
         executable.setRemoteAddress("http://localhost");
         executable.setConnectTimeout(5000);
         executable.setIdleTimeout(5000);

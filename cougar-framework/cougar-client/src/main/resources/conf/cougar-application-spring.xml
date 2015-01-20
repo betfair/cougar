@@ -1,5 +1,6 @@
 <!--
   ~ Copyright 2014, The Sporting Exchange Limited
+  ~ Copyright 2015, Simon Matić Langford
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -72,6 +73,7 @@
     <bean id="abstractRescriptTransport" class="com.betfair.cougar.client.HttpClientExecutable" abstract="true"
           init-method="init">
         <constructor-arg index="1" ref="defaultHttpContextEmission"/>
+        <constructor-arg index="2" ref="cougar.core.Tracer"/>
 
         <property name="retryHandler" ref="defaultRetryHandler"/>
         <property name="dataBindingFactory" ref="cougar.marshalling.JSONBindingFactory"/>
@@ -123,8 +125,9 @@
     <bean id="abstractAsyncRescriptTransport" class="com.betfair.cougar.client.AsyncHttpExecutable" abstract="true"
           init-method="init">
         <constructor-arg index="1" ref="defaultHttpContextEmission"/>
-        <constructor-arg index="2" ref="asyncHttpWorkerThreadPool"/>
-        <constructor-arg index="3" ref="asyncHttpReponseProcessorThreadPool"/>
+        <constructor-arg index="2" ref="cougar.core.Tracer"/>
+        <constructor-arg index="3" ref="asyncHttpWorkerThreadPool"/>
+        <constructor-arg index="4" ref="asyncHttpReponseProcessorThreadPool"/>
 
         <property name="dataBindingFactory" ref="cougar.marshalling.JSONBindingFactory"/>
         <property name="queryStringGeneratorFactory" ref="qsGeneratorFactory"/>
@@ -149,6 +152,8 @@
         <property name="maxTotalConnections" value="$COUGAR_CLIENT{cougar.client.http.maxConnectionsTotal}"/>
         <property name="maxPerRouteConnections" value="$COUGAR_CLIENT{cougar.client.http.maxConnectionsPerRoute}"/>
         <property name="hardFailEnumDeserialisation" value="$COUGAR_CLIENT{cougar.client.http.enums.hardFailure}"/>
+        <property name="contextEmitter" ref="cougar.client.DefaultHttpContextEmission"/>
+        <property name="tracer" ref="cougar.core.Tracer"/>
     </bean>
 
     <!-- binary transport -->
@@ -235,7 +240,6 @@
         <constructor-arg index="0" ref="defaultSocketContextEmission"/>
     </bean>
 
-    <!-- todo: still need to do socket transport emission!! -->
     <bean id="abstractSocketTransport" class="com.betfair.cougar.client.socket.ExecutionVenueNioClient" abstract="true"
           init-method="start" destroy-method="stop">
         <constructor-arg index="0" ref="clientNioLogger"/>
@@ -249,6 +253,7 @@
         <constructor-arg index="9" value="$COUGAR_CLIENT{cougar.client.socket.handshakeResponseTimeout}"/>
         <constructor-arg index="10" value="$COUGAR_CLIENT{cougar.client.socket.session.recycle.interval}"/>
         <constructor-arg index="11" ref="networkAddressResolver"/>
+        <constructor-arg index="12" ref="cougar.core.Tracer"/>
         <property name="marshaller" ref="clientSocketMarshaller"/>
         <property name="contextEmitter" ref="defaultSocketContextEmission"/>
     </bean>

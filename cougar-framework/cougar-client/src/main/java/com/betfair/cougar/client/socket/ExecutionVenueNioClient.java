@@ -1,5 +1,6 @@
 /*
  * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +19,8 @@ package com.betfair.cougar.client.socket;
 
 import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.security.IdentityResolver;
+import com.betfair.cougar.client.CallContextFactory;
+import com.betfair.cougar.client.ClientCallContext;
 import com.betfair.cougar.client.api.ContextEmitter;
 import com.betfair.cougar.client.socket.jmx.ClientSocketTransportInfo;
 import com.betfair.cougar.client.socket.resolver.NetworkAddressResolver;
@@ -27,7 +30,9 @@ import com.betfair.cougar.core.api.exception.CougarClientException;
 import com.betfair.cougar.core.api.exception.CougarMarshallingException;
 import com.betfair.cougar.core.api.exception.CougarValidationException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
+import com.betfair.cougar.core.api.tracing.Tracer;
 import com.betfair.cougar.core.api.transcription.Parameter;
+import com.betfair.cougar.core.impl.tracing.TracingEndObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.betfair.cougar.marshalling.api.socket.RemotableMethodInvocationMarshaller;
@@ -83,18 +88,20 @@ public class ExecutionVenueNioClient extends AbstractClientTransport implements 
     private ApplicationContext applicationContext;
     private boolean hardFailEnumDeserialisation;
     private RPCTimeoutChecker rpcTimeoutChecker;
+    private Tracer tracer;
 
     public ExecutionVenueNioClient(NioLogger logger, NioConfig nioConfig, CougarObjectIOFactory objectIOFactory, ClientConnectedObjectManager connectedObjectManager, ClientSocketTransportInfo clientSocketTransportInfo, String addressList,
-                                   JMXReportingThreadPoolExecutor ioExecutorService, JMXReportingThreadPoolExecutor reconnectExecutor, NetworkAddressResolver addressResolver) {
+                                   JMXReportingThreadPoolExecutor ioExecutorService, JMXReportingThreadPoolExecutor reconnectExecutor, NetworkAddressResolver addressResolver, Tracer tracer) {
         this(logger, nioConfig, objectIOFactory, connectedObjectManager, clientSocketTransportInfo, addressList,
-                ioExecutorService, reconnectExecutor, DEFAULT_RECONNECT_INTERVAL, DEFAULT_HANDSHAKE_RESPONSE_TIMEOUT, DEFAULT_SESSION_RECYCLE_INTERVAL, addressResolver);
+                ioExecutorService, reconnectExecutor, DEFAULT_RECONNECT_INTERVAL, DEFAULT_HANDSHAKE_RESPONSE_TIMEOUT, DEFAULT_SESSION_RECYCLE_INTERVAL, addressResolver, tracer);
     }
 
     public ExecutionVenueNioClient(NioLogger logger, NioConfig nioConfig, CougarObjectIOFactory objectIOFactory, ClientConnectedObjectManager connectedObjectManager, ClientSocketTransportInfo clientSocketTransportInfo, String addressList,
                                    JMXReportingThreadPoolExecutor ioExecutorService, JMXReportingThreadPoolExecutor reconnectExecutor,
                                    int reconnectInterval, int handshakeResponseTimeout, long sessionRecycleInterval,
-                                   NetworkAddressResolver addressResolver) {
+                                   NetworkAddressResolver addressResolver, Tracer tracer) {
         this.logger = logger;
+        this.tracer = tracer;
         this.sessionFactory = new IoSessionFactory(logger, addressList, ioExecutorService, reconnectExecutor,
                 nioConfig, ioHandler, sessionCloseListener, reconnectInterval, handshakeResponseTimeout, sessionRecycleInterval, addressResolver);
         this.addressList = addressList;
@@ -279,7 +286,10 @@ public class ExecutionVenueNioClient extends AbstractClientTransport implements 
     }
 
     public void execute(final ExecutionContext ctx, final OperationDefinition def, final Object[] args,
-                        final ExecutionObserver observer, final TimeConstraints timeConstraints) {
+                        final ExecutionObserver origObserver, final TimeConstraints timeConstraints) {
+        ClientCallContext callContext = CallContextFactory.createSubContext(ctx);
+        tracer.startCall(ctx.getRequestUUID(), callContext.getRequestUUID(), def.getOperationKey());
+        final ExecutionObserver observer = new TracingEndObserver(tracer, origObserver, ctx.getRequestUUID(), callContext.getRequestUUID(), def.getOperationKey());
 
         if (validateCTX(ctx, observer)) {
             final IoSession session = sessionFactory.getSession();
@@ -297,7 +307,7 @@ public class ExecutionVenueNioClient extends AbstractClientTransport implements 
                     final CougarObjectOutput out = objectIOFactory.newCougarObjectOutput(baos, protocolVersion);
 
                     final Map<String,String> additionalData = new HashMap<>();
-                    contextEmitter.emit(ctx,additionalData,null);
+                    contextEmitter.emit(callContext,additionalData,null);
 
 //                    addObserver(correlationId, def.getReturnType(), observer);
                     marshaller.writeInvocationRequest(new InvocationRequest() {

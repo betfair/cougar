@@ -1,5 +1,6 @@
 /*
  * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +52,7 @@ public abstract class CougarRequestFactory<HR> {
     }
 
     public HR create(final String uri, final String httpMethod, final Message message,
-                              final Marshaller marshaller, final String contentType, final ExecutionContext ctx, final TimeConstraints timeConstraints) {
+                              final Marshaller marshaller, final String contentType, final ClientCallContext ctx, final TimeConstraints timeConstraints) {
 
         final HR httpRequest = createRequest(httpMethod, uri);
 
@@ -59,7 +60,7 @@ public abstract class CougarRequestFactory<HR> {
             addPostEntity(httpRequest, createPostEntity(message, marshaller), contentType);
         }
 
-        List<Header> coreHeaders = constructRequestHeaders(message, contentType, ctx, timeConstraints);
+        List<Header> coreHeaders = constructRequestHeaders(message, contentType, timeConstraints);
         contextEmission.emit(ctx, httpRequest, coreHeaders);
 
         addHeaders(httpRequest, coreHeaders);
@@ -105,8 +106,7 @@ public abstract class CougarRequestFactory<HR> {
         }
     }
 
-    private List<Header> constructRequestHeaders(final Message message, final String contentType,
-                                                 final ExecutionContext ctx, TimeConstraints timeConstraints) {
+    private List<Header> constructRequestHeaders(final Message message, final String contentType, TimeConstraints timeConstraints) {
 
         final List<Header> result = new ArrayList<Header>();
 

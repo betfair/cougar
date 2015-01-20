@@ -1,5 +1,6 @@
 /*
  * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,10 +31,13 @@ import com.betfair.cougar.client.query.QueryStringGeneratorFactory;
 import com.betfair.cougar.core.api.ServiceDefinition;
 import com.betfair.cougar.core.api.ServiceVersion;
 import com.betfair.cougar.core.api.ev.*;
+import com.betfair.cougar.core.api.tracing.Tracer;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.logging.CougarLoggingUtils;
+import com.betfair.cougar.util.RequestUUIDImpl;
+import com.betfair.cougar.util.UUIDGeneratorImpl;
 import org.slf4j.LoggerFactory;
 import com.betfair.cougar.marshalling.api.databinding.DataBindingFactory;
 import com.betfair.cougar.marshalling.api.databinding.FaultMarshaller;
@@ -92,6 +96,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
     protected HttpRequest mockGetMethod;
     protected HttpRequest mockPostMethod;
     protected PassFailExecutionObserver observer;
+    protected Tracer tracer;
 
     @BeforeClass
     public static void suppressLogs() {
@@ -152,9 +157,10 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
         // Add dependent mocks to cougar client execution venue
         tsd = new TestServiceDefinition();
         TestServiceBindingDescriptor tsbd = new TestServiceBindingDescriptor();
+        RequestUUIDImpl.setGenerator(new UUIDGeneratorImpl());
 
+        tracer = mock(Tracer.class);
         client = makeExecutable(tsbd);
-
 
         mockedMarshaller = mock(Marshaller.class);
         mockedUnMarshaller = mock(UnMarshaller.class);
@@ -163,7 +169,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
 
         mockMethodFactory = mock(CougarRequestFactory.class);
         when(mockMethodFactory.create(any(String.class), any(String.class), any(Message.class), any(Marshaller.class),
-                any(String.class), any(ExecutionContext.class), any(TimeConstraints.class))).thenReturn(mockGetMethod);
+                any(String.class), any(ClientCallContext.class), any(TimeConstraints.class))).thenReturn(mockGetMethod);
         qsgf = mock(QueryStringGeneratorFactory.class);
         queryStringGenerator = mock(QueryStringGenerator.class);
         when(qsgf.getQueryStringGenerator()).thenReturn(queryStringGenerator);
@@ -218,7 +224,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
         String response = "{\"result\":\"" + TEST_TEXT + "\"}";
 
         when(mockMethodFactory.create(anyString(), anyString(), any(Message.class), any(Marshaller.class),
-                anyString(), any(ExecutionContext.class), any(TimeConstraints.class))).thenReturn(mockGetMethod);
+                anyString(), any(ClientCallContext.class), any(TimeConstraints.class))).thenReturn(mockGetMethod);
 
         observer = new PassFailExecutionObserver(true, false);
         OperationKey key = TestServiceDefinition.TEST_GET;
@@ -281,7 +287,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
         String response = "{\"result\":\"" + TEST_TEXT + "\"}";
 
         when(mockMethodFactory.create(anyString(), anyString(), any(Message.class), any(Marshaller.class),
-                anyString(), any(ExecutionContext.class), any(TimeConstraints.class))).thenReturn(mockGetMethod);
+                anyString(), any(ClientCallContext.class), any(TimeConstraints.class))).thenReturn(mockGetMethod);
 
         TestResponse testResponse = new TestResponse();
         testResponse.setResult(TEST_TEXT);
@@ -401,7 +407,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
         when(queryStringGenerator.generate(any(Map.class))).thenReturn("");
 
         when(mockMethodFactory.create(anyString(), anyString(), any(Message.class), any(Marshaller.class),
-                anyString(), any(ExecutionContext.class), any(TimeConstraints.class))).thenAnswer(httpMethodFactoryCreatePostAnswer);
+                anyString(), any(ClientCallContext.class), any(TimeConstraints.class))).thenAnswer(httpMethodFactoryCreatePostAnswer);
         String response = "{\"result\":\"" + TEST_TEXT + "\"}";
 
         TestResponse tr = new TestResponse();
@@ -428,7 +434,7 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
         generateEV(tsd, null);
         when(queryStringGenerator.generate(any(Map.class))).thenReturn("?messageMixedQUERY=hello");
         when(mockMethodFactory.create(anyString(), anyString(), any(Message.class), any(Marshaller.class),
-                anyString(), any(ExecutionContext.class), any(TimeConstraints.class))).thenAnswer(httpMethodFactoryCreateMixedAnswer);
+                anyString(), any(ClientCallContext.class), any(TimeConstraints.class))).thenAnswer(httpMethodFactoryCreateMixedAnswer);
         String response = "{\"result\":\"" + TEST_TEXT + TEST_TEXT + "\"}";
 
 
@@ -454,14 +460,14 @@ public abstract class AbstractHttpExecutableTest<HttpRequest> {
 
     @Test(expected = IllegalArgumentException.class)
     public void testExtractPortFromBadAddresses() throws IOException {
-        HttpClientExecutable executable = new HttpClientExecutable(null, new HttpContextEmitter(new DefaultGeoLocationSerializer(),"X-REQUEST-UUID","X-REQUEST-UUID-PARENTS"));
+        HttpClientExecutable executable = new HttpClientExecutable(null, new HttpContextEmitter(new DefaultGeoLocationSerializer(),"X-REQUEST-UUID","X-REQUEST-UUID-PARENTS"),tracer);
         executable.setRemoteAddress("NOT ASSIGNED");
         executable.extractPortFromAddress();
     }
 
     @Test
     public void testExtractPortFromAddress() throws IOException {
-        HttpClientExecutable executable = new HttpClientExecutable(null, new HttpContextEmitter(new DefaultGeoLocationSerializer(),"X-REQUEST-UUID","X-REQUEST-UUID-PARENTS"));
+        HttpClientExecutable executable = new HttpClientExecutable(null, new HttpContextEmitter(new DefaultGeoLocationSerializer(),"X-REQUEST-UUID","X-REQUEST-UUID-PARENTS"),tracer);
         executable.setRemoteAddress("http://wibble.com:3939/www");
         int actual = executable.extractPortFromAddress();
         assertEquals(3939, actual);

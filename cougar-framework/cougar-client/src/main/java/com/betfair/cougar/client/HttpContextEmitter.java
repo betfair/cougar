@@ -42,7 +42,6 @@ import java.util.Set;
  * Standard context emitter for use with http client transports
  */
 public class HttpContextEmitter<HR> implements ContextEmitter<HR, List<Header>> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(HttpContextEmitter.class);
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = ISODateTimeFormat.dateTime();
     private final String uuidHeader;
@@ -57,7 +56,7 @@ public class HttpContextEmitter<HR> implements ContextEmitter<HR, List<Header>> 
 
 
     @Override
-    public void emit(ExecutionContext ctx, HR request, List<Header> result) {
+    public void emit(ClientCallContext ctx, HR request, List<Header> result) {
         if (ctx.traceLoggingEnabled()) {
             result.add(new BasicHeader("X-Trace-Me", "true"));
         }
@@ -68,15 +67,11 @@ public class HttpContextEmitter<HR> implements ContextEmitter<HR, List<Header>> 
         }
 
         if (uuidHeader != null) {
-            RequestUUID requestUUID = ctx.getRequestUUID() != null ? ctx.getRequestUUID().getNewSubUUID() : new RequestUUIDImpl();
+            RequestUUID requestUUID = ctx.getRequestUUID();
             result.add(new BasicHeader(uuidHeader, requestUUID.getLocalUUIDComponent()));
             if (uuidParentsHeader != null && requestUUID.getRootUUIDComponent() != null) {
                 result.add(new BasicHeader(uuidParentsHeader, requestUUID.getRootUUIDComponent()+ UUIDGenerator.COMPONENT_SEPARATOR+requestUUID.getParentUUIDComponent()));
             }
-        }
-        // time headers
-        if (ctx.getReceivedTime() != null) {
-            result.add(new BasicHeader("X-ReceivedTime", DATE_TIME_FORMATTER.print(ctx.getReceivedTime().getTime())));
         }
 
         result.add(new BasicHeader("X-RequestTime", DATE_TIME_FORMATTER.print(System.currentTimeMillis())));

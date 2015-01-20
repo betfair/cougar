@@ -1,5 +1,6 @@
 /*
  * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +47,7 @@ public class JettyCougarRequestFactoryTest {
 
 
     @Mock
-    private ExecutionContext mockContext;
+    private ClientCallContext mockContext;
     @Mock
     private Message mockMessage;
     @Mock

@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,11 +43,11 @@ public class RestPostRequestTypesMapDateTimeKeyXMLTest {
         CougarManager cougarManager1 = CougarManager.getInstance();
         HttpCallBean hbean = cougarManager1.getNewHttpCallBean("87.248.113.14");
         CougarManager hinstance = cougarManager1;
-        
+
         hbean.setOperationName("mapDateTimeKeyOperation");
-        
+
         hbean.setServiceName("baseline", "cougarBaseline");
-        
+
         hbean.setVersion("v2");
         // Create a date time object expected to be in the response object (as a key)
 
@@ -66,13 +67,13 @@ public class RestPostRequestTypesMapDateTimeKeyXMLTest {
         Document expectedResponseXML = xMLHelpers5.createAsDocument(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(("<MapDateTimeKeyOperationResponse><MapDateTimeKeyOperationResponseObject><responseMap><entry key=\""+date1+"\"><String>date1</String></entry><entry key=\""+date2+"\"><String>date2</String></entry></responseMap></MapDateTimeKeyOperationResponseObject></MapDateTimeKeyOperationResponse>").getBytes())));
         // Check the response is as expected
         HttpResponseBean response6 = hbean.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTXMLXML);
-        AssertionUtils.multiAssertEquals(expectedResponseXML, response6.getResponseObject());
+        AssertionUtils.multiAssertEquals(expectedResponseXML, (Document) response6.getResponseObject(),"/*[local-name()='MapDateTimeKeyOperationResponse']/*[local-name()='MapDateTimeKeyOperationResponseObject']/*[local-name()='responseMap']");
         AssertionUtils.multiAssertEquals((int) 200, response6.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("OK", response6.getHttpStatusText());
-        
+
         // generalHelpers.pauseTest(500L);
         // Check the log entries are as expected
-        
+
         hinstance.verifyRequestLogEntriesAfterDate(getTimeAsTimeStamp11, new RequestLogRequirement("2.8", "mapDateTimeKeyOperation") );
     }
 

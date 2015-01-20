@@ -1,5 +1,6 @@
 /*
  * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +23,7 @@ import com.betfair.cougar.core.api.ev.ExecutionObserver;
 import com.betfair.cougar.core.api.ev.OperationDefinition;
 import com.betfair.cougar.core.api.exception.CougarFrameworkException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
+import com.betfair.cougar.core.api.tracing.Tracer;
 import com.betfair.cougar.transport.api.protocol.http.HttpServiceBindingDescriptor;
 import com.betfair.cougar.util.KeyStoreManagement;
 import com.betfair.cougar.util.jmx.JMXControl;
@@ -71,9 +73,9 @@ public class AsyncHttpExecutable extends AbstractHttpExecutable<Request> impleme
     private int maxConnectionsPerDestination;
     private int maxRequestsQueuedPerDestination;
 
-    public AsyncHttpExecutable(HttpServiceBindingDescriptor bindingDescriptor, ContextEmitter emission,
+    public AsyncHttpExecutable(HttpServiceBindingDescriptor bindingDescriptor, ContextEmitter emission, Tracer tracer,
                                ExecutorService threadPool, ExecutorService responseThreadPool) {
-        super(bindingDescriptor, new JettyCougarRequestFactory(emission));
+        super(bindingDescriptor, new JettyCougarRequestFactory(emission), tracer);
         ((JettyCougarRequestFactory)super.requestFactory).setExecutable(this);
         this.threadPool = threadPool;
         this.responseThreadPool = responseThreadPool;
