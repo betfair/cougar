@@ -2,6 +2,7 @@ package com.betfair.cougar.modules.zipkin.impl.socket;
 
 import com.betfair.cougar.api.RequestUUID;
 import com.betfair.cougar.core.api.builder.DehydratedExecutionContextBuilder;
+import com.betfair.cougar.modules.zipkin.api.ZipkinKeys;
 import com.betfair.cougar.modules.zipkin.impl.ZipkinManager;
 import com.betfair.cougar.netutil.nio.marshalling.SocketContextResolutionParams;
 import com.betfair.cougar.netutil.nio.marshalling.SocketRequestUuidResolver;
@@ -25,15 +26,19 @@ public class ZipkinSocketRequestUuidResolver<Void> extends SocketRequestUuidReso
         String traceId = null;
         String spanId = null;
         String parentSpanId = null;
+        String sampled = null;
+        String flags = null;
         Map<String, String> additionalData = params.getAdditionalData();
 
         if (additionalData != null) {
-            traceId = additionalData.get(ZipkinManager.TRACE_ID_KEY);
-            spanId = additionalData.get(ZipkinManager.SPAN_ID_KEY);
-            parentSpanId = additionalData.get(ZipkinManager.PARENT_SPAN_ID_KEY);
+            traceId = additionalData.get(ZipkinKeys.TRACE_ID);
+            spanId = additionalData.get(ZipkinKeys.SPAN_ID);
+            parentSpanId = additionalData.get(ZipkinKeys.PARENT_SPAN_ID);
+            sampled = additionalData.get(ZipkinKeys.SAMPLED);
+            flags = additionalData.get(ZipkinKeys.FLAGS);
         }
 
-        RequestUUID requestUUID = zipkinManager.createNewZipkinRequestUUID(cougarUuid, traceId, spanId, parentSpanId);
+        RequestUUID requestUUID = zipkinManager.createNewZipkinRequestUUID(cougarUuid, traceId, spanId, parentSpanId, sampled, flags);
         builder.setRequestUUID(requestUUID);
     }
 }

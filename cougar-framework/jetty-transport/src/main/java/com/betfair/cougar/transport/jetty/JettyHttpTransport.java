@@ -47,7 +47,6 @@ import javax.servlet.ServletException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
-import java.util.logging.Level;
 
 @ManagedResource
 public class JettyHttpTransport extends AbstractRegisterableTransport implements GateListener {

@@ -21,5 +21,8 @@ public interface ZipkinDataBuilder {
     ZipkinDataBuilder port(short port);
 
     @Nonnull
+    ZipkinDataBuilder flags(Long flags);
+
+    @Nonnull
     ZipkinData build();
 }

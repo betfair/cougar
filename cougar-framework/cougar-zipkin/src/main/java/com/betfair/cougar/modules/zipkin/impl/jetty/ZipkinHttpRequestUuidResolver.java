@@ -18,6 +18,7 @@ package com.betfair.cougar.modules.zipkin.impl.jetty;
 
 import com.betfair.cougar.api.RequestUUID;
 import com.betfair.cougar.core.api.builder.DehydratedExecutionContextBuilder;
+import com.betfair.cougar.modules.zipkin.api.ZipkinKeys;
 import com.betfair.cougar.modules.zipkin.impl.ZipkinManager;
 import com.betfair.cougar.transport.api.protocol.http.HttpCommand;
 import com.betfair.cougar.transport.impl.protocol.http.HttpRequestUuidResolver;
@@ -41,11 +42,13 @@ public class ZipkinHttpRequestUuidResolver<Ignore> extends HttpRequestUuidResolv
 
         HttpServletRequest request = httpCommand.getRequest();
 
-        String traceId = request.getHeader(ZipkinManager.TRACE_ID_KEY);
-        String spanId = request.getHeader(ZipkinManager.SPAN_ID_KEY);
-        String parentSpanId = request.getHeader(ZipkinManager.PARENT_SPAN_ID_KEY);
+        String traceId = request.getHeader(ZipkinKeys.TRACE_ID);
+        String spanId = request.getHeader(ZipkinKeys.SPAN_ID);
+        String parentSpanId = request.getHeader(ZipkinKeys.PARENT_SPAN_ID);
+        String sampled = request.getHeader(ZipkinKeys.SAMPLED);
+        String flags = request.getHeader(ZipkinKeys.FLAGS);
 
-        RequestUUID requestUUID = zipkinManager.createNewZipkinRequestUUID(cougarUuid, traceId, spanId, parentSpanId);
+        RequestUUID requestUUID = zipkinManager.createNewZipkinRequestUUID(cougarUuid, traceId, spanId, parentSpanId, sampled, flags);
         contextBuilder.setRequestUUID(requestUUID);
     }
 }

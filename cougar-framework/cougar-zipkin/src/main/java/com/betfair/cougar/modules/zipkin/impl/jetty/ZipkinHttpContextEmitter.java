@@ -6,8 +6,8 @@ import com.betfair.cougar.client.HttpContextEmitter;
 import com.betfair.cougar.client.api.CompoundContextEmitter;
 import com.betfair.cougar.client.api.GeoLocationSerializer;
 import com.betfair.cougar.modules.zipkin.api.ZipkinData;
+import com.betfair.cougar.modules.zipkin.api.ZipkinKeys;
 import com.betfair.cougar.modules.zipkin.api.ZipkinRequestUUID;
-import com.betfair.cougar.modules.zipkin.impl.ZipkinManager;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
 
@@ -41,6 +41,9 @@ public class ZipkinHttpContextEmitter<HR> extends HttpContextEmitter<HR> {
                 ZipkinData zipkinData = newZipkinRequestUUID.getZipkinData();
 
                 appendZipkinHeaders(result, zipkinData);
+            } else {
+                // disabling sampling for the entire request chain
+                appendHeader(result, ZipkinKeys.SAMPLED, ZipkinKeys.DO_NOT_SAMPLE_VALUE);
             }
 
         } else {
@@ -48,11 +51,20 @@ public class ZipkinHttpContextEmitter<HR> extends HttpContextEmitter<HR> {
         }
     }
 
-    private void appendZipkinHeaders(@Nonnull List<Header> result, @Nonnull ZipkinData zipkinData) {
-        result.add(new BasicHeader(ZipkinManager.TRACE_ID_KEY, String.valueOf(zipkinData.getTraceId())));
-        result.add(new BasicHeader(ZipkinManager.SPAN_ID_KEY, String.valueOf(zipkinData.getSpanId())));
+    private static void appendZipkinHeaders(@Nonnull List<Header> result, @Nonnull ZipkinData zipkinData) {
+        // enabling sampling for the entire request chain
+        appendHeader(result, ZipkinKeys.SAMPLED, ZipkinKeys.DO_SAMPLE_VALUE);
+        appendHeader(result, ZipkinKeys.TRACE_ID, String.valueOf(zipkinData.getTraceId()));
+        appendHeader(result, ZipkinKeys.SPAN_ID, String.valueOf(zipkinData.getSpanId()));
         if (zipkinData.getParentSpanId() != null) {
-            result.add(new BasicHeader(ZipkinManager.PARENT_SPAN_ID_KEY, zipkinData.getParentSpanId().toString()));
+            appendHeader(result, ZipkinKeys.PARENT_SPAN_ID, zipkinData.getParentSpanId().toString());
         }
+        if (zipkinData.getFlags() != null) {
+            appendHeader(result, ZipkinKeys.FLAGS, zipkinData.getFlags().toString());
+        }
+    }
+
+    private static void appendHeader(@Nonnull List<Header> result, String key, String value) {
+        result.add(new BasicHeader(key, value));
     }
 }

@@ -21,4 +21,7 @@ public interface ZipkinData {
     String getSpanName();
 
     short getPort();
+
+    @Nullable
+    Long getFlags();
 }
