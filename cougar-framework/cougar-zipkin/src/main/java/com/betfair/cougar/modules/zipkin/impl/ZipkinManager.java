@@ -16,8 +16,8 @@ import java.util.concurrent.ThreadLocalRandom;
 @ManagedResource(description = "Zipkin tracing config", objectName = "Cougar:name=ZipkinManager")
 public class ZipkinManager {
 
-    private static final int MAX_LEVEL = 1000;
     private static final int MIN_LEVEL = 0;
+    private static final int MAX_LEVEL = 1000;
 
     private static final ThreadLocalRandom RANDOM = ThreadLocalRandom.current();
 
@@ -69,9 +69,9 @@ public class ZipkinManager {
             // a request with the fields is always traceable so we always propagate the tracing to the following calls
 
             zipkinDataBuilder = new ZipkinDataImpl.Builder()
-                    .traceId(Long.valueOf(traceId))
-                    .spanId(Long.valueOf(spanId))
-                    .parentSpanId(parentSpanId == null ? null : Long.valueOf(parentSpanId))
+                    .traceId(hexStringToLong(traceId))
+                    .spanId(hexStringToLong(spanId))
+                    .parentSpanId(parentSpanId == null ? null : hexStringToLong(parentSpanId))
                     .flags(flags == null ? null : Long.valueOf(flags));
 
         } else {
@@ -96,5 +96,9 @@ public class ZipkinManager {
         }
 
         return new ZipkinRequestUUIDImpl(cougarUuid, zipkinDataBuilder);
+    }
+
+    private static long hexStringToLong(String hexValue) {
+        return Long.parseLong(hexValue, 16);
     }
 }

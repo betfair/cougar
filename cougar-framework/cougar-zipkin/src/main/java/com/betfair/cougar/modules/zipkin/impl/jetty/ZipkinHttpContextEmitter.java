@@ -54,10 +54,10 @@ public class ZipkinHttpContextEmitter<HR> extends HttpContextEmitter<HR> {
     private static void appendZipkinHeaders(@Nonnull List<Header> result, @Nonnull ZipkinData zipkinData) {
         // enabling sampling for the entire request chain
         appendHeader(result, ZipkinKeys.SAMPLED, ZipkinKeys.DO_SAMPLE_VALUE);
-        appendHeader(result, ZipkinKeys.TRACE_ID, String.valueOf(zipkinData.getTraceId()));
-        appendHeader(result, ZipkinKeys.SPAN_ID, String.valueOf(zipkinData.getSpanId()));
+        appendHeader(result, ZipkinKeys.TRACE_ID, Long.toHexString(zipkinData.getTraceId()));
+        appendHeader(result, ZipkinKeys.SPAN_ID, Long.toHexString(zipkinData.getSpanId()));
         if (zipkinData.getParentSpanId() != null) {
-            appendHeader(result, ZipkinKeys.PARENT_SPAN_ID, zipkinData.getParentSpanId().toString());
+            appendHeader(result, ZipkinKeys.PARENT_SPAN_ID, Long.toHexString(zipkinData.getParentSpanId()));
         }
         if (zipkinData.getFlags() != null) {
             appendHeader(result, ZipkinKeys.FLAGS, zipkinData.getFlags().toString());
