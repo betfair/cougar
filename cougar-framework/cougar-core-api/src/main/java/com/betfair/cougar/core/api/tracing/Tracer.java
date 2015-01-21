@@ -46,7 +46,7 @@ public interface Tracer {
      */
     void end(RequestUUID uuid);
 
-    void startCall(RequestUUID uuid, RequestUUID subUuid, OperationKey key);
+    void startCall(RequestUUID uuid, RequestUUID subUuid, OperationKey operationKey);
 
-    void endCall(RequestUUID uuid, RequestUUID subUuid, OperationKey key);
+    void endCall(RequestUUID uuid, RequestUUID subUuid, OperationKey operationKey);
 }

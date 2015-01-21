@@ -3,17 +3,11 @@ package com.betfair.cougar.modules.zipkin.impl;
 import com.betfair.cougar.modules.zipkin.api.ZipkinData;
 import com.betfair.cougar.util.geolocation.RemoteAddressUtils;
 import com.github.kristofa.brave.zipkin.ZipkinSpanCollector;
-import com.twitter.zipkin.gen.Annotation;
-import com.twitter.zipkin.gen.BinaryAnnotation;
 import com.twitter.zipkin.gen.Endpoint;
 import com.twitter.zipkin.gen.Span;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 import static com.twitter.zipkin.gen.zipkinCoreConstants.*;
 
@@ -21,7 +15,7 @@ public class ZipkinEmitter {
 
     private static final int LOCALHOST_IP;
 
-    private String cougarAppName;
+    private String serviceName;
 
     private ZipkinSpanCollector zipkinSpanCollector;
 
@@ -46,28 +40,75 @@ public class ZipkinEmitter {
         emitAnnotation(zipkinData, CLIENT_RECV);
     }
 
-    public void emitAnnotation(@Nonnull ZipkinData zipkinData, String s) {
+    /**
+     * The returning object should be used to emit more than 1 annotation at once. After adding your annotations you
+     * will need to call emitAnnotations in order to send the span with all the annotations to Zipkin.
+     *
+     * @param zipkinData Zipkin request data
+     * @return Zipkin annotations storage capable of merging multiple annotations per emission
+     */
+    public ZipkinAnnotationsStore buildAnnotationsStore(@Nonnull ZipkinData zipkinData) {
         Objects.requireNonNull(zipkinData);
+        Endpoint endpoint = generateEndpoint(zipkinData);
+        return new ZipkinAnnotationsStore(zipkinData).defaultEndpoint(endpoint);
+    }
 
-        long annotationTimeMicro = TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis());
+    /**
+     * Emit a pre-populated storage of annotations to Zipkin
+     *
+     * @param zipkinAnnotationsStore Zipkin annotations storage representing the entire list of annotations to emit
+     */
+    public void emitAnnotations(@Nonnull ZipkinAnnotationsStore zipkinAnnotationsStore) {
+        Objects.requireNonNull(zipkinAnnotationsStore);
+        zipkinSpanCollector.collect(zipkinAnnotationsStore.generate());
+    }
 
-        Annotation annotation = new Annotation(annotationTimeMicro, s);
-        annotation.setHost(new Endpoint(LOCALHOST_IP, zipkinData.getPort(), cougarAppName));
 
-        Span span = generateSpan(zipkinData, Arrays.asList(annotation), null);
+    // Single annotation emission methods
 
+    public void emitAnnotation(@Nonnull ZipkinData zipkinData, String s) {
+        Objects.requireNonNull(s);
+        Span span = generateZipkinAnnotationsStore(zipkinData).addAnnotation(s).generate();
         zipkinSpanCollector.collect(span);
     }
 
+    public void emitAnnotation(@Nonnull ZipkinData zipkinData, @Nonnull String key, @Nonnull String value) {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(value);
+        Span span = generateZipkinAnnotationsStore(zipkinData).addAnnotation(key, value).generate();
+        zipkinSpanCollector.collect(span);
+    }
+
+    public void emitAnnotation(@Nonnull ZipkinData zipkinData, @Nonnull String key, int value) {
+        Objects.requireNonNull(key);
+        Span span = generateZipkinAnnotationsStore(zipkinData).addAnnotation(key, value).generate();
+        zipkinSpanCollector.collect(span);
+    }
+
+    public void emitAnnotation(@Nonnull ZipkinData zipkinData, @Nonnull String key, long value) {
+        Objects.requireNonNull(key);
+        Span span = generateZipkinAnnotationsStore(zipkinData).addAnnotation(key, value).generate();
+        zipkinSpanCollector.collect(span);
+    }
+
+    public void emitAnnotation(@Nonnull ZipkinData zipkinData, @Nonnull String key, double value) {
+        Objects.requireNonNull(key);
+        Span span = generateZipkinAnnotationsStore(zipkinData).addAnnotation(key, value).generate();
+        zipkinSpanCollector.collect(span);
+    }
+
+
     @Nonnull
-    private Span generateSpan(@Nonnull ZipkinData zipkinData, @Nullable List<Annotation> annotations,
-                              @Nullable List<BinaryAnnotation> binaryAnnotations) {
-        Span span = new Span(zipkinData.getTraceId(), zipkinData.getSpanName(), zipkinData.getSpanId(), annotations,
-                binaryAnnotations);
-        if (zipkinData.getParentSpanId() != null) {
-            span.setParent_id(zipkinData.getParentSpanId());
-        }
-        return span;
+    private ZipkinAnnotationsStore generateZipkinAnnotationsStore(@Nonnull ZipkinData zipkinData) {
+        Objects.requireNonNull(zipkinData);
+
+        Endpoint endpoint = generateEndpoint(zipkinData);
+        return new ZipkinAnnotationsStore(zipkinData).defaultEndpoint(endpoint);
+    }
+
+    @Nonnull
+    private Endpoint generateEndpoint(@Nonnull ZipkinData zipkinData) {
+        return new Endpoint(LOCALHOST_IP, zipkinData.getPort(), serviceName);
     }
 
     public void setZipkinSpanCollector(@Nonnull ZipkinSpanCollector zipkinSpanCollector) {
@@ -75,8 +116,8 @@ public class ZipkinEmitter {
         this.zipkinSpanCollector = zipkinSpanCollector;
     }
 
-    public void setCougarAppName(@Nonnull String cougarAppName) {
-        Objects.requireNonNull(cougarAppName);
-        this.cougarAppName = cougarAppName;
+    public void setServiceName(@Nonnull String serviceName) {
+        Objects.requireNonNull(serviceName);
+        this.serviceName = serviceName;
     }
 }

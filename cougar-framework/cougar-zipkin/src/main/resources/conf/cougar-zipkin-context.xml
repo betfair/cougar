@@ -19,7 +19,7 @@
 
     <bean id="zipkinEmitter" class="com.betfair.cougar.modules.zipkin.impl.ZipkinEmitter">
         <property name="zipkinSpanCollector" ref="zipkinSpanCollector"/>
-        <property name="cougarAppName" value="$COUGAR{cougar.app.name}"/>
+        <property name="serviceName" value="$COUGAR{cougar.app.name}"/>
     </bean>
 
     <bean id="zipkinSpanCollector" class="com.github.kristofa.brave.zipkin.ZipkinSpanCollector">

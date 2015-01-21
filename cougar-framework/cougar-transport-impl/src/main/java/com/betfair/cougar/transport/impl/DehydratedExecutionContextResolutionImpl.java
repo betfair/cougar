@@ -77,10 +77,8 @@ public class DehydratedExecutionContextResolutionImpl implements GateListener, D
                                     handling.add(component);
                                 }
                             }
-                            if (!handling.isEmpty()) {
-                                // notify the resolver what they will be resolving
-                                resolver.resolving(Collections.unmodifiableSet(handling));
-                            }
+                            // notify the resolver what they will be resolving
+                            resolver.resolving(Collections.unmodifiableSet(handling));
                         }
                     }
                 }

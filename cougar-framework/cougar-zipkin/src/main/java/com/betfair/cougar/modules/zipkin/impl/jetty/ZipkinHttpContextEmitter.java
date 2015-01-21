@@ -1,7 +1,7 @@
 package com.betfair.cougar.modules.zipkin.impl.jetty;
 
-import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.RequestUUID;
+import com.betfair.cougar.client.ClientCallContext;
 import com.betfair.cougar.client.HttpContextEmitter;
 import com.betfair.cougar.client.api.CompoundContextEmitter;
 import com.betfair.cougar.client.api.GeoLocationSerializer;
@@ -26,7 +26,7 @@ public class ZipkinHttpContextEmitter<HR> extends HttpContextEmitter<HR> {
     }
 
     @Override
-    public void emit(ExecutionContext ctx, HR request, List<Header> result) {
+    public void emit(ClientCallContext ctx, HR request, List<Header> result) {
         super.emit(ctx, request, result);
 
         RequestUUID requestUUID = ctx.getRequestUUID();

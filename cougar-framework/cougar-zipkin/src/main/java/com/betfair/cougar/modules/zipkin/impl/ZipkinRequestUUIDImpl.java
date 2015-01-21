@@ -97,11 +97,12 @@ public class ZipkinRequestUUIDImpl implements ZipkinRequestUUID {
     }
 
     @Override
-    public void setZipkinSpanName(@Nonnull String spanName) {
+    public ZipkinData buildZipkinData(@Nonnull String spanName) {
         Objects.requireNonNull(spanName);
 
         if (zipkinData == null) {
             zipkinData = zipkinDataBuilder.spanName(spanName).build();
+            return zipkinData;
         } else {
             throw new IllegalStateException("Span name was already set for this request.");
         }

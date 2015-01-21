@@ -20,5 +20,5 @@ public interface ZipkinRequestUUID extends RequestUUID {
     boolean isZipkinTracingReady();
 
     // We need this because we only have the span name after the ZipkinHttpRequestUuidResolver pointcut
-    void setZipkinSpanName(@Nonnull String spanName);
+    ZipkinData buildZipkinData(@Nonnull String spanName);
 }
