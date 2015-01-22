@@ -98,7 +98,7 @@ public class ZipkinManager {
         return new ZipkinRequestUUIDImpl(cougarUuid, zipkinDataBuilder);
     }
 
-    private static long hexStringToLong(String hexValue) {
+    private static long hexStringToLong(@Nonnull String hexValue) {
         return Long.parseLong(hexValue, 16);
     }
 }

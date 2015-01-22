@@ -13,9 +13,13 @@ import java.util.concurrent.TimeUnit;
 
 public final class ZipkinAnnotationsStore {
 
-    public static final int INT_SIZE_B = Integer.SIZE / 8;
-    public static final int LONG_SIZE_B = Long.SIZE / 8;
-    public static final int DOUBLE_SIZE_B = Double.SIZE / 8;
+    private static final int INT_SIZE_B = Integer.SIZE / 8;
+    private static final int LONG_SIZE_B = Long.SIZE / 8;
+    private static final int DOUBLE_SIZE_B = Double.SIZE / 8;
+
+    private static final ByteBuffer TRUE_BB = ByteBuffer.wrap(new byte[]{1});
+    private static final ByteBuffer FALSE_BB = ByteBuffer.wrap(new byte[]{0});
+
 
     private ZipkinData zipkinData;
     private List<Annotation> annotations;
@@ -63,6 +67,11 @@ public final class ZipkinAnnotationsStore {
         return addBinaryAnnotation(key, value, defaultEndpoint);
     }
 
+    @Nonnull
+    public ZipkinAnnotationsStore addAnnotation(@Nonnull String key, boolean value) {
+        return addBinaryAnnotation(key, value, defaultEndpoint);
+    }
+
 
     // PACKAGE-PRIVATE METHODS
 
@@ -107,6 +116,12 @@ public final class ZipkinAnnotationsStore {
     ZipkinAnnotationsStore addBinaryAnnotation(@Nonnull String key, double value, @Nonnull Endpoint endpoint) {
         ByteBuffer wrappedValue = ByteBuffer.allocate(DOUBLE_SIZE_B).putDouble(value);
         return addBinaryAnnotation(key, wrappedValue, AnnotationType.DOUBLE, endpoint);
+    }
+
+    @Nonnull
+    ZipkinAnnotationsStore addBinaryAnnotation(@Nonnull String key, boolean value, @Nonnull Endpoint endpoint) {
+        ByteBuffer wrappedValue = value ? TRUE_BB : FALSE_BB;
+        return addBinaryAnnotation(key, wrappedValue, AnnotationType.BOOL, endpoint);
     }
 
     @Nonnull

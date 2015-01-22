@@ -68,42 +68,39 @@ public class ZipkinEmitter {
 
     public void emitAnnotation(@Nonnull ZipkinData zipkinData, String s) {
         Objects.requireNonNull(s);
-        Span span = generateZipkinAnnotationsStore(zipkinData).addAnnotation(s).generate();
+        Span span = buildAnnotationsStore(zipkinData).addAnnotation(s).generate();
         zipkinSpanCollector.collect(span);
     }
 
     public void emitAnnotation(@Nonnull ZipkinData zipkinData, @Nonnull String key, @Nonnull String value) {
         Objects.requireNonNull(key);
         Objects.requireNonNull(value);
-        Span span = generateZipkinAnnotationsStore(zipkinData).addAnnotation(key, value).generate();
+        Span span = buildAnnotationsStore(zipkinData).addAnnotation(key, value).generate();
         zipkinSpanCollector.collect(span);
     }
 
     public void emitAnnotation(@Nonnull ZipkinData zipkinData, @Nonnull String key, int value) {
         Objects.requireNonNull(key);
-        Span span = generateZipkinAnnotationsStore(zipkinData).addAnnotation(key, value).generate();
+        Span span = buildAnnotationsStore(zipkinData).addAnnotation(key, value).generate();
         zipkinSpanCollector.collect(span);
     }
 
     public void emitAnnotation(@Nonnull ZipkinData zipkinData, @Nonnull String key, long value) {
         Objects.requireNonNull(key);
-        Span span = generateZipkinAnnotationsStore(zipkinData).addAnnotation(key, value).generate();
+        Span span = buildAnnotationsStore(zipkinData).addAnnotation(key, value).generate();
         zipkinSpanCollector.collect(span);
     }
 
     public void emitAnnotation(@Nonnull ZipkinData zipkinData, @Nonnull String key, double value) {
         Objects.requireNonNull(key);
-        Span span = generateZipkinAnnotationsStore(zipkinData).addAnnotation(key, value).generate();
+        Span span = buildAnnotationsStore(zipkinData).addAnnotation(key, value).generate();
         zipkinSpanCollector.collect(span);
     }
 
-
-    @Nonnull
-    private ZipkinAnnotationsStore generateZipkinAnnotationsStore(@Nonnull ZipkinData zipkinData) {
-        Objects.requireNonNull(zipkinData);
-
-        Endpoint endpoint = generateEndpoint(zipkinData);
-        return new ZipkinAnnotationsStore(zipkinData).defaultEndpoint(endpoint);
+    public void emitAnnotation(@Nonnull ZipkinData zipkinData, @Nonnull String key, boolean value) {
+        Objects.requireNonNull(key);
+        Span span = buildAnnotationsStore(zipkinData).addAnnotation(key, value).generate();
+        zipkinSpanCollector.collect(span);
     }
 
     @Nonnull
