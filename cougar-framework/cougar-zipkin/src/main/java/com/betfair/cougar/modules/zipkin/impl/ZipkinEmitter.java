@@ -4,7 +4,6 @@ import com.betfair.cougar.modules.zipkin.api.ZipkinData;
 import com.betfair.cougar.util.geolocation.RemoteAddressUtils;
 import com.github.kristofa.brave.zipkin.ZipkinSpanCollector;
 import com.twitter.zipkin.gen.Endpoint;
-import com.twitter.zipkin.gen.Span;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
@@ -47,6 +46,7 @@ public class ZipkinEmitter {
      * @param zipkinData Zipkin request data
      * @return Zipkin annotations storage capable of merging multiple annotations per emission
      */
+    @Nonnull
     public ZipkinAnnotationsStore buildAnnotationsStore(@Nonnull ZipkinData zipkinData) {
         Objects.requireNonNull(zipkinData);
         Endpoint endpoint = generateEndpoint(zipkinData);
@@ -66,41 +66,51 @@ public class ZipkinEmitter {
 
     // Single annotation emission methods
 
-    public void emitAnnotation(@Nonnull ZipkinData zipkinData, String s) {
-        Objects.requireNonNull(s);
-        Span span = buildAnnotationsStore(zipkinData).addAnnotation(s).generate();
-        zipkinSpanCollector.collect(span);
+    public void emitAnnotation(@Nonnull ZipkinData zipkinData, @Nonnull String s) {
+        ZipkinAnnotationsStore store = prepareEmission(zipkinData, s).addAnnotation(s);
+        emitAnnotations(store);
     }
 
     public void emitAnnotation(@Nonnull ZipkinData zipkinData, @Nonnull String key, @Nonnull String value) {
-        Objects.requireNonNull(key);
         Objects.requireNonNull(value);
-        Span span = buildAnnotationsStore(zipkinData).addAnnotation(key, value).generate();
-        zipkinSpanCollector.collect(span);
+        ZipkinAnnotationsStore store = prepareEmission(zipkinData, key).addAnnotation(key, value);
+        emitAnnotations(store);
+    }
+
+    public void emitAnnotation(@Nonnull ZipkinData zipkinData, @Nonnull String key, short value) {
+        ZipkinAnnotationsStore store = prepareEmission(zipkinData, key).addAnnotation(key, value);
+        emitAnnotations(store);
     }
 
     public void emitAnnotation(@Nonnull ZipkinData zipkinData, @Nonnull String key, int value) {
-        Objects.requireNonNull(key);
-        Span span = buildAnnotationsStore(zipkinData).addAnnotation(key, value).generate();
-        zipkinSpanCollector.collect(span);
+        ZipkinAnnotationsStore store = prepareEmission(zipkinData, key).addAnnotation(key, value);
+        emitAnnotations(store);
     }
 
     public void emitAnnotation(@Nonnull ZipkinData zipkinData, @Nonnull String key, long value) {
-        Objects.requireNonNull(key);
-        Span span = buildAnnotationsStore(zipkinData).addAnnotation(key, value).generate();
-        zipkinSpanCollector.collect(span);
+        ZipkinAnnotationsStore store = prepareEmission(zipkinData, key).addAnnotation(key, value);
+        emitAnnotations(store);
     }
 
     public void emitAnnotation(@Nonnull ZipkinData zipkinData, @Nonnull String key, double value) {
-        Objects.requireNonNull(key);
-        Span span = buildAnnotationsStore(zipkinData).addAnnotation(key, value).generate();
-        zipkinSpanCollector.collect(span);
+        ZipkinAnnotationsStore store = prepareEmission(zipkinData, key).addAnnotation(key, value);
+        emitAnnotations(store);
     }
 
     public void emitAnnotation(@Nonnull ZipkinData zipkinData, @Nonnull String key, boolean value) {
-        Objects.requireNonNull(key);
-        Span span = buildAnnotationsStore(zipkinData).addAnnotation(key, value).generate();
-        zipkinSpanCollector.collect(span);
+        ZipkinAnnotationsStore store = prepareEmission(zipkinData, key).addAnnotation(key, value);
+        emitAnnotations(store);
+    }
+
+    public void emitAnnotation(@Nonnull ZipkinData zipkinData, @Nonnull String key, byte[] value) {
+        ZipkinAnnotationsStore store = prepareEmission(zipkinData, key).addAnnotation(key, value);
+        emitAnnotations(store);
+    }
+
+    @Nonnull
+    private ZipkinAnnotationsStore prepareEmission(@Nonnull ZipkinData zipkinData, @Nonnull String s) {
+        Objects.requireNonNull(s);
+        return buildAnnotationsStore(zipkinData);
     }
 
     @Nonnull

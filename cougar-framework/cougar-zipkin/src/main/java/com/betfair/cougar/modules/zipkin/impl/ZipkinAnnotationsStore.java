@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 public final class ZipkinAnnotationsStore {
 
+    private static final int SHORT_SIZE_B = Short.SIZE / 8;
     private static final int INT_SIZE_B = Integer.SIZE / 8;
     private static final int LONG_SIZE_B = Long.SIZE / 8;
     private static final int DOUBLE_SIZE_B = Double.SIZE / 8;
@@ -53,6 +54,11 @@ public final class ZipkinAnnotationsStore {
     }
 
     @Nonnull
+    public ZipkinAnnotationsStore addAnnotation(@Nonnull String key, short value) {
+        return addBinaryAnnotation(key, value, defaultEndpoint);
+    }
+
+    @Nonnull
     public ZipkinAnnotationsStore addAnnotation(@Nonnull String key, int value) {
         return addBinaryAnnotation(key, value, defaultEndpoint);
     }
@@ -72,6 +78,10 @@ public final class ZipkinAnnotationsStore {
         return addBinaryAnnotation(key, value, defaultEndpoint);
     }
 
+    @Nonnull
+    public ZipkinAnnotationsStore addAnnotation(@Nonnull String key, byte[] value) {
+        return addBinaryAnnotation(key, value, defaultEndpoint);
+    }
 
     // PACKAGE-PRIVATE METHODS
 
@@ -101,6 +111,12 @@ public final class ZipkinAnnotationsStore {
     }
 
     @Nonnull
+    ZipkinAnnotationsStore addBinaryAnnotation(@Nonnull String key, short value, @Nonnull Endpoint endpoint) {
+        ByteBuffer wrappedValue = ByteBuffer.allocate(SHORT_SIZE_B).putShort(value);
+        return addBinaryAnnotation(key, wrappedValue, AnnotationType.BOOL, endpoint);
+    }
+
+    @Nonnull
     ZipkinAnnotationsStore addBinaryAnnotation(@Nonnull String key, int value, @Nonnull Endpoint endpoint) {
         ByteBuffer wrappedValue = ByteBuffer.allocate(INT_SIZE_B).putInt(value);
         return addBinaryAnnotation(key, wrappedValue, AnnotationType.I32, endpoint);
@@ -123,6 +139,13 @@ public final class ZipkinAnnotationsStore {
         ByteBuffer wrappedValue = value ? TRUE_BB : FALSE_BB;
         return addBinaryAnnotation(key, wrappedValue, AnnotationType.BOOL, endpoint);
     }
+
+    @Nonnull
+    ZipkinAnnotationsStore addBinaryAnnotation(@Nonnull String key, byte[] value, @Nonnull Endpoint endpoint) {
+        ByteBuffer wrappedValue = ByteBuffer.wrap(value);
+        return addBinaryAnnotation(key, wrappedValue, AnnotationType.BOOL, endpoint);
+    }
+
 
     @Nonnull
     Span generate() {
