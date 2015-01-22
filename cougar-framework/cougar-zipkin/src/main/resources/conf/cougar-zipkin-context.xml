@@ -14,12 +14,13 @@
     </bean>
 
     <bean id="zikinConfig" class="com.betfair.cougar.modules.zipkin.impl.ZipkinManager">
-        <property name="tracingLevel" value="$COUGAR_ZIPKIN{zipkin.tracing.level}"/>
+        <property name="samplingLevel" value="$COUGAR_ZIPKIN{zipkin.samplingLevel}"/>
     </bean>
 
     <bean id="zipkinEmitter" class="com.betfair.cougar.modules.zipkin.impl.ZipkinEmitter">
-        <property name="zipkinSpanCollector" ref="zipkinSpanCollector"/>
-        <property name="serviceName" value="$COUGAR{cougar.app.name}"/>
+        <constructor-arg index="0" value="#{T(com.betfair.cougar.util.geolocation.RemoteAddressUtils).getIPv4AsInteger()}"/>
+        <constructor-arg index="1" value="$COUGAR{cougar.app.name}"/>
+        <constructor-arg index="2" ref="zipkinSpanCollector"/>
     </bean>
 
     <bean id="zipkinSpanCollector" class="com.github.kristofa.brave.zipkin.ZipkinSpanCollector">
@@ -42,6 +43,6 @@
                 <property name="zipkinEmitter" ref="zipkinEmitter"/>
             </bean>
         </constructor-arg>
-        <constructor-arg index="2" value="#{ $COUGAR_ZIPKIN{zipkin.tracing.level} > 0 }"/>
+        <constructor-arg index="2" value="#{ $COUGAR_ZIPKIN{zipkin.samplingLevel} > 0 }"/>
     </bean>
 </beans>

@@ -21,7 +21,7 @@ public class ZipkinManager {
 
     private static final ThreadLocalRandom RANDOM = ThreadLocalRandom.current();
 
-    private int tracingLevel = 0;
+    private int samplingLevel = 0;
 
     /**
      * Sampling strategy to determine whether a given request should be traced by Zipkin.
@@ -30,24 +30,24 @@ public class ZipkinManager {
      */
     public boolean shouldTrace() {
         // with short circuit so we don't go through the random generation process if the Zipkin tracing is disabled
-        // (tracingLevel == 0)
-        return tracingLevel > 0 && RANDOM.nextInt(MIN_LEVEL, MAX_LEVEL) < tracingLevel;
+        // (samplingLevel == 0)
+        return samplingLevel > 0 && RANDOM.nextInt(MIN_LEVEL, MAX_LEVEL) < samplingLevel;
     }
 
     //TODO: In the future we may consider having a service that defers the decision of tracing or not to the next
     // underlying service, i.e. it doesn't create the Zipkin ids, but it also doesn't mark the request as do not sample.
 
     @ManagedAttribute
-    public int getTracingLevel() {
-        return tracingLevel;
+    public int getSamplingLevel() {
+        return samplingLevel;
     }
 
     @ManagedAttribute
-    public void setTracingLevel(int tracingLevel) {
-        if (tracingLevel >= MIN_LEVEL && tracingLevel <= MAX_LEVEL) {
-            this.tracingLevel = tracingLevel;
+    public void setSamplingLevel(int samplingLevel) {
+        if (samplingLevel >= MIN_LEVEL && samplingLevel <= MAX_LEVEL) {
+            this.samplingLevel = samplingLevel;
         } else {
-            throw new IllegalArgumentException("Tracing level " + tracingLevel + " is not in the range [" + MIN_LEVEL + ";" + MAX_LEVEL + "[");
+            throw new IllegalArgumentException("Sampling level " + samplingLevel + " is not in the range [" + MIN_LEVEL + ";" + MAX_LEVEL + "[");
         }
     }
 

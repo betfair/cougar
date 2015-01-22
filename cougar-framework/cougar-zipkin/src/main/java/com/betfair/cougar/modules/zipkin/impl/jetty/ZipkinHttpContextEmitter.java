@@ -36,9 +36,7 @@ public class ZipkinHttpContextEmitter<HR> extends HttpContextEmitter<HR> {
 
             if (zipkinRequestUUID.isZipkinTracingEnabled()) {
 
-                ZipkinRequestUUID newZipkinRequestUUID = (ZipkinRequestUUID) zipkinRequestUUID.getNewSubUUID();
-
-                ZipkinData zipkinData = newZipkinRequestUUID.getZipkinData();
+                ZipkinData zipkinData = zipkinRequestUUID.getZipkinData();
 
                 appendZipkinHeaders(result, zipkinData);
             } else {
@@ -46,9 +44,7 @@ public class ZipkinHttpContextEmitter<HR> extends HttpContextEmitter<HR> {
                 appendHeader(result, ZipkinKeys.SAMPLED, ZipkinKeys.DO_NOT_SAMPLE_VALUE);
             }
 
-        } else {
-            throw new IllegalStateException("RequestUUID is not a ZipkinRequestUUIDImpl");
-        }
+        } // else ignore
     }
 
     private static void appendZipkinHeaders(@Nonnull List<Header> result, @Nonnull ZipkinData zipkinData) {

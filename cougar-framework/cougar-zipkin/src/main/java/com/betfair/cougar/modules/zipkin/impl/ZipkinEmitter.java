@@ -1,7 +1,6 @@
 package com.betfair.cougar.modules.zipkin.impl;
 
 import com.betfair.cougar.modules.zipkin.api.ZipkinData;
-import com.betfair.cougar.util.geolocation.RemoteAddressUtils;
 import com.github.kristofa.brave.zipkin.ZipkinSpanCollector;
 import com.twitter.zipkin.gen.Endpoint;
 
@@ -12,15 +11,20 @@ import static com.twitter.zipkin.gen.zipkinCoreConstants.*;
 
 public class ZipkinEmitter {
 
-    private static final int LOCALHOST_IP;
+    private int serviceIPv4;
 
     private String serviceName;
 
     private ZipkinSpanCollector zipkinSpanCollector;
 
 
-    static {
-        LOCALHOST_IP = RemoteAddressUtils.getIPv4AsInteger();
+    public ZipkinEmitter(int serviceIPv4, @Nonnull String serviceName, @Nonnull ZipkinSpanCollector zipkinSpanCollector) {
+        Objects.requireNonNull(serviceName);
+        Objects.requireNonNull(zipkinSpanCollector);
+
+        this.serviceIPv4 = serviceIPv4;
+        this.serviceName = serviceName;
+        this.zipkinSpanCollector = zipkinSpanCollector;
     }
 
     public void emitServerReceive(@Nonnull ZipkinData zipkinData) {
@@ -115,16 +119,6 @@ public class ZipkinEmitter {
 
     @Nonnull
     private Endpoint generateEndpoint(@Nonnull ZipkinData zipkinData) {
-        return new Endpoint(LOCALHOST_IP, zipkinData.getPort(), serviceName);
-    }
-
-    public void setZipkinSpanCollector(@Nonnull ZipkinSpanCollector zipkinSpanCollector) {
-        Objects.requireNonNull(zipkinSpanCollector);
-        this.zipkinSpanCollector = zipkinSpanCollector;
-    }
-
-    public void setServiceName(@Nonnull String serviceName) {
-        Objects.requireNonNull(serviceName);
-        this.serviceName = serviceName;
+        return new Endpoint(serviceIPv4, zipkinData.getPort(), serviceName);
     }
 }

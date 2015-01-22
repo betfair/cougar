@@ -18,7 +18,7 @@ public class ZipkinTracer extends AbstractTracer {
 
     @Override
     public void start(RequestUUID uuid, OperationKey operationKey) {
-        ZipkinData zipkinData = getZipkinDataIfEnabled(uuid, operationKey);
+        ZipkinData zipkinData = buildZipkinDataIfEnabled(uuid, operationKey);
         if (zipkinData != null) {
             zipkinEmitter.emitServerReceive(zipkinData);
         }
@@ -74,7 +74,7 @@ public class ZipkinTracer extends AbstractTracer {
 
     @Override
     public void startCall(RequestUUID uuid, RequestUUID subUuid, OperationKey operationKey) {
-        ZipkinData zipkinData = getZipkinDataIfEnabled(subUuid, operationKey);
+        ZipkinData zipkinData = buildZipkinDataIfEnabled(subUuid, operationKey);
         if (zipkinData != null) {
             zipkinEmitter.emitClientSend(zipkinData);
         }
@@ -82,7 +82,7 @@ public class ZipkinTracer extends AbstractTracer {
 
     @Override
     public void endCall(RequestUUID uuid, RequestUUID subUuid, OperationKey operationKey) {
-        ZipkinData zipkinData = getZipkinDataIfEnabled(subUuid, operationKey);
+        ZipkinData zipkinData = getZipkinDataIfReady(subUuid);
         if (zipkinData != null) {
             zipkinEmitter.emitClientReceive(zipkinData);
         }
@@ -99,11 +99,11 @@ public class ZipkinTracer extends AbstractTracer {
                 return null;
             }
         } else {
-            throw new IllegalStateException("RequestUUID is not a ZipkinRequestUUIDImpl");
+            return null;
         }
     }
 
-    private static ZipkinData getZipkinDataIfEnabled(@Nonnull RequestUUID uuid, @Nonnull OperationKey operationKey) {
+    private static ZipkinData buildZipkinDataIfEnabled(@Nonnull RequestUUID uuid, @Nonnull OperationKey operationKey) {
         Objects.requireNonNull(operationKey);
 
         if (uuid instanceof ZipkinRequestUUID) {
@@ -118,7 +118,7 @@ public class ZipkinTracer extends AbstractTracer {
                 return null;
             }
         } else {
-            throw new IllegalStateException("RequestUUID is not a ZipkinRequestUUIDImpl");
+            return null;
         }
     }
 
