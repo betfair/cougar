@@ -1,5 +1,6 @@
 /*
  * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +57,7 @@ import com.betfair.cougar.transport.impl.DehydratedExecutionContextResolutionImp
 import com.betfair.cougar.util.RequestUUIDImpl;
 import com.betfair.cougar.util.UUIDGeneratorImpl;
 import com.betfair.cougar.util.geolocation.RemoteAddressUtils;
-import org.apache.commons.collections.CollectionUtils;
+import com.google.common.collect.ImmutableMultiset;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.junit.Assert;
@@ -599,7 +600,7 @@ public class SocketRMIMarshallerTest {
         for (String[] group : actualCause.getApplicationFaultMessages()) {
             collatedActualFaultList.addAll(Arrays.asList(group));
         }
-        assertTrue(CollectionUtils.isEqualCollection(collatedExpectedFaultList, collatedActualFaultList));
+        assertTrue(ImmutableMultiset.copyOf(collatedExpectedFaultList).equals(ImmutableMultiset.copyOf(collatedActualFaultList)));
         Assert.assertEquals(ex.getApplicationFaultNamespace(), actualCause.getApplicationFaultNamespace());
     }
 

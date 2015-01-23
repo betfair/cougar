@@ -104,7 +104,7 @@
         <json.version>20090211</json.version>
         <commons.exec.version>1.1</commons.exec.version>
         <commons.io.version>2.4</commons.io.version>
-        <commons.collections.version>3.2.1</commons.collections.version>
+        <guava.version>18.0</guava.version>
         <jackson.databind.version>2.3.2</jackson.databind.version>
         <jackson.afterburner.version>2.4.0</jackson.afterburner.version>
         <jasypt.version>1.9.1</jasypt.version>
@@ -230,11 +230,6 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-            <dependency>
-                <groupId>commons-collections</groupId>
-                <artifactId>commons-collections</artifactId>
-                <version>${commons.collections.version}</version>
-            </dependency>
 
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
@@ -261,6 +256,11 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>${commons.io.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
