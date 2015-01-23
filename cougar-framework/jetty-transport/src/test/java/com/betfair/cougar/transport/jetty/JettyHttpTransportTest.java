@@ -132,7 +132,8 @@ public class JettyHttpTransportTest {
         transport.setUuidHeader("X-UUid");
 
         transport.getServerWrapper().setMinThreads(5);
-        transport.getServerWrapper().setMaxThreads(5);
+        // jetty now frustratingly checks we have enough max threads on startup
+        transport.getServerWrapper().setMaxThreads(33);
 
         // default is 9001, but going to use something odd so we don't clash if people have something running
         transport.getServerWrapper().setHttpPort(TEST_HTTP_PORT);
