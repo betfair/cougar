@@ -1,5 +1,6 @@
 /*
  * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +31,7 @@ public final class EventLogRecord extends CougarLogRecord {
 
 	private static final String fieldSeperator = ",";
 	private static final String collectionStart = "[";
-    private static String collectionSeperator = ",";
+    private static String collectionSeperator = "|";
 	private static final String collectionEnd = "]";
 	private static final String TAB = "\t";
 

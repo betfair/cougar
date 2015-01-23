@@ -58,6 +58,9 @@ public abstract class AbstractClientTest {
 
     public static Collection<Object[]> protocolVersionParams() {
         byte minVersion = Byte.parseByte(System.getProperty("test.cougar.client.minVersion",String.valueOf(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MIN_SUPPORTED)));
+        if (minVersion < 0) {
+            minVersion = (byte) (CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MIN_SUPPORTED - minVersion);
+        }
         byte maxVersion = Byte.parseByte(System.getProperty("test.cougar.client.maxVersion",String.valueOf(CougarProtocol.TRANSPORT_PROTOCOL_VERSION_MAX_SUPPORTED)));
 
         List<Object[]> ret = new ArrayList<>();

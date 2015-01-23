@@ -1,5 +1,6 @@
 /*
  * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -182,7 +183,7 @@ public class HttpRequestLoggerTest {
         assertEquals("1000", loggedValues[i++]);
         assertEquals("json", loggedValues[i++]);
         assertEquals("xml", loggedValues[i++]);
-        assertEquals("[User-Agent=IE,eeeep=meeeep]", loggedValues[i++]);
+        assertEquals("[User-Agent=IE|eeeep=meeeep]", loggedValues[i++]);
 
 
     }
