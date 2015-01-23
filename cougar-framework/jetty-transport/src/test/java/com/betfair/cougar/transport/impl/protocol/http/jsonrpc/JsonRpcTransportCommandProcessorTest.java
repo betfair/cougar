@@ -1,5 +1,6 @@
 /*
  * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,8 +80,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
+import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
@@ -1075,6 +1078,16 @@ public class JsonRpcTransportCommandProcessorTest  {
         public String getCapturedOutputStream() {
             return new String(delegate.toByteArray());
         }
+
+        @Override
+        public boolean isReady() {
+            return false;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        @Override
+        public void setWriteListener(WriteListener writeListener) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
     }
 
     private static class TestInputStream extends ServletInputStream {
@@ -1087,6 +1100,21 @@ public class JsonRpcTransportCommandProcessorTest  {
         @Override
         public int read() throws IOException {
             return delegate.read();
+        }
+
+        @Override
+        public boolean isFinished() {
+            return false;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        @Override
+        public boolean isReady() {
+            return false;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        @Override
+        public void setReadListener(ReadListener readListener) {
+            //To change body of implemented methods use File | Settings | File Templates.
         }
     }
 

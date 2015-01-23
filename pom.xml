@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Copyright 2014, The Sporting Exchange Limited
+  ~ Copyright 2015, Simon Matić Langford
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -107,7 +108,8 @@
         <jackson.databind.version>2.3.2</jackson.databind.version>
         <jackson.afterburner.version>2.4.0</jackson.afterburner.version>
         <jasypt.version>1.9.1</jasypt.version>
-        <jetty.version>9.0.6.v20130930</jetty.version>
+        <!--<jetty.version>9.2.7.v20150116</jetty.version>-->
+        <jetty.version>9.1.5.v20140505</jetty.version>
         <opendmk.version>1.0-b02</opendmk.version>
         <joda.time.version>2.3</joda.time.version>
         <jsr311.version>1.1.1</jsr311.version>
@@ -287,8 +289,8 @@
                 <version>${jetty.version}</version>
                 <exclusions>
                     <exclusion>
-                        <groupId>org.eclipse.jetty.orbit</groupId>
-                        <artifactId>javax.servlet</artifactId>
+                        <groupId>javax.servlet</groupId>
+                        <artifactId>javax.servlet-api</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -308,8 +310,8 @@
                 <version>${jetty.version}</version>
                 <exclusions>
                     <exclusion>
-                        <groupId>org.eclipse.jetty.orbit</groupId>
-                        <artifactId>javax.servlet</artifactId>
+                        <groupId>javax.servlet</groupId>
+                        <artifactId>javax.servlet-api</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -319,8 +321,8 @@
                 <version>${jetty.version}</version>
                 <exclusions>
                     <exclusion>
-                        <groupId>org.eclipse.jetty.orbit</groupId>
-                        <artifactId>javax.servlet</artifactId>
+                        <groupId>javax.servlet</groupId>
+                        <artifactId>javax.servlet-api</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -330,8 +332,8 @@
                 <version>${jetty.version}</version>
                 <exclusions>
                     <exclusion>
-                        <groupId>org.eclipse.jetty.orbit</groupId>
-                        <artifactId>javax.servlet</artifactId>
+                        <groupId>javax.servlet</groupId>
+                        <artifactId>javax.servlet-api</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -391,9 +393,9 @@
                 <version>2.7.1</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.jetty.orbit</groupId>
-                <artifactId>javax.servlet</artifactId>
-                <version>3.0.0.v201112011016</version>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>3.1.0</version>
             </dependency>
             <dependency>
                 <groupId>joda-time</groupId>

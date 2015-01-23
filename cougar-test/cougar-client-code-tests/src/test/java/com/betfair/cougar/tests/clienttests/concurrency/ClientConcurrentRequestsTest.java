@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +39,7 @@ public class ClientConcurrentRequestsTest {
         responses.assertOutcome(new ClientConcurrencyTestResultBean.AssertionWrapper() {
             @Override
             public void assertEquals(Object expected, Object actual) {
-                AssertJUnit.assertEquals(expected, actual);
+                AssertJUnit.assertEquals(expected != null ? expected.toString() : null, actual != null ? actual.toString() : null);
             }
         });
     }

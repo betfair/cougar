@@ -28,8 +28,7 @@ import com.betfair.cougar.core.api.client.ExceptionFactory;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.core.impl.DefaultTimeConstraints;
 import com.betfair.cougar.transport.api.protocol.http.HttpServiceBindingDescriptor;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.HttpDestination;
+import org.eclipse.jetty.client.*;
 import org.eclipse.jetty.client.api.Connection;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
@@ -226,8 +225,11 @@ public class AsyncHttpExecutableTest extends AbstractHttpExecutableTest<Request>
         MyHttpDestination dest = mock(MyHttpDestination.class);
 
         when(mockClient.getDestination(anyString(), anyString(), anyInt())).thenReturn(dest);
-        when(dest.getIdleConnections()).thenReturn(queued(2));
-        when(dest.getActiveConnections()).thenReturn(queued(4));
+
+        ConnectionPool pool = mock(ConnectionPool.class);
+        when(dest.getConnectionPool()).thenReturn(pool);
+        when(pool.getIdleConnections()).thenReturn(queued(2));
+        when(pool.getActiveConnections()).thenReturn(queued(4));
         ((AsyncHttpExecutable) client).setMaxConnectionsPerDestination(10);
 
         assertEquals(4, client.getTransportMetrics().getOpenConnections());
@@ -249,19 +251,24 @@ public class AsyncHttpExecutableTest extends AbstractHttpExecutableTest<Request>
         return ret;
     }
 
-    private class MyHttpDestination extends HttpDestination {
+    private class MyHttpDestination extends PoolingHttpDestination {
+
         private MyHttpDestination(HttpClient client, String scheme, String host, int port) {
-            super(client, scheme, host, port);
+            super(client, new Origin(scheme, host, port));
         }
 
         @Override
-        protected BlockingQueue<Connection> getIdleConnections() {
-            return super.getIdleConnections();
+        protected void send() {
         }
 
         @Override
-        protected BlockingQueue<Connection> getActiveConnections() {
-            return super.getActiveConnections();
+        protected void send(Connection connection, HttpExchange exchange) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        @Override
+        public void succeeded(Object result) {
+            //To change body of implemented methods use File | Settings | File Templates.
         }
     }
 }
