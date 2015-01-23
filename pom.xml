@@ -108,7 +108,6 @@
         <jackson.databind.version>2.3.2</jackson.databind.version>
         <jackson.afterburner.version>2.4.0</jackson.afterburner.version>
         <jasypt.version>1.9.1</jasypt.version>
-        <!--<jetty.version>9.2.7.v20150116</jetty.version>-->
         <jetty.version>9.1.5.v20140505</jetty.version>
         <opendmk.version>1.0-b02</opendmk.version>
         <joda.time.version>2.3</joda.time.version>
