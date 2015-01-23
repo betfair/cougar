@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +18,7 @@
 // Originally from UpdatedComponentTests/Concurrency/Rest/Rest_MultipleOperations_ConcurrentRequests_JSONJSON.xls;
 package com.betfair.cougar.tests.updatedcomponenttests.concurrency.rest;
 
-import com.betfair.cougar.testing.concurrency.RestConcurrentRequestsAcrossMultipleOperationsJETTTest;
+import com.betfair.cougar.testing.concurrency.RestConcurrentRequestsAcrossMultipleOperationsTest;
 import com.betfair.testing.utils.cougar.assertions.AssertionUtils;
 import com.betfair.testing.utils.cougar.beans.HttpResponseBean;
 import com.betfair.testing.utils.cougar.enums.CougarMessageContentTypeEnum;
@@ -33,7 +34,7 @@ public class RestMultipleOperationsConcurrentRequestsJSONJSONTest {
     @Test
     public void doTest() throws Exception {
         // Execute the test, creating the given number of threads and making the given number of JSON calls per thread
-        RestConcurrentRequestsAcrossMultipleOperationsJETTTest.RestConcurrentRequestsAcrossMultipleOperationsTestResultBean executeTest3 = new RestConcurrentRequestsAcrossMultipleOperationsJETTTest().executeTest(4, 400, CougarMessageProtocolRequestTypeEnum.RESTJSON, CougarMessageContentTypeEnum.JSON);
+        RestConcurrentRequestsAcrossMultipleOperationsTest.RestConcurrentRequestsAcrossMultipleOperationsTestResultBean executeTest3 = new RestConcurrentRequestsAcrossMultipleOperationsTest().executeTest(4, 400, CougarMessageProtocolRequestTypeEnum.RESTJSON, CougarMessageContentTypeEnum.JSON);
         // Get the expected responses to the requests made
         Map<String, HttpResponseBean> getExpectedResponses4 = executeTest3.getExpectedResponses();
         // Check the actual responses against the expected ones (with a date tolerance of 2000ms)

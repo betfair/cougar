@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,19 +81,19 @@ public class RPCGetRequestTypesStringQueryParamEscapedCharactersTest {
         // Convert the returned json object to a map for comparison
         CougarHelpers cougarHelpers5 = new CougarHelpers();
         Map<String, Object> map6 = cougarHelpers5.convertBatchedResponseToMap(response);
-        AssertionUtils.multiAssertEquals("{\"id\":\"And\",\"result\":{\"message\":\"headerParam=Foo,queryParam=this & that,dateQueryParam="+convertedDate1+"\"},\"jsonrpc\":\"2.0\"}", map6.get("responseAnd"));
-        AssertionUtils.multiAssertEquals("{\"id\":\"Colon\",\"result\":{\"message\":\"headerParam=Foo,queryParam=colon:,dateQueryParam="+convertedDate1+"\"},\"jsonrpc\":\"2.0\"}", map6.get("responseColon"));
-        AssertionUtils.multiAssertEquals("{\"id\":\"Combo\",\"result\":{\"message\":\"headerParam=Foo,queryParam=this & that is 100%,dateQueryParam="+convertedDate1+"\"},\"jsonrpc\":\"2.0\"}", map6.get("responseCombo"));
-        AssertionUtils.multiAssertEquals("{\"id\":\"Hash\",\"result\":{\"message\":\"headerParam=Foo,queryParam=hash#,dateQueryParam="+convertedDate1+"\"},\"jsonrpc\":\"2.0\"}", map6.get("responseHash"));
-        AssertionUtils.multiAssertEquals("{\"id\":\"Space\",\"result\":{\"message\":\"headerParam=Foo,queryParam=a space,dateQueryParam="+convertedDate1+"\"},\"jsonrpc\":\"2.0\"}", map6.get("responseSpace"));
+        AssertionUtils.multiAssertEquals("{\"id\":\"And\",\"result\":{\"message\":\"headerParam=Foo,queryParam=this & that,dateQueryParam="+cougarHelpers2.dateInUTC(convertedDate1)+"\"},\"jsonrpc\":\"2.0\"}", map6.get("responseAnd"));
+        AssertionUtils.multiAssertEquals("{\"id\":\"Colon\",\"result\":{\"message\":\"headerParam=Foo,queryParam=colon:,dateQueryParam="+cougarHelpers2.dateInUTC(convertedDate1)+"\"},\"jsonrpc\":\"2.0\"}", map6.get("responseColon"));
+        AssertionUtils.multiAssertEquals("{\"id\":\"Combo\",\"result\":{\"message\":\"headerParam=Foo,queryParam=this & that is 100%,dateQueryParam="+cougarHelpers2.dateInUTC(convertedDate1)+"\"},\"jsonrpc\":\"2.0\"}", map6.get("responseCombo"));
+        AssertionUtils.multiAssertEquals("{\"id\":\"Hash\",\"result\":{\"message\":\"headerParam=Foo,queryParam=hash#,dateQueryParam="+cougarHelpers2.dateInUTC(convertedDate1)+"\"},\"jsonrpc\":\"2.0\"}", map6.get("responseHash"));
+        AssertionUtils.multiAssertEquals("{\"id\":\"Space\",\"result\":{\"message\":\"headerParam=Foo,queryParam=a space,dateQueryParam="+cougarHelpers2.dateInUTC(convertedDate1)+"\"},\"jsonrpc\":\"2.0\"}", map6.get("responseSpace"));
         AssertionUtils.multiAssertEquals(200, map6.get("httpStatusCode"));
         AssertionUtils.multiAssertEquals("OK", map6.get("httpStatusText"));
         // Pause the test to allow the logs to be filled
         // generalHelpers.pauseTest(500L);
         // Check the log entries are as expected
-        
+
         cougarManager.verifyRequestLogEntriesAfterDate(timeStamp, new RequestLogRequirement("2.8", "testParameterStylesQA"),new RequestLogRequirement("2.8", "testParameterStylesQA"),new RequestLogRequirement("2.8", "testParameterStylesQA"),new RequestLogRequirement("2.8", "testParameterStylesQA"),new RequestLogRequirement("2.8", "testParameterStylesQA") );
-        
+
         cougarManager.verifyAccessLogEntriesAfterDate(timeStamp, new AccessLogRequirement("87.248.113.14", "/json-rpc", "Ok") );
     }
 

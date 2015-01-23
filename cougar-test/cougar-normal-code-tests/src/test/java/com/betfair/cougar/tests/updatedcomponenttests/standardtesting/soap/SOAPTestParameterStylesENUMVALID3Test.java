@@ -66,7 +66,7 @@ public class SOAPTestParameterStylesENUMVALID3Test {
         cougarManager2.makeSoapCougarHTTPCalls(getNewHttpCallBean2);
         // Create the expected response object as an XML document (A message stating if the number of items in the list was correct)
         XMLHelpers xMLHelpers5 = new XMLHelpers();
-        Document createAsDocument10 = xMLHelpers5.createAsDocument(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(("<response><message>headerParam=FooBar,queryParam=qp1,dateQueryParam="+convertedDate1+"</message></response>").getBytes())));
+        Document createAsDocument10 = xMLHelpers5.createAsDocument(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(("<response><message>headerParam=FooBar,queryParam=qp1,dateQueryParam="+cougarHelpers1.dateInUTC(convertedDate1)+"</message></response>").getBytes())));
         // Check the response is as expected
         HttpResponseBean response6 = getNewHttpCallBean2.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.SOAP);
         AssertionUtils.multiAssertEquals(createAsDocument10, response6.getResponseObject());
