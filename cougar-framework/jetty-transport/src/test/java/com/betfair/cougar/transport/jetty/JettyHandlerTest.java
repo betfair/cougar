@@ -1,5 +1,6 @@
 /*
  * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,11 +35,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import javax.servlet.*;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.Part;
+import javax.servlet.http.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -273,6 +270,21 @@ public class JettyHandlerTest {
         };
 
         HttpServletRequest req = new HttpServletRequest() {
+            @Override
+            public String changeSessionId() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass) throws IOException, ServletException {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public long getContentLengthLong() {
+                return 0;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
             @Override
             public boolean authenticate(HttpServletResponse httpServletResponse) throws IOException, ServletException {
                 return false;  //To change body of implemented methods use File | Settings | File Templates.
@@ -784,6 +796,11 @@ public class JettyHandlerTest {
             @Override
             public Locale getLocale() {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public void setContentLengthLong(long len) {
+                //To change body of implemented methods use File | Settings | File Templates.
             }
         };
 

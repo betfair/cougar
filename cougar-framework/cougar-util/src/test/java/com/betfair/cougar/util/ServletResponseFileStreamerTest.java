@@ -1,5 +1,6 @@
 /*
  * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +23,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -38,6 +40,15 @@ import static org.mockito.Mockito.when;
 public class ServletResponseFileStreamerTest {
     final ByteArrayOutputStream baos = new ByteArrayOutputStream();
     final ServletOutputStream capturingOutputStream = new ServletOutputStream() {
+        @Override
+        public boolean isReady() {
+            return false;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        @Override
+        public void setWriteListener(WriteListener writeListener) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
 
         @Override
         public void write(int b) throws IOException {

@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <!--
   ~ Copyright 2014, The Sporting Exchange Limited
+  ~ Copyright 2015, Simon Matić Langford
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -92,8 +93,8 @@
     </dependency>
 
     <dependency>
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
       <scope>test</scope>
     </dependency>
 

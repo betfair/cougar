@@ -1,5 +1,6 @@
 /*
  * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +28,7 @@ import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.util.Fields;
 
 import java.io.IOException;
+import java.net.HttpCookie;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.List;
@@ -50,6 +52,12 @@ class CapturingRequest implements Request {
         return 0;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+
+    @Override
+    public Request onComplete(Response.CompleteListener listener) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     @Override
     public String getScheme() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
@@ -71,12 +79,7 @@ class CapturingRequest implements Request {
     }
 
     @Override
-    public HttpMethod getMethod() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public String method() {
+    public String getMethod() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 

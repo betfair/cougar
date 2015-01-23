@@ -1,5 +1,6 @@
 /*
  * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,8 +53,10 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
+import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -506,7 +509,21 @@ public abstract class AbstractHttpCommandProcessorTest<CredentialContainer> {
 			}
 			return -1;
 		}
-	};
+
+        @Override
+        public boolean isFinished() {
+            return (pos >= input.length());
+        }
+
+        @Override
+        public boolean isReady() {
+            return (pos < input.length());
+        }
+
+        @Override
+        public void setReadListener(ReadListener readListener) {
+        }
+    };
 
 	protected class TestServletOutputStream extends ServletOutputStream {
 
@@ -520,7 +537,16 @@ public abstract class AbstractHttpCommandProcessorTest<CredentialContainer> {
 		public String getOutput() {
 			return output.toString();
 		}
-	}
+
+        @Override
+        public boolean isReady() {
+            return true;
+        }
+
+        @Override
+        public void setWriteListener(WriteListener writeListener) {
+        }
+    }
 
     protected HttpCommand createCommand(IdentityTokenResolver identityTokenResolver, Protocol protocol) {
         return new TestHttpCommand(identityTokenResolver, protocol);

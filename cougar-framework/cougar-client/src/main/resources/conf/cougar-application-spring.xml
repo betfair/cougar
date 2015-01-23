@@ -107,7 +107,7 @@
     </bean>
 
     <!-- asynchronous http transport -->
-    <bean id="asyncHttpReponseProcessorThreadPool" class="com.betfair.cougar.util.JMXReportingThreadPoolExecutor">
+    <bean id="asyncHttpResponseProcessorThreadPool" class="com.betfair.cougar.util.JMXReportingThreadPoolExecutor">
         <constructor-arg value="$COUGAR_CLIENT{cougar.client.http.async.response.corePoolSize}"/>
         <constructor-arg value="$COUGAR_CLIENT{cougar.client.http.async.response.maxPoolSize}"/>
         <constructor-arg value="$COUGAR_CLIENT{cougar.client.http.async.response.timeout}"/>
@@ -127,7 +127,7 @@
         <constructor-arg index="1" ref="defaultHttpContextEmission"/>
         <constructor-arg index="2" ref="cougar.core.Tracer"/>
         <constructor-arg index="3" ref="asyncHttpWorkerThreadPool"/>
-        <constructor-arg index="4" ref="asyncHttpReponseProcessorThreadPool"/>
+        <constructor-arg index="4" ref="asyncHttpResponseProcessorThreadPool"/>
 
         <property name="dataBindingFactory" ref="cougar.marshalling.JSONBindingFactory"/>
         <property name="queryStringGeneratorFactory" ref="qsGeneratorFactory"/>
@@ -321,6 +321,8 @@
             <map>
                 <entry key="CoUGAR.socket.transport.client:name=asyncHttpWorkerExecutor"
                        value-ref="asyncHttpWorkerThreadPool"/>
+                <entry key="CoUGAR.socket.transport.client:name=asyncHttpResponseProcessorThreadPool"
+                       value-ref="asyncHttpResponseProcessorThreadPool"/>
 
                 <entry key="CoUGAR.socket.transport.client:name=socketWorkerExecutor" value-ref="workerThreadPool"/>
                 <entry key="CoUGAR.socket.transport.client:name=socketConnectorExecutor"

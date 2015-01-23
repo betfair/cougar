@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +38,7 @@ public class CougarClientConcurrencyTestUtils {
 	private CougarClientWrapper.TransportType transport;
 	private List<Thread> threads = new ArrayList<Thread>();
 	private List<Executor> executors = new ArrayList<Executor>();
-	
+
 	private static final int I32_HEADER = 5;
 	private static final int I32_QUERY = 6;
 	private static final int I32_BODY = 7;
@@ -78,81 +79,81 @@ public class CougarClientConcurrencyTestUtils {
 
         return responseBean;
     }
-	
+
 	// Add as many threads as required in here and create a corresponding createExecutor method for each one
 	public void createExecutors() throws Exception{
-		
+
 		Executor simpleExecutor = createSimpleExecutor();
 		executors.add(simpleExecutor);
 		Thread simpleThread = new Thread(simpleExecutor);
 		threads.add(simpleThread);
-		
+
 		Executor boolExecutor = createBoolExecutor();
 		executors.add(boolExecutor);
 		Thread boolThread = new Thread(boolExecutor);
 		threads.add(boolThread);
-	
+
 		Executor intExecutor = createIntExecutor();
 		executors.add(intExecutor);
 		Thread intThread = new Thread(intExecutor);
 		threads.add(intThread);
 	}
-	
+
 	public Executor createSimpleExecutor() throws Exception {
 
-		
+
 		//Set up request wrapper
 		CougarClientWrapper simpleWrapper = CougarClientWrapper.getInstance(transport);
         Executor simpleExecutor = new Executor("testSimpleGet", simpleWrapper);
-		
+
 		//Set up expected response object
 		SimpleResponse expectedResponse = new SimpleResponse();
 		expectedResponse.setMessage("foo");
-		
+
 		JSONObject jsonObject = new JSONObject(expectedResponse.toString());
 		simpleExecutor.setExpectedResponse(jsonObject);
-		
+
 		return simpleExecutor;
 	}
-	
+
 	public Executor createBoolExecutor() throws Exception{
-		
+
 		//Set up request wrapper
 		CougarClientWrapper boolWrapper = CougarClientWrapper.getInstance(transport);
 
         Executor boolExecutor = new Executor("boolOperation", boolWrapper);
-		
+
 		//Set up expected response object
 		BoolOperationResponseObject expectedResponse = new BoolOperationResponseObject();
 		expectedResponse.setHeaderParameter(false);
 		expectedResponse.setQueryParameter(true);
 		expectedResponse.setBodyParameter(true);
-		
+
 		JSONObject jsonObject = new JSONObject(expectedResponse.toString());
 		boolExecutor.setExpectedResponse(jsonObject);
-		
+
 		return boolExecutor;
 	}
-	
+
 	public Executor createIntExecutor() throws Exception{
 
-		
+
 		//Set up request wrapper
 		CougarClientWrapper intWrapper = CougarClientWrapper.getInstance(transport);
         Executor intExecutor = new Executor("i32Operation", intWrapper);
-		
+
 		//Set up expected response object
 		I32OperationResponseObject expectedResponse = new I32OperationResponseObject();
 		expectedResponse.setHeaderParameter(I32_HEADER);
 		expectedResponse.setQueryParameter(I32_QUERY);
 		expectedResponse.setBodyParameter(I32_BODY);
-		
+
 		JSONObject jsonObject = new JSONObject(expectedResponse.toString());
 		intExecutor.setExpectedResponse(jsonObject);
-		
+
 		return intExecutor;
 	}
-	
+
 	public static class Executor implements Runnable{
 
 		private String methodToExecute;
@@ -165,7 +166,7 @@ public class CougarClientConcurrencyTestUtils {
 			this.methodToExecute = method;
             this.wrapper = wrapper;
 		}
-		
+
 		public JSONObject getActualResponse(){
 			return actualResponse;
 		}
@@ -177,24 +178,24 @@ public class CougarClientConcurrencyTestUtils {
         public void setExpectedResponse(JSONObject expectedResponse){
 			this.expectedResponse = expectedResponse;
 		}
-		
+
 		public JSONObject getExpectedResponse(){
 			return expectedResponse;
 		}
-		
+
 		public String getMethod(){
 			return methodToExecute;
 		}
-		
+
 		@Override
 		public void run(){
 			this.makeCall();
 		}
-		
+
 		public void makeCall(){
 			BaselineSyncClient client = wrapper.getClient();
 			ExecutionContext ctx = wrapper.getCtx();
-			
+
 			if("testSimpleGet".equals(methodToExecute)){
 				try{
 					SimpleResponse response = client.testSimpleGet(ctx, "foo");
@@ -237,9 +238,9 @@ public class CougarClientConcurrencyTestUtils {
 			}
 		}
 	}
-	
+
 	public static class ClientConcurrencyTestResultBean {
-		
+
 		private Map<String, JSONObject> expectedResponses = new LinkedHashMap<String, JSONObject>();
 		private Map<String, JSONObject> actualResponses = new LinkedHashMap<String, JSONObject>();
         private Map<String, Exception> exceptionResponses;
@@ -263,7 +264,7 @@ public class CougarClientConcurrencyTestUtils {
                 if (ex != null) {
                     ex.printStackTrace();
                 }
-                wrapper.assertEquals(expected.toString(), actual.toString());
+                wrapper.assertEquals(expected, actual);
             }
         }
 

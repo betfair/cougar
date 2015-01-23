@@ -27,8 +27,10 @@ import com.betfair.cougar.core.api.tracing.Tracer;
 import com.betfair.cougar.transport.api.protocol.http.HttpServiceBindingDescriptor;
 import com.betfair.cougar.util.KeyStoreManagement;
 import com.betfair.cougar.util.jmx.JMXControl;
+import org.eclipse.jetty.client.ConnectionPool;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpDestination;
+import org.eclipse.jetty.client.PoolingHttpDestination;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.InputStreamResponseListener;
@@ -193,7 +195,7 @@ public class AsyncHttpExecutable extends AbstractHttpExecutable<Request> impleme
 
                                 @Override
                                 public List<String> getContentEncoding() {
-                                    return new ArrayList<>(response.getHeaders().getValuesCollection(HttpHeader.CONTENT_ENCODING.asString()));
+                                    return new ArrayList<>(response.getHeaders().getValuesList(HttpHeader.CONTENT_ENCODING.asString()));
                                 }
 
                                 @Override
@@ -268,9 +270,6 @@ public class AsyncHttpExecutable extends AbstractHttpExecutable<Request> impleme
         private String host;
         private boolean https;
 
-        private Method HttpDestination_getActiveConnections;
-        private Method HttpDestination_getIdleConnections;
-
         JettyTransportMetrics() {
             try {
                 URI uri = new URI(getRemoteAddress());
@@ -281,29 +280,16 @@ public class AsyncHttpExecutable extends AbstractHttpExecutable<Request> impleme
             } catch (URISyntaxException e) {
                 throw new RuntimeException("Unable to determine address and port for service address '" + getRemoteAddress() + "'");//NOSONAR
             }
-            try {
-                HttpDestination_getActiveConnections = HttpDestination.class.getDeclaredMethod("getActiveConnections");
-                HttpDestination_getActiveConnections.setAccessible(true);
-                HttpDestination_getIdleConnections = HttpDestination.class.getDeclaredMethod("getIdleConnections");
-                HttpDestination_getIdleConnections.setAccessible(true);
-            } catch (NoSuchMethodException e) {
-                throw new RuntimeException(e);
-            }
-
         }
 
-        private HttpDestination getDestination() {
-            return (HttpDestination) client.getDestination(https ? "https" : "http", host, port);
+        private PoolingHttpDestination getDestination() {
+            return (PoolingHttpDestination) client.getDestination(https ? "https" : "http", host, port);
         }
 
         @Override
         public int getOpenConnections() {
-            try {
-                if (host != null) {
-                    return ((BlockingQueue)HttpDestination_getActiveConnections.invoke(getDestination())).size();
-                }
-            } catch (InvocationTargetException | IllegalAccessException ite) {
-                LOGGER.warn("Could not determine open connections for '" + getRemoteAddress() + "'");
+            if (host != null) {
+                return getDestination().getConnectionPool().getActiveConnections().size();
             }
 
             return 0;
@@ -316,12 +302,8 @@ public class AsyncHttpExecutable extends AbstractHttpExecutable<Request> impleme
 
         @Override
         public int getFreeConnections() {
-            try {
-                if (host != null) {
-                    return ((BlockingQueue)HttpDestination_getIdleConnections.invoke(getDestination())).size();
-                }
-            } catch (InvocationTargetException | IllegalAccessException ite) {
-                LOGGER.warn("Could not determine open connections for '" + getRemoteAddress() + "'");
+            if (host != null) {
+                return getDestination().getConnectionPool().getIdleConnections().size();
             }
             return 0;
         }
