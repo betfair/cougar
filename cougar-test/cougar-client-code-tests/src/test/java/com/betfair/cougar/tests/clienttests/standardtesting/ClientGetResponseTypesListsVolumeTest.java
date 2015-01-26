@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +50,7 @@ public class ClientGetResponseTypesListsVolumeTest {
         Date dateParam = cougarClientResponseTypeUtils2.createDateFromString("2009-06-01T13:50:00.0Z");
         // Make call to the method via client and validate the response is as expected
         SimpleResponse response3 = client.testParameterStylesQA(context, com.betfair.baseline.v2.enumerations.TestParameterStylesQAHeaderParamEnum.Foo, "this & that is 100%", convertedDate);
-        assertEquals("headerParam=Foo,queryParam=this & that is 100%,dateQueryParam="+convertedDate, response3.getMessage());
+        assertEquals("headerParam=Foo,queryParam=this & that is 100%,dateQueryParam="+helper.dateInUTC(convertedDate), response3.getMessage());
     }
 
     @DataProvider(name="TransportType")
