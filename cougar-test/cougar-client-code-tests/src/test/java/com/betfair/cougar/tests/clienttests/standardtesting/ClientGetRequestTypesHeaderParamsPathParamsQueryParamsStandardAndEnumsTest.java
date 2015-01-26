@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +51,7 @@ public class ClientGetRequestTypesHeaderParamsPathParamsQueryParamsStandardAndEn
 
         // Make call to the method via client and validate the response is as expected
         SimpleResponse response3 = client.testParameterStylesQA(context, com.betfair.baseline.v2.enumerations.TestParameterStylesQAHeaderParamEnum.Foo, "qp1", convertedDate1);
-        assertEquals("headerParam=Foo,queryParam=qp1,dateQueryParam="+convertedDate1, response3.getMessage());
+        assertEquals("headerParam=Foo,queryParam=qp1,dateQueryParam="+helper.dateInUTC(convertedDate1), response3.getMessage());
     }
 
     @DataProvider(name="TransportType")
