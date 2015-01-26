@@ -1057,4 +1057,11 @@ public class CougarHelpers {
 		}
 return date;
 	}
+
+    public String dateInUTC(Date date) {
+        if (date == null) {
+            return "null";
+        }
+        return date.toGMTString().replace("GMT","UTC");
+    }
 }

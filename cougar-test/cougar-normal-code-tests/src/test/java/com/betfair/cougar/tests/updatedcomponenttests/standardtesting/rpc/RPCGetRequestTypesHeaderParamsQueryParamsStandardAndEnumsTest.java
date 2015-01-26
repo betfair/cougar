@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,16 +72,16 @@ public class RPCGetRequestTypesHeaderParamsQueryParamsStandardAndEnumsTest {
         // Convert the returned json object to a map for comparison
         CougarHelpers cougarHelpers6 = new CougarHelpers();
         Map<String, Object> map7 = cougarHelpers6.convertBatchedResponseToMap(response);
-        AssertionUtils.multiAssertEquals("{\"id\":1,\"result\":{\"message\":\"headerParam=Foo,queryParam=qp1,dateQueryParam="+convertedDate1+"\"},\"jsonrpc\":\"2.0\"}", map7.get("response1"));
-        AssertionUtils.multiAssertEquals("{\"id\":2,\"result\":{\"message\":\"headerParam=Foo,queryParam=qp2,dateQueryParam="+convertedDate2+"\"},\"jsonrpc\":\"2.0\"}", map7.get("response2"));
+        AssertionUtils.multiAssertEquals("{\"id\":1,\"result\":{\"message\":\"headerParam=Foo,queryParam=qp1,dateQueryParam="+cougarHelpers4.dateInUTC(convertedDate1)+"\"},\"jsonrpc\":\"2.0\"}", map7.get("response1"));
+        AssertionUtils.multiAssertEquals("{\"id\":2,\"result\":{\"message\":\"headerParam=Foo,queryParam=qp2,dateQueryParam="+cougarHelpers4.dateInUTC(convertedDate2)+"\"},\"jsonrpc\":\"2.0\"}", map7.get("response2"));
         AssertionUtils.multiAssertEquals(200, map7.get("httpStatusCode"));
         AssertionUtils.multiAssertEquals("OK", map7.get("httpStatusText"));
         // Pause the test to allow the logs to be filled
         // generalHelpers.pauseTest(500L);
         // Check the log entries are as expected
-        
+
         cougarManager.verifyRequestLogEntriesAfterDate(timeStamp, new RequestLogRequirement("2.8", "testParameterStylesQA"),new RequestLogRequirement("2.8", "testParameterStylesQA") );
-        
+
         cougarManager.verifyAccessLogEntriesAfterDate(timeStamp, new AccessLogRequirement("87.248.113.14", "/json-rpc", "Ok") );
     }
 

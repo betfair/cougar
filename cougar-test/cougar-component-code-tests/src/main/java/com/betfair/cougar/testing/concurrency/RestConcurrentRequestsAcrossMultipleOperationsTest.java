@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +34,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RestConcurrentRequestsAcrossMultipleOperationsJETTTest {
+public class RestConcurrentRequestsAcrossMultipleOperationsTest {
 
 
 
@@ -321,7 +322,7 @@ public class RestConcurrentRequestsAcrossMultipleOperationsJETTTest {
 
 				//Store expected responses
 				HttpResponseBean responseBean = new HttpResponseBean();
-				String responseXmlString = "<SimpleResponse><message>headerParam=Foo,queryParam=" + queryParameter + ",dateQueryParam=Mon Jun 01 13:50:00 UTC 2009</message></SimpleResponse>";
+				String responseXmlString = "<SimpleResponse><message>headerParam=Foo,queryParam=" + queryParameter + ",dateQueryParam=1 Jun 2009 13:50:00 UTC</message></SimpleResponse>";
 				Document responseBaseObject = xHelpers.getXMLObjectFromString(responseXmlString);
 				Map<CougarMessageProtocolRequestTypeEnum, Object> builtExpectedResponse = cougarManager.convertResponseToRestTypes(responseBaseObject, callBean);
 				switch (responseContentTypeEnum) {

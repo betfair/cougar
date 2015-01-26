@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -360,7 +361,7 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
         response.add("secondHeaderParam=" + secondHeaderParam);
         response.add("queryParam=" + queryParam);
         response.add("headerParam=" + headerParam);
-        response.add("dateQueryParam=" + dateQueryParam);
+        response.add("dateQueryParam=" + dateInUTC(dateQueryParam));
 
         response.add("ok=" + ok);
         return response;
@@ -374,9 +375,16 @@ public class BaselineServiceImpl implements BaselineService, GateListener {
 		ctx.setRequestLogExtension(new BaselineLogExtension(queryParam, null, null));
 		SimpleResponse response = new SimpleResponse();
 		response.setMessage("headerParam=" + headerParam
-                + ",queryParam=" + queryParam + ",dateQueryParam=" + dateQueryParam);
+                + ",queryParam=" + queryParam + ",dateQueryParam=" + dateInUTC(dateQueryParam));
 		return response;
 	}
+
+    private String dateInUTC(Date date) {
+        if (date == null) {
+            return "null";
+        }
+        return date.toGMTString().replace("GMT","UTC");
+    }
 
     @KPITimedEvent(value = "Baseline.service.testDateRetrieval", catchFailures = true)
     @Override

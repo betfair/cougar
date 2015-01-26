@@ -1,5 +1,6 @@
 /*
  * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +51,6 @@ import static junit.framework.Assert.*;
  */
 @RunWith(Parameterized.class)
 public class ExecutionVenueNioClientTest extends AbstractClientTest {
-    private HessianObjectIOFactory objectIOFactory;
 
     private byte serverVersion;
     private NioLogger nioLogger;
@@ -71,7 +71,7 @@ public class ExecutionVenueNioClientTest extends AbstractClientTest {
 
     @Before
     public void before() throws Exception {
-        this.objectIOFactory = new HessianObjectIOFactory(true);
+        HessianObjectIOFactory objectIOFactory = new HessianObjectIOFactory(true);
         this.nioLogger = new NioLogger("ALL");
         super.before(serverVersion);
     }

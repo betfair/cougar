@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,13 +47,13 @@ public class RestGetRequestTypesStringQueryParamEscapedCharactersAmpersandTest {
         CougarManager cougarManager1 = CougarManager.getInstance();
         HttpCallBean getNewHttpCallBean1 = cougarManager1.getNewHttpCallBean("87.248.113.14");
         cougarManager1 = cougarManager1;
-        
+
         getNewHttpCallBean1.setOperationName("testParameterStylesQA");
-        
+
         getNewHttpCallBean1.setServiceName("baseline", "cougarBaseline");
-        
+
         getNewHttpCallBean1.setVersion("v2");
-        
+
         Map map2 = new HashMap();
         map2.put("HeaderParam","Foo");
         getNewHttpCallBean1.setHeaderParams(map2);
@@ -61,7 +62,7 @@ public class RestGetRequestTypesStringQueryParamEscapedCharactersAmpersandTest {
         map3.put("queryParam","this%26that");
         map3.put("dateQueryParam","2009-06-01T13:50:00.0Z");
         getNewHttpCallBean1.setQueryParams(map3);
-        
+
         CougarHelpers cougarHelpers4 = new CougarHelpers();
         Date convertedDate1 = cougarHelpers4.convertToSystemTimeZone("2009-06-01T13:50:00.0Z");
         // Get current time for getting log entries later
@@ -71,32 +72,32 @@ public class RestGetRequestTypesStringQueryParamEscapedCharactersAmpersandTest {
         cougarManager1.makeRestCougarHTTPCalls(getNewHttpCallBean1);
         // Create the expected response as an XML document
         XMLHelpers xMLHelpers6 = new XMLHelpers();
-        Document createAsDocument10 = xMLHelpers6.createAsDocument(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(("<SimpleResponse><message>headerParam=Foo,queryParam=this&amp;that,dateQueryParam="+convertedDate1+"</message></SimpleResponse>").getBytes())));        // Convert the expected response to REST types for comparison with actual responses
+        Document createAsDocument10 = xMLHelpers6.createAsDocument(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(("<SimpleResponse><message>headerParam=Foo,queryParam=this&amp;that,dateQueryParam="+cougarHelpers4.dateInUTC(convertedDate1)+"</message></SimpleResponse>").getBytes())));        // Convert the expected response to REST types for comparison with actual responses
         Map<CougarMessageProtocolRequestTypeEnum, Object> convertResponseToRestTypes11 = cougarManager1.convertResponseToRestTypes(createAsDocument10, getNewHttpCallBean1);
         // Check the 4 responses are as expected
         HttpResponseBean response7 = getNewHttpCallBean1.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTXMLXML);
         AssertionUtils.multiAssertEquals(convertResponseToRestTypes11.get(CougarMessageProtocolRequestTypeEnum.RESTXML), response7.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 200, response7.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("OK", response7.getHttpStatusText());
-        
+
         HttpResponseBean response8 = getNewHttpCallBean1.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTJSONJSON);
         AssertionUtils.multiAssertEquals(convertResponseToRestTypes11.get(CougarMessageProtocolRequestTypeEnum.RESTJSON), response8.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 200, response8.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("OK", response8.getHttpStatusText());
-        
+
         HttpResponseBean response9 = getNewHttpCallBean1.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTXMLJSON);
         AssertionUtils.multiAssertEquals(convertResponseToRestTypes11.get(CougarMessageProtocolRequestTypeEnum.RESTJSON), response9.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 200, response9.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("OK", response9.getHttpStatusText());
-        
+
         HttpResponseBean response10 = getNewHttpCallBean1.getResponseObjectsByEnum(com.betfair.testing.utils.cougar.enums.CougarMessageProtocolResponseTypeEnum.RESTJSONXML);
         AssertionUtils.multiAssertEquals(convertResponseToRestTypes11.get(CougarMessageProtocolRequestTypeEnum.RESTXML), response10.getResponseObject());
         AssertionUtils.multiAssertEquals((int) 200, response10.getHttpStatusCode());
         AssertionUtils.multiAssertEquals("OK", response10.getHttpStatusText());
-        
+
         // generalHelpers.pauseTest(500L);
         // Check the log entries are as expected
-        
+
         cougarManager1.verifyRequestLogEntriesAfterDate(getTimeAsTimeStamp8, new RequestLogRequirement("2.8", "testParameterStylesQA"),new RequestLogRequirement("2.8", "testParameterStylesQA"),new RequestLogRequirement("2.8", "testParameterStylesQA"),new RequestLogRequirement("2.8", "testParameterStylesQA") );
     }
 

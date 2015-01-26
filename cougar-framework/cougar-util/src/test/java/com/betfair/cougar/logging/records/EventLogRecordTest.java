@@ -1,5 +1,6 @@
 /*
  * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,7 +104,7 @@ public class EventLogRecordTest {
         data.add(data2);
 
         mle.setFieldsToLog(new Object[]{data});
-        assertEquals("", "[one,2,[three,4]]", elr.getMessage().toString());
+        assertEquals("", "[one|2|[three|4]]", elr.getMessage().toString());
     }
 
     @Test
