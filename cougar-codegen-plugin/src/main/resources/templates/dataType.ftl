@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,10 +63,14 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class  ${dataTypeName} implements Result, Validatable, Transcribable {
     private boolean mandCheck = false;
+    private boolean sealed = false;
     private ${dataTypeName}Delegate delegate;
     public ${dataTypeName} (${dataTypeName}Delegate delegate ) {
         this();
         this.delegate = delegate;
+    }
+    public void seal() {
+        sealed = true;
     }
 <#assign paramNameTypeHash={}>
 <#assign paramHash={}>
@@ -277,6 +282,9 @@ public class  ${dataTypeName} implements Result, Validatable, Transcribable {
             throw new IllegalArgumentException("UNRECOGNIZED_VALUE reserved for soft enum deserialisation handling");
         }
         </#if>
+        if (sealed) {
+            throw new IllegalStateException("This class is immutable following a call to seal()!");
+        }
         if (delegate != null) {
             delegate.set${paramCapFirst}(${paramName});
         }

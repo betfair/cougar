@@ -25,6 +25,7 @@ import java.util.*;
  */
 public class MapBuilder<K,V> implements Builder<Map<K,V>> {
     private Map<K,V> ret;
+    private boolean seal = true;
 
     public MapBuilder() {
         ret = new HashMap<>();
@@ -54,14 +55,6 @@ public class MapBuilder<K,V> implements Builder<Map<K,V>> {
         return this;
     }
 
-    /**
-     * Prevents further mutations by wrapping the internal list using Collections.unmodifiableMap().
-     */
-    public MapBuilder<K,V> lock() {
-        ret = Collections.unmodifiableMap(ret);
-        return this;
-    }
-
     public MapBuilder<K,V> toHashtable() {
         ret = new Hashtable<>(ret);
         return this;
@@ -72,8 +65,16 @@ public class MapBuilder<K,V> implements Builder<Map<K,V>> {
         return this;
     }
 
+    public MapBuilder<K, V> leaveModifiable() {
+        seal = false;
+        return this;
+    }
+
     @Override
     public Map<K,V> build() {
+        if (seal) {
+            ret = Collections.unmodifiableMap(ret);
+        }
         return ret;
     }
 }

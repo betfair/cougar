@@ -27,6 +27,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public class SetBuilder<T> implements Builder<Set<T>> {
     private Set<T> ret;
+    private boolean seal = true;
 
     public SetBuilder() {
         ret = new HashSet<>();
@@ -46,16 +47,16 @@ public class SetBuilder<T> implements Builder<Set<T>> {
         return this;
     }
 
-    /**
-     * Prevents further mutations by wrapping the internal list using Collections.unmodifiableSet().
-     */
-    public SetBuilder<T> lock() {
-        ret = Collections.unmodifiableSet(ret);
+    public SetBuilder<T> leaveModifiable() {
+        seal = false;
         return this;
     }
 
     @Override
     public Set<T> build() {
+        if (seal) {
+            ret = Collections.unmodifiableSet(ret);
+        }
         return ret;
     }
 

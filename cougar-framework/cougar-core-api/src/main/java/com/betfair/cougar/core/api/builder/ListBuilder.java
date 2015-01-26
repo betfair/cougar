@@ -26,6 +26,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class ListBuilder<T> implements Builder<List<T>> {
     private List<T> ret;
+    private boolean seal = true;
 
     public ListBuilder() {
         ret = new LinkedList<>();
@@ -60,16 +61,16 @@ public class ListBuilder<T> implements Builder<List<T>> {
         return this;
     }
 
-    /**
-     * Prevents further mutations by wrapping the internal list using Collections.unmodifiableList().
-     */
-    public ListBuilder<T> lock() {
-        ret = Collections.unmodifiableList(ret);
+    public ListBuilder<T> leaveModifiable() {
+        seal = false;
         return this;
     }
 
     @Override
     public List<T> build() {
+        if (seal) {
+            ret = Collections.unmodifiableList(ret);
+        }
         return ret;
     }
 }

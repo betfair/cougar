@@ -72,6 +72,7 @@ public class  ${dataTypeName}Builder implements Builder<${dataTypeName}> {
     public ${dataTypeName}Builder () {}
 
     public ${dataTypeName} build() {
+        value.seal();
         return value;
     }
 
