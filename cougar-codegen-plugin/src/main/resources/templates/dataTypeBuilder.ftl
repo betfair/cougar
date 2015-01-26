@@ -61,6 +61,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 public class  ${dataTypeName}Builder implements Builder<${dataTypeName}> {
 
     private final ${dataTypeName} value = new ${dataTypeName}();
+    private boolean seal = true;
 
 <#assign paramNameTypeHash={}>
 <#assign paramHash={}>
@@ -72,8 +73,15 @@ public class  ${dataTypeName}Builder implements Builder<${dataTypeName}> {
     public ${dataTypeName}Builder () {}
 
     public ${dataTypeName} build() {
-        value.seal();
+        if (seal) {
+            value.seal();
+        }
         return value;
+    }
+
+    public ${dataTypeName}Builder leaveModifiable() {
+        seal = false;
+        return this;
     }
 
 <#if mapNameArray?size!=0>
