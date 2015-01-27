@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,17 +22,20 @@ import com.betfair.baseline.v2.enumerations.SimpleExceptionErrorCodeEnum;
 import com.betfair.baseline.v2.exception.SimpleException;
 import com.betfair.baseline.v2.to.MandatoryParamsRequest;
 import com.betfair.cougar.api.ResponseCode;
+import com.betfair.cougar.core.api.ev.ExecutionObserver;
+import com.betfair.cougar.core.api.ev.ExecutionResult;
+import com.betfair.cougar.core.api.ev.WaitingObserver;
 import com.betfair.cougar.core.api.exception.CougarClientException;
 import com.betfair.cougar.core.api.exception.ServerFaultCode;
 import com.betfair.cougar.tests.clienttests.ClientTestsHelper;
 import com.betfair.cougar.tests.clienttests.CougarClientWrapper;
+import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
-import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.assertTrue;
-import static org.testng.AssertJUnit.fail;
+
+import static org.testng.AssertJUnit.*;
 
 /**
  * Ensure that when a request with a non mandatory query parameter not set is performed against cougar via a cougar client the request is sent and the response is handled correctly
@@ -113,6 +117,32 @@ public class ClientExceptionsTest {
             if (cse.getCause() != null) {
                 assertEquals("Read timed out", cse.getCause().getMessage());
             }
+        }
+        finally {
+            wrapper.getClient().cancelSleeps(wrapper.getCtx());
+        }
+    }
+
+    @Test(dataProvider = "TransportType")
+    public void asyncZeroTimeout(CougarClientWrapper.TransportType tt) throws Exception {
+        if (!tt.isAsync()) {
+            return;
+        }
+        CougarClientWrapper wrapper = CougarClientWrapper.getInstance(tt);
+        // Make call to the method via client and validate the response is as expected
+        // this should fail to respond in time for the observer since 0 == no timeout
+        // we have the timeout set at 24h so it doesn't randomly log in the middle of another test which doesn't expect it
+        try {
+            WaitingObserver obs = new WaitingObserver();
+            wrapper.getAsyncClient().testSleep(wrapper.getCtx(), 86400000L, obs, 0L);
+            boolean response = obs.await(5000);
+            if (response) {
+                ExecutionResult result = obs.getExecutionResult();
+                if (result.isFault()) {
+                    Assert.fail("Didn't expect a fault response", result.getFault());
+                }
+            }
+            assertFalse("Shouldn't have received a response", response);
         }
         finally {
             wrapper.getClient().cancelSleeps(wrapper.getCtx());

@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +17,7 @@
 
 package com.betfair.cougar.tests.clienttests;
 
+import com.betfair.baseline.v2.BaselineClient;
 import com.betfair.baseline.v2.BaselineSyncClient;
 import com.betfair.baseline.v2.enumerations.PreOrPostInterceptorException;
 import com.betfair.baseline.v2.exception.SimpleException;
@@ -96,6 +98,7 @@ public class CougarClientWrapper {
     }
 
 	private BaselineSyncClient client;
+	private BaselineClient asyncClient;
 	private ExecutionContext ctx;
 
     private ClassPathXmlApplicationContext appContext;
@@ -146,6 +149,7 @@ public class CougarClientWrapper {
         CougarSpringCtxFactoryImpl cougarCtx = new CougarSpringCtxFactoryImpl();
         appContext = cougarCtx.create(null);
         client = (BaselineSyncClient) appContext.getBean("syncClient");
+        asyncClient = (BaselineClient) appContext.getBean("asyncClient");
         ctx = new CougarClientExecutionContext();
 	}
 
@@ -221,6 +225,10 @@ public class CougarClientWrapper {
 
     public BaselineSyncClient getClient() {
 		return client;
+	}
+
+    public BaselineClient getAsyncClient() {
+		return asyncClient;
 	}
 
 
