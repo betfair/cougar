@@ -71,7 +71,7 @@ public class ZipkinManager {
 
     public ZipkinRequestUUID createNewZipkinRequestUUID(@Nonnull RequestUUID cougarUuid, @Nullable String traceId,
                                                         @Nullable String spanId, @Nullable String parentSpanId,
-                                                        @Nullable String sampled, @Nullable String flags) {
+                                                        @Nullable String sampled, @Nullable String flags, int port) {
         Objects.requireNonNull(cougarUuid);
 
         if (Boolean.FALSE.equals(ZipkinKeys.sampledToBoolean(sampled))) {
@@ -90,7 +90,8 @@ public class ZipkinManager {
                     .traceId(hexUnsignedStringToLong(traceId))
                     .spanId(hexUnsignedStringToLong(spanId))
                     .parentSpanId(parentSpanId == null ? null : hexUnsignedStringToLong(parentSpanId))
-                    .flags(flags == null ? null : Long.valueOf(flags));
+                    .flags(flags == null ? null : Long.valueOf(flags))
+                    .port((short) port);
 
         } else {
 
@@ -103,7 +104,8 @@ public class ZipkinManager {
                         .traceId(getRandomLong())
                         .spanId(getRandomLong())
                         .parentSpanId(null)
-                        .flags(flags == null ? null : Long.valueOf(flags));
+                        .flags(flags == null ? null : Long.valueOf(flags))
+                        .port((short) port);
 
             } else {
                 // otherwise leave them as null - this means Zipkin tracing will be disabled for this request

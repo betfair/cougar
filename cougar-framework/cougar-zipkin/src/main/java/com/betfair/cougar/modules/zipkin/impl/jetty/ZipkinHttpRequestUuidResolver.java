@@ -47,8 +47,10 @@ public class ZipkinHttpRequestUuidResolver<Ignore> extends HttpRequestUuidResolv
         String parentSpanId = request.getHeader(ZipkinKeys.PARENT_SPAN_ID);
         String sampled = request.getHeader(ZipkinKeys.SAMPLED);
         String flags = request.getHeader(ZipkinKeys.FLAGS);
+        int port = request.getLocalPort();
 
-        RequestUUID requestUUID = zipkinManager.createNewZipkinRequestUUID(cougarUuid, traceId, spanId, parentSpanId, sampled, flags);
+        RequestUUID requestUUID = zipkinManager.createNewZipkinRequestUUID(cougarUuid, traceId, spanId, parentSpanId,
+                sampled, flags, port);
         contextBuilder.setRequestUUID(requestUUID);
     }
 }

@@ -38,7 +38,9 @@ public class ZipkinSocketRequestUuidResolver<Void> extends SocketRequestUuidReso
             flags = additionalData.get(ZipkinKeys.FLAGS);
         }
 
-        RequestUUID requestUUID = zipkinManager.createNewZipkinRequestUUID(cougarUuid, traceId, spanId, parentSpanId, sampled, flags);
+        //TODO: Obtain port
+        RequestUUID requestUUID = zipkinManager.createNewZipkinRequestUUID(cougarUuid, traceId, spanId, parentSpanId,
+                sampled, flags, 0);
         builder.setRequestUUID(requestUUID);
     }
 }
