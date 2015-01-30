@@ -8,7 +8,6 @@ import com.betfair.cougar.modules.zipkin.api.ZipkinRequestUUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
-import java.util.UUID;
 
 public class ZipkinRequestUUIDImpl implements ZipkinRequestUUID {
 
@@ -61,7 +60,7 @@ public class ZipkinRequestUUIDImpl implements ZipkinRequestUUID {
             // The child span name will still need to be set after, as it happened with the original zipkinDataBuilder.
             ZipkinDataBuilder newZipkinDataBuilder = new ZipkinDataImpl.Builder()
                     .traceId(zipkinData.getTraceId())
-                    .spanId(UUID.randomUUID().getMostSignificantBits())
+                    .spanId(ZipkinManager.getRandomLong())
                     .parentSpanId(zipkinData.getSpanId())
                     .port(zipkinData.getPort());
 

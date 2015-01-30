@@ -9,8 +9,10 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.security.SecureRandom;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 @ManagedResource(description = "Zipkin tracing config", objectName = "Cougar:name=ZipkinManager")
@@ -19,9 +21,25 @@ public class ZipkinManager {
     private static final int MIN_LEVEL = 0;
     private static final int MAX_LEVEL = 1000;
 
+    private static final int HEX_RADIX = 16;
+
+    // Fast - Pseudo-random used for sampling
     private static final ThreadLocalRandom RANDOM = ThreadLocalRandom.current();
 
+    // Can be arbitrarily slow (depends on the amount of entropy in the OS)
+    // Used for long (complete 64-bit range) ID generation
+    private static final ThreadLocal<SecureRandom> SECURE_RANDOM_TL = new ThreadLocal<SecureRandom>() {
+        @Override
+        public SecureRandom initialValue() {
+            return new SecureRandom();
+        }
+    };
+
     private int samplingLevel = 0;
+
+    static {
+        SECURE_RANDOM_TL.set(new SecureRandom());
+    }
 
     /**
      * Sampling strategy to determine whether a given request should be traced by Zipkin.
@@ -69,9 +87,9 @@ public class ZipkinManager {
             // a request with the fields is always traceable so we always propagate the tracing to the following calls
 
             zipkinDataBuilder = new ZipkinDataImpl.Builder()
-                    .traceId(hexStringToLong(traceId))
-                    .spanId(hexStringToLong(spanId))
-                    .parentSpanId(parentSpanId == null ? null : hexStringToLong(parentSpanId))
+                    .traceId(hexUnsignedStringToLong(traceId))
+                    .spanId(hexUnsignedStringToLong(spanId))
+                    .parentSpanId(parentSpanId == null ? null : hexUnsignedStringToLong(parentSpanId))
                     .flags(flags == null ? null : Long.valueOf(flags));
 
         } else {
@@ -81,10 +99,9 @@ public class ZipkinManager {
                 // nevertheless, if there are any flags we get them so we can act on them and pass them on to the
                 // underlying services
 
-                UUID uuid = UUID.randomUUID();
                 zipkinDataBuilder = new ZipkinDataImpl.Builder()
-                        .traceId(uuid.getLeastSignificantBits())
-                        .spanId(uuid.getMostSignificantBits())
+                        .traceId(getRandomLong())
+                        .spanId(getRandomLong())
                         .parentSpanId(null)
                         .flags(flags == null ? null : Long.valueOf(flags));
 
@@ -98,7 +115,16 @@ public class ZipkinManager {
         return new ZipkinRequestUUIDImpl(cougarUuid, zipkinDataBuilder);
     }
 
-    private static long hexStringToLong(@Nonnull String hexValue) {
-        return Long.parseLong(hexValue, 16);
+    public static long getRandomLong() {
+        byte[] rndBytes = new byte[8];
+        SECURE_RANDOM_TL.get().nextBytes(rndBytes);
+        return ByteBuffer.wrap(rndBytes).getLong();
+    }
+
+    public static long hexUnsignedStringToLong(@Nonnull String hexValue) {
+        // Long.parseLong receives signed longs, but Long.toHexString uses unsigned longs, so we need to use BigInteger
+        // in order to parse the unsigned string created by Long.toHexString and then obtain the value without raising
+        // an NumberFormatException caused by long overflow.
+        return new BigInteger(hexValue, HEX_RADIX).longValue();
     }
 }
