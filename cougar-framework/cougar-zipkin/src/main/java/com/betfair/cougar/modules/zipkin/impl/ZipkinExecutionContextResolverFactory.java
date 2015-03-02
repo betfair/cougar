@@ -55,7 +55,7 @@ public class ZipkinExecutionContextResolverFactory implements DehydratedExecutio
                     (DehydratedExecutionContextResolver<T, B>) new ZipkinSocketRequestUuidResolver<>(zipkinManager)
             };
         }
-        // i can't handle other protocols
+        // I can't handle other protocols
         return null;
     }
 

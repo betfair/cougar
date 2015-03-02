@@ -125,8 +125,9 @@ public class ZipkinRequestUUIDImpl implements ZipkinRequestUUID {
 
     @Override
     public String toString() {
-        // currently i think this is used for the logs, and I think it needs to
-        // change to use getUUID which should be renamed to be more explicit
-        return zipkinData + getUUID();
+        return "ZipkinRequestUUIDImpl{" +
+                "cougarUuid=" + getUUID() +
+                ", zipkinData=" + zipkinData +
+                '}';
     }
 }
