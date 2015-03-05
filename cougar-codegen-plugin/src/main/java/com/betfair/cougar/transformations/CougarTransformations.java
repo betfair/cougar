@@ -44,7 +44,6 @@ import javax.xml.xpath.XPathExpressionException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 
 public class CougarTransformations implements Transformations{
     protected List<Transformation> transformations = new ArrayList<Transformation>();
@@ -64,6 +63,10 @@ public class CougarTransformations implements Transformations{
     };
 
     public CougarTransformations() {
+        this(false);
+    }
+
+    public CougarTransformations(boolean legacyExceptionModeValidation) {
         super();
         Transformation[] definitions = new Transformation[] {
                 //directory name should not  contain / at the end
@@ -85,7 +88,12 @@ public class CougarTransformations implements Transformations{
                 new Transformation("dataTypeDelegate.ftl", "/interface/dataType", "${package}/${majorVersion}/to", "${name}Delegate.java", false, false, OutputDomain.Client_and_Server),
                 new Transformation("events/event.ftl", "/interface/event", "${package}/${majorVersion}/events", "${name}.java", true, false, OutputDomain.Client_and_Server),
                 new Transformation("events/jmsServiceBindingDescriptor.ftl", "/interface", "${package}/${majorVersion}/events", "${name}JMSServiceBindingDescriptor.java", true, false, OutputDomain.Client_and_Server),
-                new Transformation("exception.ftl", "/interface/exceptionType", "${package}/${majorVersion}/exception", "${name}.java",false, false, OutputDomain.Client_and_Server),
+
+                (legacyExceptionModeValidation ?
+                    new Transformation("exceptionLegacy.ftl", "/interface/exceptionType", "${package}/${majorVersion}/exception", "${name}.java", false, false, OutputDomain.Client_and_Server) :
+                    new Transformation("exception.ftl", "/interface/exceptionType", "${package}/${majorVersion}/exception", "${name}.java", false, false, OutputDomain.Client_and_Server)
+                ),
+
                 new Transformation("exceptionFactory.ftl", "/interface", "${package}/${majorVersion}/exception", "${name}ExceptionFactory.java",false, false, OutputDomain.Client),
                 new Transformation("enum.ftl", "//parameter/validValues", "${package}/${majorVersion}/enumerations", "${name}Enum.java",true, true, OutputDomain.Client_and_Server),
                 new Transformation("wrappedValueEnum.ftl", "//simpleResponse/validValues", "${package}/${majorVersion}/enumerations", "${name}WrappedValueEnum.java",true, false, OutputDomain.Client_and_Server),
@@ -107,7 +115,7 @@ public class CougarTransformations implements Transformations{
 
         validations.add(new DataTypeValidator());
         validations.add(new OperationValidator());
-        validations.add(new ExceptionValidator());
+        validations.add(new ExceptionValidator(legacyExceptionModeValidation));
         validations.add(new ValidValuesValidator());
         validations.add(new RequestParameterValidator());
         validations.add(new NameClashValidator());

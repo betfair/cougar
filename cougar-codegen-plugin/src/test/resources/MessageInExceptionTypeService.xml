@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~ Copyright 2014, The Sporting Exchange Limited
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<interface name="MessageInExceptionTypeService" version="1.0"
+           namespace="com.betfair"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:noNamespaceSchemaLocation="http://www.betfair.com/BSIDL/4.0.xsd"
+           xmlns:xi="http://www.w3.org/2001/XInclude">
+
+    <authors><author name="Fred Flinstone" email="fred@flinstone.com"/></authors>
+    <description>A service for testing the exception message param toggle</description>
+    <operation name="testSimpleGet" since="1.0.0">
+        <description>test of an idempotent service.  takes a single arg and echos it back</description>
+        <parameters>
+            <request>
+                <parameter name="message" type="string" mandatory="true">
+                    <description>the message to echo</description>
+                </parameter>
+            </request>
+            <simpleResponse type="void">
+                <description>The response</description>
+            </simpleResponse>
+            <exceptions>
+                <exception type="TestException">
+                    <description>If the echo service fails for any reason</description>
+                </exception>
+            </exceptions>
+        </parameters>
+    </operation>
+
+    <dataType name="TextQuery">
+        <description></description>
+        <parameter name="query" type="string" mandatory="false">
+            <description>The text query itself</description>
+        </parameter>
+    </dataType>
+
+    <exceptionType name="TestException" prefix="TSX">
+        <description>Thrown by the service when a satisfactory response can't be returned</description>
+        <parameter name="errorCode" type="string">
+            <description>Error Code</description>
+            <validValues>
+                <value id="1" name="VALIDATION_ERROR">
+                    <description>Validation error</description>
+                </value>
+            </validValues>
+        </parameter>
+
+        <parameter name="message" type="string">
+            <description>This is a message describing the reason for the exception</description>
+        </parameter>
+    </exceptionType>
+</interface>

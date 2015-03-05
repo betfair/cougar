@@ -26,8 +26,17 @@ import com.betfair.cougar.codegen.ValidationException;
 
 public class ExceptionValidator extends AbstractValidator {
 	private Set<String> exceptionNames = new HashSet<String>();
+    private boolean legacyExceptionModeValidation;
 
-	@Override
+    public ExceptionValidator() {
+        this(false);
+    }
+
+    public ExceptionValidator(boolean legacyExceptionModeValidation) {
+        this.legacyExceptionModeValidation = legacyExceptionModeValidation;
+    }
+
+    @Override
 	public boolean nodeMustExist() {
 		return true;
 	}
@@ -70,7 +79,7 @@ public class ExceptionValidator extends AbstractValidator {
             if (paramType.toLowerCase().equals("datetime")) {
                 throw new ValidationException("Datetime arguments [" + paramName + "] are not permitted as exception parameters", param);
             }
-            if (paramName.equals("message") || paramName.equals("Message")) {
+            if (!legacyExceptionModeValidation && (paramName.equals("message") || paramName.equals("Message"))) {
                 throw new ValidationException("Exceptions can't have a parameter named [message]", param);
             }
             if (paramName.equals("localizedMessage") || paramName.equals("LocalizedMessage")) {
