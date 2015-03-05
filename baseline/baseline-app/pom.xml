@@ -48,17 +48,11 @@
                                 <service>
                                     <serviceName>LocalisationService</serviceName>
                                 </service>
-                                <!--
-                                <service>
-                                    <serviceName>CustomerReadOnlyService</serviceName>
-                                </service>
-                                -->
                             </services>
                             <iddAsResource>true</iddAsResource>
                             <!-- run as both a client and a server -->
                             <client>true</client>
                             <server>true</server>
-                            <legacyExceptionParamValidation>false</legacyExceptionParamValidation>
                         </configuration>
                     </execution>
                     <execution>
@@ -101,29 +95,6 @@
         </resources>
     </build>
     <dependencies>
-        <dependency>
-            <groupId>com.betfair.service.customer.readonly</groupId>
-            <artifactId>customer-readonly-service-idd</artifactId>
-            <version>1.7.6</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.betfair.platform</groupId>
-                    <artifactId>cougar-util</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.betfair.platform</groupId>
-                    <artifactId>cougar-core-impl</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.betfair.platform</groupId>
-                    <artifactId>cougar-transport-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.betfair.platform</groupId>
-                    <artifactId>cougar-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
         <dependency>
             <groupId>com.betfair.cougar</groupId>
             <artifactId>baseline-idd</artifactId>
