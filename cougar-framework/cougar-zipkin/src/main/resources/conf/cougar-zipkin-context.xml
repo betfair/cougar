@@ -17,10 +17,14 @@
         <property name="samplingLevel" value="$COUGAR_ZIPKIN{zipkin.samplingLevel}"/>
     </bean>
 
+    <bean id="zipkinClock" class="java.time.Clock" factory-method="systemUTC">
+    </bean>
+
     <bean id="zipkinEmitter" class="com.betfair.cougar.modules.zipkin.impl.ZipkinEmitter">
         <constructor-arg index="0" value="#{T(com.betfair.cougar.util.geolocation.RemoteAddressUtils).getIPv4AsInteger()}"/>
         <constructor-arg index="1" value="$COUGAR{cougar.app.name}"/>
         <constructor-arg index="2" ref="zipkinSpanCollector"/>
+        <constructor-arg index="3" ref="zipkinClock"/>
     </bean>
 
     <bean id="zipkinSpanCollector" class="com.github.kristofa.brave.zipkin.ZipkinSpanCollector">

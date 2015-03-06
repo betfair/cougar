@@ -1,15 +1,13 @@
 package com.betfair.cougar.modules.zipkin.impl;
 
 import com.betfair.cougar.modules.zipkin.api.ZipkinData;
+import com.google.common.collect.Lists;
 import com.twitter.zipkin.gen.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 public final class ZipkinAnnotationsStore {
 
@@ -22,30 +20,31 @@ public final class ZipkinAnnotationsStore {
     private static final ByteBuffer FALSE_BB = ByteBuffer.wrap(new byte[]{0});
 
 
-    private ZipkinData zipkinData;
-    private List<Annotation> annotations;
-    private List<BinaryAnnotation> binaryAnnotations;
     private Endpoint defaultEndpoint;
+    private Span underlyingSpan;
 
     ZipkinAnnotationsStore(@Nonnull ZipkinData zipkinData) {
-        this.zipkinData = zipkinData;
-        this.annotations = new ArrayList<>();
-        this.binaryAnnotations = new ArrayList<>();
+        this.underlyingSpan = new Span(zipkinData.getTraceId(), zipkinData.getSpanName(), zipkinData.getSpanId(),
+                Lists.<Annotation>newArrayList(), Lists.<BinaryAnnotation>newArrayList());
+
+        if (zipkinData.getParentSpanId() != null) {
+            underlyingSpan.setParent_id(zipkinData.getParentSpanId());
+        }
     }
 
 
     // PUBLIC METHODS
 
     /**
-     * Append annotation with value s and timestamp now.
+     * Add an annotation for an event that happened on a specific timestamp
      *
-     * @param s Annotation value to emit
+     * @param timestamp The timestamp of the annotation, in microseconds
+     * @param s         Annotation value to emit
      * @return this object
      */
     @Nonnull
-    public ZipkinAnnotationsStore addAnnotation(@Nonnull String s) {
-        long timestampMicro = TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis());
-        return addAnnotation(timestampMicro, s, defaultEndpoint);
+    public ZipkinAnnotationsStore addAnnotation(long timestamp, @Nonnull String s) {
+        return addAnnotation(timestamp, s, defaultEndpoint);
     }
 
     @Nonnull
@@ -99,7 +98,7 @@ public final class ZipkinAnnotationsStore {
             // endpoint is optional - current version of zipkin web doesn't show spans without host though
             annotation.setHost(endpoint);
         }
-        annotations.add(annotation);
+        underlyingSpan.addToAnnotations(annotation);
         return this;
     }
 
@@ -113,24 +112,28 @@ public final class ZipkinAnnotationsStore {
     @Nonnull
     ZipkinAnnotationsStore addBinaryAnnotation(@Nonnull String key, short value, @Nonnull Endpoint endpoint) {
         ByteBuffer wrappedValue = ByteBuffer.allocate(SHORT_SIZE_B).putShort(value);
-        return addBinaryAnnotation(key, wrappedValue, AnnotationType.BOOL, endpoint);
+        wrappedValue.flip();
+        return addBinaryAnnotation(key, wrappedValue, AnnotationType.I16, endpoint);
     }
 
     @Nonnull
     ZipkinAnnotationsStore addBinaryAnnotation(@Nonnull String key, int value, @Nonnull Endpoint endpoint) {
         ByteBuffer wrappedValue = ByteBuffer.allocate(INT_SIZE_B).putInt(value);
+        wrappedValue.flip();
         return addBinaryAnnotation(key, wrappedValue, AnnotationType.I32, endpoint);
     }
 
     @Nonnull
     ZipkinAnnotationsStore addBinaryAnnotation(@Nonnull String key, long value, @Nonnull Endpoint endpoint) {
         ByteBuffer wrappedValue = ByteBuffer.allocate(LONG_SIZE_B).putLong(value);
+        wrappedValue.flip();
         return addBinaryAnnotation(key, wrappedValue, AnnotationType.I64, endpoint);
     }
 
     @Nonnull
     ZipkinAnnotationsStore addBinaryAnnotation(@Nonnull String key, double value, @Nonnull Endpoint endpoint) {
         ByteBuffer wrappedValue = ByteBuffer.allocate(DOUBLE_SIZE_B).putDouble(value);
+        wrappedValue.flip();
         return addBinaryAnnotation(key, wrappedValue, AnnotationType.DOUBLE, endpoint);
     }
 
@@ -143,18 +146,13 @@ public final class ZipkinAnnotationsStore {
     @Nonnull
     ZipkinAnnotationsStore addBinaryAnnotation(@Nonnull String key, byte[] value, @Nonnull Endpoint endpoint) {
         ByteBuffer wrappedValue = ByteBuffer.wrap(value);
-        return addBinaryAnnotation(key, wrappedValue, AnnotationType.BOOL, endpoint);
+        return addBinaryAnnotation(key, wrappedValue, AnnotationType.BYTES, endpoint);
     }
 
 
     @Nonnull
     Span generate() {
-        Span span = new Span(zipkinData.getTraceId(), zipkinData.getSpanName(), zipkinData.getSpanId(), annotations,
-                binaryAnnotations);
-        if (zipkinData.getParentSpanId() != null) {
-            span.setParent_id(zipkinData.getParentSpanId());
-        }
-        return span;
+        return underlyingSpan;
     }
 
 
@@ -168,7 +166,7 @@ public final class ZipkinAnnotationsStore {
             // endpoint is optional - current version of zipkin web doesn't show spans without host though
             binaryAnnotation.setHost(endpoint);
         }
-        binaryAnnotations.add(binaryAnnotation);
+        underlyingSpan.addToBinary_annotations(binaryAnnotation);
         return this;
     }
 }

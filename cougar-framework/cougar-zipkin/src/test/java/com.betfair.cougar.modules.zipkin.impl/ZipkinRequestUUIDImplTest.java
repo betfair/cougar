@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -25,6 +24,9 @@ public class ZipkinRequestUUIDImplTest {
 
     @Mock
     private ZipkinDataBuilder zipkinDataBuilder;
+
+    @Mock
+    private RequestUUID requestUUID;
 
     @Before
     public void init() {
@@ -115,27 +117,23 @@ public class ZipkinRequestUUIDImplTest {
     @Test
     public void buildZipkinData_WhenCalledForTheFirstTime_ShouldPopulateAndReturnZipkinData() {
         String spanName = "Span Name";
-        ZipkinData expectedZipkinData = mock(ZipkinData.class);
-        ZipkinDataBuilder interimZipkinDataBuilder = mock(ZipkinDataBuilder.class);
 
-        when(zipkinDataBuilder.spanName(spanName)).thenReturn(interimZipkinDataBuilder);
-        when(interimZipkinDataBuilder.build()).thenReturn(expectedZipkinData);
+        when(zipkinDataBuilder.spanName(spanName)).thenReturn(zipkinDataBuilder);
+        when(zipkinDataBuilder.build()).thenReturn(zipkinData);
 
         victim = new ZipkinRequestUUIDImpl(cougarUuid, zipkinDataBuilder);
 
         ZipkinData result = victim.buildZipkinData(spanName);
 
-        assertEquals(expectedZipkinData, result);
+        assertEquals(zipkinData, result);
     }
 
     @Test(expected = IllegalStateException.class)
     public void buildZipkinData_WhenZipkinDataAlreadyExists_ShouldThrowISE() {
         String spanName = "Span Name";
-        ZipkinData expectedZipkinData = mock(ZipkinData.class);
-        ZipkinDataBuilder interimZipkinDataBuilder = mock(ZipkinDataBuilder.class);
 
-        when(zipkinDataBuilder.spanName(spanName)).thenReturn(interimZipkinDataBuilder);
-        when(interimZipkinDataBuilder.build()).thenReturn(expectedZipkinData);
+        when(zipkinDataBuilder.spanName(spanName)).thenReturn(zipkinDataBuilder);
+        when(zipkinDataBuilder.build()).thenReturn(zipkinData);
 
         victim = new ZipkinRequestUUIDImpl(cougarUuid, zipkinDataBuilder);
 
@@ -156,11 +154,9 @@ public class ZipkinRequestUUIDImplTest {
     @Test
     public void isZipkinTracingReady_WhenZipkinDataHasBeenBuilt_ShouldReturnTrue() {
         String spanName = "Span Name";
-        ZipkinData expectedZipkinData = mock(ZipkinData.class);
-        ZipkinDataBuilder interimZipkinDataBuilder = mock(ZipkinDataBuilder.class);
 
-        when(zipkinDataBuilder.spanName(spanName)).thenReturn(interimZipkinDataBuilder);
-        when(interimZipkinDataBuilder.build()).thenReturn(expectedZipkinData);
+        when(zipkinDataBuilder.spanName(spanName)).thenReturn(zipkinDataBuilder);
+        when(zipkinDataBuilder.build()).thenReturn(zipkinData);
 
         victim = new ZipkinRequestUUIDImpl(cougarUuid, zipkinDataBuilder);
 
@@ -174,16 +170,13 @@ public class ZipkinRequestUUIDImplTest {
         String zipkinSpanName = "Span Name";
         String cougarLogString = "abcde-1234-fghij-5678-klmno";
         String zipkinDataToString = "ZipkinDataImpl{spanName=" + zipkinSpanName + "}";
-        ZipkinData expectedZipkinData = mock(ZipkinData.class);
         String expectedResult = "ZipkinRequestUUIDImpl{cougarUuid=" + cougarLogString +
                 ", zipkinData=" + zipkinDataToString + "}";
 
-        ZipkinDataBuilder interimZipkinDataBuilder = mock(ZipkinDataBuilder.class);
-
-        when(zipkinDataBuilder.spanName(zipkinSpanName)).thenReturn(interimZipkinDataBuilder);
-        when(interimZipkinDataBuilder.build()).thenReturn(expectedZipkinData);
+        when(zipkinDataBuilder.spanName(zipkinSpanName)).thenReturn(zipkinDataBuilder);
+        when(zipkinDataBuilder.build()).thenReturn(zipkinData);
         when(cougarUuid.toCougarLogString()).thenReturn(cougarLogString);
-        when(expectedZipkinData.toString()).thenReturn(zipkinDataToString);
+        when(zipkinData.toString()).thenReturn(zipkinDataToString);
 
         victim = new ZipkinRequestUUIDImpl(cougarUuid, zipkinDataBuilder);
 
@@ -196,17 +189,15 @@ public class ZipkinRequestUUIDImplTest {
     @Test
     public void getZipkinData_WhenZipkinDataHasBeenBuilt_ShouldReturnBuiltData() {
         String spanName = "Span Name";
-        ZipkinData expectedZipkinData = mock(ZipkinData.class);
-        ZipkinDataBuilder interimZipkinDataBuilder = mock(ZipkinDataBuilder.class);
 
-        when(zipkinDataBuilder.spanName(spanName)).thenReturn(interimZipkinDataBuilder);
-        when(interimZipkinDataBuilder.build()).thenReturn(expectedZipkinData);
+        when(zipkinDataBuilder.spanName(spanName)).thenReturn(zipkinDataBuilder);
+        when(zipkinDataBuilder.build()).thenReturn(zipkinData);
 
         victim = new ZipkinRequestUUIDImpl(cougarUuid, zipkinDataBuilder);
 
         victim.buildZipkinData(spanName);
 
-        assertEquals(victim.getZipkinData(), expectedZipkinData);
+        assertEquals(victim.getZipkinData(), zipkinData);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -225,7 +216,6 @@ public class ZipkinRequestUUIDImplTest {
 
     @Test
     public void getNewSubUUID_WhenZipkinTracingIsNotEnabled_ChildShouldNotBeTracedEither() {
-        RequestUUID requestUUID = mock(RequestUUID.class);
 
         when(cougarUuid.getNewSubUUID()).thenReturn(requestUUID);
 
@@ -234,25 +224,22 @@ public class ZipkinRequestUUIDImplTest {
         RequestUUID result = victim.getNewSubUUID();
 
         assertNotNull(result);
-        assertFalse(((ZipkinRequestUUID)result).isZipkinTracingEnabled());
+        assertFalse(((ZipkinRequestUUID) result).isZipkinTracingEnabled());
     }
 
     @Test
     public void getNewSubUUID_WhenZipkinTracingIsEnabled_ShouldReturnTraceableChild() {
         String spanName = "Span Name";
-        ZipkinData expectedZipkinData = mock(ZipkinData.class);
-        ZipkinDataBuilder interimZipkinDataBuilder = mock(ZipkinDataBuilder.class);
-        RequestUUID requestUUID = mock(RequestUUID.class);
         long traceId = 123456789;
         long spanId = 987654321;
         short port = 9101;
 
-        when(zipkinDataBuilder.spanName(spanName)).thenReturn(interimZipkinDataBuilder);
-        when(interimZipkinDataBuilder.build()).thenReturn(expectedZipkinData);
+        when(zipkinDataBuilder.spanName(spanName)).thenReturn(zipkinDataBuilder);
+        when(zipkinDataBuilder.build()).thenReturn(zipkinData);
         when(cougarUuid.getNewSubUUID()).thenReturn(requestUUID);
-        when(expectedZipkinData.getTraceId()).thenReturn(traceId);
-        when(expectedZipkinData.getSpanId()).thenReturn(spanId);
-        when(expectedZipkinData.getPort()).thenReturn(port);
+        when(zipkinData.getTraceId()).thenReturn(traceId);
+        when(zipkinData.getSpanId()).thenReturn(spanId);
+        when(zipkinData.getPort()).thenReturn(port);
 
         victim = new ZipkinRequestUUIDImpl(cougarUuid, zipkinDataBuilder);
         victim.buildZipkinData(spanName);
@@ -260,6 +247,6 @@ public class ZipkinRequestUUIDImplTest {
         RequestUUID result = victim.getNewSubUUID();
 
         assertNotNull(result);
-        assertTrue(((ZipkinRequestUUID)result).isZipkinTracingEnabled());
+        assertTrue(((ZipkinRequestUUID) result).isZipkinTracingEnabled());
     }
 }

@@ -5,7 +5,9 @@ import com.github.kristofa.brave.zipkin.ZipkinSpanCollector;
 import com.twitter.zipkin.gen.Endpoint;
 
 import javax.annotation.Nonnull;
+import java.time.Clock;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import static com.twitter.zipkin.gen.zipkinCoreConstants.*;
 
@@ -17,14 +19,18 @@ public class ZipkinEmitter {
 
     private ZipkinSpanCollector zipkinSpanCollector;
 
+    private final Clock clock;
 
-    public ZipkinEmitter(int serviceIPv4, @Nonnull String serviceName, @Nonnull ZipkinSpanCollector zipkinSpanCollector) {
+    public ZipkinEmitter(int serviceIPv4, @Nonnull String serviceName, @Nonnull ZipkinSpanCollector zipkinSpanCollector,
+                         @Nonnull Clock clock) {
         Objects.requireNonNull(serviceName);
         Objects.requireNonNull(zipkinSpanCollector);
+        Objects.requireNonNull(clock);
 
         this.serviceIPv4 = serviceIPv4;
         this.serviceName = serviceName;
         this.zipkinSpanCollector = zipkinSpanCollector;
+        this.clock = clock;
     }
 
     public void emitServerReceive(@Nonnull ZipkinData zipkinData) {
@@ -71,7 +77,10 @@ public class ZipkinEmitter {
     // Single annotation emission methods
 
     public void emitAnnotation(@Nonnull ZipkinData zipkinData, @Nonnull String s) {
-        ZipkinAnnotationsStore store = prepareEmission(zipkinData, s).addAnnotation(s);
+        long timestampMillis = clock.millis();
+        long timestampMicros = TimeUnit.MILLISECONDS.toMicros(timestampMillis);
+
+        ZipkinAnnotationsStore store = prepareEmission(zipkinData, s).addAnnotation(timestampMicros, s);
         emitAnnotations(store);
     }
 
