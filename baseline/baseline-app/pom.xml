@@ -45,9 +45,6 @@
                                 <service>
                                     <serviceName>BaselineService</serviceName>
                                 </service>
-                                <service>
-                                    <serviceName>LocalisationService</serviceName>
-                                </service>
                             </services>
                             <iddAsResource>true</iddAsResource>
                             <!-- run as both a client and a server -->
