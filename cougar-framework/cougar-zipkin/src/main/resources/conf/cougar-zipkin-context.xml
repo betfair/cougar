@@ -13,7 +13,7 @@
         <property name="placeholderPrefix" value="$COUGAR_ZIPKIN{"/>
     </bean>
 
-    <bean id="zikinConfig" class="com.betfair.cougar.modules.zipkin.impl.ZipkinManager">
+    <bean id="zipkinConfig" class="com.betfair.cougar.modules.zipkin.impl.ZipkinManager">
         <property name="samplingLevel" value="$COUGAR_ZIPKIN{zipkin.samplingLevel}"/>
     </bean>
 

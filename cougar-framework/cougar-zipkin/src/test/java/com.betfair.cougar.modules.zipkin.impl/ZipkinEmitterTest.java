@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
+import java.nio.ByteBuffer;
 import java.time.Clock;
 import java.util.Collections;
 import java.util.List;
@@ -41,6 +42,8 @@ public class ZipkinEmitterTest {
     private Endpoint endpoint = new Endpoint(serviceIPv4, port, serviceName);
     private long timestampMillis = 327;
     private long timestampMicros = TimeUnit.MILLISECONDS.toMicros(timestampMillis);
+
+    private String key = "key";
 
     @Before
     public void init() {
@@ -135,18 +138,133 @@ public class ZipkinEmitterTest {
         verify(zipkinSpanCollector).collect(expectedSpan);
     }
 
-//    @Test
-//    public void emitAnnotation_OnStringOverload_ShouldEmitAnnotation() {
-//
-//        Annotation annotation = new Annotation(timestampMicros, zipkinCoreConstants.CLIENT_RECV);
-//        annotation.setHost(endpoint);
-//        List<BinaryAnnotation> binaryAnnotations = Collections.emptyList();
-//
-//        Span expectedSpan = new Span(traceId, spanName, spanId, Lists.newArrayList(annotation), binaryAnnotations);
-//        expectedSpan.setParent_id(0);
-//
-//        victim.emitClientReceive(zipkinData);
-//
-//        verify(zipkinSpanCollector).collect(expectedSpan);
-//    }
+    @Test
+    public void emitAnnotation_OnStringOverload_ShouldEmitAnnotation() {
+
+        String value = "value";
+        ByteBuffer wrappedValue = ByteBuffer.wrap(value.getBytes());
+
+        BinaryAnnotation binaryAnnotation =
+                new BinaryAnnotation(key, wrappedValue, AnnotationType.STRING);
+        binaryAnnotation.setHost(endpoint);
+        List<Annotation> annotations = Collections.emptyList();
+
+        Span expectedSpan = new Span(traceId, spanName, spanId, annotations, Lists.newArrayList(binaryAnnotation));
+        expectedSpan.setParent_id(0);
+
+        victim.emitAnnotation(zipkinData, key, value);
+
+        verify(zipkinSpanCollector).collect(expectedSpan);
+    }
+
+    @Test
+    public void emitAnnotation_OnShortOverload_ShouldEmitAnnotation() {
+
+        short value = 327;
+        ByteBuffer wrappedValue = ByteBuffer.allocate(Short.SIZE / 8).putShort(value);
+        wrappedValue.flip();
+
+        BinaryAnnotation binaryAnnotation = new BinaryAnnotation(key, wrappedValue, AnnotationType.I16);
+        binaryAnnotation.setHost(endpoint);
+        List<Annotation> annotations = Collections.emptyList();
+
+        Span expectedSpan = new Span(traceId, spanName, spanId, annotations, Lists.newArrayList(binaryAnnotation));
+        expectedSpan.setParent_id(0);
+
+        victim.emitAnnotation(zipkinData, key, value);
+
+        verify(zipkinSpanCollector).collect(expectedSpan);
+    }
+
+    @Test
+    public void emitAnnotation_OnIntOverload_ShouldEmitAnnotation() {
+
+        int value = 327;
+        ByteBuffer wrappedValue = ByteBuffer.allocate(Integer.SIZE / 8).putInt(value);
+        wrappedValue.flip();
+
+        BinaryAnnotation binaryAnnotation = new BinaryAnnotation(key, wrappedValue, AnnotationType.I32);
+        binaryAnnotation.setHost(endpoint);
+        List<Annotation> annotations = Collections.emptyList();
+
+        Span expectedSpan = new Span(traceId, spanName, spanId, annotations, Lists.newArrayList(binaryAnnotation));
+        expectedSpan.setParent_id(0);
+
+        victim.emitAnnotation(zipkinData, key, value);
+
+        verify(zipkinSpanCollector).collect(expectedSpan);
+    }
+
+    @Test
+    public void emitAnnotation_OnLongOverload_ShouldEmitAnnotation() {
+
+        long value = 327L;
+        ByteBuffer wrappedValue = ByteBuffer.allocate(Long.SIZE / 8).putLong(value);
+        wrappedValue.flip();
+
+        BinaryAnnotation binaryAnnotation = new BinaryAnnotation(key, wrappedValue, AnnotationType.I64);
+        binaryAnnotation.setHost(endpoint);
+        List<Annotation> annotations = Collections.emptyList();
+
+        Span expectedSpan = new Span(traceId, spanName, spanId, annotations, Lists.newArrayList(binaryAnnotation));
+        expectedSpan.setParent_id(0);
+
+        victim.emitAnnotation(zipkinData, key, value);
+
+        verify(zipkinSpanCollector).collect(expectedSpan);
+    }
+
+    @Test
+    public void emitAnnotation_OnDoubleOverload_ShouldEmitAnnotation() {
+
+        double value = 327D;
+        ByteBuffer wrappedValue = ByteBuffer.allocate(Double.SIZE / 8).putDouble(value);
+        wrappedValue.flip();
+
+        BinaryAnnotation binaryAnnotation = new BinaryAnnotation(key, wrappedValue, AnnotationType.DOUBLE);
+        binaryAnnotation.setHost(endpoint);
+        List<Annotation> annotations = Collections.emptyList();
+
+        Span expectedSpan = new Span(traceId, spanName, spanId, annotations, Lists.newArrayList(binaryAnnotation));
+        expectedSpan.setParent_id(0);
+
+        victim.emitAnnotation(zipkinData, key, value);
+
+        verify(zipkinSpanCollector).collect(expectedSpan);
+    }
+
+    @Test
+    public void emitAnnotation_OnBooleanOverload_ShouldEmitAnnotation() {
+
+        ByteBuffer wrappedValue = ByteBuffer.wrap(new byte[]{1});
+
+        BinaryAnnotation binaryAnnotation = new BinaryAnnotation(key, wrappedValue, AnnotationType.BOOL);
+        binaryAnnotation.setHost(endpoint);
+        List<Annotation> annotations = Collections.emptyList();
+
+        Span expectedSpan = new Span(traceId, spanName, spanId, annotations, Lists.newArrayList(binaryAnnotation));
+        expectedSpan.setParent_id(0);
+
+        victim.emitAnnotation(zipkinData, key, true);
+
+        verify(zipkinSpanCollector).collect(expectedSpan);
+    }
+
+    @Test
+    public void emitAnnotation_OnBytesOverload_ShouldEmitAnnotation() {
+
+        byte[] value = "327".getBytes();
+        ByteBuffer wrappedValue = ByteBuffer.wrap(value);
+
+        BinaryAnnotation binaryAnnotation = new BinaryAnnotation(key, wrappedValue, AnnotationType.BYTES);
+        binaryAnnotation.setHost(endpoint);
+        List<Annotation> annotations = Collections.emptyList();
+
+        Span expectedSpan = new Span(traceId, spanName, spanId, annotations, Lists.newArrayList(binaryAnnotation));
+        expectedSpan.setParent_id(0);
+
+        victim.emitAnnotation(zipkinData, key, value);
+
+        verify(zipkinSpanCollector).collect(expectedSpan);
+    }
 }

@@ -24,7 +24,7 @@ public class ZipkinManager {
     private static final int HEX_RADIX = 16;
 
     // Fast - Pseudo-random used for sampling
-    private static final ThreadLocalRandom RANDOM = ThreadLocalRandom.current();
+    private static ThreadLocalRandom RANDOM = ThreadLocalRandom.current();
 
     // Can be arbitrarily slow (depends on the amount of entropy in the OS)
     // Used for long (complete 64-bit range) ID generation
