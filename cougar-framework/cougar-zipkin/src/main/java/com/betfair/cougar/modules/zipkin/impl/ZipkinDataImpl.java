@@ -20,7 +20,6 @@ public class ZipkinDataImpl implements ZipkinData {
 
     private ZipkinDataImpl(@Nonnull Builder builder) {
         Objects.requireNonNull(builder);
-        Objects.requireNonNull(builder.spanName);
 
         traceId = builder.traceId;
         spanId = builder.spanId;
@@ -28,6 +27,8 @@ public class ZipkinDataImpl implements ZipkinData {
         spanName = builder.spanName;
         port = builder.port;
         flags = builder.flags;
+
+        Objects.requireNonNull(spanName);
     }
 
     @Override

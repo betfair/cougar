@@ -1,11 +1,11 @@
 package com.betfair.cougar.modules.zipkin.impl;
 
 import com.betfair.cougar.modules.zipkin.api.ZipkinData;
+import com.betfair.cougar.util.time.Clock;
 import com.github.kristofa.brave.zipkin.ZipkinSpanCollector;
 import com.twitter.zipkin.gen.Endpoint;
 
 import javax.annotation.Nonnull;
-import java.time.Clock;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 

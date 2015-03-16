@@ -1,6 +1,7 @@
 package com.betfair.cougar.modules.zipkin.impl;
 
 import com.betfair.cougar.modules.zipkin.api.ZipkinData;
+import com.betfair.cougar.util.time.Clock;
 import com.github.kristofa.brave.zipkin.ZipkinSpanCollector;
 import com.google.common.collect.Lists;
 import com.twitter.zipkin.gen.*;
@@ -9,7 +10,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 
 import java.nio.ByteBuffer;
-import java.time.Clock;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
