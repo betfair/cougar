@@ -21,7 +21,7 @@
     <parent>
         <groupId>com.betfair.cougar</groupId>
         <artifactId>cougar-framework</artifactId>
-        <version>3.2-SNAPSHOT</version>
+        <version>3.2.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>cougar-client</artifactId>
