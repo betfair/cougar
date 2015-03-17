@@ -52,6 +52,7 @@ find . -name "*.releaseBackup" -exec rm {} \;
 rm release.properties
 mvn versions:set -DnewVersion=3.2.0-SNAPSHOT
 find . -name "pom.xml.versionsBackup" -exec rm {} \;
+git add .
 git commit -m "Reset versions following failed release"
 mvn release:clean
 ```
