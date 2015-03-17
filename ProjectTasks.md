@@ -16,7 +16,7 @@ Snapshot Deploy
 Releasing
 ---------
 * Branch cougar to create the release branch
-* [Perform maven release](https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide) on the branch
+* Perform maven release - see below
 * Branch the cougar-documentation to create the release documentation
 * Publish the new cougar-documentation branch
 * Change the master cougar-documentation to reference the new release
@@ -25,3 +25,33 @@ Releasing
 * [Perform maven release](https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide) on the archetype branch
 * Update the archetypes on the master branch to reference the new SNAPSHOT
 * Send notification email to betfair-cougar@googlegroups.com
+
+Perform maven release
+---------------------
+```
+# create branch
+git checkout -b 3.2
+mvn versions:set -DnewVersion=3.2.0-SNAPSHOT
+find . -name "pom.xml.versionsBackup" -exec rm {} \;
+git commit -m "Update versions on branch"
+# fix master
+git checkout master
+mvn versions:set -DnewVersion=3.3-SNAPSHOT
+find . -name "pom.xml.versionsBackup" -exec rm {} \;
+git commit -m "Update versions post branch"
+# prepare release
+git checkout -b 3.2
+mvn release:prepare
+# enter gpg passphrase when prompted
+mvn release:perform
+```
+
+If you have any errors at the release:perform stage, then reset using the following:
+```
+find . -name "*.releaseBackup" -exec rm {} \;
+rm release.properties
+mvn versions:set -DnewVersion=3.2.0-SNAPSHOT
+find . -name "pom.xml.versionsBackup" -exec rm {} \;
+git commit -m "Reset versions following failed release"
+mvn release:clean
+```
