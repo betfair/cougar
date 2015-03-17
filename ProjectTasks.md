@@ -55,3 +55,11 @@ find . -name "pom.xml.versionsBackup" -exec rm {} \;
 git commit -m "Reset versions following failed release"
 mvn release:clean
 ```
+
+If you have errors due to a pre-existing tag, then delete using:
+```
+# remote
+git push origin :cougar-master-pom-3.2.0
+# local
+git tag -d cougar-master-pom-3.2.0
+```
