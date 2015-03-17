@@ -29,6 +29,8 @@ Releasing
 Perform maven release
 ---------------------
 ```
+# make sure up to date
+git pull
 # create branch
 git checkout -b 3.2
 mvn versions:set -DnewVersion=3.2.0-SNAPSHOT
@@ -54,6 +56,7 @@ mvn versions:set -DnewVersion=3.2.0-SNAPSHOT
 find . -name "pom.xml.versionsBackup" -exec rm {} \;
 git add .
 git commit -m "Reset versions following failed release"
+git push
 mvn release:clean
 ```
 
