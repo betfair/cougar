@@ -29,7 +29,7 @@
     <groupId>com.betfair.cougar</groupId>
     <artifactId>cougar-master-pom</artifactId>
     <name>cougar-master-pom</name>
-    <version>3.2.0-SNAPSHOT</version>
+    <version>3.2.0</version>
     <packaging>pom</packaging>
     <inceptionYear>2009</inceptionYear>
 
@@ -85,7 +85,7 @@
         <connection>scm:git:git@github.com:betfair/cougar.git</connection>
         <url>https://github.com/betfair/cougar.git</url>
         <developerConnection>scm:git:git@github.com:betfair/cougar</developerConnection>
-      <tag>HEAD</tag>
+      <tag>3.2.0</tag>
   </scm>
 
     <ciManagement>
