@@ -45,6 +45,17 @@ git commit -m "Update versions post branch"
 git checkout -b 3.2
 mvn release:prepare
 # enter gpg passphrase when prompted
+# some fudgery required now, namely to install release binaries in local repo
+cd target
+git clone --branch 3.2.0 git@github.com:betfair/cougar checkout
+cd checkout
+git fetch git@github.com:betfair/cougar
+git checkout 3.2.0
+mvn install -Dmaven.test.skip=true
+cd ..
+rm -rf checkout
+cd ..
+# now do the actual release
 mvn release:perform
 ```
 
