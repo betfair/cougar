@@ -13,15 +13,19 @@ import java.util.Map;
  * Default HTTP UUID resolver. Uses the uuid and uuidParents headers to resolve uuids.
  */
 public class ZipkinSocketRequestUuidResolver<Void> extends SocketRequestUuidResolver<Void> {
+
     private final ZipkinManager zipkinManager;
 
-    public ZipkinSocketRequestUuidResolver(ZipkinManager zipkinManager) {
+    private final int serverPort;
+
+    public ZipkinSocketRequestUuidResolver(ZipkinManager zipkinManager, int socketServerPort) {
         this.zipkinManager = zipkinManager;
+        this.serverPort = socketServerPort;
     }
 
     @Override
     public void resolve(SocketContextResolutionParams params, Void ignore, DehydratedExecutionContextBuilder builder) {
-        RequestUUID cougarUuid = super.resolve(params);
+        RequestUUID cougarUUID = super.resolve(params);
 
         String traceId = null;
         String spanId = null;
@@ -38,9 +42,8 @@ public class ZipkinSocketRequestUuidResolver<Void> extends SocketRequestUuidReso
             flags = additionalData.get(ZipkinKeys.FLAGS);
         }
 
-        //TODO: Obtain port
-        RequestUUID requestUUID = zipkinManager.createNewZipkinRequestUUID(cougarUuid, traceId, spanId, parentSpanId,
-                sampled, flags, 0);
+        RequestUUID requestUUID = zipkinManager.createNewZipkinRequestUUID(cougarUUID, traceId, spanId, parentSpanId,
+                sampled, flags, serverPort);
         builder.setRequestUUID(requestUUID);
     }
 }

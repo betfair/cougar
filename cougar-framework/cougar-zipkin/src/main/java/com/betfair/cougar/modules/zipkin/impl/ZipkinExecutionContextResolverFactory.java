@@ -29,6 +29,7 @@ public class ZipkinExecutionContextResolverFactory implements DehydratedExecutio
 
     private String cougarUUIDHeader;
     private String uuidParentsHeader;
+    private int socketServerPort = 0;
     private ZipkinManager zipkinManager;
 
     public void setCougarUUIDHeader(String cougarUUIDHeader) {
@@ -43,6 +44,10 @@ public class ZipkinExecutionContextResolverFactory implements DehydratedExecutio
         this.zipkinManager = zipkinManager;
     }
 
+    public void setSocketServerPort(int socketServerPort) {
+        this.socketServerPort = socketServerPort;
+    }
+
     @Override
     public <T, B> DehydratedExecutionContextResolver<T, B>[] resolvers(Protocol protocol) {
         if (protocol.underlyingTransportIsHttp()) {
@@ -52,7 +57,7 @@ public class ZipkinExecutionContextResolverFactory implements DehydratedExecutio
         }
         if (protocol == Protocol.SOCKET) {
             return new DehydratedExecutionContextResolver[] {
-                    (DehydratedExecutionContextResolver<T, B>) new ZipkinSocketRequestUuidResolver<>(zipkinManager)
+                    (DehydratedExecutionContextResolver<T, B>) new ZipkinSocketRequestUuidResolver<>(zipkinManager, socketServerPort)
             };
         }
         // I can't handle other protocols

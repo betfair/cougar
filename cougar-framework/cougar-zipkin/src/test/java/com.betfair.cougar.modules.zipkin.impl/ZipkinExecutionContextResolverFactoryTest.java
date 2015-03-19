@@ -19,6 +19,7 @@ public class ZipkinExecutionContextResolverFactoryTest {
 
     private String cougarUUIDHeader = "X-UUID";
     private String uuidParentsHeader = "X-UUID-Parents";
+    private int socketServerPort = 9003;
 
     @Before
     public void init() {
@@ -26,6 +27,7 @@ public class ZipkinExecutionContextResolverFactoryTest {
         victim.setCougarUUIDHeader(cougarUUIDHeader);
         victim.setUuidParentsHeader(uuidParentsHeader);
         victim.setZipkinManager(zipkinManager);
+        victim.setSocketServerPort(socketServerPort);
     }
 
     @Test

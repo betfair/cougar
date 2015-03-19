@@ -37,7 +37,7 @@ public class ZipkinHttpRequestUuidResolver<Ignore> extends HttpRequestUuidResolv
     }
 
     @Override
-    public void resolve(HttpCommand httpCommand, Ignore ignore, DehydratedExecutionContextBuilder contextBuilder) {
+    public void resolve(HttpCommand httpCommand, Ignore ignore, DehydratedExecutionContextBuilder builder) {
         RequestUUID cougarUuid = resolve(httpCommand);
 
         HttpServletRequest request = httpCommand.getRequest();
@@ -51,6 +51,6 @@ public class ZipkinHttpRequestUuidResolver<Ignore> extends HttpRequestUuidResolv
 
         RequestUUID requestUUID = zipkinManager.createNewZipkinRequestUUID(cougarUuid, traceId, spanId, parentSpanId,
                 sampled, flags, port);
-        contextBuilder.setRequestUUID(requestUUID);
+        builder.setRequestUUID(requestUUID);
     }
 }
