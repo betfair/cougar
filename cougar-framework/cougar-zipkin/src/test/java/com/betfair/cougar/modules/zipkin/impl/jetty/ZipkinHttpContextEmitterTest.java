@@ -83,7 +83,7 @@ public class ZipkinHttpContextEmitterTest {
         when(ctx.traceLoggingEnabled()).thenReturn(false);
         when(zipkinRequestUUID.isZipkinTracingEnabled()).thenReturn(false);
 
-        victim.emit(ctx, victim, result);
+        victim.emit(ctx, null, result);
 
         // This is ugly as we are relying on the behaviour of the superclass, but it's the least ugly, I guess..
         assertEquals(2, result.size());
@@ -105,7 +105,7 @@ public class ZipkinHttpContextEmitterTest {
         when(zipkinData.getParentSpanId()).thenReturn(null);
         when(zipkinData.getFlags()).thenReturn(null);
 
-        victim.emit(ctx, victim, result);
+        victim.emit(ctx, null, result);
 
         // This is ugly as we are relying on the behaviour of the superclass, but it's the least ugly, I guess..
         assertEquals(4, result.size());
@@ -129,7 +129,7 @@ public class ZipkinHttpContextEmitterTest {
         when(zipkinData.getParentSpanId()).thenReturn(parentSpanId);
         when(zipkinData.getFlags()).thenReturn(flags);
 
-        victim.emit(ctx, victim, result);
+        victim.emit(ctx, null, result);
 
         // This is ugly as we are relying on the behaviour of the superclass, but it's the least ugly, I guess..
         assertEquals(6, result.size());
