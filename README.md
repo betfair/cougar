@@ -12,6 +12,8 @@ Project admin
 
 [Project tasks](ProjectTasks.md)
 
+[Sonar report](http://nemo.sonarqube.org/dashboard/index?id=com.betfair.cougar%3Acougar-master-pom)
+
 [![Build Status](https://travis-ci.org/betfair/cougar.png?branch=master)](https://travis-ci.org/betfair/cougar)
 
 Licensing & Copyright

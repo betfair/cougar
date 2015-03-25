@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +55,15 @@ public interface ${service}Client extends com.betfair.cougar.api.Service {<#t>
 				<@createTypeDecl param.paramType/> ${param.paramName},
 			</#list>
 			ExecutionObserver obs);
-</@compress>			
+</@compress>
+
+	<@compress single_line=true>public void ${operation.operationName}(
+		ExecutionContext ctx,
+		<#list operation.params as param>
+			<@createTypeDecl param.paramType/> ${param.paramName},
+		</#list>
+		ExecutionObserver obs, long timeoutMillis);
+</@compress>
 
 </#list>
 
@@ -62,7 +71,7 @@ public interface ${service}Client extends com.betfair.cougar.api.Service {<#t>
 <#assign eventClassName = event.@name?cap_first><#t>
 <@compress single_line=true>
     public void subscribeTo${eventClassName}(ExecutionContext ctx,
-                                                      Object[] args,  
+                                                      Object[] args,
                                                       ExecutionObserver executionObserver);</@compress>
 
 </#list>

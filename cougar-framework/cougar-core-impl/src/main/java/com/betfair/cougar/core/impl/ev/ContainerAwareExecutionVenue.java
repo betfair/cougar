@@ -143,7 +143,7 @@ public class ContainerAwareExecutionVenue extends ServiceRegisterableExecutionVe
 		int cnt = 0;
 		Collections.sort(startingListeners, LISTENER_COMPARATOR);
 		for (GateListener listener: startingListeners) {
-			LOGGER.info("({} of {}) Calling gate listener {2}", ++cnt, numListeners, listener.getName());
+			LOGGER.info("({} of {}) Calling gate listener {}", ++cnt, numListeners, listener.getName());
 			listener.onCougarStart();
 		}
 	}

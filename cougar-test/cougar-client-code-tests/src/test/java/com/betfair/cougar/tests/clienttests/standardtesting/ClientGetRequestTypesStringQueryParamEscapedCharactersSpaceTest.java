@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +50,7 @@ public class ClientGetRequestTypesStringQueryParamEscapedCharactersSpaceTest {
         Date dateParam = cougarClientResponseTypeUtils2.createDateFromString("2009-06-01T13:50:00.0Z");
         // Make call to the method via client and validate the response is as expected
         SimpleResponse response3 = client.testParameterStylesQA(context, com.betfair.baseline.v2.enumerations.TestParameterStylesQAHeaderParamEnum.Foo, "a space", convertedDate);
-        assertEquals("headerParam=Foo,queryParam=a space,dateQueryParam="+convertedDate, response3.getMessage());
+        assertEquals("headerParam=Foo,queryParam=a space,dateQueryParam="+helper.dateInUTC(convertedDate), response3.getMessage());
     }
 
     @DataProvider(name="TransportType")

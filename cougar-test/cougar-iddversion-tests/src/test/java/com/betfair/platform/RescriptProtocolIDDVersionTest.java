@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +25,7 @@ import org.testng.annotations.BeforeClass;
 import com.betfair.baseline.v2.BaselineSyncClient;
 import org.slf4j.LoggerFactory;
 
-public class RescriptProtocolIDDVersionTest extends TestSuite{
+public class RescriptProtocolIDDVersionTest extends TestSuite {
 
 	private ClassPathXmlApplicationContext springContext;
 
