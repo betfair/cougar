@@ -1,6 +1,7 @@
 package com.betfair.cougar.modules.zipkin.impl;
 
 import com.betfair.cougar.modules.zipkin.api.ZipkinData;
+import com.betfair.cougar.util.geolocation.RemoteAddressUtils;
 import com.betfair.cougar.util.time.Clock;
 import com.github.kristofa.brave.zipkin.ZipkinSpanCollector;
 import com.twitter.zipkin.gen.Endpoint;
@@ -21,8 +22,13 @@ public class ZipkinEmitter {
 
     private final Clock clock;
 
-    public ZipkinEmitter(int serviceIPv4, @Nonnull String serviceName, @Nonnull ZipkinSpanCollector zipkinSpanCollector,
+    public ZipkinEmitter(@Nonnull String serviceName, @Nonnull ZipkinSpanCollector zipkinSpanCollector,
                          @Nonnull Clock clock) {
+        this(serviceName, zipkinSpanCollector, clock, RemoteAddressUtils.getIPv4AsInteger());
+    }
+
+    public ZipkinEmitter(@Nonnull String serviceName, @Nonnull ZipkinSpanCollector zipkinSpanCollector,
+                         @Nonnull Clock clock, int serviceIPv4) {
         Objects.requireNonNull(serviceName);
         Objects.requireNonNull(zipkinSpanCollector);
         Objects.requireNonNull(clock);

@@ -1,11 +1,7 @@
 package com.betfair.cougar.modules.zipkin.impl.socket;
 
-import com.betfair.cougar.api.RequestUUID;
-import com.betfair.cougar.api.geolocation.GeoLocationDetails;
 import com.betfair.cougar.client.ClientCallContext;
-import com.betfair.cougar.client.HttpContextEmitter;
 import com.betfair.cougar.client.api.CompoundContextEmitter;
-import com.betfair.cougar.client.api.GeoLocationSerializer;
 import com.betfair.cougar.modules.zipkin.api.ZipkinData;
 import com.betfair.cougar.modules.zipkin.api.ZipkinKeys;
 import com.betfair.cougar.modules.zipkin.api.ZipkinRequestUUID;
@@ -26,19 +22,10 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class ZipkinSocketContextEmitterTest {
 
     @Mock
-    private GeoLocationSerializer geoLocationSerializer;
-
-    @Mock
     private CompoundContextEmitter compoundContextEmitter;
 
     @Mock
     private ClientCallContext ctx;
-
-    @Mock
-    private HttpContextEmitter request;
-
-    @Mock
-    private RequestUUID requestUUID;
 
     @Mock
     private ZipkinRequestUUID zipkinRequestUUID;
@@ -46,11 +33,6 @@ public class ZipkinSocketContextEmitterTest {
     @Mock
     private ZipkinData zipkinData;
 
-    @Mock
-    private GeoLocationDetails geoLocationDetails;
-
-    private String uuidHeader = "X-UUID";
-    private String uuidParentsHeader = "X-UUID-Parents";
     private long traceId = 123456789L;
     private long spanId = 987654321L;
     private long parentSpanId = 567891234L;
@@ -67,8 +49,7 @@ public class ZipkinSocketContextEmitterTest {
 
     @Test
     public void ZipkinSocketContextEmitter_OnCreation_ShouldRegisterItselfWithCompoundContextEmitter() {
-        victim = new ZipkinSocketContextEmitter(geoLocationSerializer, uuidHeader, uuidParentsHeader,
-                compoundContextEmitter);
+        victim = new ZipkinSocketContextEmitter(compoundContextEmitter);
 
         verify(compoundContextEmitter).addEmitter(victim);
     }
@@ -78,14 +59,14 @@ public class ZipkinSocketContextEmitterTest {
         Map<String, String> additionalData = Maps.newHashMap();
         Map.Entry<String, String> expectedHeader = new AbstractMap.SimpleEntry<>(ZipkinKeys.SAMPLED, ZipkinKeys.DO_NOT_SAMPLE_VALUE);
 
-        victim = new ZipkinSocketContextEmitter(geoLocationSerializer, null, null, compoundContextEmitter);
+        victim = new ZipkinSocketContextEmitter(compoundContextEmitter);
 
         when(ctx.traceLoggingEnabled()).thenReturn(false);
         when(zipkinRequestUUID.isZipkinTracingEnabled()).thenReturn(false);
 
         victim.emit(ctx, additionalData, null);
 
-        assertEquals(2, additionalData.size());
+        assertEquals(1, additionalData.size());
         assertTrue(additionalData.containsKey(expectedHeader.getKey()));
         assertEquals(additionalData.get(expectedHeader.getKey()), expectedHeader.getValue());
     }
@@ -95,7 +76,7 @@ public class ZipkinSocketContextEmitterTest {
         Map<String, String> additionalData = Maps.newHashMap();
         Map<String, String> expectedZipkinHeaders = createZipkinHeaders(traceId, spanId, null, null);
 
-        victim = new ZipkinSocketContextEmitter(geoLocationSerializer, null, null, compoundContextEmitter);
+        victim = new ZipkinSocketContextEmitter(compoundContextEmitter);
 
         when(ctx.traceLoggingEnabled()).thenReturn(false);
         when(zipkinRequestUUID.isZipkinTracingEnabled()).thenReturn(true);
@@ -107,7 +88,7 @@ public class ZipkinSocketContextEmitterTest {
 
         victim.emit(ctx, additionalData, null);
 
-        assertEquals(4, additionalData.size());
+        assertEquals(3, additionalData.size());
         assertTrue(additionalData.entrySet().containsAll(expectedZipkinHeaders.entrySet()));
     }
 
@@ -116,7 +97,7 @@ public class ZipkinSocketContextEmitterTest {
         Map<String, String> additionalData = Maps.newHashMap();
         Map<String, String> expectedZipkinHeaders = createZipkinHeaders(traceId, spanId, parentSpanId, flags);
 
-        victim = new ZipkinSocketContextEmitter(geoLocationSerializer, null, null, compoundContextEmitter);
+        victim = new ZipkinSocketContextEmitter(compoundContextEmitter);
 
         when(ctx.traceLoggingEnabled()).thenReturn(false);
         when(zipkinRequestUUID.isZipkinTracingEnabled()).thenReturn(true);
@@ -128,7 +109,7 @@ public class ZipkinSocketContextEmitterTest {
 
         victim.emit(ctx, additionalData, null);
 
-        assertEquals(6, additionalData.size());
+        assertEquals(5, additionalData.size());
         assertTrue(additionalData.entrySet().containsAll(expectedZipkinHeaders.entrySet()));
     }
 

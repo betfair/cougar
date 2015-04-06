@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.betfair.cougar.modules.zipkin.impl.jetty;
+package com.betfair.cougar.modules.zipkin.impl.http;
 
 import com.betfair.cougar.api.RequestUUID;
 import com.betfair.cougar.core.api.builder.DehydratedExecutionContextBuilder;

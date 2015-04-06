@@ -115,7 +115,7 @@ public class ZipkinRequestUUIDImpl implements ZipkinRequestUUID {
      */
     @Override
     public String getUUID() {
-        return toCougarLogString();
+        return cougarUuid.getUUID();
     }
 
     @Override

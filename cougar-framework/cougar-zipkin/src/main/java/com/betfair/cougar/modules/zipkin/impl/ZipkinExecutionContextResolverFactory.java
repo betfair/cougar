@@ -17,13 +17,13 @@
 package com.betfair.cougar.modules.zipkin.impl;
 
 import com.betfair.cougar.api.export.Protocol;
-import com.betfair.cougar.modules.zipkin.impl.jetty.ZipkinHttpRequestUuidResolver;
+import com.betfair.cougar.modules.zipkin.impl.http.ZipkinHttpRequestUuidResolver;
 import com.betfair.cougar.modules.zipkin.impl.socket.ZipkinSocketRequestUuidResolver;
 import com.betfair.cougar.transport.api.DehydratedExecutionContextResolver;
 import com.betfair.cougar.transport.api.DehydratedExecutionContextResolverFactory;
 
 /**
- * Zipkin factory for EC resolvers for HTTP transports.
+ * Zipkin factory for EC resolvers for HTTP and socket transports.
  */
 public class ZipkinExecutionContextResolverFactory implements DehydratedExecutionContextResolverFactory {
 
@@ -56,7 +56,7 @@ public class ZipkinExecutionContextResolverFactory implements DehydratedExecutio
             };
         }
         if (protocol == Protocol.SOCKET) {
-            return new DehydratedExecutionContextResolver[] {
+            return new DehydratedExecutionContextResolver[]{
                     (DehydratedExecutionContextResolver<T, B>) new ZipkinSocketRequestUuidResolver<>(zipkinManager, socketServerPort)
             };
         }

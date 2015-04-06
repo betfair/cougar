@@ -2,9 +2,8 @@ package com.betfair.cougar.modules.zipkin.impl.socket;
 
 import com.betfair.cougar.api.RequestUUID;
 import com.betfair.cougar.client.ClientCallContext;
-import com.betfair.cougar.client.SocketContextEmitter;
 import com.betfair.cougar.client.api.CompoundContextEmitter;
-import com.betfair.cougar.client.api.GeoLocationSerializer;
+import com.betfair.cougar.client.api.ContextEmitter;
 import com.betfair.cougar.modules.zipkin.api.ZipkinData;
 import com.betfair.cougar.modules.zipkin.api.ZipkinKeys;
 import com.betfair.cougar.modules.zipkin.api.ZipkinRequestUUID;
@@ -16,18 +15,14 @@ import java.util.Map;
 /**
  * Zipkin context emitter for use with socket client transports (based on ZipkinHttpContextEmitter)
  */
-public class ZipkinSocketContextEmitter<C> extends SocketContextEmitter<C> {
+public class ZipkinSocketContextEmitter<C> implements ContextEmitter<Map<String, String>, C> {
 
-    public ZipkinSocketContextEmitter(GeoLocationSerializer geoLocationSerializer, String uuidHeader,
-                                      String uuidParentsHeader,
-                                      CompoundContextEmitter<Map<String, String>, C> compoundContextEmitter) {
-        super(geoLocationSerializer, uuidHeader, uuidParentsHeader);
+    public ZipkinSocketContextEmitter(CompoundContextEmitter<Map<String, String>, C> compoundContextEmitter) {
         compoundContextEmitter.addEmitter(this);
     }
 
     @Override
     public void emit(ClientCallContext ctx, @Nonnull Map<String, String> additionalData, @Nullable C ignore) {
-        super.emit(ctx, additionalData, ignore);
 
         RequestUUID requestUUID = ctx.getRequestUUID();
 

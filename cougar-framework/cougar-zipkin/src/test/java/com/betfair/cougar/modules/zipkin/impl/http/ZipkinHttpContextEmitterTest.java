@@ -1,11 +1,7 @@
-package com.betfair.cougar.modules.zipkin.impl.jetty;
+package com.betfair.cougar.modules.zipkin.impl.http;
 
-import com.betfair.cougar.api.RequestUUID;
-import com.betfair.cougar.api.geolocation.GeoLocationDetails;
 import com.betfair.cougar.client.ClientCallContext;
-import com.betfair.cougar.client.HttpContextEmitter;
 import com.betfair.cougar.client.api.CompoundContextEmitter;
-import com.betfair.cougar.client.api.GeoLocationSerializer;
 import com.betfair.cougar.modules.zipkin.api.ZipkinData;
 import com.betfair.cougar.modules.zipkin.api.ZipkinKeys;
 import com.betfair.cougar.modules.zipkin.api.ZipkinRequestUUID;
@@ -26,19 +22,10 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class ZipkinHttpContextEmitterTest {
 
     @Mock
-    private GeoLocationSerializer geoLocationSerializer;
-
-    @Mock
     private CompoundContextEmitter compoundContextEmitter;
 
     @Mock
     private ClientCallContext ctx;
-
-    @Mock
-    private HttpContextEmitter request;
-
-    @Mock
-    private RequestUUID requestUUID;
 
     @Mock
     private ZipkinRequestUUID zipkinRequestUUID;
@@ -46,11 +33,6 @@ public class ZipkinHttpContextEmitterTest {
     @Mock
     private ZipkinData zipkinData;
 
-    @Mock
-    private GeoLocationDetails geoLocationDetails;
-
-    private String uuidHeader = "X-UUID";
-    private String uuidParentsHeader = "X-UUID-Parents";
     private long traceId = 123456789L;
     private long spanId = 987654321L;
     private long parentSpanId = 567891234L;
@@ -67,8 +49,7 @@ public class ZipkinHttpContextEmitterTest {
 
     @Test
     public void ZipkinHttpContextEmitter_OnCreation_ShouldRegisterItselfWithCompoundContextEmitter() {
-        victim = new ZipkinHttpContextEmitter(geoLocationSerializer, uuidHeader, uuidParentsHeader,
-                compoundContextEmitter);
+        victim = new ZipkinHttpContextEmitter(compoundContextEmitter);
 
         verify(compoundContextEmitter).addEmitter(victim);
     }
@@ -78,16 +59,15 @@ public class ZipkinHttpContextEmitterTest {
         List<Header> result = Lists.newArrayList();
         Header expectedHeader = new BasicHeader(ZipkinKeys.SAMPLED, ZipkinKeys.DO_NOT_SAMPLE_VALUE);
 
-        victim = new ZipkinHttpContextEmitter(geoLocationSerializer, null, null, compoundContextEmitter);
+        victim = new ZipkinHttpContextEmitter(compoundContextEmitter);
 
         when(ctx.traceLoggingEnabled()).thenReturn(false);
         when(zipkinRequestUUID.isZipkinTracingEnabled()).thenReturn(false);
 
         victim.emit(ctx, null, result);
 
-        // This is ugly as we are relying on the behaviour of the superclass, but it's the least ugly, I guess..
-        assertEquals(2, result.size());
-        assertEquals(expectedHeader.toString(), result.get(1).toString());
+        assertEquals(1, result.size());
+        assertEquals(expectedHeader.toString(), result.get(0).toString());
     }
 
     @Test
@@ -95,7 +75,7 @@ public class ZipkinHttpContextEmitterTest {
         List<Header> result = Lists.newArrayList();
         List<Header> expectedZipkinHeaders = createZipkinHeaders(traceId, spanId, null, null);
 
-        victim = new ZipkinHttpContextEmitter(geoLocationSerializer, null, null, compoundContextEmitter);
+        victim = new ZipkinHttpContextEmitter(compoundContextEmitter);
 
         when(ctx.traceLoggingEnabled()).thenReturn(false);
         when(zipkinRequestUUID.isZipkinTracingEnabled()).thenReturn(true);
@@ -107,11 +87,10 @@ public class ZipkinHttpContextEmitterTest {
 
         victim.emit(ctx, null, result);
 
-        // This is ugly as we are relying on the behaviour of the superclass, but it's the least ugly, I guess..
-        assertEquals(4, result.size());
-        assertEquals(expectedZipkinHeaders.get(0).toString(), result.get(1).toString());
-        assertEquals(expectedZipkinHeaders.get(1).toString(), result.get(2).toString());
-        assertEquals(expectedZipkinHeaders.get(2).toString(), result.get(3).toString());
+        assertEquals(3, result.size());
+        assertEquals(expectedZipkinHeaders.get(0).toString(), result.get(0).toString());
+        assertEquals(expectedZipkinHeaders.get(1).toString(), result.get(1).toString());
+        assertEquals(expectedZipkinHeaders.get(2).toString(), result.get(2).toString());
     }
 
     @Test
@@ -119,7 +98,7 @@ public class ZipkinHttpContextEmitterTest {
         List<Header> result = Lists.newArrayList();
         List<Header> expectedZipkinHeaders = createZipkinHeaders(traceId, spanId, parentSpanId, flags);
 
-        victim = new ZipkinHttpContextEmitter(geoLocationSerializer, null, null, compoundContextEmitter);
+        victim = new ZipkinHttpContextEmitter(compoundContextEmitter);
 
         when(ctx.traceLoggingEnabled()).thenReturn(false);
         when(zipkinRequestUUID.isZipkinTracingEnabled()).thenReturn(true);
@@ -131,13 +110,12 @@ public class ZipkinHttpContextEmitterTest {
 
         victim.emit(ctx, null, result);
 
-        // This is ugly as we are relying on the behaviour of the superclass, but it's the least ugly, I guess..
-        assertEquals(6, result.size());
-        assertEquals(expectedZipkinHeaders.get(0).toString(), result.get(1).toString());
-        assertEquals(expectedZipkinHeaders.get(1).toString(), result.get(2).toString());
-        assertEquals(expectedZipkinHeaders.get(2).toString(), result.get(3).toString());
-        assertEquals(expectedZipkinHeaders.get(3).toString(), result.get(4).toString());
-        assertEquals(expectedZipkinHeaders.get(4).toString(), result.get(5).toString());
+        assertEquals(5, result.size());
+        assertEquals(expectedZipkinHeaders.get(0).toString(), result.get(0).toString());
+        assertEquals(expectedZipkinHeaders.get(1).toString(), result.get(1).toString());
+        assertEquals(expectedZipkinHeaders.get(2).toString(), result.get(2).toString());
+        assertEquals(expectedZipkinHeaders.get(3).toString(), result.get(3).toString());
+        assertEquals(expectedZipkinHeaders.get(4).toString(), result.get(4).toString());
     }
 
     private List<Header> createZipkinHeaders(long traceId, long spanId, Long parentSpanId, Long flags) {

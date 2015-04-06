@@ -15,18 +15,12 @@
         <constructor-arg index="1" ref="zipkinExecutionContextResolverFactory"/>
     </bean>
 
-    <bean id="zipkinHttpContextEmitter" class="com.betfair.cougar.modules.zipkin.impl.jetty.ZipkinHttpContextEmitter">
-        <constructor-arg index="0" ref="$COUGAR_CLIENT{cougar.client.geoLocationSerializerBean}"/>
-        <constructor-arg index="1" value="$COUGAR_CLIENT{cougar.client.http.uuidheader}"/>
-        <constructor-arg index="2" value="$COUGAR_CLIENT{cougar.client.http.uuidparentsheader}"/>
-        <constructor-arg index="3" ref="cougar.client.DefaultHttpContextEmission"/>
+    <bean id="zipkinHttpContextEmitter" class="com.betfair.cougar.modules.zipkin.impl.http.ZipkinHttpContextEmitter">
+        <constructor-arg index="0" ref="cougar.client.DefaultHttpContextEmission"/>
     </bean>
 
     <bean id="zipkinSocketContextEmitter" class="com.betfair.cougar.modules.zipkin.impl.socket.ZipkinSocketContextEmitter">
-        <constructor-arg index="0" ref="$COUGAR_CLIENT{cougar.client.geoLocationSerializerBean}"/>
-        <constructor-arg index="1" value="$COUGAR_CLIENT{cougar.client.http.uuidheader}"/>
-        <constructor-arg index="2" value="$COUGAR_CLIENT{cougar.client.http.uuidparentsheader}"/>
-        <constructor-arg index="3" ref="cougar.client.DefaultSocketContextEmission"/>
+        <constructor-arg index="0" ref="cougar.client.DefaultSocketContextEmission"/>
     </bean>
 
 </beans>

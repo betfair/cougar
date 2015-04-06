@@ -57,25 +57,25 @@ public class ZipkinEmitterTest {
 
         when(zipkinClock.millis()).thenReturn(timestampMillis);
 
-        victim = new ZipkinEmitter(serviceIPv4, serviceName, zipkinSpanCollector, zipkinClock);
+        victim = new ZipkinEmitter(serviceName, zipkinSpanCollector, zipkinClock, serviceIPv4);
     }
 
     @Test(expected = NullPointerException.class)
     public void ZipkinEmitter_WhenServiceNameIsNull_ShouldThrowNPE() {
 
-        new ZipkinEmitter(serviceIPv4, null, zipkinSpanCollector, zipkinClock);
+        new ZipkinEmitter(null, zipkinSpanCollector, zipkinClock, serviceIPv4);
     }
 
     @Test(expected = NullPointerException.class)
     public void ZipkinEmitter_WhenZipkinSpanCollectorIsNull_ShouldThrowNPE() {
 
-        new ZipkinEmitter(serviceIPv4, serviceName, null, zipkinClock);
+        new ZipkinEmitter(serviceName, null, zipkinClock, serviceIPv4);
     }
 
     @Test(expected = NullPointerException.class)
     public void ZipkinEmitter_WhenZipkinClockIsNull_ShouldThrowNPE() {
 
-        new ZipkinEmitter(serviceIPv4, serviceName, zipkinSpanCollector, null);
+        new ZipkinEmitter(serviceName, zipkinSpanCollector, null, serviceIPv4);
     }
 
     @Test

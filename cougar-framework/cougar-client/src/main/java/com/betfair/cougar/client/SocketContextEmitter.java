@@ -43,8 +43,6 @@ public class SocketContextEmitter<C> implements ContextEmitter<Map<String, Strin
             List<Header> headers = new ArrayList<>();
             geoLocationSerializer.serialize(gld, headers);
 
-            // TODO: I don't really like this, but I'm not seeing any "proper way" of doing this that doesn't require us
-            // to refactor the entire socket protocol headers / additional data handling.
             for (Header header : headers) {
                 additionalData.put(header.getName(), header.getValue());
             }

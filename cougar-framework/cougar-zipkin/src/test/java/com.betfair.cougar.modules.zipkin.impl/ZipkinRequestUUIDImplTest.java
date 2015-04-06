@@ -83,14 +83,14 @@ public class ZipkinRequestUUIDImplTest {
     }
 
     @Test
-    public void getUUID_ShouldDeferToCougarLogString() {
-        String cougarLogString = "abcde-1234-fghij-5678-klmno";
+    public void getUUID_ShouldDeferToCougarGetUUID() {
+        String cougarUUID = "abcde-1234-fghij-5678-klmno";
 
-        when(cougarUuid.toCougarLogString()).thenReturn(cougarLogString);
+        when(cougarUuid.getUUID()).thenReturn(cougarUUID);
 
         victim = new ZipkinRequestUUIDImpl(cougarUuid, null);
 
-        assertEquals(cougarLogString, victim.getUUID());
+        assertEquals(cougarUUID, victim.getUUID());
     }
 
     @Test
@@ -168,14 +168,14 @@ public class ZipkinRequestUUIDImplTest {
     @Test
     public void toString_ShouldConcatenateZipkinDataWithCougarUUID() {
         String zipkinSpanName = "Span Name";
-        String cougarLogString = "abcde-1234-fghij-5678-klmno";
+        String cougarUUID = "abcde-1234-fghij-5678-klmno";
         String zipkinDataToString = "ZipkinDataImpl{spanName=" + zipkinSpanName + "}";
-        String expectedResult = "ZipkinRequestUUIDImpl{cougarUuid=" + cougarLogString +
+        String expectedResult = "ZipkinRequestUUIDImpl{cougarUuid=" + cougarUUID +
                 ", zipkinData=" + zipkinDataToString + "}";
 
         when(zipkinDataBuilder.spanName(zipkinSpanName)).thenReturn(zipkinDataBuilder);
         when(zipkinDataBuilder.build()).thenReturn(zipkinData);
-        when(cougarUuid.toCougarLogString()).thenReturn(cougarLogString);
+        when(cougarUuid.getUUID()).thenReturn(cougarUUID);
         when(zipkinData.toString()).thenReturn(zipkinDataToString);
 
         victim = new ZipkinRequestUUIDImpl(cougarUuid, zipkinDataBuilder);

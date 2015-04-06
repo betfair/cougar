@@ -1,7 +1,7 @@
 package com.betfair.cougar.modules.zipkin.impl;
 
 import com.betfair.cougar.api.export.Protocol;
-import com.betfair.cougar.modules.zipkin.impl.jetty.ZipkinHttpRequestUuidResolver;
+import com.betfair.cougar.modules.zipkin.impl.http.ZipkinHttpRequestUuidResolver;
 import com.betfair.cougar.modules.zipkin.impl.socket.ZipkinSocketRequestUuidResolver;
 import com.betfair.cougar.transport.api.DehydratedExecutionContextResolver;
 import org.junit.Before;

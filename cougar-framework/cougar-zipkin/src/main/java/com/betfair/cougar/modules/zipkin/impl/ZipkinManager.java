@@ -52,9 +52,6 @@ public class ZipkinManager {
         return samplingLevel > 0 && RANDOM.nextInt(MIN_LEVEL, MAX_LEVEL) < samplingLevel;
     }
 
-    //TODO: In the future we may consider having a service that defers the decision of tracing or not to the next
-    // underlying service, i.e. it doesn't create the Zipkin ids, but it also doesn't mark the request as do not sample.
-
     @ManagedAttribute
     public int getSamplingLevel() {
         return samplingLevel;
