@@ -228,16 +228,9 @@
         <constructor-arg index="0" value="$COUGAR_CLIENT{cougar.client.socket.address.resolver}"/>
     </bean>
 
-    <bean id="defaultSocketContextEmitter" class="com.betfair.cougar.client.SocketContextEmitter">
-        <constructor-arg index="0" ref="$COUGAR_CLIENT{cougar.client.geoLocationSerializerBean}"/>
-        <constructor-arg index="1" value="$COUGAR_CLIENT{cougar.client.http.uuidheader}"/>
-        <constructor-arg index="2" value="$COUGAR_CLIENT{cougar.client.http.uuidparentsheader}"/>
-    </bean>
-
     <bean id="defaultSocketContextEmission" class="com.betfair.cougar.client.api.CompoundContextEmitter">
         <constructor-arg index="0">
             <list>
-                <ref bean="defaultSocketContextEmitter"/>
             </list>
         </constructor-arg>
     </bean>
