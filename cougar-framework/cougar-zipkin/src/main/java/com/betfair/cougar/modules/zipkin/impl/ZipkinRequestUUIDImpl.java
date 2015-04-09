@@ -9,6 +9,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
+/**
+ * Base implementation of ZipkinRequestUUID.
+ *
+ * @see com.betfair.cougar.modules.zipkin.api.ZipkinRequestUUID
+ */
 public class ZipkinRequestUUIDImpl implements ZipkinRequestUUID {
 
     private RequestUUID cougarUuid;

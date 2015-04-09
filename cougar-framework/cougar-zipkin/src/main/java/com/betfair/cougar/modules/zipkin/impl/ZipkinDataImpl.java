@@ -7,6 +7,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
+/**
+ * A default implementation of ZipkinData.
+ *
+ * @see com.betfair.cougar.modules.zipkin.api.ZipkinData
+ */
 public class ZipkinDataImpl implements ZipkinData {
 
     private final long traceId;
@@ -76,6 +81,11 @@ public class ZipkinDataImpl implements ZipkinData {
                 '}';
     }
 
+    /**
+     * A ZipkinDataBuilder implementation to be used when instantiating new ZipkinDataImpl instances.
+     *
+     * @see com.betfair.cougar.modules.zipkin.api.ZipkinDataBuilder
+     */
     public static final class Builder implements ZipkinDataBuilder {
         private long traceId;
         private long spanId;

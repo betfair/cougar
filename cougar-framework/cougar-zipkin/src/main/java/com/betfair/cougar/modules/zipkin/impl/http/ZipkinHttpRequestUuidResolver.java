@@ -27,6 +27,8 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * Zipkin HTTP UUID resolver. Extends default Cougar HTTP Resolver.
+ *
+ * @see com.betfair.cougar.transport.impl.protocol.http.HttpRequestUuidResolver
  */
 public class ZipkinHttpRequestUuidResolver<Ignore> extends HttpRequestUuidResolver<Ignore> {
     private final ZipkinManager zipkinManager;

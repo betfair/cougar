@@ -10,7 +10,9 @@ import javax.annotation.Nonnull;
 import java.util.Objects;
 
 /**
- * Zipkin tracer implementation
+ * Zipkin tracer implementation.
+ *
+ * @see com.betfair.cougar.core.impl.tracing.AbstractTracer
  */
 public class ZipkinTracer extends AbstractTracer {
 

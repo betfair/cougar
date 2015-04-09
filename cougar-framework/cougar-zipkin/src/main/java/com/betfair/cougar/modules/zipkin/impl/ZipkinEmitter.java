@@ -12,6 +12,12 @@ import java.util.concurrent.TimeUnit;
 
 import static com.twitter.zipkin.gen.zipkinCoreConstants.*;
 
+/**
+ * An emitter capable of emitting ZipkinData information to a ZipkinSpanCollector. ZipkinEmitter should be instantiated
+ * per service, as it stores information about the service (attaching it to the emitted spans transparently).
+ *
+ * @see com.betfair.cougar.modules.zipkin.api.ZipkinData
+ */
 public class ZipkinEmitter {
 
     private int serviceIPv4;
@@ -22,11 +28,27 @@ public class ZipkinEmitter {
 
     private final Clock clock;
 
+    /**
+     * Creates a new ZipkinEmitter. This constructor overload obtains the service IPv4 through
+     * com.betfair.cougar.util.geolocation.RemoteAddressUtils.
+     *
+     * @param serviceName         The name of the service the emitter will correspond to
+     * @param zipkinSpanCollector The brave ZipkinSpanCollector to be used for emitting spans
+     * @param clock               The clock to be used when obtaining timestamps
+     */
     public ZipkinEmitter(@Nonnull String serviceName, @Nonnull ZipkinSpanCollector zipkinSpanCollector,
                          @Nonnull Clock clock) {
         this(serviceName, zipkinSpanCollector, clock, RemoteAddressUtils.getIPv4AsInteger());
     }
 
+    /**
+     * Creates a new ZipkinEmitter.
+     *
+     * @param serviceName         The name of the service the emitter will correspond to
+     * @param zipkinSpanCollector The brave ZipkinSpanCollector to be used for emitting spans
+     * @param clock               The clock to be used when obtaining timestamps
+     * @param serviceIPv4         The IPv4 of the service the emitter will correspond to
+     */
     public ZipkinEmitter(@Nonnull String serviceName, @Nonnull ZipkinSpanCollector zipkinSpanCollector,
                          @Nonnull Clock clock, int serviceIPv4) {
         Objects.requireNonNull(serviceName);
@@ -39,23 +61,45 @@ public class ZipkinEmitter {
         this.clock = clock;
     }
 
+    /**
+     * Emits a Server Receive annotation for a particular span.
+     *
+     * @param zipkinData The ZipkinData representing the span
+     */
     public void emitServerReceive(@Nonnull ZipkinData zipkinData) {
         emitAnnotation(zipkinData, SERVER_RECV);
     }
 
+    /**
+     * Emits a Server Send annotation for a particular span.
+     *
+     * @param zipkinData The ZipkinData representing the span
+     */
     public void emitServerSend(@Nonnull ZipkinData zipkinData) {
         emitAnnotation(zipkinData, SERVER_SEND);
     }
 
+    /**
+     * Emits a Client Send annotation for a particular span.
+     *
+     * @param zipkinData The ZipkinData representing the span
+     */
     public void emitClientSend(@Nonnull ZipkinData zipkinData) {
         emitAnnotation(zipkinData, CLIENT_SEND);
     }
 
+    /**
+     * Emits a Client Receive annotation for a particular span.
+     *
+     * @param zipkinData The ZipkinData representing the span
+     */
     public void emitClientReceive(@Nonnull ZipkinData zipkinData) {
         emitAnnotation(zipkinData, CLIENT_RECV);
     }
 
     /**
+     * Builds an annotations store for a specific ZipkinData object.
+     * <p/>
      * The returning object should be used to emit more than 1 annotation at once. After adding your annotations you
      * will need to call emitAnnotations in order to send the span with all the annotations to Zipkin.
      *
@@ -70,7 +114,7 @@ public class ZipkinEmitter {
     }
 
     /**
-     * Emit a pre-populated storage of annotations to Zipkin
+     * Emits a pre-populated storage of annotations to Zipkin.
      *
      * @param zipkinAnnotationsStore Zipkin annotations storage representing the entire list of annotations to emit
      */
@@ -82,6 +126,12 @@ public class ZipkinEmitter {
 
     // Single annotation emission methods
 
+    /**
+     * Emits a single annotation to Zipkin.
+     *
+     * @param zipkinData Zipkin request data
+     * @param s          The annotation to emit
+     */
     public void emitAnnotation(@Nonnull ZipkinData zipkinData, @Nonnull String s) {
         long timestampMillis = clock.millis();
         long timestampMicros = TimeUnit.MILLISECONDS.toMicros(timestampMillis);
@@ -90,37 +140,86 @@ public class ZipkinEmitter {
         emitAnnotations(store);
     }
 
+    /**
+     * Emits a single (binary) string annotation to Zipkin.
+     *
+     * @param zipkinData Zipkin request data
+     * @param key        The annotation key
+     * @param value      The annotation value
+     */
     public void emitAnnotation(@Nonnull ZipkinData zipkinData, @Nonnull String key, @Nonnull String value) {
         Objects.requireNonNull(value);
         ZipkinAnnotationsStore store = prepareEmission(zipkinData, key).addAnnotation(key, value);
         emitAnnotations(store);
     }
 
+    /**
+     * Emits a single (binary) short annotation to Zipkin.
+     *
+     * @param zipkinData Zipkin request data
+     * @param key        The annotation key
+     * @param value      The annotation value
+     */
     public void emitAnnotation(@Nonnull ZipkinData zipkinData, @Nonnull String key, short value) {
         ZipkinAnnotationsStore store = prepareEmission(zipkinData, key).addAnnotation(key, value);
         emitAnnotations(store);
     }
 
+    /**
+     * Emits a single (binary) int annotation to Zipkin.
+     *
+     * @param zipkinData Zipkin request data
+     * @param key        The annotation key
+     * @param value      The annotation value
+     */
     public void emitAnnotation(@Nonnull ZipkinData zipkinData, @Nonnull String key, int value) {
         ZipkinAnnotationsStore store = prepareEmission(zipkinData, key).addAnnotation(key, value);
         emitAnnotations(store);
     }
 
+    /**
+     * Emits a single (binary) long annotation to Zipkin.
+     *
+     * @param zipkinData Zipkin request data
+     * @param key        The annotation key
+     * @param value      The annotation value
+     */
     public void emitAnnotation(@Nonnull ZipkinData zipkinData, @Nonnull String key, long value) {
         ZipkinAnnotationsStore store = prepareEmission(zipkinData, key).addAnnotation(key, value);
         emitAnnotations(store);
     }
 
+    /**
+     * Emits a single (binary) double annotation to Zipkin.
+     *
+     * @param zipkinData Zipkin request data
+     * @param key        The annotation key
+     * @param value      The annotation value
+     */
     public void emitAnnotation(@Nonnull ZipkinData zipkinData, @Nonnull String key, double value) {
         ZipkinAnnotationsStore store = prepareEmission(zipkinData, key).addAnnotation(key, value);
         emitAnnotations(store);
     }
 
+    /**
+     * Emits a single (binary) boolean annotation to Zipkin.
+     *
+     * @param zipkinData Zipkin request data
+     * @param key        The annotation key
+     * @param value      The annotation value
+     */
     public void emitAnnotation(@Nonnull ZipkinData zipkinData, @Nonnull String key, boolean value) {
         ZipkinAnnotationsStore store = prepareEmission(zipkinData, key).addAnnotation(key, value);
         emitAnnotations(store);
     }
 
+    /**
+     * Emits a single (binary) byte array annotation to Zipkin.
+     *
+     * @param zipkinData Zipkin request data
+     * @param key        The annotation key
+     * @param value      The annotation value
+     */
     public void emitAnnotation(@Nonnull ZipkinData zipkinData, @Nonnull String key, byte[] value) {
         ZipkinAnnotationsStore store = prepareEmission(zipkinData, key).addAnnotation(key, value);
         emitAnnotations(store);

@@ -14,7 +14,9 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
- * Zipkin context emitter for use with http client transports
+ * Zipkin context emitter for use with http client transports.
+ *
+ * @see com.betfair.cougar.client.api.ContextEmitter
  */
 public class ZipkinHttpContextEmitter<HR> implements ContextEmitter<HR, List<Header>> {
 

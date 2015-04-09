@@ -15,6 +15,10 @@ import java.security.SecureRandom;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Manages all Zipkin tracing config and operations. This is the class responsible for deciding whether a specific
+ * request should be traced or not.
+ */
 @ManagedResource(description = "Zipkin tracing config", objectName = "Cougar:name=ZipkinManager")
 public class ZipkinManager {
 
@@ -52,11 +56,23 @@ public class ZipkinManager {
         return samplingLevel > 0 && RANDOM.nextInt(MIN_LEVEL, MAX_LEVEL) < samplingLevel;
     }
 
+    /**
+     * Returns the current sampling level.
+     *
+     * @return the sampling level
+     */
     @ManagedAttribute
     public int getSamplingLevel() {
         return samplingLevel;
     }
 
+    /**
+     * Sets a new sampling level. The sampling level must be within the range 0-1000, representing the permillage of
+     * requests to be sampled. Setting the sampling level to 0 disabled sampling.
+     *
+     * @param samplingLevel The sampling level
+     * @throws IllegalArgumentException if the sampling level is off bounds
+     */
     @ManagedAttribute
     public void setSamplingLevel(int samplingLevel) {
         if (samplingLevel >= MIN_LEVEL && samplingLevel <= MAX_LEVEL) {
@@ -66,6 +82,19 @@ public class ZipkinManager {
         }
     }
 
+    /**
+     * Creates a new ZipkinRequestUUID. This method will generate any required Zipkin data if it does not exist (e.g. if
+     * this invocation corresponds to the first request in the chain).
+     *
+     * @param cougarUuid   The cougar UUID
+     * @param traceId      The trace ID of the span (null to request generation)
+     * @param spanId       The ID of the span (null to request generation)
+     * @param parentSpanId The ID of the parent span
+     * @param sampled      The sampled flag of the span
+     * @param flags        The flags of the span
+     * @param port         The port corresponding to the span
+     * @return The newly created ZipkinRequestUUID
+     */
     public ZipkinRequestUUID createNewZipkinRequestUUID(@Nonnull RequestUUID cougarUuid, @Nullable String traceId,
                                                         @Nullable String spanId, @Nullable String parentSpanId,
                                                         @Nullable String sampled, @Nullable String flags, int port) {
@@ -114,12 +143,23 @@ public class ZipkinManager {
         return new ZipkinRequestUUIDImpl(cougarUuid, zipkinDataBuilder);
     }
 
+    /**
+     * Retrieves a newly generated random long.
+     *
+     * @return A newly generated random long
+     */
     public static long getRandomLong() {
         byte[] rndBytes = new byte[8];
         SECURE_RANDOM_TL.get().nextBytes(rndBytes);
         return ByteBuffer.wrap(rndBytes).getLong();
     }
 
+    /**
+     * Converts a string representing an unsigned hex to a long value.
+     *
+     * @param hexValue The hex value
+     * @return The converted value
+     */
     public static long hexUnsignedStringToLong(@Nonnull String hexValue) {
         // Long.parseLong receives signed longs, but Long.toHexString uses unsigned longs, so we need to use BigInteger
         // in order to parse the unsigned string created by Long.toHexString and then obtain the value without raising

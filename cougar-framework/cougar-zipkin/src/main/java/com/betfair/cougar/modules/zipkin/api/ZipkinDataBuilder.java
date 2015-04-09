@@ -3,6 +3,9 @@ package com.betfair.cougar.modules.zipkin.api;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Builder interface for ZipkinData (@see com.betfair.cougar.modules.zipkin.api.ZipkinData).
+ */
 public interface ZipkinDataBuilder {
 
     @Nonnull

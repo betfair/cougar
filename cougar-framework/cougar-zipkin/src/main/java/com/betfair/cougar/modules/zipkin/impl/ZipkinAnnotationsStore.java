@@ -9,6 +9,10 @@ import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
+/**
+ * A container used for storing Zipkin annotations relative to a specific Zipkin span, to be sent once the span has been
+ * fully populated.
+ */
 public final class ZipkinAnnotationsStore {
 
     private static final int SHORT_SIZE_B = Short.SIZE / 8;
@@ -23,6 +27,11 @@ public final class ZipkinAnnotationsStore {
     private Endpoint defaultEndpoint;
     private Span underlyingSpan;
 
+    /**
+     * Creates a new annotations store for a specific span, to be created from the passed in ZipkinData.
+     *
+     * @param zipkinData The ZipkinData to be used for creating the underlying span.
+     */
     ZipkinAnnotationsStore(@Nonnull ZipkinData zipkinData) {
         this.underlyingSpan = new Span(zipkinData.getTraceId(), zipkinData.getSpanName(), zipkinData.getSpanId(),
                 Lists.<Annotation>newArrayList(), Lists.<BinaryAnnotation>newArrayList());
@@ -36,10 +45,10 @@ public final class ZipkinAnnotationsStore {
     // PUBLIC METHODS
 
     /**
-     * Add an annotation for an event that happened on a specific timestamp
+     * Adds an annotation for an event that happened on a specific timestamp.
      *
      * @param timestamp The timestamp of the annotation, in microseconds
-     * @param s         Annotation value to emit
+     * @param s         The annotation value to emit
      * @return this object
      */
     @Nonnull
@@ -47,36 +56,85 @@ public final class ZipkinAnnotationsStore {
         return addAnnotation(timestamp, s, defaultEndpoint);
     }
 
+    /**
+     * Adds a (binary) string annotation for an event.
+     *
+     * @param key   The key of the annotation
+     * @param value The value of the annotation
+     * @return this object
+     */
     @Nonnull
     public ZipkinAnnotationsStore addAnnotation(@Nonnull String key, @Nonnull String value) {
         return addBinaryAnnotation(key, value, defaultEndpoint);
     }
 
+    /**
+     * Adds a (binary) short annotation for an event.
+     *
+     * @param key   The key of the annotation
+     * @param value The value of the annotation
+     * @return this object
+     */
     @Nonnull
     public ZipkinAnnotationsStore addAnnotation(@Nonnull String key, short value) {
         return addBinaryAnnotation(key, value, defaultEndpoint);
     }
 
+    /**
+     * Adds a (binary) int annotation for an event.
+     *
+     * @param key   The key of the annotation
+     * @param value The value of the annotation
+     * @return this object
+     */
     @Nonnull
     public ZipkinAnnotationsStore addAnnotation(@Nonnull String key, int value) {
         return addBinaryAnnotation(key, value, defaultEndpoint);
     }
 
+    /**
+     * Adds a (binary) long annotation for an event.
+     *
+     * @param key   The key of the annotation
+     * @param value The value of the annotation
+     * @return this object
+     */
     @Nonnull
     public ZipkinAnnotationsStore addAnnotation(@Nonnull String key, long value) {
         return addBinaryAnnotation(key, value, defaultEndpoint);
     }
 
+    /**
+     * Adds a (binary) double annotation for an event.
+     *
+     * @param key   The key of the annotation
+     * @param value The value of the annotation
+     * @return this object
+     */
     @Nonnull
     public ZipkinAnnotationsStore addAnnotation(@Nonnull String key, double value) {
         return addBinaryAnnotation(key, value, defaultEndpoint);
     }
 
+    /**
+     * Adds a (binary) boolean annotation for an event.
+     *
+     * @param key   The key of the annotation
+     * @param value The value of the annotation
+     * @return this object
+     */
     @Nonnull
     public ZipkinAnnotationsStore addAnnotation(@Nonnull String key, boolean value) {
         return addBinaryAnnotation(key, value, defaultEndpoint);
     }
 
+    /**
+     * Adds a (binary) byte array annotation for an event.
+     *
+     * @param key   The key of the annotation
+     * @param value The value of the annotation
+     * @return this object
+     */
     @Nonnull
     public ZipkinAnnotationsStore addAnnotation(@Nonnull String key, byte[] value) {
         return addBinaryAnnotation(key, value, defaultEndpoint);

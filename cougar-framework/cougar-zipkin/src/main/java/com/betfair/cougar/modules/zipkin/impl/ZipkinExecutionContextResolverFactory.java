@@ -32,18 +32,38 @@ public class ZipkinExecutionContextResolverFactory implements DehydratedExecutio
     private int socketServerPort = 0;
     private ZipkinManager zipkinManager;
 
+    /**
+     * Sets the value of the Cougar UUID header to be used by the EC resolver.
+     *
+     * @param cougarUUIDHeader The Cougar UUID header
+     */
     public void setCougarUUIDHeader(String cougarUUIDHeader) {
         this.cougarUUIDHeader = cougarUUIDHeader;
     }
 
+    /**
+     * Sets the value of the Cougar UUID parents header to be used by the EC resolver.
+     *
+     * @param uuidParentsHeader The Cougar UUID parents header
+     */
     public void setUuidParentsHeader(String uuidParentsHeader) {
         this.uuidParentsHeader = uuidParentsHeader;
     }
 
+    /**
+     * Sets the ZipkinManager to be used by the EC resolver.
+     *
+     * @param zipkinManager The ZipkinManager to be used
+     */
     public void setZipkinManager(ZipkinManager zipkinManager) {
         this.zipkinManager = zipkinManager;
     }
 
+    /**
+     * Sets the port of the (socket) server.
+     *
+     * @param socketServerPort The server port
+     */
     public void setSocketServerPort(int socketServerPort) {
         this.socketServerPort = socketServerPort;
     }
