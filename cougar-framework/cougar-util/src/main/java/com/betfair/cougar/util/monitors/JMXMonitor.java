@@ -134,7 +134,7 @@ public class JMXMonitor extends OnDemandMonitor {
     public Status checkStatus() {
         if (isFailState()) {
             if (currentStatus != failState) {
-                LOGGER.warn("{} {}. Attribute {2} is unavailable or incorrect", beanName, failState, attributeName);
+                LOGGER.warn("{} {}. Attribute {} is unavailable or incorrect", beanName, failState, attributeName);
             }
             currentStatus = failState;
         } else {

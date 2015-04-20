@@ -295,7 +295,7 @@ public abstract class AbstractHttpCommandProcessor<CredentialsContainer> extends
 		//Instead a summary debug level log message with some relevant info
         incrementIoErrorsEncountered();
 		LOGGER.debug(
-				"Failed to marshall object of class {} to the output channel. Exception ({}) message is: {2}",
+				"Failed to marshall object of class {} to the output channel. Exception ({}) message is: {}",
 				resultClass.getCanonicalName(),
 				e.getClass().getCanonicalName(),
 				e.getMessage()
