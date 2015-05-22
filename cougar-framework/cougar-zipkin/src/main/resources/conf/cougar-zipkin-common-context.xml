@@ -37,4 +37,25 @@
         </constructor-arg>
         <constructor-arg index="2" value="#{ $COUGAR_ZIPKIN{zipkin.samplingLevel} > 0 }"/>
     </bean>
+
+    <bean class="org.springframework.jmx.export.MBeanExporter">
+        <property name="server" ref="mbeanServer"/>
+
+        <property name="registrationBehavior" ref="org.springframework.jmx.export.MBeanExporter.REGISTRATION_REPLACE_EXISTING"/>
+
+        <property name="beans">
+            <map>
+                <entry key="CoUGAR:name=ZipkinManager" value-ref="zipkinManager"/>
+                <entry key="CoUGAR:name=ZipkinEmitter" value-ref="zipkinEmitter"/>
+            </map>
+        </property>
+
+        <property name="assembler">
+            <bean id="assembler" class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler">
+                <property name="attributeSource">
+                    <bean id="jmxAttributeSource" class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource"/>
+                </property>
+            </bean>
+        </property>
+    </bean>
 </beans>

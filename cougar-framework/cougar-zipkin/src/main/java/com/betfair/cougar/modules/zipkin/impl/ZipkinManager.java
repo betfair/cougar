@@ -19,7 +19,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * Manages all Zipkin tracing config and operations. This is the class responsible for deciding whether a specific
  * request should be traced or not.
  */
-@ManagedResource(description = "Zipkin tracing config", objectName = "Cougar:name=ZipkinManager")
+@ManagedResource
 public class ZipkinManager {
 
     private static final int MIN_LEVEL = 0;

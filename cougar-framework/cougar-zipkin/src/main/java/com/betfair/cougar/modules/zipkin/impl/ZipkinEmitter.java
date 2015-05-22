@@ -5,9 +5,16 @@ import com.betfair.cougar.util.geolocation.RemoteAddressUtils;
 import com.betfair.cougar.util.time.Clock;
 import com.github.kristofa.brave.zipkin.ZipkinSpanCollector;
 import com.twitter.zipkin.gen.Endpoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.jmx.export.annotation.ManagedAttribute;
+import org.springframework.jmx.export.annotation.ManagedResource;
 
 import javax.annotation.Nonnull;
+import java.lang.reflect.Field;
 import java.util.Objects;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import static com.twitter.zipkin.gen.zipkinCoreConstants.*;
@@ -18,7 +25,10 @@ import static com.twitter.zipkin.gen.zipkinCoreConstants.*;
  *
  * @see com.betfair.cougar.modules.zipkin.api.ZipkinData
  */
-public class ZipkinEmitter {
+@ManagedResource
+public class ZipkinEmitter implements InitializingBean {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ZipkinEmitter.class);
 
     private int serviceIPv4;
 
@@ -27,6 +37,8 @@ public class ZipkinEmitter {
     private ZipkinSpanCollector zipkinSpanCollector;
 
     private final Clock clock;
+
+    private BlockingQueue<?> zipkinSpanCollectorInternalQueue;
 
     /**
      * Creates a new ZipkinEmitter. This constructor overload obtains the service IPv4 through
@@ -234,5 +246,38 @@ public class ZipkinEmitter {
     @Nonnull
     private Endpoint generateEndpoint(@Nonnull ZipkinData zipkinData) {
         return new Endpoint(serviceIPv4, zipkinData.getPort(), serviceName);
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        try {
+            Field field = zipkinSpanCollector.getClass().getDeclaredField("spanQueue");
+            field.setAccessible(true);
+            zipkinSpanCollectorInternalQueue = (BlockingQueue<?>) field.get(zipkinSpanCollector);
+        } catch (Exception e) {
+            LOGGER.warn("Unable to obtain ZipkinSpanCollector's internal queue", e);
+        }
+    }
+
+    /**
+     * Gets the current size of the underlying queue (of spans). This method returns -1 if ZipkinEmitter was unable to
+     * obtain a reference to the queue.
+     *
+     * @return The current size of the underlying queue
+     */
+    @ManagedAttribute
+    public int getCurrentQueueSize() {
+        return zipkinSpanCollectorInternalQueue != null ? zipkinSpanCollectorInternalQueue.size() : -1;
+    }
+
+    /**
+     * Gets the remaining capacity of the underlying queue (of spans). This method returns -1 if ZipkinEmitter was
+     * unable to obtain a reference to the queue.
+     *
+     * @return The remaining capacity of the underlying queue
+     */
+    @ManagedAttribute
+    public int getRemainingQueueCapacity() {
+        return zipkinSpanCollectorInternalQueue != null ? zipkinSpanCollectorInternalQueue.remainingCapacity() : -1;
     }
 }
