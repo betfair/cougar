@@ -249,7 +249,7 @@ public class ZipkinEmitter implements InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         try {
             Field field = zipkinSpanCollector.getClass().getDeclaredField("spanQueue");
             field.setAccessible(true);
