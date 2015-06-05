@@ -186,7 +186,7 @@ public class ServiceRegisterableExecutionVenue extends BaseExecutionVenue implem
             if (me.getKey().toLowerCase().contains("password")) {
             	value = "*****";
             }
-            LOGGER.info("  {} = {}{2}",
+            LOGGER.info("  {} = {}{}",
                             StringUtils.rightPad(value,longest),
                             me.getKey(),
                             value,
