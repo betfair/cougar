@@ -1,5 +1,6 @@
 /*
  * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +17,7 @@
 
 package com.betfair.cougar.core.api.ev;
 
+import com.betfair.cougar.core.api.OperationBindingDescriptor;
 import com.betfair.cougar.core.api.transcription.Parameter;
 import com.betfair.cougar.core.api.transcription.ParameterType;
 
@@ -23,13 +25,7 @@ import com.betfair.cougar.core.api.transcription.ParameterType;
  * Defines an Operation, its parameters and its return type.
  *
  */
-public interface OperationDefinition {
-
-	/**
-	 * Get the key values of the Operation (service name, service version and operation name)
-	 * @return
-	 */
-	public OperationKey getOperationKey();
+public interface OperationDefinition extends OperationBindingDescriptor {
 
 	/**
 	 * Get the Parameters (names and ParameterType) for the operation.

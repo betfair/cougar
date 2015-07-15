@@ -18,7 +18,6 @@
 package com.betfair.cougar.client.socket;
 
 import com.betfair.cougar.api.ExecutionContext;
-import com.betfair.cougar.api.security.IdentityResolver;
 import com.betfair.cougar.client.CallContextFactory;
 import com.betfair.cougar.client.ClientCallContext;
 import com.betfair.cougar.client.api.ContextEmitter;
@@ -223,7 +222,7 @@ public class ExecutionVenueNioClient extends AbstractClientTransport implements 
                 // We arrive here when the output pipe is broken. Broken network connections are not
                 // really exceptional and should not be reported by dumping the stack trace.
                 // Instead a summary debug level log message with some relevant info
-                 logger.log(ALL, session, "ExecutionVenueNioClient: IOException received on session - closing");
+                 logger.log(ALL, session, "ExecutionVenueNioClient: IOException received on session - closing",cause);
             } else {
                 logger.log(SESSION, session, "ExecutionVenueNioClient: Unexpected exception from session - see main log for details");
                 LOG.warn("Unexpected exception from session " + NioUtils.getSessionId(session), cause);

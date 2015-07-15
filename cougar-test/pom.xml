@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Copyright 2014, The Sporting Exchange Limited
+  ~ Copyright 2015, Simon Matić Langford
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -30,17 +31,17 @@
 
 	<properties>
         <testFailureIgnore>false</testFailureIgnore>
-
 	</properties>
 
-  <modules>
-    <module>cougar-test-utils</module>
-    <module>cougar-ci-test-listener</module>
-    <module>cougar-component-code-tests</module>
-    <module>cougar-client-code-tests</module>
-    <module>cougar-normal-code-tests</module>
-    <module>cougar-iddversion-tests</module>
-    <module>cougar-binaryprotocol-tests</module>
-    <module>cougar-ci-process-launcher</module>
-  </modules>
+    <modules>
+        <module>cougar-test-utils</module>
+        <module>cougar-ci-test-listener</module>
+        <module>cougar-component-code-tests</module>
+        <module>cougar-client-code-tests</module>
+        <module>cougar-normal-code-tests</module>
+        <module>cougar-iddversion-tests</module>
+        <module>cougar-binaryprotocol-tests</module>
+        <module>cougar-ci-process-launcher</module>
+        <module>socket-compatibility-testing</module>
+    </modules>
 </project>

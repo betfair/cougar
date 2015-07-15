@@ -1,5 +1,6 @@
 /*
  * Copyright 2014, The Sporting Exchange Limited
+ * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,6 +69,7 @@ public class SessionRecycler implements Runnable {
             public Thread newThread(Runnable r) {
                 Thread t = new Thread(r);
                 t.setName("Session Recycler for " + hosts);
+                t.setDaemon(true);
                 return t;
             }
         }).scheduleAtFixedRate(this, 0, sessionRecycleInterval, TimeUnit.MILLISECONDS);

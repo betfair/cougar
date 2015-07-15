@@ -1,5 +1,4 @@
 /*
- * Copyright 2014, The Sporting Exchange Limited
  * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,15 +14,23 @@
  * limitations under the License.
  */
 
-package com.betfair.cougar.core.api;
+package com.betfair.cougar.test.socket.tester.client;
 
-import com.betfair.cougar.core.api.ev.OperationKey;
-
-public interface OperationBindingDescriptor {
+/**
+ *
+ */
+public interface ClientTest {
+    /**
+     * Do the test.
+     * Exceptions treated as failure.
+     */
+    void test(TestResult ret) throws Exception;
 
     /**
-     * Get the key values of the Operation (service name, service version and operation name)
+     * Name / short desc of test
      * @return
      */
-	OperationKey getOperationKey();
+    String getName();
+
+    String getServerVariant();
 }

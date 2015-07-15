@@ -1,5 +1,4 @@
 /*
- * Copyright 2014, The Sporting Exchange Limited
  * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,15 +14,29 @@
  * limitations under the License.
  */
 
-package com.betfair.cougar.core.api;
+package com.betfair.cougar.test.socket.tester.common;
 
-import com.betfair.cougar.core.api.ev.OperationKey;
+import java.security.Principal;
 
-public interface OperationBindingDescriptor {
+/**
+*
+*/
+public class SimplePrincipal implements Principal {
+    private String identifier;
 
-    /**
-     * Get the key values of the Operation (service name, service version and operation name)
-     * @return
-     */
-	OperationKey getOperationKey();
+    public SimplePrincipal(String identifier) {
+        this.identifier = identifier;
+    }
+
+    @Override
+    public String getName() {
+        return identifier;
+    }
+
+    @Override
+    public String toString() {
+        return "SimplePrincipal{" +
+                "identifier='" + identifier + '\'' +
+                '}';
+    }
 }

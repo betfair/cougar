@@ -1,5 +1,4 @@
 /*
- * Copyright 2014, The Sporting Exchange Limited
  * Copyright 2015, Simon Matić Langford
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,15 +14,18 @@
  * limitations under the License.
  */
 
-package com.betfair.cougar.core.api;
+package com.betfair.cougar.test.socket.app;
 
-import com.betfair.cougar.core.api.ev.OperationKey;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
-public interface OperationBindingDescriptor {
-
-    /**
-     * Get the key values of the Operation (service name, service version and operation name)
-     * @return
-     */
-	OperationKey getOperationKey();
+/**
+ *
+ */
+public class CentralRepoSearcher implements RepoSearcher {
+    @Override
+    public List<File> findAndCache(File tmpDir) {
+        return new ArrayList<>();
+    }
 }
