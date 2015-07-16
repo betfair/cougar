@@ -17,7 +17,6 @@
 package com.betfair.cougar.logging;
 
 
-import com.betfair.cougar.logging.handlers.AbstractLogHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

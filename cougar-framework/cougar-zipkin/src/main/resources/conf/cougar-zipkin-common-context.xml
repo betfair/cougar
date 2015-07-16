@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="zipkinManager" class="com.betfair.cougar.modules.zipkin.impl.ZipkinManager">
+        <property name="samplingLevel" value="$COUGAR_ZIPKIN{zipkin.samplingLevel}"/>
+    </bean>
+
+    <bean id="zipkinClock" class="com.betfair.cougar.util.time.SystemClock" />
+
+    <bean id="zipkinEmitter" class="com.betfair.cougar.modules.zipkin.impl.ZipkinEmitter">
+        <constructor-arg index="0" value="$COUGAR{cougar.app.name}"/>
+        <constructor-arg index="1" ref="zipkinSpanCollector"/>
+        <constructor-arg index="2" ref="zipkinClock"/>
+    </bean>
+
+    <bean id="zipkinSpanCollector" class="com.github.kristofa.brave.zipkin.ZipkinSpanCollector">
+        <constructor-arg index="0" value="$COUGAR_ZIPKIN{zipkin.collector.host}"/>
+        <constructor-arg index="1" value="$COUGAR_ZIPKIN{zipkin.collector.port}"/>
+        <constructor-arg index="2" ref="zipkinSpanCollectorParams"/>
+    </bean>
+
+    <bean id="zipkinSpanCollectorParams" class="com.github.kristofa.brave.zipkin.ZipkinSpanCollectorParams">
+        <property name="batchSize" value="$COUGAR_ZIPKIN{zipkin.brave.batchSize}"/>
+        <property name="failOnSetup" value="$COUGAR_ZIPKIN{zipkin.brave.failOnSetup}"/>
+        <property name="nrOfThreads" value="$COUGAR_ZIPKIN{zipkin.brave.nrOfThreads}"/>
+        <property name="queueSize" value="$COUGAR_ZIPKIN{zipkin.brave.queueSize}"/>
+        <property name="socketTimeout" value="$COUGAR_ZIPKIN{zipkin.brave.socketTimeout}"/>
+    </bean>
+
+    <bean name="zipkinTracerInitialisation" parent="cougar.core.TracerRegistrationHelper">
+        <constructor-arg index="1">
+            <bean class="com.betfair.cougar.modules.zipkin.impl.ZipkinTracer">
+                <property name="zipkinEmitter" ref="zipkinEmitter"/>
+            </bean>
+        </constructor-arg>
+        <constructor-arg index="2" value="#{ $COUGAR_ZIPKIN{zipkin.samplingLevel} > 0 }"/>
+    </bean>
+
+    <bean class="org.springframework.jmx.export.MBeanExporter">
+        <property name="server" ref="mbeanServer"/>
+
+        <property name="registrationBehavior" ref="org.springframework.jmx.export.MBeanExporter.REGISTRATION_REPLACE_EXISTING"/>
+
+        <property name="beans">
+            <map>
+                <entry key="CoUGAR:name=ZipkinManager" value-ref="zipkinManager"/>
+                <entry key="CoUGAR:name=ZipkinEmitter" value-ref="zipkinEmitter"/>
+            </map>
+        </property>
+
+        <property name="assembler">
+            <bean id="assembler" class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler">
+                <property name="attributeSource">
+                    <bean id="jmxAttributeSource" class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource"/>
+                </property>
+            </bean>
+        </property>
+    </bean>
+</beans>
