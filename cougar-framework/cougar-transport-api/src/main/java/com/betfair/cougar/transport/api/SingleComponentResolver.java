@@ -32,7 +32,7 @@ public abstract class SingleComponentResolver<Transport,Body> implements Dehydra
 
     @Override
     public void resolving(Set<DehydratedExecutionContextComponent> handling) {
-        if (handling.size() > 1 || (handling.size() == 1 && !handling.contains(component))) {
+        if (handling.size() > 1 || (handling.size() == 0 && !handling.contains(component))) {
             Set<DehydratedExecutionContextComponent> cantHandle = new HashSet<>(handling);
             cantHandle.remove(component);
             throw new IllegalArgumentException("I don't know how to handle: "+cantHandle);
