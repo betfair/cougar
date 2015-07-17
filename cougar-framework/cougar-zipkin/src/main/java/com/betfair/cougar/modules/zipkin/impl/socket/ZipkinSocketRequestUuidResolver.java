@@ -26,7 +26,7 @@ import com.betfair.cougar.netutil.nio.marshalling.SocketRequestUuidResolver;
 import java.util.Map;
 
 /**
- * Default socket UUID resolver. Uses the uuid and uuidParents headers to resolve uuids.
+ * Zipkin request uuid resolver.
  */
 public class ZipkinSocketRequestUuidResolver<Void> extends SocketRequestUuidResolver<Void> {
 
