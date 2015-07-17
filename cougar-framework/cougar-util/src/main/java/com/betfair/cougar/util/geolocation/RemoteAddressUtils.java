@@ -159,7 +159,7 @@ public class RemoteAddressUtils {
         return sb.toString();
     }
 
-    public static int getIPv4AsInteger() {
+    public static int getLocalhostAsIPv4Integer() {
         try {
             InetAddress localhost = InetAddress.getLocalHost();
             return new BigInteger(localhost.getAddress()).intValue();
