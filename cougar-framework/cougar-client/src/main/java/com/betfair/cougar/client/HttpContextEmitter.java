@@ -16,27 +16,17 @@
 
 package com.betfair.cougar.client;
 
-import com.betfair.cougar.api.ExecutionContext;
 import com.betfair.cougar.api.RequestUUID;
 import com.betfair.cougar.api.UUIDGenerator;
 import com.betfair.cougar.api.geolocation.GeoLocationDetails;
-import com.betfair.cougar.api.security.IdentityResolver;
-import com.betfair.cougar.api.security.IdentityToken;
-import com.betfair.cougar.api.security.IdentityTokenResolver;
 import com.betfair.cougar.client.api.ContextEmitter;
 import com.betfair.cougar.client.api.GeoLocationSerializer;
-import com.betfair.cougar.transport.api.ExecutionContextComponent;
-import com.betfair.cougar.util.RequestUUIDImpl;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Standard context emitter for use with http client transports
@@ -70,7 +60,7 @@ public class HttpContextEmitter<HR> implements ContextEmitter<HR, List<Header>> 
             RequestUUID requestUUID = ctx.getRequestUUID();
             result.add(new BasicHeader(uuidHeader, requestUUID.getLocalUUIDComponent()));
             if (uuidParentsHeader != null && requestUUID.getRootUUIDComponent() != null) {
-                result.add(new BasicHeader(uuidParentsHeader, requestUUID.getRootUUIDComponent()+ UUIDGenerator.COMPONENT_SEPARATOR+requestUUID.getParentUUIDComponent()));
+                result.add(new BasicHeader(uuidParentsHeader, requestUUID.getRootUUIDComponent() + UUIDGenerator.COMPONENT_SEPARATOR + requestUUID.getParentUUIDComponent()));
             }
         }
 

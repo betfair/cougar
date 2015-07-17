@@ -23,7 +23,6 @@ import com.betfair.cougar.transport.api.DehydratedExecutionContextComponent;
 import com.betfair.cougar.transport.api.DehydratedExecutionContextResolver;
 import com.betfair.cougar.transport.api.DehydratedExecutionContextResolverFactory;
 import com.betfair.cougar.transport.api.RequestTimeResolver;
-import com.betfair.cougar.util.RequestUUIDImpl;
 import com.betfair.cougar.util.geolocation.GeoIPLocator;
 
 import java.util.Date;
@@ -46,8 +45,9 @@ public class DefaultExecutionContextResolverFactory implements DehydratedExecuti
     @Override
     public <T, B> DehydratedExecutionContextResolver<T, B>[] resolvers(Protocol protocol) {
         if (protocol == Protocol.SOCKET) {
-            return new DehydratedExecutionContextResolver[] {
-                new SocketResolver()
+            return new DehydratedExecutionContextResolver[]{
+                    new SocketResolver(),
+                    new SocketRequestUuidResolver()
             };
         }
         return null;
@@ -58,12 +58,11 @@ public class DefaultExecutionContextResolverFactory implements DehydratedExecuti
 
         @Override
         public DehydratedExecutionContextComponent[] supportedComponents() {
-            return new DehydratedExecutionContextComponent[] {
+            return new DehydratedExecutionContextComponent[]{
                     DehydratedExecutionContextComponent.IdentityTokens,
                     DehydratedExecutionContextComponent.Location,
                     DehydratedExecutionContextComponent.ReceivedTime,
                     DehydratedExecutionContextComponent.RequestedTime,
-                    DehydratedExecutionContextComponent.RequestUuid,
                     DehydratedExecutionContextComponent.TraceLoggingEnabled,
                     DehydratedExecutionContextComponent.TransportSecurityStrengthFactor
             };
@@ -95,15 +94,6 @@ public class DefaultExecutionContextResolverFactory implements DehydratedExecuti
             if (handling.contains(DehydratedExecutionContextComponent.TransportSecurityStrengthFactor)) {
                 builder.setTransportSecurityStrengthFactor(params.getTransportSecurityStrengthFactor());
             }
-            if (handling.contains(DehydratedExecutionContextComponent.RequestUuid)) {
-                if (params.getUuid() != null) {
-                    builder.setRequestUUID(new RequestUUIDImpl(params.getUuid()));
-                }
-                else {
-                    builder.setRequestUUID(new RequestUUIDImpl());
-                }
-            }
-
         }
     }
 

@@ -20,6 +20,7 @@ import com.betfair.cougar.util.NetworkAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -156,5 +157,14 @@ public class RemoteAddressUtils {
             sb.append(additional);
         }
         return sb.toString();
+    }
+
+    public static int getIPv4AsInteger() {
+        try {
+            InetAddress localhost = InetAddress.getLocalHost();
+            return new BigInteger(localhost.getAddress()).intValue();
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

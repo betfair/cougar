@@ -21,4 +21,5 @@
             http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <import resource="classpath:conf/module-config-jetty-transport.xml" />
+
 </beans>

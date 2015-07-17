@@ -125,6 +125,7 @@
         </sonar.skippedModules>
         <hessian.version>4.0.33</hessian.version>
         <virtualheap.version>1.3.0</virtualheap.version>
+        <jsr305.version>1.3.9</jsr305.version>
     </properties>
 
     <modules>
@@ -474,6 +475,11 @@
                 <groupId>com.caucho</groupId>
                 <artifactId>hessian</artifactId>
                 <version>${hessian.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.findbugs</groupId>
+                <artifactId>jsr305</artifactId>
+                <version>${jsr305.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
