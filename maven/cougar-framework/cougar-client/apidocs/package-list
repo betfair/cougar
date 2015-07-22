@@ -1,0 +1,9 @@
+com.betfair.cougar.client
+com.betfair.cougar.client.api
+com.betfair.cougar.client.exception
+com.betfair.cougar.client.factory
+com.betfair.cougar.client.query
+com.betfair.cougar.client.socket
+com.betfair.cougar.client.socket.jmx
+com.betfair.cougar.client.socket.resolver
+com.betfair.cougar.client.ssl

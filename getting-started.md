@@ -44,6 +44,15 @@ package: wibble
 
 Enter the values shown when prompted.
 
+Now a little pom hackery is required to remove the vestiges of our archetype project, open up the ```pom.xml``` in the directory just created (```wibble```) and remove these lines from the top:
+```
+    <parent>
+        <groupId>com.betfair.cougar.archetypes</groupId>
+        <artifactId>cougar-archetypes</artifactId>
+        <version>3.0-SNAPSHOT</version>
+    </parent>
+```
+
 Finally, we need to run a little maven magic to get all the files with the right names/content:
 ```
 C:\>cd wibble
@@ -87,7 +96,7 @@ This defines an operation called ```echo``` which will be exposed as an operatio
 
 As you can see, all elements have a description tag. Currently you must specify this tag, but it may be empty. We intend to remove this restriction soon.
 
-Cougar supports a wide range of datatypes, both simple and complex. For more information checkout our [IDL documentation](TODO.html).
+Cougar supports a wide range of datatypes, both simple and complex. For more information checkout the [IDL reference](bsidl-reference.html).
 
 Generate your stubs
 -------------------

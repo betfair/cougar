@@ -1,0 +1,4 @@
+com.betfair.cougar.client
+com.betfair.cougar.client.exception
+com.betfair.cougar.client.query
+com.betfair.cougar.client.socket

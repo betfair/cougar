@@ -1,4 +1,5 @@
 com.betfair.cougar.core.api
+com.betfair.cougar.core.api.builder
 com.betfair.cougar.core.api.client
 com.betfair.cougar.core.api.collectionwrappers
 com.betfair.cougar.core.api.ev

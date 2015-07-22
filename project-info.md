@@ -17,8 +17,8 @@ The developer list is intended for use for build notifications and other automat
 
 If you want to contribute to Cougar you can do so in many ways, and we'll gladly accept all the help we can get:
 * Raising new issues: if you want to discuss your requirements before raising then feel free to use the user list, alternatively we can use github discussion on the actual issue once raised.
-* Documentation: we hold our documentation in a seperate [repo](http://github.com/betfair/cougar-documentation) so we can version it independently but broadly aligned to the binary builds.
-* Archetypes: we hold our archetypes in a seperate [repo](http://github.com/betfair/cougar-archetypes) so we can version it independently but broadly aligned to the binary builds.
+* Documentation: we hold our documentation in a separate [repo](http://github.com/betfair/cougar-documentation) so we can version it independently but broadly aligned to the binary builds.
+* Archetypes: we hold our archetypes in a separate [repo](http://github.com/betfair/cougar-archetypes) so we can version it independently but broadly aligned to the binary builds.
 
 # Maven repositories
 

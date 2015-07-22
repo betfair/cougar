@@ -22,9 +22,9 @@ Alternatively, checkout our [documentation hub](documentation.html) for other gu
 Releases
 --------
 
-Cougar has only recently been made an open source project after 4 years as a closed source project. Source code is available on GitHub, click [here](http://github.com/betfair/cougar) or checkout the "Fork Me" banner.
+Cougar releases are available on [GitHub](http://github.com/betfair/cougar/releases), as is [source code](http://github.com/betfair/cougar) or checkout the "Fork Me" banner.
 
-Whilst we're cleaning up Cougar (mostly in the documentation/archetype space), plus adding features we think are needed, Cougar is available as a SNAPSHOT release (3.0-SNAPSHOT to be precise) in the Sonatype OSS Repository:
+Cougar releases are published in the Maven Central repo, and SNAPSHOTs are also available (3.3-SNAPSHOT is the latest) in the Sonatype OSS Repository:
 
 ```
 <repository>

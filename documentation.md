@@ -12,7 +12,7 @@ Project Info
 Guides
 ------
 
-* [What is Cougar?](cougar-guide.html) - In progress
+* [What is Cougar?](cougar-guide.html)
 * [Cougar in under 5 minutes](getting-started.html) - TODO
 * [Securing Cougar](securing.html) - TODO
 * [Tips 'N' Tricks](tips-tricks.html) - TODO
@@ -20,7 +20,7 @@ Guides
 References
 ----------
 
-* [Cougar IDL](bsidl-reference.html) - TODO
+* [Cougar IDL](bsidl-reference.html) - In Progress
 * [Transport basics](transport-basics.html)
  * [Jetty transport](jetty-transport.html) - TODO
  * [Binary transport](binary-transport.html) - TODO
@@ -31,7 +31,7 @@ References
 * [Connected objects](connected-objects.html) - TODO
 * [Maven code generation plugin](codegen.html) - TODO
 * [Monitoring (health & performance)](monitoring.html) - TODO
-* [Configuration](configuration.html) - TODO
+* [Configuration](configuration.html)
 * [Async/sync](async-vs-sync.html) - TODO
 * [Modules](modules.html) - TODO
 * [Utilities](utilities.html) - TODO
@@ -42,7 +42,7 @@ Notes
 -----
 
 * [Interface versioning](versioning.html) - TODO
-* [SOAP - why we don't like it](whats-wrong-with-soap.html) - TODO
+* [SOAP - why we don't like it](whats-wrong-with-soap.html)
 
 Older
 -----
