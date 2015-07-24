@@ -30,14 +30,14 @@ keys on an encrypted sso token).
 Identity token resolution
 -------------------------
 
-Identity token resolution is performed through transport-specific implementations of ```IdentityTokenResolver```:
-```
-public interface IdentityTokenResolver<I, O, C> {
-    public List<IdentityToken> resolve(I input, C transportAuthTokens);
-    public void rewrite(List<IdentityToken> credentials, O output);
-    public boolean isRewriteSupported();
-}
-```
+Identity token resolution is performed through transport-specific implementations of `IdentityTokenResolver`:
+
+    public interface IdentityTokenResolver<I, O, C> {
+        public List<IdentityToken> resolve(I input, C transportAuthTokens);
+        public void rewrite(List<IdentityToken> credentials, O output);
+        public boolean isRewriteSupported();
+    }
+
 The types of the generic parameters vary by transport and for custom transports you should consult specific documentation to ascertain these. Standard Cougar transports are as follows:
 <table>
   <tr><th>Name</th><th>I</th><th>O</th><th>C</th></tr>

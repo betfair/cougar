@@ -47,7 +47,7 @@ archetypes to generate the basic layout:
 
 Enter the values shown when prompted.
 
-Now a little pom hackery is required to remove the vestiges of our archetype project, open up the ```pom.xml``` in the
+Now a little pom hackery is required to remove the vestiges of our archetype project, open up the `pom.xml` in the
 directory just created (`wibble`) and remove these lines from the top:
 
     <parent>
@@ -178,9 +178,30 @@ You will now see a bunch of console output, which should end with the last few l
 
 We're now ready to call our operation.
 
-
 Calling your service
 --------------------
 
+Open your browser of choce and point it to [http://localhost:8080/Wibble/v1/echo?message=Hello%20world], this will give you the output:
+
+    <EchoResponse>
+        <String>Hello world</String>
+    </EchoResponse>
+
+If you want to see a json response then add `&alt=json` to the end of the url (this is a developer friendly way to override
+the content type negotiation, rather than having to fiddle with your browser settings, `Accepts` headers are the preferred
+way for a client to negotiate content type with a Cougar service):
+
+    "Hello world"
+
 Viewing the admin console
 -------------------------
+
+Open your browser and point it to [http://localhost:9999/], you'll be prompted for a username and password, which default
+to `jmxadmin` and `password` respectively. This shows you an html JMX console, the most useful beans are those in the `CoUGAR` domain.
+
+Opening [http://localhost:9999/administration/] gives you the administration interface, within which Cougar modules can register
+pages. The only one provided by default allows you to remotely get a thread dump from a running Cougar service.
+
+Next
+----
+

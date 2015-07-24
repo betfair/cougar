@@ -26,16 +26,16 @@ Cougar releases are available on [GitHub](http://github.com/betfair/cougar/relea
 
 Cougar releases are published in the Maven Central repo, and SNAPSHOTs are also available (3.3-SNAPSHOT is the latest) in the Sonatype OSS Repository:
 
-```
-<repository>
-  <id>sonatype-nexus-snapshots</id>
-  <name>Sonatype Nexus Snapshots</name>
-  <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-  <releases>
-    <enabled>false</enabled>
-  </releases>
-  <snapshots>
-    <enabled>true</enabled>
-  </snapshots>
-</repository>
-```
+
+    <repository>
+      <id>sonatype-nexus-snapshots</id>
+      <name>Sonatype Nexus Snapshots</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+
