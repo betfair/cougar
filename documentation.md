@@ -7,13 +7,13 @@ Cougar documentation hub
 Project Info
 ------------
 * [Project Info](project-info.html) (maven repos, mailing lists, etc)
-* [Building Cougar](building.html) - TODO
+* [Building Cougar](building.html)
 
 Guides
 ------
 
 * [What is Cougar?](cougar-guide.html)
-* [Cougar in under 5 minutes](getting-started.html) - TODO
+* [Cougar in under 5 minutes](getting-started.html) - In progress
 * [Securing Cougar](securing.html) - TODO
 * [Tips 'N' Tricks](tips-tricks.html) - TODO
 
@@ -26,7 +26,7 @@ References
  * [Binary transport](binary-transport.html) - TODO
  * [JMS transports](jms-transports.html) - TODO
 * [Cougar client](client.html) - TODO
-* [Identities](identities.html) - TODO
+* [Identities](identities.html)
 * [Geo-location](geolocation.html) - TODO
 * [Connected objects](connected-objects.html) - TODO
 * [Maven code generation plugin](codegen.html) - TODO
