@@ -37,8 +37,6 @@ public class PropertyLoader {
 
     private Logger logger;
 
-    private String configHostProp = DEFAULT_CONFIG_HOST_PROPERTY;
-
     private Resource defaultConfig;
     private Resource appProperties;
     private String configOverride;
@@ -84,7 +82,7 @@ public class PropertyLoader {
      * @return returns an array of validated Resources for use with overlaid property files
      */
     public Resource[] constructResourceList() {
-        String configHost = System.getProperties().getProperty(configHostProp);
+        String configHost = System.getProperties().getProperty(DEFAULT_CONFIG_HOST_PROPERTY);
         if (configHost == null) {
             log("No config Host defined - assuming " + DEFAULT_CONFIG_HOST_PROPERTY_VALUE);
             configHost = DEFAULT_CONFIG_HOST_PROPERTY_VALUE;
