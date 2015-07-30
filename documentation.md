@@ -33,7 +33,7 @@ References
 * [Monitoring (health & performance)](monitoring.html) - TODO
 * [Configuration](configuration.html)
 * [Async/sync](async-vs-sync.html) - TODO
-* [Modules](modules.html) - TODO
+* [Modules](modules.html)
 * [Utilities](utilities.html) - TODO
 * [Archetypes](archetypes.html) - TODO
 * [Tuning](tuning.html) - TODO
