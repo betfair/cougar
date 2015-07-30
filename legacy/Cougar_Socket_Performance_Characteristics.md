@@ -3,8 +3,6 @@ layout: default
 ---
 # Socket Performance Testing
 
-{toc:minLevel=2}
-
 ## RPC
 
 ### Local loopback
@@ -12,8 +10,8 @@ layout: default
 Key:
 
 * Num Clients - the number of independent client processes
-* Client Threads - value given for ```cougar.client.socket.clientExecutor.maximumPoolSize``` and the number of client threads trying to make RPC calls.
-* Server Threads - value given for ```cougar.socket.serverExecutor.maximumPoolSize``` and ```cougar.commandProcessor.maximumPoolSize```
+* Client Threads - value given for `cougar.client.socket.clientExecutor.maximumPoolSize` and the number of client threads trying to make RPC calls.
+* Server Threads - value given for `cougar.socket.serverExecutor.maximumPoolSize` and `cougar.commandProcessor.maximumPoolSize`
 * Total TPS - average total throughput on the server during the test
 * Avg Latency - average response time for each RPC operation during the test (ms)
 
@@ -483,7 +481,7 @@ Key:
 
 * Num Heaps - the number of independent heaps
 * Num Clients - the number of independent client processes (each subscribed to all heaps)
-* Num Threads - value given for ```cougar.socket.push.processingThreads``` 
+* Num Threads - value given for `cougar.socket.push.processingThreads`
 * Subscription Time - the maximum time for any one client to subscribe to all the heaps (ms)
 * Avg Subscription Latency - the average time for the slowest client to subscribe to each heap (ms)
 * Replication Time - the maximum time for any one client to receive all updates (ms)
@@ -1305,5 +1303,3 @@ Num updates for each heap for these tests was 100k.
 <td>.7685</td>
 </tr>
 </table>
-
-### LA

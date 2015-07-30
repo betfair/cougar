@@ -18,8 +18,8 @@ Maven:
 
 Files:
 
-|```/src/main/resources/<serviceName>Service.xml```|The BSIDL definition of the service interface|
-|```/src/main/resources/<serviceName>Service-Extensions.xml```|The RESCRIPT mappings file for the service interface|
+|`/src/main/resources/<serviceName>Service.xml`|The BSIDL definition of the service interface|
+|`/src/main/resources/<serviceName>Service-Extensions.xml`|The RESCRIPT mappings file for the service interface|
 
 # application - The Application
 
@@ -37,12 +37,12 @@ Maven:
 
 Files:
 
-|```/src/main/java```|Application code|
-|```/src/test/java```|Unit tests|
-|```/src/main/resources/conf```|Spring assembly files, default properties, other configuration|
-|```/target/generated-sources```|Java sources generated from your ```idd``` project.  This folder needs to be included in your IDE as a source root|  
-|```/target/generated-sources```|Non-source files generated from your ```idd``` project.  This folder needs to be included in your IDE as a source root|  
-|```/target/generated-resources```|Your service's IDD (a merge of services' BSIDL and RESCRIPT mappings) plus WSDLs|  
+|`/src/main/java`|Application code|
+|`/src/test/java`|Unit tests|
+|`/src/main/resources/conf`|Spring assembly files, default properties, other configuration|
+|`/target/generated-sources`|Java sources generated from your `idd` project.  This folder needs to be included in your IDE as a source root|
+|`/target/generated-sources`|Non-source files generated from your `idd` project.  This folder needs to be included in your IDE as a source root|
+|`/target/generated-resources`|Your service's IDD (a merge of services' BSIDL and RESCRIPT mappings) plus WSDLs|
 
 # launcher - Application Launcher and Packager
 
@@ -58,12 +58,12 @@ Maven:
 
 Files:
 
-|```src/main/java/<package>/Launcher```|Main class|
-|```src/main/resources/etc```|configuration|
-|```src/main/resources/conf/overrides.properties```|Cougar property overrides|
-|```src/test/java```|Integration tests|
-|```src/test/resources/conf```|Cougar config to use in test mode|
-|```src/main/assembly```|Maven assembly descriptors that will build distributables|
+|`src/main/java/<package>/Launcher`|Main class|
+|`src/main/resources/etc`|configuration|
+|`src/main/resources/conf/overrides.properties`|Cougar property overrides|
+|`src/test/java`|Integration tests|
+|`src/test/resources/conf`|Cougar config to use in test mode|
+|`src/main/assembly`|Maven assembly descriptors that will build distributables|
 
 # rescript-client - Example RESCRIPT client app
 
@@ -81,9 +81,9 @@ Note: You can run your service on http://localhost:8080 for use in the tests by 
 
 Files:
 
-|```src/main/java/<package>```|Main class and the sample Application|
-|```src/main/resources/etc```|configuration|
-|```/src/main/resources/conf```|Spring assembly files, default properties, other configuration|
-|```src/tes/java```|Integration tests|
-|```src/test/resources/conf```|Cougar config to use in test mode|
-|```src/main/assembly```|Maven assembly descriptors that will build distributables|
+|`src/main/java/<package>`|Main class and the sample Application|
+|`src/main/resources/etc`|configuration|
+|`/src/main/resources/conf`|Spring assembly files, default properties, other configuration|
+|`src/tes/java`|Integration tests|
+|`src/test/resources/conf`|Cougar config to use in test mode|
+|`src/main/assembly`|Maven assembly descriptors that will build distributables|

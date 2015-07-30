@@ -24,14 +24,14 @@ balancer.
 This is done via the [JMX](Cougar_Monitoring.html#JMXHTMLBeanBrowser) interface exposed by Cougar:
 [http://localhost:9999/ViewObjectRes//CoUGAR%3Aname%3DserviceStatusController.html](http://localhost:9999/ViewObjectRes//CoUGAR%3Aname%3DserviceStatusController.html).
 
-To change the health of the service interfaces hosted by this Cougar instance, just change the ```InService``` parameter.
-This will instantly affect the health of the service as returned by the ```HealthService```.
+To change the health of the service interfaces hosted by this Cougar instance, just change the `InService` parameter.
+This will instantly affect the health of the service as returned by the `HealthService`.
 
 ## Persistence of service status
 
-By default the controller assumes that ```InService``` is ```true```. When a user changes the value of this via JMX, it
-persists that status in a file, denoted by the overridable property ```cougar.service.status.file```, which defaults to
-```/tmp/cougar-service.status```, but should be set to ```/var/run/<APP_NAME>/cougar-service.status``` so that the value
+By default the controller assumes that `InService` is `true`. When a user changes the value of this via JMX, it
+persists that status in a file, denoted by the overridable property `cougar.service.status.file`, which defaults to
+`/tmp/cougar-service.status`, but should be set to `/var/run/<APP_NAME>/cougar-service.status` so that the value
 is persisted across node restarts.
 
-If the file is deleted at any point, then on next restart the status will revert to ```true```.
+If the file is deleted at any point, then on next restart the status will revert to `true`.

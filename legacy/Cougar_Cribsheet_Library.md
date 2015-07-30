@@ -3,16 +3,16 @@ layout: default
 ---
 # Invocation URLs
 
-Port is usually 8080 unless over-ridden by ```jetty.http.port```.
+Port is usually 8080 unless over-ridden by `jetty.http.port`.
 
 |What|Where|Notes|
 | -- | --- | --- |
-|Service RESCRIPT endpoint|```http://localhost:8080/<interfacePath>/v<x>/<operationPath>[?<queryString>]```|```port``` is usually 8080 unless overridden (```jetty.http.port```)
-```interfacePath``` is defined in RESCRIPT extensions document, and may be omitted entirely
-```x``` is the major version number of the interface
-```operationPath``` is defined in the RESCRIPT extensions document |
-| SOAP Servive WSDL | ```http://localhost:8080/wsdl/<nameOfServiceBSIDLFile>.wsdl``` | {color:red}This should be changed to the name of the service and be version-qualified{color} |
-| SOAP Service Endpoint | ```http://localhost:8080/<serviceName>Service/vX``` | \- |
+|Service RESCRIPT endpoint|`http://localhost:8080/<interfacePath>/v<x>/<operationPath>[?<queryString>]`|`port` is usually 8080 unless overridden (`jetty.http.port`)
+`interfacePath` is defined in RESCRIPT extensions document, and may be omitted entirely
+`x` is the major version number of the interface
+`operationPath` is defined in the RESCRIPT extensions document |
+| SOAP Servive WSDL | `http://localhost:8080/wsdl/<nameOfServiceBSIDLFile>.wsdl` | {color:red}This should be changed to the name of the service and be version-qualified{color} |
+| SOAP Service Endpoint | `http://localhost:8080/<serviceName>Service/vX` | \- |
 
 # Monitoring URLs
 
@@ -39,7 +39,7 @@ Read [related documentation](Cougar_Monitoring.html).
 
 # Health Service URLs
 
-Port is usually 8080 unless over-ridden by ```jetty.http.port```.
+Port is usually 8080 unless over-ridden by `jetty.http.port`.
 
 <table>
 <tr>

@@ -10,7 +10,7 @@ you want to run on top. Discovery is done at runtime, by searching the classpath
 Cougar has 4 types of module, which are wired into the system in the order shown below:
 1. Bootstrap - As the name implies, modules which change base behaviour before Cougar initialises. Currently only used
    for setting up encrypted configuration file support (see [configuration](configuration.html)). Descriptor: `cougar-bootstrap-spring.xml`
-2. Core - Core Cougar modules, required by all Cougar based applications. Descriptor: `cougar-core-spring.xml`
+2. Core - Core Cougar module (singleton), required by all Cougar based applications. Descriptor: `cougar-core-spring.xml`
 3. Framework - Optional Cougar modules, may have dependencies on other framework modules, encompasses third party integrations
    such as caching or tracing, as well as Cougar transports. Descriptor: `cougar-module-spring.xml`
 4. Application - Applications/services running within the Cougar framework. Descriptor: `cougar-application-spring.xml`

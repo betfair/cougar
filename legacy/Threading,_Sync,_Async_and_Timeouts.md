@@ -119,7 +119,7 @@ Does the following on the calling thread:
 * Obtain a connection
 * Write the request
 
-Does the following on it's internal thread pool (```CoUGAR.socket.transport.client:name=asyncHttpWorkerExecutor``` in JMX):
+Does the following on it's internal thread pool (`CoUGAR.socket.transport.client:name=asyncHttpWorkerExecutor` in JMX):
 
 * Deserialise the response
 * Call the observer onXXX method

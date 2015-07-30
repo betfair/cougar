@@ -58,11 +58,11 @@ For applications that will be exposed via either Rescript or SOAP, narrowed impl
 
 Rescript:
 
-``` public interface RescriptIdentityTokenResolver extends IdentityTokenResolver<HttpServletRequest, HttpServletResponse> {} ```
+` public interface RescriptIdentityTokenResolver extends IdentityTokenResolver<HttpServletRequest, HttpServletResponse> {} `
 
 SOAP:
 
-``` public interface SoapIdentityTokenResolver extends IdentityTokenResolver<OMElement, OMElement> {} ```
+` public interface SoapIdentityTokenResolver extends IdentityTokenResolver<OMElement, OMElement> {} `
 
 When designing how your application will marshal tokens, you should consider any network appliances the request must pass
 through in transit - and that any parameter transported as part of an HTTP request is subject to inspection, manipulation

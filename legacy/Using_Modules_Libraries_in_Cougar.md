@@ -1,13 +1,11 @@
 ---
 layout: default
 ---
-{:toc}
-
 ## Overview
 
 Cougar is a modular system, discovering modules at runtime based on predefined rules to search in your classpath.
 
-Modules are defined by the existence of a Spring config file ```conf/cougar-<module-type>-spring.xml```.
+Modules are defined by the existence of a Spring config file `conf/cougar-<module-type>-spring.xml`.
 
 Modules types may be singletons.
 
@@ -19,20 +17,20 @@ Precedence/loading order:
 
 ## Bootstrap Modules
 
-**Module Type**: ```bootstrap```
+**Module Type**: `bootstrap`
 **Singleton**: (x)
 
 ## Core Module
 
-**Module Type**: ```core```
+**Module Type**: `core`
 **Singleton**: (/)
 
 ## Framework Modules
 
-**Module Type**: ```module```
+**Module Type**: `module`
 **Singleton**: (x)
 
 ## Application Modules
 
-**Module Type**: ```application```
+**Module Type**: `application`
 **Singleton**: (x)

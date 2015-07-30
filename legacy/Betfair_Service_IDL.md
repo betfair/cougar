@@ -50,15 +50,13 @@ Note that generics are specified with '()' rather than '<>' as chevrons break th
 
 #### Preamble
 
-```
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<interface name="Test" owner="Joe Bloggs" version="0.1" date="01/01/1970">
-	<authors>
-		<author name="Joe Bloggs" email="joe@bloggs.com"/>
-	</authors>
-	<description>This is here to provide an example of all features in order for tests to be made</description>
-</interface>
-```
+    <?xml version="1.0" encoding="ISO-8859-1"?>
+    <interface name="Test" owner="Joe Bloggs" version="0.1" date="01/01/1970">
+        <authors>
+            <author name="Joe Bloggs" email="joe@bloggs.com"/>
+        </authors>
+        <description>This is here to provide an example of all features in order for tests to be made</description>
+    </interface>
 
 This is essentially the header of the IDL containing information about the service. Below each significant XPath is explained
 
@@ -98,24 +96,22 @@ address  </td>
 
 #### Operations
 
-```xml
-<operation name="someMethod" since="0.1.0">
-	<description>Retrieves an account</description>
-	<parameters>
-		<request>
-			<parameter name="mandatoryNumber" type="i64" mandatory="true">
-				<description>abc</description>
-			</parameter>
-		</request>
-		<simpleResponse type="i64">
-			<description>Some Number</description>
-		</simpleResponse>
-	</parameters>
-	<consumers>
-		<product name="SoftGames"/>
-	</consumers>
-</operation>
-```
+    <operation name="someMethod" since="0.1.0">
+        <description>Retrieves an account</description>
+        <parameters>
+            <request>
+                <parameter name="mandatoryNumber" type="i64" mandatory="true">
+                    <description>abc</description>
+                </parameter>
+            </request>
+            <simpleResponse type="i64">
+                <description>Some Number</description>
+            </simpleResponse>
+        </parameters>
+        <consumers>
+            <product name="SoftGames"/>
+        </consumers>
+    </operation>
 
 <table>
 <tr>
@@ -169,19 +165,18 @@ have valid values assigned to them.
 Valid Values elements indicate the total set of available values which can be used for the named parameter, and which
 should ultimately be validated in the interface implementation. An example is shown below
 
-```xml
-<parameter name="type" type="string">
-	<description>The type of balance</description>
-	<validValues>
-		<value name="AVAILABLE_TO_BET">
-			<description>The amount of the balance the user can Bet with</description>
-		</value>
-		<value name="AVAILABLE_TO_WITHDRAW">
-			<description>The amount of the Balance that the user can Withdraw to a payment method</description>
-		</value>
-	</validValues>
-</parameter>
-```
+
+    <parameter name="type" type="string">
+        <description>The type of balance</description>
+        <validValues>
+            <value name="AVAILABLE_TO_BET">
+                <description>The amount of the balance the user can Bet with</description>
+            </value>
+            <value name="AVAILABLE_TO_WITHDRAW">
+                <description>The amount of the Balance that the user can Withdraw to a payment method</description>
+            </value>
+        </validValues>
+    </parameter>
 
 So this is a string parameter called 'type' which can have the value AVAILABLE_TO_BET or AVAILABLE_TO_WITHDRAW
 
@@ -189,52 +184,44 @@ So this is a string parameter called 'type' which can have the value AVAILABLE_T
 
 These act as aliases for the base types supported by the IDL.
 
-```xml
-<simpleType name="someType" type="i64"/>
-```
+    <simpleType name="someType" type="i64"/>
 
 #### Data Types
 
-```xml
-<dataType name="Example">
-	<description>This data type represents an example for a howto</description>
-	<parameter name="account" type="Account">
-		<description>The account being referenced in this Example</description>
-	</parameter>
-	<parameter name="master" type="bool">
-		<description>If the account is a master account</description>
-	</parameter>
-</dataType>
-```
+    <dataType name="Example">
+        <description>This data type represents an example for a howto</description>
+        <parameter name="account" type="Account">
+            <description>The account being referenced in this Example</description>
+        </parameter>
+        <parameter name="master" type="bool">
+            <description>If the account is a master account</description>
+        </parameter>
+    </dataType>
 
 #### Events
 
-```xml
-<event name="SomeChange" since="1.1.0">
-	<description>Event indicating that a change has been made</description>
-	<parameter type="i64" name="accountId" mandatory="true">
-		<description>The Account ID to which the change has been made. Must be between 10^12 and -10^12</description>
-	</parameter>
-	<parameter type="i64" name="newAccountId" mandatory="false">
-		<description>The new value for this account</description>
-	</parameter>
-</event>
-```
+    <event name="SomeChange" since="1.1.0">
+        <description>Event indicating that a change has been made</description>
+        <parameter type="i64" name="accountId" mandatory="true">
+            <description>The Account ID to which the change has been made. Must be between 10^12 and -10^12</description>
+        </parameter>
+        <parameter type="i64" name="newAccountId" mandatory="false">
+            <description>The new value for this account</description>
+        </parameter>
+    </event>
 
 #### Exceptions
 
-```xml
-<exceptionType name="SomeException">
-	<description>This exception is thrown when Something bad happens</description>
-	<parameter name="errorCode" type="string">
-		<description>An error code</description>
-	</parameter>
-	<parameter name="message" type="string">
-		<description>This is a message describes the reason for the exception in English and is for debug/logging purposes
-		only and shouldn't be returned to users. There is also no need to localize this string.</description>
-	</parameter>
-</exceptionType>
-```
+    <exceptionType name="SomeException">
+        <description>This exception is thrown when Something bad happens</description>
+        <parameter name="errorCode" type="string">
+            <description>An error code</description>
+        </parameter>
+        <parameter name="message" type="string">
+            <description>This is a message describes the reason for the exception in English and is for debug/logging purposes
+            only and shouldn't be returned to users. There is also no need to localize this string.</description>
+        </parameter>
+    </exceptionType>
 
 #### Enumerations
 
@@ -250,12 +237,10 @@ More info required (regexps + size restrictions).
 Several elements within the IDL support extension markup which is specific to each modeled protocol. Extension elements
 take the format of:
 
-```xml
-<extensions>
-	<!-- Some Protocol name which supports extensions, which maps to the type generator name
-             such as bfmq-java, or rest -->
-	<rest>
-		<httpmethod>GET</httpmethod>
-	</rest>
-</extensions>
-```
+    <extensions>
+        <!-- Some Protocol name which supports extensions, which maps to the type generator name
+                 such as bfmq-java, or rest -->
+        <rest>
+            <httpmethod>GET</httpmethod>
+        </rest>
+    </extensions>

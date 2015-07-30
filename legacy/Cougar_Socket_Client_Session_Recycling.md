@@ -36,7 +36,7 @@ would be able to pick up the changes within a few minutes. Ideally you would als
 basis, to all the nodes in the datacentre.
 
 The address resolution can also be triggered on the cougar client via JMX manually on mbean
-```CoUGAR.socket.transport.client:name=socketSessionRecycler,instance=XXX```.
+`CoUGAR.socket.transport.client:name=socketSessionRecycler,instance=XXX`.
 
 Relevant cougar properties with their defaults are as below.
 
