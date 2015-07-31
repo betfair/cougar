@@ -17,5 +17,3 @@ To customize the location of the static HTML directory:
     cougar.htmlHandler.regex=/info/.*
 
 I think the regex controls what resources the client of the embedded web server is allowed to access directly.
-
-See also [the config properties page for the relevant module](http://TODO).

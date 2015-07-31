@@ -134,7 +134,7 @@ Code your implementation
 Now we've got our interface stub generated we can implement our new method. We're just going to be implementing the
 synchronous version of the interface for now, as it's simpler.
 
-**TODO**: Need to fix that package!
+*TODO*: Need to fix that package!
 Open up `C:\wibble\wibble-application\src\main\java\com\betfair\cougar\wibble\WibbleServiceImpl.java` in your favourite
 editor (or open the whole project in your IDE) and add the following method body:
 

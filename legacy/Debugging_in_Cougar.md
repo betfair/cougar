@@ -29,8 +29,8 @@ You might also want to [trace](Tracing_Requests_in_Cougar.html) your requests.
 
 # Diagnostics
 
-Cougar logs the effective properties on the JMX Console. It can be accessed via operation listProperties on MBean **ApplicationProperties**
+Cougar logs the effective properties on the JMX Console. It can be accessed via operation listProperties on MBean *ApplicationProperties*
 [https://localhost:9999/ViewObjectRes//CoUGAR%3Aname%3DApplicationProperties](https://localhost:9999/ViewObjectRes//CoUGAR%3Aname%3DApplicationProperties)
 
-The HTTP endpoints exposed by via Cougar is exposed on MBean **EndPoints** under operation listEndpoints as in
+The HTTP endpoints exposed by via Cougar is exposed on MBean *EndPoints* under operation listEndpoints as in
 [https://localhost:9999/ViewObjectRes//CoUGAR%3Aname%3DEndPoints](https://localhost:9999/ViewObjectRes//CoUGAR%3Aname%3DEndPoints)

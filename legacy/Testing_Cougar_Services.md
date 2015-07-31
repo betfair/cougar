@@ -29,6 +29,7 @@ want this to run as part of a CI build.
 * Add a `test` scope dependency on this from your `launcher` module
 * Add an integration test class to the `launcher` module.  Sample code follows:
 
+
     private static ExampleClient client;
     private static ClassPathXmlApplicationContext context;
     @BeforeClass

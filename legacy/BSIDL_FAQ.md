@@ -3,9 +3,9 @@ layout: default
 ---
 # Does BSIDL Support&nbsp;Inheritance?
 
-**Q: I was hoping to have a type say “Shape” with some attributes and extend that type with some sub types say “Triangle” etc ?**
+*Q: I was hoping to have a type say “Shape” with some attributes and extend that type with some sub types say “Triangle” etc ?*
 
-**Is inheritance of “types” possible in BSIDL ? (or anywhere in the roadmap?)&nbsp;**
+*Is inheritance of “types” possible in BSIDL ? (or anywhere in the roadmap?)&nbsp;*
 
 A: TL;DR No and by design
 

@@ -56,6 +56,6 @@ the form `address/mask`. The current default value is `64.12.96.0/255.255.224.0,
 
 ## Country inference
 
-By default country inference is not performed. To enable define a **single** spring bean which implements
+By default country inference is not performed. To enable define a *single* spring bean which implements
 `com.betfair.cougar.api.security.InferredCountryResolver<HttpServletRequest>`. If more than one implementation of
 `InferredCountryResolver` is found within the Spring context then Cougar will fail to start.

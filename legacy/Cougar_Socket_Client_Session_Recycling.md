@@ -21,14 +21,14 @@ When FILE based resolution is used, the mappings are loaded from a file on the l
 the file is /etc/bf-cougar/endpoints.dat. The format of the file is going to be similar to
 
 
-        # APP1 binary endpoints
-        app1.yourdomain.com=10.10.10.10,10.10.10.11,10.10.10.12
-        # APP2 binary endpoints
-        app2.yourdomain.com=20.20.20.20,20.20.20.21,20.20.20.22
-        # APP3 binary endpoints
-        app3.yourdomain.com=30.30.30.30,30.30.30.31,30.30.30.32
-        # APP4 binary endpoints
-        app4.yourdomain.com=40.40.40.40,40.40.40.41,40.40.40.42
+    # APP1 binary endpoints
+    app1.yourdomain.com=10.10.10.10,10.10.10.11,10.10.10.12
+    # APP2 binary endpoints
+    app2.yourdomain.com=20.20.20.20,20.20.20.21,20.20.20.22
+    # APP3 binary endpoints
+    app3.yourdomain.com=30.30.30.30,30.30.30.31,30.30.30.32
+    # APP4 binary endpoints
+    app4.yourdomain.com=40.40.40.40,40.40.40.41,40.40.40.42
 
 
 So when ever there is a change in topology, you will need push the updated file to all the nodes and the cougar clients
@@ -40,13 +40,13 @@ The address resolution can also be triggered on the cougar client via JMX manual
 
 Relevant cougar properties with their defaults are as below.
 
-        # Duration after which the endpoints are re-resolved and socket sessions are recycled if needed
-        cougar.client.socket.session.recycle.interval=1800000
-        # Mode of resolving server endpoints into host addresses
-        # Valid values are DNS or FILE
-        cougar.client.socket.address.resolver=DNS
-        # Location of the config file to be used for address resolution
-        # Is only applicable if
-        # cougar.client.socket.address.resolver=FILE
-        # By default set to /etc/cougar.hosts
-        cougar.client.socket.address.resolver.config.file=/etc/bf-cougar/cougar.hosts
+    # Duration after which the endpoints are re-resolved and socket sessions are recycled if needed
+    cougar.client.socket.session.recycle.interval=1800000
+    # Mode of resolving server endpoints into host addresses
+    # Valid values are DNS or FILE
+    cougar.client.socket.address.resolver=DNS
+    # Location of the config file to be used for address resolution
+    # Is only applicable if
+    # cougar.client.socket.address.resolver=FILE
+    # By default set to /etc/cougar.hosts
+    cougar.client.socket.address.resolver.config.file=/etc/bf-cougar/cougar.hosts

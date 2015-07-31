@@ -96,19 +96,19 @@ https://localhost:9999/administration/threaddump.jsp (or http://localhost:9999/a
 
 ### Parameters
 
-This is an API (if we're going to be **really** generous) that allows beans and attributes to be returned in an easy-to-parse format,
+This is an API (if we're going to be *really* generous) that allows beans and attributes to be returned in an easy-to-parse format,
 either individually or in batches. It is accessed at `https://localhost:9999/administration/batchquery.jsp`
 (or `http://localhost:9999/administration/batchquery.jsp` if you have SSL disabled) and takes the following attributes:
 
-* **on** The object name of the bean being interrogated.
- * This may be a [wildcard](http://download.oracle.com/javase/6/docs/api/javax/management/ObjectName.html) name matching multiple beans.
- * It may also be the word _SYSTEM_ if system properties are to be returned.
-* **an** The name of the attribute the be returned.
- * If not specified all attributes of the matching beans are returned.
- * In the case of system properties being returned, this is the name of the property required, or may be omitted for all properties.
-* **sep** the character separator used in the response. By default it is a tilde (~), but if this character might be returned
+* *on* The object name of the bean being interrogated.
+  * This may be a [wildcard](http://download.oracle.com/javase/6/docs/api/javax/management/ObjectName.html) name matching multiple beans.
+  * It may also be the word _SYSTEM_ if system properties are to be returned.
+* *an* The name of the attribute the be returned.
+  * If not specified all attributes of the matching beans are returned.
+  * In the case of system properties being returned, this is the name of the property required, or may be omitted for all properties.
+* *sep* the character separator used in the response. By default it is a tilde (~), but if this character might be returned
 in the string, a different value may be specified as no escaping is performed if this character is found in any values to be returned.
-* **t** if present, this attribute forces the current system time to be provided in the response.
+* *t* if present, this attribute forces the current system time to be provided in the response.
 
 ### Response format
 

@@ -26,43 +26,43 @@ a DB.
 To create your implementation of this component, you'll need an implementation of the com.betfair.cougar.api.security.IdentityTokenResolver
 interface, which is as follows:
 
+    /**
+     * Base credential resolver interface. This interface is intended to be extended
+     * per transport to provide the resolving, writing and rewriting capabilities
+     * required per transport.
+     */
+    public interface IdentityTokenResolver<I, O> {
         /**
-         * Base credential resolver interface. This interface is intended to be extended
-         * per transport to provide the resolving, writing and rewriting capabilities
-         * required per transport.
+         * Resolve a set of identity tokens, which in turn will be used to
+         * resolve identity, from the request. Examples of a credential are a username,
+         * a password, or an SSO token.
+         * @param input  the data from which the tokens will be read.
+         * @return a set of credentials resolved from the request
          */
-        public interface IdentityTokenResolver<I, O> {
-            /**
-             * Resolve a set of identity tokens, which in turn will be used to
-             * resolve identity, from the request. Examples of a credential are a username,
-             * a password, or an SSO token.
-             * @param input  the data from which the tokens will be read.
-             * @return a set of credentials resolved from the request
-             */
-            public List<IdentityToken> resolve(I input);
-            /**
-             * Allows the credentials to be re-written to the output. This may be
-             * necessary, for example, in the case of an SSO token, where a new token has
-             * been issued, and this new token must now be supplied to the client.
-             * @param credentials the credentials to rewrite
-             * @param output the output to which the token wil be written
-             */
-            public void rewrite(List<IdentityToken> credentials, O output);
-            /**
-             * is rewriting the tokens to the output supported
-             */
-            public boolean isRewriteSupported();
-        }
+        public List<IdentityToken> resolve(I input);
+        /**
+         * Allows the credentials to be re-written to the output. This may be
+         * necessary, for example, in the case of an SSO token, where a new token has
+         * been issued, and this new token must now be supplied to the client.
+         * @param credentials the credentials to rewrite
+         * @param output the output to which the token wil be written
+         */
+        public void rewrite(List<IdentityToken> credentials, O output);
+        /**
+         * is rewriting the tokens to the output supported
+         */
+        public boolean isRewriteSupported();
+    }
 
 For applications that will be exposed via either Rescript or SOAP, narrowed implementation need to be implemented:
 
 Rescript:
 
-` public interface RescriptIdentityTokenResolver extends IdentityTokenResolver<HttpServletRequest, HttpServletResponse> {} `
+    public interface RescriptIdentityTokenResolver extends IdentityTokenResolver<HttpServletRequest, HttpServletResponse> {}
 
 SOAP:
 
-` public interface SoapIdentityTokenResolver extends IdentityTokenResolver<OMElement, OMElement> {} `
+    public interface SoapIdentityTokenResolver extends IdentityTokenResolver<OMElement, OMElement> {}
 
 When designing how your application will marshal tokens, you should consider any network appliances the request must pass
 through in transit - and that any parameter transported as part of an HTTP request is subject to inspection, manipulation

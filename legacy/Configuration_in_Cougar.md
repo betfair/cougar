@@ -55,8 +55,8 @@ If you want to reference another module's configuration data in your assembly, y
 prefix.  If you depend on the module in your project, you can navigate to the depended-upon JAR and look inside it at
 `src/main/resources/conf/cougar-application-spring.xml` and look for the prefix there.
 
-**It's strongly recommended that you change the property placeholder prefix from MY_APPLICATION to something more specific
-to your module, to avoid collisions.**
+*It's strongly recommended that you change the property placeholder prefix from MY_APPLICATION to something more specific
+to your module, to avoid collisions.*
 
 # Static Cougar Config Overrides
 
@@ -76,7 +76,7 @@ module, with the following bean definition:
         </constructor-arg>
     </bean>
 
-**Note**: Cougar only supports a single encryptor, so any attempt to set 2 will fail.
+*Note*: Cougar only supports a single encryptor, so any attempt to set 2 will fail.
 
 # Cougar Framework Module Configuration
 

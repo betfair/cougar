@@ -11,14 +11,14 @@ complexity and enable Cougar users to make informed decisions on how to configur
 
 ## Async core
 
-One thing to remember as you read all this and wonder about the complexities: **_Cougar is asynchronous at it's core_**
+One thing to remember as you read all this and wonder about the complexities: *_Cougar is asynchronous at it's core_*
 
 We provide synchronous constructs to hide the complex nature of asynchronous implementation, but it does affect how things
 work, and to truly understand Cougar and how your app will work within it you need to be aware of this.
 
 ## Abbreviations used
 
-**EV** - Execution venue
+*EV* - Execution venue
 
 # Server concerns
 
@@ -42,9 +42,9 @@ wait on external resources (DB, remote call etc), which then:
 ### Sync
 
 * Is actually an async call (due to Cougar's core nature), adapted onto a sync interface:
- * Service method is called on an EV thread
- * Any blocking call out continues to consume the EV thread
- * Callback as a result of the method return is made on the same EV thread
+  * Service method is called on an EV thread
+  * Any blocking call out continues to consume the EV thread
+  * Callback as a result of the method return is made on the same EV thread
 
 ## Server transports
 
@@ -53,10 +53,10 @@ wait on external resources (DB, remote call etc), which then:
 * Acceptor thread is used to open the connection and setup various fluff around that
 * Selector threads actually read bytes from the wire
 * Remaining threads do the following:
- * Deserialise request
- * Validation
- * Identity token resolution
- * Hand off to EV
+  * Deserialise request
+  * Validation
+  * Identity token resolution
+  * Hand off to EV
 
 The jetty threads also flush the data back after handoff from the EV after the service has returned
 
@@ -65,10 +65,10 @@ The jetty threads also flush the data back after handoff from the EV after the s
 * Acceptor thread is used to open the connection and setup various fluff around that
 * Selector threads actually read bytes from the wire
 * Remaining threads do the following:
- * Deserialise request
- * Validation
- * Identity token resolution
- * Hand off to EV
+  * Deserialise request
+  * Validation
+  * Identity token resolution
+  * Hand off to EV
 
 The MINA threads also write the serialised response to the wire after the service has returned
 
@@ -81,7 +81,7 @@ The MINA threads also write the serialised response to the wire after the servic
 * Makes the EV execution on the callers thread.
 * If the client transport doesn't use the callers thread to write back to the observer then the optional timeout has
 effect from the time the execute method completes (normally after the request has actually been sent).
-* **The optional timeout has no effect when using a synchronous client transport**
+* *The optional timeout has no effect when using a synchronous client transport*
 
 ### Async
 
@@ -97,7 +97,7 @@ Does the following on the calling thread:
 * Obtain a connection
 * Write the request
 
-Does the following on the **??** thread pool:
+Does the following on the *??* thread pool:
 
 * Deserialise the response
 * Call the observer onXXX method
@@ -108,7 +108,7 @@ Does everything on the calling thread:
 
 * Obtain a connection
 * Write the request
- * **Blocks awaiting the response**
+  * *Blocks awaiting the response*
 * Deserialise the response
 * Call the observer onXXX method
 
@@ -128,4 +128,4 @@ Does the following on it's internal thread pool (`CoUGAR.socket.transport.client
 
 Once we know all of the above, we can make some observations on sensible / unwise combinations..
 
-**TODO**
+*TODO*

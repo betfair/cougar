@@ -7,7 +7,7 @@ layout: default
 
 A 'self-service' (you can manage your own subscription) mailing list has been set up on [Google Groups](https://groups.google.com/forum/#!forum/betfair-cougar).
 
-If you have any questions or comments about Cougar, post to the list by the google interface, or by email to **betfair-cougar@googlegroups.com**.
+If you have any questions or comments about Cougar, post to the list by the google interface, or by email to <betfair-cougar@googlegroups.com/>.
 
 ### Searching the Archives
 
@@ -19,8 +19,8 @@ Javadoc for Cougar versions in the SNAPSHOT and release repositories are publish
 
 # Getting the Source Code
 
-The trunk is found at [http://github.com/betfair/cougar](http://github.com/betfair/cougar).
-The documentation source is at [http://github.com/betfair/cougar-documentation](http://github.com/betfair/cougar-documentation).
+The trunk is found at <http://github.com/betfair/cougar/>.
+The documentation source is at <http://github.com/betfair/cougar-documentation/>.
 
 # Reporting Bugs and Requesting new Features
 

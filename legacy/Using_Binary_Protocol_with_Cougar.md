@@ -40,13 +40,13 @@ If `cougar.socket.ssl.supportsTls` is set to `true` then additional properties n
 
 * `cougar.socket.ssl.keystore` \- The Spring resource path to the keystore.
 * `cougar.socket.ssl.keystoreType` \- The type of keystore, defaults to `JKS`.
-* `cougar.socket.ssl.keystorePassword` \- The password for the keystore - **must not** be set as a system property.
+  * `cougar.socket.ssl.keystorePassword` \- The password for the keystore - *must not* be set as a system property.
 
 If `cougar.socket.ssl.wantClientAuth` is set to `true` then additional properties need to be set to give the truststore for client certificates:
 
 * `cougar.socket.ssl.truststore` \- The Spring resource path to the truststore.
 * `cougar.socket.ssl.truststoreType` \- The type of truststore, defaults to `JKS`.
-* `cougar.socket.ssl.truststorePassword` \- The password for the truststore - **must not** be set as a system property.
+  * `cougar.socket.ssl.truststorePassword` \- The password for the truststore - *must not* be set as a system property.
 
 
 #### Connection rejection
@@ -118,13 +118,13 @@ If `cougar.client.socket.ssl.supportsTls` is set to `true` then additional prope
 
 * `cougar.client.socket.ssl.truststore` \- The Spring resource path to the truststore.
 * `cougar.client.socket.ssl.truststoreType` \- The type of truststore, defaults to `JKS`.
-* `cougar.client.socket.ssl.truststorePassword` \- The password for the truststore - **must not** be set as a system property.
+  * `cougar.client.socket.ssl.truststorePassword` \- The password for the truststore - *must not* be set as a system property.
 
 If client certificates are to be supported then additional properties need to be set to give the keystore for the client certificate:
 
 * `cougar.client.socket.ssl.keystore` \- The Spring resource path to the keystore.
 * `cougar.client.socket.ssl.keystoreType` \- The type of keystore, defaults to `JKS`.
-* `cougar.client.socket.ssl.keystorePassword` \- The password for the keystore - **must not** be set as a system property.
+  * `cougar.client.socket.ssl.keystorePassword` \- The password for the keystore - *must not* be set as a system property.
 
 #### Connection termination
 

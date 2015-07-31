@@ -17,7 +17,7 @@ a reference to the first client that needs it.
 
 The constructor for the heap takes a logical uri that must be unique within the context of this cougar instance.
 
-  MutableHeap heap = new MutableHeap(marketId+"/bestPrices/live");
+    MutableHeap heap = new MutableHeap(marketId+"/bestPrices/live");
 
 *On the server side we always construct a `MutableHeap`, there is a conversely named `ImmutableHeap` which is used
 on the client to ensure we don't end up mutating at both ends of the connection.*

@@ -184,7 +184,7 @@ The `description` element provides a description of the interface (usually in En
 <a name="interface-extensions"></a>
 #### Supported extensions
 
-**TODO**
+*TODO*
 
 #### &lt;authors>
 

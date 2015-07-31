@@ -65,10 +65,10 @@ Snippets of IDD will be used throughout this document, but all will be based on 
 RESCRIPT can currently return any data in XML or JSON. There are 2 ways of indicating to the framework what the desired
 format is:
 
-* the **alt** parameter: If there is an 'alt' query parameter available, it is used to defined the return type. Valid
-values of this parameter are **xml** and **json**. For example, to define an XML return type on the
+* the *alt* parameter: If there is an 'alt' query parameter available, it is used to defined the return type. Valid
+values of this parameter are *xml* and *json*. For example, to define an XML return type on the
 baseline service simple get, call [http://localhost:8080/baseline/v1.0/simple/foo?alt=xml.html](http://localhost:8080/baseline/v1.0/simple/foo?alt=xml.html)
-* The **Accept** header: If the **alt** parameter is not defined, the HTTP standard 'Accept' header is used.
+* The *Accept* header: If the *alt* parameter is not defined, the HTTP standard 'Accept' header is used.
 
 
 ## XML Namespace
@@ -87,9 +87,9 @@ All operations must have a uniquely defined endpoint from which data may be requ
 endpoint is provided by the extensions tag. The extensions tags also define where else the data may be retrieved from
 (these descriptions are based on HTTP, other transports may differ):
 
-* **query** The data is passed as an HTTP query parameter. Parameter must be stringable.
-* **header** The data is passed as an HTTP header. Parameter must be stringable.
-* **body** The data will be POSTed as part of the HTTP body. If one or more body parameters is defined, the operation
+* *query* The data is passed as an HTTP query parameter. Parameter must be stringable.
+* *header* The data is passed as an HTTP header. Parameter must be stringable.
+* *body* The data will be POSTed as part of the HTTP body. If one or more body parameters is defined, the operation
 extension method must be POST, not GET.
 
 Stringable parameters are defined as data types that can be rendered as strings with no ambiguity:

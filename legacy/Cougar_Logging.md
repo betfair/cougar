@@ -196,8 +196,8 @@ subclass will do (including any you invent).
 
 ## Logging to the Custom Event Log
 
-# Implement a `com.betfair.cougar.api.LoggableEvent` (which also encapsulates the name of the log which the event will be recorded-to, e.g. `ADDITIONAL_LOG`)
-# Whenever you want to log a custom event, use the `addEventLogRecord` method on the operation's `RequestContext`
+* Implement a `com.betfair.cougar.api.LoggableEvent` (which also encapsulates the name of the log which the event will be recorded-to, e.g. `ADDITIONAL_LOG`)
+* Whenever you want to log a custom event, use the `addEventLogRecord` method on the operation's `RequestContext`
 
     ctx.addEventLogRecord(new MyLoggableEvent(thing, otherThing));
 
@@ -213,11 +213,11 @@ The suffix used for rotating logs is `.YYYY-MM-DD-HH`.
 
 # Changing log levels at runtime using JMX
 
-# Go to Cougar's logging control bean at `https://localhost:9999/ViewObjectRes/CoUGAR%3Aname%3DLoggingControl`
-# Fill out setLogLevel operation parameters
-## p1 \-> The name of the package or fully qualified class to start logging
-## p2 \-> a [JULI log level](http://tomcat.apache.org/tomcat-6.0-doc/logging.html), e.g. `WARNING` or `FINEST`
-## p3 \-> `true` if you want the logging level change to be recursive, `false` otherwise
+* Go to Cougar's logging control bean at `https://localhost:9999/ViewObjectRes/CoUGAR%3Aname%3DLoggingControl`
+* Fill out setLogLevel operation parameters
+  * p1 \-> The name of the package or fully qualified class to start logging
+  * p2 \-> a [JULI log level](http://tomcat.apache.org/tomcat-6.0-doc/logging.html), e.g. `WARNING` or `FINEST`
+  * p3 \-> `true` if you want the logging level change to be recursive, `false` otherwise
 
 # Muffling Cougar logs from code
 

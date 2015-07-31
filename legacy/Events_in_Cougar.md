@@ -85,26 +85,26 @@ In the spring wiring for your application, you'll need to configure two separate
 
 Examining each property in turn:
 
-* **destinationUrl** \- This is a url for your activemq message brokers. It can contain a comma separated list of
+* *destinationUrl* \- This is a url for your activemq message brokers. It can contain a comma separated list of
 addresses for redundancy purposes
-* **destinationType** \- This is the type of destination, and can be one of Queue, Topic and Durable topic. If you're
+* *destinationType* \- This is the type of destination, and can be one of Queue, Topic and Durable topic. If you're
 using a durable topic, you must supply a unique identifier (so ActiveMQ can know who you are and where you're upto
 following connection/reconnection)
-* **username** \- Username of the destination
-* **password** \- Passsword of the destination
-* **destinationResolver** \- if you're using the recommended approach, a different destination will be created for every
+* *username* \- Username of the destination
+* *password* \- Passsword of the destination
+* *destinationResolver* \- if you're using the recommended approach, a different destination will be created for every
 unique message type on your transport - the EventNameDestinationResolver in the spring wiring snippet above will take care
 of creating the appropriate destination name appended onto the supplied destination.
-* **threadPoolSize** \- Non mandatory property (will default to 1 if not set). This property sets how many threads (each
+* *threadPoolSize* \- Non mandatory property (will default to 1 if not set). This property sets how many threads (each
 containing a JMS session) will be created to service requests to emit events.
-* **transportIdentifier** \- Non mandatory property (defaults to null). Allows you to distinguish between multiple instances
+* *transportIdentifier* \- Non mandatory property (defaults to null). Allows you to distinguish between multiple instances
 of event transports.
-* **monitorRegistry** \- Non mandatory property (defaults to null). If set, the transport will register connection,
+* *monitorRegistry* \- Non mandatory property (defaults to null). If set, the transport will register connection,
 publisher, and subscriber monitors with this monitor registry.
 
 There are other properties you may wish to set, but which are optional:
 
-* **acknowledgementMode** - Defaults to _SINGLE_MESSAGE_ACKNOWLEDGE_; Can be one of:
+* *acknowledgementMode* - Defaults to _SINGLE_MESSAGE_ACKNOWLEDGE_; Can be one of:
  * _AUTO\_ACKNOWLEDGE_ — The session automatically acknowledges the client’s receipt of a message before the next call
  to receive (synchronous mode) or when the session MessageListener successfully returns (asynchronous mode). In the event
  of a failure, the last message might be redelivered.
@@ -283,7 +283,7 @@ Use one observer per EventType you wish to listen for.
 # Monitoring and Events over JMS
 
 Cougar supports ping's being sent over message streams for the purposes of determining if a stream is healthy.
-Monitoring is only enabled if you set the **monitorRegistry** property on your EventTransport bean.
+Monitoring is only enabled if you set the *monitorRegistry* property on your EventTransport bean.
 
 ## Connection Monitoring
 
@@ -324,7 +324,7 @@ stream (in ms).
 monitor should have on the overall health of your application.
 
 The exported monitor will have the name `TopicPublisherPingMonitor-<destinationName>`, unless you have specified a
-**transportIdentifier**, in which case it will be `TopicPublisherPingMonitor-<transportIdentifier>-<destinationName>`.
+*transportIdentifier*, in which case it will be `TopicPublisherPingMonitor-<transportIdentifier>-<destinationName>`.
 
 if your transport is configured within a Cougar container, the monitor will be exported in JMX under the following name:
 
@@ -344,7 +344,7 @@ message is not received in this time period then the associated monitor will be 
 associated monitor should have on the overall health of your application.
 
 The exported monitor will have the name `TopicSubscriberPingMonitor-<destinationName>`, unless you have specified
-a **transportIdentifier**, in which case it will be `TopicSubscriberPingMonitor-<transportIdentifier>-<destinationName>`.
+a *transportIdentifier*, in which case it will be `TopicSubscriberPingMonitor-<transportIdentifier>-<destinationName>`.
 If a subscriptionId has been specified (for example for a durable subscription), then the name will be appended with
 `\[<subscriptionId>\]`.
 

@@ -10,27 +10,27 @@ Modules are defined by the existence of a Spring config file `conf/cougar-<modul
 Modules types may be singletons.
 
 Precedence/loading order:
-# Bootstrap modules
-# Core module
-# Framework modules
-# Application modules
+1. Bootstrap modules
+2. Core module
+3. Framework modules
+4. Application modules
 
 ## Bootstrap Modules
 
-**Module Type**: `bootstrap`
-**Singleton**: (x)
+*Module Type*: `bootstrap`
+*Singleton*: NO
 
 ## Core Module
 
-**Module Type**: `core`
-**Singleton**: (/)
+*Module Type*: `core`
+*Singleton*: YES
 
 ## Framework Modules
 
-**Module Type**: `module`
-**Singleton**: (x)
+*Module Type*: `module`
+*Singleton*: NO
 
 ## Application Modules
 
-**Module Type**: `application`
-**Singleton**: (x)
+*Module Type*: `application`
+*Singleton*: NO

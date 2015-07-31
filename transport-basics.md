@@ -70,4 +70,4 @@ event transport(s) you wish to bind your service interface to (those you wish to
       ...
     </bean>
 
-**Note that this is required in addition to the binding descriptor above.**
+*Note that this is required in addition to the binding descriptor above.*

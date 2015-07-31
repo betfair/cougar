@@ -15,7 +15,7 @@ Whatever you decide, remember to talk to the service owner about it, to avoid na
 
 # Using SOAP
 
-**DON'T**
+Did we mention we don't like SOAP?
 
 You'll need to point a SOAP stack at the WSDL, such as [Apache Axis2](http://axis.apache.org/axis2/java/core/docs/quickstartguide.html#clientadb)
 (this is not mentioned as a recommendation, just an example) in the Java world.
