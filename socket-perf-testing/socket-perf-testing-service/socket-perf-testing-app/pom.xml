@@ -87,7 +87,6 @@
         <dependency>
             <groupId>com.betfair.cougar</groupId>
             <artifactId>socket-transport</artifactId>
-            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

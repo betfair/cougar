@@ -74,7 +74,12 @@
         <module>jms-transport</module>
         <module>activemq-transport</module>
         <module>cougar-client</module>
-        <module>cougar-zipkin</module>
+        <module>cougar-zipkin-common</module>
+        <module>cougar-zipkin-server-common</module>
+        <module>cougar-zipkin-server-http</module>
+        <module>cougar-zipkin-server-socket</module>
+		<module>cougar-zipkin-client-http</module>
+		<module>cougar-zipkin-client-socket</module>
 	</modules>
 
 </project>
