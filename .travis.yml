@@ -11,6 +11,7 @@ notifications:
     on_success: always
     on_failure: always
 before_install:
+   - "gem install mime-types -v 2.6.2"
    - "gem install --version 0.8.9 faraday"
    - "gem install travis-artifacts"
    - "echo 'MAVEN_OPTS = $MAVEN_OPTS'"
