@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2015, The Sporting Exchange Limited
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean class="com.betfair.cougar.util.configuration.PropertyConfigurer">
+        <constructor-arg index="0" ref="cougar.core.EncryptorRegistry"/>
+        <property name="defaultConfig" value="classpath:conf/zipkin-defaults.properties"/>
+        <property name="configOverride" value="overrides.properties"/>
+        <property name="placeholderPrefix" value="$COUGAR_ZIPKIN{"/>
+    </bean>
+
+    <bean id="zipkinManager" class="com.betfair.cougar.modules.zipkin.impl.ZipkinManager">
+        <property name="samplingLevel" value="$COUGAR_ZIPKIN{zipkin.samplingLevel}"/>
+    </bean>
+
+    <bean id="zipkinClock" class="com.betfair.cougar.util.time.SystemClock" />
+
+    <bean id="zipkinEmitter" class="com.betfair.cougar.modules.zipkin.impl.ZipkinEmitter">
+        <constructor-arg index="0" value="$COUGAR{cougar.app.name}"/>
+        <constructor-arg index="1" ref="zipkinSpanCollector"/>
+        <constructor-arg index="2" ref="zipkinClock"/>
+    </bean>
+
+    <bean id="zipkinSpanCollector" class="com.github.kristofa.brave.zipkin.ZipkinSpanCollector">
+        <constructor-arg index="0" value="$COUGAR_ZIPKIN{zipkin.collector.host}"/>
+        <constructor-arg index="1" value="$COUGAR_ZIPKIN{zipkin.collector.port}"/>
+        <constructor-arg index="2" ref="zipkinSpanCollectorParams"/>
+    </bean>
+
+    <bean id="zipkinSpanCollectorParams" class="com.github.kristofa.brave.zipkin.ZipkinSpanCollectorParams">
+        <property name="batchSize" value="$COUGAR_ZIPKIN{zipkin.brave.batchSize}"/>
+        <property name="failOnSetup" value="$COUGAR_ZIPKIN{zipkin.brave.failOnSetup}"/>
+        <property name="nrOfThreads" value="$COUGAR_ZIPKIN{zipkin.brave.nrOfThreads}"/>
+        <property name="queueSize" value="$COUGAR_ZIPKIN{zipkin.brave.queueSize}"/>
+        <property name="socketTimeout" value="$COUGAR_ZIPKIN{zipkin.brave.socketTimeout}"/>
+    </bean>
+
+    <bean name="zipkinTracerInitialisation" parent="cougar.core.TracerRegistrationHelper">
+        <constructor-arg index="1">
+            <bean class="com.betfair.cougar.modules.zipkin.impl.ZipkinTracer">
+                <property name="zipkinEmitter" ref="zipkinEmitter"/>
+            </bean>
+        </constructor-arg>
+        <constructor-arg index="2" value="#{ $COUGAR_ZIPKIN{zipkin.samplingLevel} > 0 }"/>
+    </bean>
+
+    <bean class="org.springframework.jmx.export.MBeanExporter">
+        <property name="server" ref="mbeanServer"/>
+
+        <property name="registrationBehavior" ref="org.springframework.jmx.export.MBeanExporter.REGISTRATION_REPLACE_EXISTING"/>
+
+        <property name="beans">
+            <map>
+                <entry key="CoUGAR:name=ZipkinManager" value-ref="zipkinManager"/>
+                <entry key="CoUGAR:name=ZipkinEmitter" value-ref="zipkinEmitter"/>
+            </map>
+        </property>
+
+        <property name="assembler">
+            <bean id="assembler" class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler">
+                <property name="attributeSource">
+                    <bean id="jmxAttributeSource" class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource"/>
+                </property>
+            </bean>
+        </property>
+    </bean>
+</beans>

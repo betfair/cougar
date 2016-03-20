@@ -84,12 +84,10 @@
 		<dependency>
 			<groupId>com.betfair.cougar</groupId>
 			<artifactId>cougar-util</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.betfair.cougar</groupId>
 			<artifactId>cougar-core-impl</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.betfair.cougar</groupId>
@@ -110,7 +108,6 @@
         <dependency>
             <groupId>com.betfair.cougar</groupId>
             <artifactId>jetty-transport</artifactId>
-            <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>

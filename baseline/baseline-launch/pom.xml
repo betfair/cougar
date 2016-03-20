@@ -219,13 +219,11 @@
 		<dependency>
 			<groupId>com.betfair.cougar</groupId>
 			<artifactId>cougar-util</artifactId>
-			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>
         <dependency>
             <groupId>com.betfair.cougar</groupId>
             <artifactId>net-util</artifactId>
-            <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
 		<dependency>
@@ -243,7 +241,6 @@
 		<dependency>
 			<groupId>com.betfair.cougar</groupId>
 			<artifactId>cougar-core-impl</artifactId>
-			<version>${project.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -289,9 +286,8 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-          <groupId>com.betfair.cougar</groupId>
-          <artifactId>jetty-transport</artifactId>
-          <version>${project.version}</version>
+            <groupId>com.betfair.cougar</groupId>
+            <artifactId>jetty-transport</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
