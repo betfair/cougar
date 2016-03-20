@@ -33,7 +33,6 @@
         <dependency>
             <groupId>com.betfair.cougar</groupId>
             <artifactId>cougar-util</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <dependency>
@@ -45,7 +44,6 @@
         <dependency>
             <groupId>com.betfair.cougar</groupId>
             <artifactId>cougar-core-impl</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <dependency>
@@ -57,7 +55,6 @@
         <dependency>
             <groupId>com.betfair.cougar</groupId>
             <artifactId>cougar-transport-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <dependency>
