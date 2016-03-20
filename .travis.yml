@@ -11,7 +11,9 @@ notifications:
     on_success: always
     on_failure: always
 before_install:
-   - "gem install --version 0.8.9 faraday"
+   - "gem install faraday -v 0.8.9"
+   - "gem install mime-types -v 2.6.2"
+   - "gem install net-ssh -v 2.9.4"
    - "gem install travis-artifacts"
    - "echo 'MAVEN_OPTS = $MAVEN_OPTS'"
 install: "echo 'No install command here!'"
