@@ -16,9 +16,6 @@
 
 package com.betfair.cougar.core.impl;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -55,11 +52,7 @@ public class CougarSpringCtxFactoryImpl implements CougarSpringCtxFactory {
 
     public static final Class DEFAULT_COUGAR_LOG_INIT_CLASS = CougarLog4JBootstrap.class;
 
-    private String configDir = "conf";
-
-    public void setConfigDir(String configDir) {
-        this.configDir = configDir;
-    }
+    private static final String CONFIG_PREFIX = "conf";
 
     public ClassPathXmlApplicationContext create() {
         return create(null);
@@ -88,23 +81,23 @@ public class CougarSpringCtxFactoryImpl implements CougarSpringCtxFactory {
     protected List<String> getConfigs() throws IOException {
         List<String> configs = new ArrayList<String>();
 
-        Enumeration<URL> bootstraps = Main.class.getClassLoader().getResources(configDir + "/cougar-bootstrap-spring.xml");
+        Enumeration<URL> bootstraps = Main.class.getClassLoader().getResources(CONFIG_PREFIX + "/cougar-bootstrap-spring.xml");
         while (bootstraps.hasMoreElements()) {
             configs.add(bootstraps.nextElement().toExternalForm());
         }
 
-        URL core = Main.class.getClassLoader().getResource(configDir + "/cougar-core-spring.xml");
+        URL core = Main.class.getClassLoader().getResource(CONFIG_PREFIX + "/cougar-core-spring.xml");
         if (core == null) {
             throw new IllegalStateException("Cannot find Cougar Core definition");
         }
         configs.add(core.toExternalForm());
 
-        Enumeration<URL> modules = Main.class.getClassLoader().getResources(configDir + "/cougar-module-spring.xml");
+        Enumeration<URL> modules = Main.class.getClassLoader().getResources(CONFIG_PREFIX + "/cougar-module-spring.xml");
         while (modules.hasMoreElements()) {
             configs.add(modules.nextElement().toExternalForm());
         }
 
-        Enumeration<URL> applications = Main.class.getClassLoader().getResources(configDir + "/cougar-application-spring.xml");
+        Enumeration<URL> applications = Main.class.getClassLoader().getResources(CONFIG_PREFIX + "/cougar-application-spring.xml");
         while (applications.hasMoreElements()) {
             configs.add(applications.nextElement().toExternalForm());
         }
@@ -120,7 +113,7 @@ public class CougarSpringCtxFactoryImpl implements CougarSpringCtxFactory {
 
         try {
             //Construct a set of resources to attempt to load initial log config from
-            Resource defaultConfig = new ClassPathResource(configDir + "/cougar-core-defaults.properties");
+            Resource defaultConfig = new ClassPathResource(CONFIG_PREFIX + "/cougar-core-defaults.properties");
             PropertyLoader pl = new PropertyLoader(defaultConfig, "overrides.properties");
             //Build a merged properties file that contains the above as well as System properties
             Properties properties = pl.buildConsolidatedProperties();

@@ -24,8 +24,8 @@ public class Main {
 	public static void main(String[] args) {
 	    CougarSpringCtxFactoryImpl ctx = new CougarSpringCtxFactoryImpl();
 	    if (args.length == 1) {
-	        System.out.println("Reading configuration from "+args[0]+" directory");
-	        ctx.setConfigDir(args[0]);
+            // this used to be supported, but would be catastrophic now.
+            throw new IllegalArgumentException("Setting configuration path is no longer supported");
 	    }
 		ctx.create(null);
 	}
