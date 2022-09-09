@@ -152,8 +152,7 @@ public class ApplicationChecksums implements DynamicMBean, InitializingBean {
                 // remove %20 etc
                 file = URLDecoder.decode(file, "UTF-8");
                 File f = new File(file);
-                String canonicalPath = f.getCanonicalPath();
-                if (!canonicalPath.startsWith(javaHome)) {
+                if (!f.getCanonicalFile().toPath().startsWith(javaHome)) {
                     ret.add(f);
                 }
             } else {

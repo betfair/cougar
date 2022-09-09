@@ -41,7 +41,7 @@ public class ApplicationChecksumsTest {
         String javaHome = System.getProperty("java.home");
         List<File> jars = ac.findNonJdkJars();
         for (File f : jars) {
-            assertFalse(f.getCanonicalPath().startsWith(javaHome));
+            assertFalse(f.getCanonicalFile().toPath().startsWith(javaHome));
         }
     }
 
