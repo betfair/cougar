@@ -182,7 +182,7 @@
     <repositories>
         <repository>
             <id>ibiblio-mule-dependencies</id>
-            <url>http://mirrors.ibiblio.org/maven/mule/dependencies</url>
+            <url>https://mirrors.ibiblio.org/maven/mule/dependencies</url>
             <releases>
                 <updatePolicy>never</updatePolicy>
                 <enabled>true</enabled>
